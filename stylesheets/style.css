@@ -1,0 +1,40 @@
+* {
+  font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif !important;
+}
+
+.main-container {
+  padding-top: 20px;
+  width: 600px;
+  margin: 0 auto;
+}
+
+.header-container, .video-container, .video_control-container {
+  margin: 10px 0;
+  text-align: center;
+}
+
+.transcription-container {
+  margin: 10px 0;
+}
+
+h1 {
+  font-weight: bold;
+  font-size: 36px;
+  font-family: cursive !important;
+}
+
+.transcription-input {
+  width: 100%;
+  padding: 15px 10px;
+  font-size: 14px;
+}
+
+.transcription-container {
+  max-height: 200px;
+  overflow-y: scroll;
+}
+
+.transcription-segment {
+  color: gray;
+  margin-bottom: 3px;
+}
