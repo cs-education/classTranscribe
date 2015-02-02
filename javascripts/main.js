@@ -29,17 +29,17 @@ $(document).ready(function () {
   Started once the DOM finishes loading
 */
 function begin() {
-  changePlaybackSpeed();
   bindEventListeners();
+  changePlaybackSpeed();
 }
 
 /*
   Binds event listeners on input elements
 */
 function bindEventListeners() {
-  $(".video-selector").change(loadVideo);
-  $(".playback-selector").change(changePlaybackSpeed);
-  $(".transcription-input").keypress(inputKeypress);
+  $(".video-selector").off().change(loadVideo);
+  $(".playback-selector").off().change(changePlaybackSpeed);
+  $(".transcription-input").off().keypress(inputKeypress);
 }
 
 /*
@@ -50,6 +50,7 @@ function loadVideo() {
   var videoSrc = VIDEOS[videoIndex];
   $(".main-video-source").attr("src", videoSrc);
   $(".main-video").get(0).load();
+  begin();
 }
 
 /*
