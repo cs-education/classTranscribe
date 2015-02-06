@@ -121,6 +121,9 @@ function loadTranscriptions(videoIndex) {
   $(".transcription-track-transcription").off().click(function () {
     var template = '<div class="transcription-track-final-transcription" draggable="true" contentEditable="true" style="width:' + 0.8 * $(this).width() + 'px">' + $(this).text() + '</div>';
     $(".final-transcription-track-spacer").append(template);
+    $( ".transcription-track-final-transcription" ).dblclick(function () {
+      $(this).remove();
+    })
     // $( ".transcription-track-final-transcription" ).draggable({ axis: "x" }); // Figure out later
   })
 }
