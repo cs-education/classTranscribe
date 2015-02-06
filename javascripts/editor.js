@@ -59,6 +59,12 @@ function begin() {
 function bindEventListeners() {
   $(".video-selector").off().change(begin);
   $(".playback-selector").off().change(changePlaybackSpeed);
+  $(window).keypress(function (e) {
+    if (e.which === 126) {
+      e.preventDefault();
+      toggleVideo();
+    }
+  })
 }
 
 /*
@@ -119,7 +125,7 @@ function loadTranscriptions(videoIndex) {
   $(".final-transcription-track-spacer").width(totalTranscriptionWidth() + 200); // Extra padding
 
   $(".transcription-track-transcription").off().click(function () {
-    var template = '<div class="transcription-track-final-transcription" draggable="true" contentEditable="true" style="width:' + 0.8 * $(this).width() + 'px">' + $(this).text() + '</div>';
+    var template = '<div class="transcription-track-final-transcription" draggable="true" contentEditable="true">' + $(this).text() + '</div>';
     $(".final-transcription-track-spacer").append(template);
     $( ".transcription-track-final-transcription" ).dblclick(function () {
       $(this).remove();
