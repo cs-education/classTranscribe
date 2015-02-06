@@ -1,0 +1,91 @@
+* {
+  font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif !important;
+}
+
+.main-container {
+  padding-top: 20px;
+  padding-bottom: 50px;
+  width: 600px;
+  margin: 0 auto;
+}
+
+.header-container, .video-container, .video_control-container {
+  margin: 10px 0;
+  text-align: center;
+}
+
+.editor-container {
+  margin: 10px 0;
+}
+
+.transcription-track {
+  border: 1px solid silver;
+  overflow-x: scroll;
+  padding: 2px 0;
+  white-space: nowrap;
+}
+
+.final-transcription-track {
+  border: 1px solid black;
+  overflow-x: scroll;
+  padding: 2px 0;
+  white-space: nowrap;
+  padding-right: 250px;
+  min-height: 26px;
+}
+
+.transcription-track-transcription {
+  border: 1px dotted silver;
+  display: inline-block;
+  padding: 5px 0;
+  font-size: 14px;
+  white-space: normal;
+  vertical-align: middle;
+}
+
+.transcription-track-final-transcription {
+  border: 1px dotted black;
+  display: inline-block;
+  resize: horizontal;
+  overflow: auto;
+  text-align: center;
+  width: 120px;
+  padding: 5px 0;
+  font-size: 14px;
+  white-space: normal;
+  vertical-align: middle;
+}
+
+.final-transcription-track-title {
+  margin: 10px 0;
+}
+
+.transcription-track-transcription:hover, .transcription-track-final-transcription:hover {
+  cursor: pointer;
+}
+
+h1 {
+  font-weight: bold;
+  font-size: 36px;
+  font-family: cursive !important;
+}
+
+.timeline-container {
+
+}
+
+.timestamp-container {
+  text-align: center;
+  display: inline-block;
+  color: gray;
+  margin-right: 27px;
+}
+
+.timestamp-container:last-child {
+  margin-right: 0;
+}
+
+.timestamp-bar {
+  text-align: left;
+  margin-bottom: 2px;
+}
