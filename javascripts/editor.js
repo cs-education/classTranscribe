@@ -59,7 +59,7 @@ function begin() {
 function bindEventListeners() {
   $(".video-selector").off().change(begin);
   $(".playback-selector").off().change(changePlaybackSpeed);
-  $(window).keypress(function (e) {
+  $(window).off().keypress(function (e) {
     if (e.which === 126) {
       e.preventDefault();
       toggleVideo();
