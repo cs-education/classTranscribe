@@ -32,6 +32,7 @@
   white-space: nowrap;
   padding-right: 250px;
   min-height: 26px;
+  position: relative;
 }
 
 .transcription-track-transcription {
@@ -88,4 +89,20 @@ h1 {
 .timestamp-bar {
   text-align: left;
   margin-bottom: 2px;
+}
+
+.final-transcription-red-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  border-left: 2px solid red;
+  -webkit-transition: left 1s linear;
+      -moz-transition: left 1s linear;
+      -o-transition: left 1s linear;
+      transition: left 1s linear;
+}
+
+.final-transcription-track-spacer {
+  height: 1px;
 }
