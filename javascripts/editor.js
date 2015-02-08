@@ -213,7 +213,7 @@ setInterval(function () {
   currentTime = Math.floor(currentTime);
 
   if (currentTime != lastTime) {
-    $(".final-transcription-red-bar").css('left', currentTime * 63.7 + "px");
+    $(".final-transcription-red-bar").css('left', currentTime * 63.8 + "px");
     lastTime = currentTime;
   }
 }, 50);
