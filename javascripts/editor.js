@@ -207,6 +207,9 @@ function save() {
   console.log(JSON.stringify(finalTranscriptions));
 }
 
+/*
+  Interval to update the red bar
+*/
 var lastTime = 0;
 setInterval(function () {
   var currentTime = $(".main-video").get(0).currentTime;
