@@ -129,9 +129,8 @@ function solidifyTranscription(e) {
 
   anchor = currentTime;
 
-  var transcriptionSegmentTemplate = '<div class="transcription-segment">'
-                                   + transcriptionSegment.start + " - " + transcriptionSegment.end + " : " + transcriptionSegment.text
-                                   + '</div>';
+  var transcriptionSegmentTemplate = $('<div class="transcription-segment"></div>');
+  transcriptionSegmentTemplate.text(transcriptionSegment.start + " - " + transcriptionSegment.end + " : " + transcriptionSegment.text);
 
   $(".transcription-container").prepend(transcriptionSegmentTemplate);
   $(".transcription-input").val("");
@@ -150,4 +149,11 @@ function getCurrentTime() {
     return currentTimeInMinutes + ":0" + currentTimeInSeconds;
   }
   return currentTimeInMinutes + ":" + currentTimeInSeconds;
+}
+
+/*
+  Save the transcriptions
+*/
+function save() {
+  console.log(JSON.stringify(transcriptions));
 }
