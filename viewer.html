@@ -1,0 +1,39 @@
+<html>
+  <head>
+    <title>Class Transcribe</title>
+
+    <!-- Begin Javsacript -->
+    <script src="javascripts/jquery-1.11.2.min.js"></script>
+    <script src="javascripts/viewer.js"></script>
+    <!-- End Javascript -->
+
+    <!-- Begin Stylesheets -->
+    <link rel="stylesheet" type="text/css" href="stylesheets/reset.css">
+    <link rel="stylesheet" type="text/css" href="stylesheets/viewer.css">
+    <!-- End Stylesheets -->
+  </head>
+  <body>
+    <div class="main-container">
+      <div class="header-container">
+        <h1>Class Transcribe</h1>
+      </div>
+      <div class="video-container">
+        <video class="main-video" width="600" controls>
+          <source class="main-video-source" src="http://angrave.github.io/sysassets/mp4/0010-HelloWorld-v2.mp4" type="video/mp4">
+        </video>
+      </div>
+      <div class="video_control-container">
+        <select class="video-selector">
+          <option selected value="1">Video: Hello World</option>
+          <option value="2">Video: Hello Std Err</option>
+          <option value="3">Video: Open and Create a file</option>
+          <option value="4">Video: Open Errors and Printf</option>
+        </select>
+        <select class="playback-selector">
+          <option selected value="1">Playback 1x</option>
+        </select>
+      </div>
+      <div class="transcription-viewer-container"></div>
+    </div>
+  </body>
+ </html>

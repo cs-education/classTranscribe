@@ -63,8 +63,19 @@ function bindEventListeners() {
     if (e.which === 126) {
       e.preventDefault();
       toggleVideo();
+    } else if (e.which === 96) {
+      e.preventDefault();
+      rewindFiveSeconds();
     }
   })
+}
+
+/*
+  Rewind the video 5 seconds
+*/
+function rewindFiveSeconds() {
+  var video = $(".main-video").get(0);
+  video.currentTime = video.currentTime - 5;
 }
 
 /*
@@ -111,22 +122,23 @@ function loadTranscriptions(videoIndex) {
   transcriptions.forEach(function (transcription, i) {
     transcription.forEach(function (segment) {
       var width = (timeStringToNum(segment.end) - timeStringToNum(segment.start)) * 64;
+      width = Math.max(width, 64);
       var template = '<div class="transcription-track-transcription" style="width:' + width + 'px">' + segment.text + '</div>';
       $(".transcription-track-track-" + i).append(template);
     });
   })
 
   $(".transcription-track, .final-transcription-track").off().scroll(function() {
-    updateTimeLine($(this).scrollLeft());
     $(".transcription-track").scrollLeft($(this).scrollLeft());
     $(".final-transcription-track").scrollLeft($(this).scrollLeft());
+    updateTimeLine($(this).scrollLeft());
   });
 
   $(".final-transcription-track-spacer").width(totalTranscriptionWidth() + 200); // Extra padding
 
   $(".transcription-track-transcription").off().click(function () {
     var template = '<div class="transcription-track-final-transcription" draggable="true" contentEditable="true">' + $(this).text() + '</div>';
-    $(".final-transcription-track-spacer").append(template);
+    $(".final-transcription-track").append(template);
     $( ".transcription-track-final-transcription" ).dblclick(function () {
       $(this).remove();
     })
@@ -170,9 +182,10 @@ function timeNumToString(timeNum) {
 /*
   Update the timeline
 */
-var currentStarTime = 0;
+var currentStartTime = 0;
 function updateTimeLine(scroll) {
-  if (scroll > 64 * (scroll + 1) || scroll < 64 * (scroll - 1) ) {
+  if (currentStartTime + 64 > 64 * scroll || currentStartTime - 64 < 64 * scroll) {
+    currentStartTime = 64 * scroll;
     $(".timestamp").each(function (i) {
       var time = timeNumToString(Math.round(scroll / 64) + i);
       $(this).text(time);
@@ -193,3 +206,17 @@ function save() {
   })
   console.log(JSON.stringify(finalTranscriptions));
 }
+
+/*
+  Interval to update the red bar
+*/
+var lastTime = 0;
+setInterval(function () {
+  var currentTime = $(".main-video").get(0).currentTime;
+  currentTime = Math.floor(currentTime);
+
+  if (currentTime != lastTime) {
+    $(".final-transcription-red-bar").css('left', currentTime * 63.8 + "px");
+    lastTime = currentTime;
+  }
+}, 50);

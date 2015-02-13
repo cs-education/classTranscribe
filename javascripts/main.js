@@ -8,6 +8,22 @@
     "http://angrave.github.io/sysassets/mp4/0020-HelloStdErr-24fps600kbs.mp4",
     "http://angrave.github.io/sysassets/mp4/0030-OpenCreateAFile-650kb.mp4",
     "http://angrave.github.io/sysassets/mp4/0040-OpenErrorsPrintf-600kbs.mp4",
+    "http://angrave.github.io/sysassets/mp4/0050-NotAllBytesAre8Bits.mp4",
+    "http://angrave.github.io/sysassets/mp4/0060-FollowTheIntPointer.mp4",
+    "http://angrave.github.io/sysassets/mp4/0070-CharacterPointers.mp4",
+    "http://angrave.github.io/sysassets/mp4/0080-ProgramArguments.mp4",
+    "http://angrave.github.io/sysassets/mp4/0090-Environment.mp4",
+    "http://angrave.github.io/sysassets/mp4/0100-CharArraySearching.mp4",
+    "http://angrave.github.io/sysassets/mp4/0110-PointersToAutomaticVariables-v2.mp4",
+    "http://angrave.github.io/sysassets/mp4/0120-TimeForMallocingHeapMemory.mp4",
+    "http://angrave.github.io/sysassets/mp4/0130-HeapGotchas-DanglingPointersAndDoubleFree.mp4",
+    "http://angrave.github.io/sysassets/mp4/0140-StructTypedefLinkedList.mp4",
+    "http://angrave.github.io/sysassets/mp4/0150-CreatingLinksStrdup.mp4",
+    "http://angrave.github.io/sysassets/mp4/0160-getputchar-gets-puts-v2.mp4",
+    "http://angrave.github.io/sysassets/mp4/0170-scanf-intro.mp4",
+    "http://angrave.github.io/sysassets/mp4/0180-getline.mp4",
+    "http://angrave.github.io/sysassets/mp4/0190-SIGINT-SIGALRM.mp4",
+    "http://angrave.github.io/sysassets/mp4/0200-forkwaitpid-forkbomb.mp4",
   ];
 
   // Data structure that holds transcriptions. Looks something like the following
@@ -113,9 +129,8 @@ function solidifyTranscription(e) {
 
   anchor = currentTime;
 
-  var transcriptionSegmentTemplate = '<div class="transcription-segment">'
-                                   + transcriptionSegment.start + " - " + transcriptionSegment.end + " : " + transcriptionSegment.text
-                                   + '</div>';
+  var transcriptionSegmentTemplate = $('<div class="transcription-segment"></div>');
+  transcriptionSegmentTemplate.text(transcriptionSegment.start + " - " + transcriptionSegment.end + " : " + transcriptionSegment.text);
 
   $(".transcription-container").prepend(transcriptionSegmentTemplate);
   $(".transcription-input").val("");
@@ -134,4 +149,11 @@ function getCurrentTime() {
     return currentTimeInMinutes + ":0" + currentTimeInSeconds;
   }
   return currentTimeInMinutes + ":" + currentTimeInSeconds;
+}
+
+/*
+  Save the transcriptions
+*/
+function save() {
+  console.log(JSON.stringify(transcriptions));
 }
