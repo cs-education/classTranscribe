@@ -97,7 +97,7 @@ function inputKeypress(e) {
 */
 function rewindFiveSeconds() {
   var video = $(".main-video").get(0);
-  video.currentTime = video.currentTime - 5;
+  video.currentTime = video.currentTime - 2;
 }
 
 /*
