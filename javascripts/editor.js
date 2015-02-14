@@ -227,7 +227,25 @@ function loadTranscriptions(videoIndex) {
       $(this).remove();
     })
     // $( ".transcription-track-final-transcription" ).draggable({ axis: "x" }); // Figure out later
-  })
+  });
+
+  $(".final-transcription-track").mousemove(function (e) {
+    if ($(e.target).hasClass('final-transcription-track')) {
+      var scrollLeft = $(this).scrollLeft();
+      $(".final-transcription-black-bar").css('left', (e.offsetX + scrollLeft) + "px");
+    }
+  });
+
+  $(".final-transcription-track").click(function (e){
+    if ($(e.target).hasClass('final-transcription-track')) {
+      var otherWidths = 0;
+      $(".transcription-track-final-transcription").slice(0, -1).each(function (i, el) {
+        otherWidths += $(el).outerWidth(); // for border
+      });
+      var scrollLeft = $(".final-transcription-track").scrollLeft();
+      $(".transcription-track-final-transcription").last().width(e.offsetX + scrollLeft - otherWidths - 2);
+    }
+  });
 }
 
 /*
