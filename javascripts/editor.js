@@ -318,7 +318,8 @@ setInterval(function () {
   currentTime = Math.floor(currentTime);
 
   if (currentTime != lastTime) {
-    $(".final-transcription-red-bar").css('left', currentTime * 63.8 + "px");
+    var numSegments = $(".transcription-track-final-transcription").length;
+    $(".final-transcription-red-bar").css('left', (currentTime * 64 + numSegments * 2) + "px");
     lastTime = currentTime;
   }
 }, 50);
