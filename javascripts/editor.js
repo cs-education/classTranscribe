@@ -312,14 +312,13 @@ function save() {
 /*
   Interval to update the red bar
 */
-var lastTime = 0;
+var lastTime = -1;
 setInterval(function () {
   var currentTime = $(".main-video").get(0).currentTime;
   currentTime = Math.floor(currentTime);
 
   if (currentTime != lastTime) {
-    var numSegments = $(".transcription-track-final-transcription").length;
-    $(".final-transcription-red-bar").css('left', (currentTime * 64 + numSegments * 2) + "px");
+    $(".final-transcription-red-bar").css('left', currentTime * 64 + "px");
     lastTime = currentTime;
   }
 }, 50);
