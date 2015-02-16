@@ -2,6 +2,10 @@
   font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif !important;
 }
 
+*:focus {
+    outline: 0;
+}
+
 .main-container {
   padding-top: 20px;
   padding-bottom: 50px;
@@ -55,6 +59,7 @@
   font-size: 14px;
   white-space: normal;
   vertical-align: middle;
+  background-color: white;
 }
 
 .final-transcription-track-title {
@@ -69,10 +74,6 @@ h1 {
   font-weight: bold;
   font-size: 36px;
   font-family: cursive !important;
-}
-
-.timeline-container {
-
 }
 
 .timestamp-container {
@@ -97,10 +98,20 @@ h1 {
   top: 0;
   height: 100%;
   border-left: 2px solid red;
+  pointer-events: none;
   -webkit-transition: left 1s linear;
       -moz-transition: left 1s linear;
       -o-transition: left 1s linear;
       transition: left 1s linear;
+}
+
+.final-transcription-black-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  border-left: 1px solid black;
+  z-index: -1;
 }
 
 .final-transcription-track-spacer {

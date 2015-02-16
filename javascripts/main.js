@@ -85,7 +85,7 @@ function inputKeypress(e) {
     solidifyTranscription(e);
   } else if (e.which === 96) {
     e.preventDefault();
-    rewindFiveSeconds();
+    rewindTwoSeconds();
   } else if (e.which === 126) {
     e.preventDefault();
     toggleVideo();
@@ -95,7 +95,7 @@ function inputKeypress(e) {
 /*
   Rewind the video 5 seconds
 */
-function rewindFiveSeconds() {
+function rewindTwoSeconds() {
   var video = $(".main-video").get(0);
   video.currentTime = video.currentTime - 2;
 }

@@ -85,11 +85,11 @@ function loadCaptions(i) {
 */
 function updateHighlightedCaption(currentTime) {
   var currentSegment = findCurrentSegment(currentTime);
+  scrollToSegment(currentSegment);
   $(".selected-caption").removeClass("selected-caption");
   currentSegment.addClass("selected-caption");
   lastTime = parseFloat(currentSegment.data("startingTime"));
   segmentLength = parseFloat(currentSegment.data("time"));
-  scrollToSegment(currentSegment);
 }
 
 /*
@@ -97,7 +97,6 @@ function updateHighlightedCaption(currentTime) {
 */
 setInterval(function () {
   var currentTime = $(".main-video").get(0).currentTime;
-  currentTime = Math.floor(currentTime);
 
   if (currentTime > (lastTime + segmentLength) || currentTime < lastTime) {
     updateHighlightedCaption(currentTime);
@@ -113,7 +112,6 @@ function findCurrentSegment(time) {
 
   var currentSegment = $(".caption").first();
   for (var i = 0; i < numCaptions; i++) {
-    console.log(timeAccumulator, time)
     if (timeAccumulator > time) {
       break;
     }
@@ -129,10 +127,8 @@ function findCurrentSegment(time) {
   Scrolls to a specific segment given the segment object
 */
 function scrollToSegment(segment) {
-  console.log(segment.offset().top)
   var viewerContainer = $('.transcription-viewer-container');
-  console.log(viewerContainer.scrollTop() - viewerContainer.offset().top + segment.offset().top - 100)
   viewerContainer.animate({
       scrollTop: viewerContainer.scrollTop() - viewerContainer.offset().top + segment.offset().top - 100
-  }, 1000);
+  }, 500);
 }
