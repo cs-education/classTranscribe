@@ -315,10 +315,9 @@ function save() {
 var lastTime = -1;
 setInterval(function () {
   var currentTime = $(".main-video").get(0).currentTime;
-  currentTime = Math.floor(currentTime);
 
   if (currentTime != lastTime) {
     $(".final-transcription-red-bar").css('left', currentTime * 64 + "px");
     lastTime = currentTime;
   }
-}, 50);
+}, 100);

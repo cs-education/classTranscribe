@@ -4,12 +4,13 @@
 
     <!-- Begin Javsacript -->
     <script src="javascripts/jquery-1.11.2.min.js"></script>
-    <script src="javascripts/main.js"></script>
+    <script src="javascripts/jquery-ui-1.11.2.min.js"></script>
+    <script src="javascripts/reviewer.js"></script>
     <!-- End Javascript -->
 
     <!-- Begin Stylesheets -->
     <link rel="stylesheet" type="text/css" href="stylesheets/reset.css">
-    <link rel="stylesheet" type="text/css" href="stylesheets/main.css">
+    <link rel="stylesheet" type="text/css" href="stylesheets/reviewer.css">
     <!-- End Stylesheets -->
   </head>
   <body>
@@ -46,17 +47,60 @@
           <option value="20">Video: Fork Waitpid Forkbomb</option>
         </select>
         <select class="playback-selector">
-          <option value="1">Playback 1x</option>
-          <option value="0.75">Playback 0.75x</option>
-          <option value="0.6">Playback 0.6x</option>
-          <option selected value="0.5">Playback 0.5x</option>
-          <option value="0.25">Playback 0.25x</option>
+          <option value="2">Playback 2x</option>
+          <option value="1.5">Playback 1.5x</option>
+          <option value="1.25">Playback 1.25x</option>
+          <option selected value="1">Playback 1x</option>
         </select>
       </div>
-      <div class="transcription-input-container">
-        <input class="transcription-input" type="text" placeholder="Start transcribing here..."></input>
+      <div class="editor-container">
+        <div class="final-caption-track-title">Final Track</div>
+        <div class="final-caption-track">
+          <div class="final-caption-red-bar"></div>
+        </div>
       </div>
-      <div class="transcription-container"></div>
+      <div class="timeline-container">
+        <div class="timestamp-container">
+          <div class="timestamp-bar">|</div>
+          <div class="timestamp">0:00</div>
+        </div>
+        <div class="timestamp-container">
+          <div class="timestamp-bar">|</div>
+          <div class="timestamp">0:01</div>
+        </div>
+        <div class="timestamp-container">
+          <div class="timestamp-bar">|</div>
+          <div class="timestamp">0:02</div>
+        </div>
+        <div class="timestamp-container">
+          <div class="timestamp-bar">|</div>
+          <div class="timestamp">0:03</div>
+        </div>
+        <div class="timestamp-container">
+          <div class="timestamp-bar">|</div>
+          <div class="timestamp">0:04</div>
+        </div>
+        <div class="timestamp-container">
+          <div class="timestamp-bar">|</div>
+          <div class="timestamp">0:05</div>
+        </div>
+        <div class="timestamp-container">
+          <div class="timestamp-bar">|</div>
+          <div class="timestamp">0:06</div>
+        </div>
+        <div class="timestamp-container">
+          <div class="timestamp-bar">|</div>
+          <div class="timestamp">0:07</div>
+        </div>
+        <div class="timestamp-container">
+          <div class="timestamp-bar">|</div>
+          <div class="timestamp">0:08</div>
+        </div>
+        <div class="timestamp-container">
+          <div class="timestamp-bar">|</div>
+          <div class="timestamp">0:09</div>
+        </div>
+      </div>
     </div>
   </body>
  </html>
