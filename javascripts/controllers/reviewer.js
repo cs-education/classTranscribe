@@ -67,8 +67,9 @@ function loadCaptions(videoIndex) {
 
   $(".caption-track-final-caption").remove();
   captions.forEach(function (caption) {
-    var template = '<div class="caption-track-final-caption" draggable="true" contentEditable="true" style="width:' + caption.width + 'px">' + caption.text + '</div>';
+    var template = '<div class="caption-track-final-caption" draggable="true" contentEditable="true" style="width:' + caption.width + 'px"></div>';
     $(".final-caption-track").append(template);
+    $(".caption-track-final-caption").last().text(caption.text);
   });
 
   $(".caption-track-final-caption").dblclick(function () {
