@@ -2,30 +2,6 @@
   Begin Global Variables
 */
 
-  // Video sources
-  var VIDEOS = [
-    "http://angrave.github.io/sysassets/mp4/0010-HelloWorld-v2.mp4",
-    "http://angrave.github.io/sysassets/mp4/0020-HelloStdErr-24fps600kbs.mp4",
-    "http://angrave.github.io/sysassets/mp4/0030-OpenCreateAFile-650kb.mp4",
-    "http://angrave.github.io/sysassets/mp4/0040-OpenErrorsPrintf-600kbs.mp4",
-    "http://angrave.github.io/sysassets/mp4/0050-NotAllBytesAre8Bits.mp4",
-    "http://angrave.github.io/sysassets/mp4/0060-FollowTheIntPointer.mp4",
-    "http://angrave.github.io/sysassets/mp4/0070-CharacterPointers.mp4",
-    "http://angrave.github.io/sysassets/mp4/0080-ProgramArguments.mp4",
-    "http://angrave.github.io/sysassets/mp4/0090-Environment.mp4",
-    "http://angrave.github.io/sysassets/mp4/0100-CharArraySearching.mp4",
-    "http://angrave.github.io/sysassets/mp4/0110-PointersToAutomaticVariables-v2.mp4",
-    "http://angrave.github.io/sysassets/mp4/0120-TimeForMallocingHeapMemory.mp4",
-    "http://angrave.github.io/sysassets/mp4/0130-HeapGotchas-DanglingPointersAndDoubleFree.mp4",
-    "http://angrave.github.io/sysassets/mp4/0140-StructTypedefLinkedList.mp4",
-    "http://angrave.github.io/sysassets/mp4/0150-CreatingLinksStrdup.mp4",
-    "http://angrave.github.io/sysassets/mp4/0160-getputchar-gets-puts-v2.mp4",
-    "http://angrave.github.io/sysassets/mp4/0170-scanf-intro.mp4",
-    "http://angrave.github.io/sysassets/mp4/0180-getline.mp4",
-    "http://angrave.github.io/sysassets/mp4/0190-SIGINT-SIGALRM.mp4",
-    "http://angrave.github.io/sysassets/mp4/0200-forkwaitpid-forkbomb.mp4",
-  ];
-
   // Data structure that holds transcriptions. Looks something like the following
   // [ {start: "0:00", end: "0:10", text:"Conditional variables are cool"}, ... ]
   var transcriptions = [];
@@ -45,6 +21,9 @@ $(document).ready(function () {
   Started once the DOM finishes loading
 */
 function begin() {
+  var videoIndex = parseInt($(".video-selector").val(), 10);
+
+  loadVideo(videoIndex)
   bindEventListeners();
   changePlaybackSpeed();
 }
@@ -53,20 +32,9 @@ function begin() {
   Binds event listeners on input elements
 */
 function bindEventListeners() {
-  $(".video-selector").off().change(loadVideo);
+  $(".video-selector").off().change(begin);
   $(".playback-selector").off().change(changePlaybackSpeed);
   $(".transcription-input").off().keypress(inputKeypress);
-}
-
-/*
-  Loads the selected video
-*/
-function loadVideo() {
-  var videoIndex = parseInt($(".video-selector").val(), 10) - 1;
-  var videoSrc = VIDEOS[videoIndex];
-  $(".main-video-source").attr("src", videoSrc);
-  $(".main-video").get(0).load();
-  begin();
 }
 
 /*

@@ -3,8 +3,10 @@
     <title>Class Transcribe</title>
 
     <!-- Begin Javsacript -->
-    <script src="javascripts/jquery-1.11.2.min.js"></script>
-    <script src="javascripts/viewer.js"></script>
+    <script src="javascripts/libraries/jquery-1.11.2.min.js"></script>
+    <script src="javascripts/data/videos.js"></script>
+    <script src="javascripts/data/captions.js"></script>
+    <script src="javascripts/controllers/viewer.js"></script>
     <!-- End Javascript -->
 
     <!-- Begin Stylesheets -->
@@ -23,28 +25,7 @@
         </video>
       </div>
       <div class="video_control-container">
-        <select class="video-selector">
-          <option selected value="1">Video: Hello World</option>
-          <option value="2">Video: Hello Std Err</option>
-          <option value="3">Video: Open and Create a file</option>
-          <option value="4">Video: Open Errors and Printf</option>
-          <option value="5">Video: Not All Bytes Are 8Bits</option>
-          <option value="6">Video: Follow The Int Pointer</option>
-          <option value="7">Video: Character Pointers</option>
-          <option value="8">Video: Program Arguments</option>
-          <option value="9">Video: Environment</option>
-          <option value="10">Video: Char Array Searching</option>
-          <option value="11">Video: Pointers To Automatic Variables</option>
-          <option value="12">Video: Time For Mallocing Heap Memory</option>
-          <option value="13">Video: HeapGotchas -Dangling Pointers And Double Free</option>
-          <option value="14">Video: Struct Typedef LinkedList</option>
-          <option value="15">Video: Creating Links Strdup</option>
-          <option value="16">Video: Get Put Char</option>
-          <option value="17">Video: Scanf Intro</option>
-          <option value="18">Video: Getline</option>
-          <option value="19">Video: SIGINT SIGALRM</option>
-          <option value="20">Video: Fork Waitpid Forkbomb</option>
-        </select>
+        <select class="video-selector"></select>
         <select class="playback-selector">
           <option selected value="1">Playback 1x</option>
         </select>
