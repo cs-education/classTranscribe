@@ -10,6 +10,7 @@
 */
 
 $(document).ready(function () {
+  setVideoFromUrl();
   begin();
 });
 
@@ -20,9 +21,42 @@ function begin() {
   var videoIndex = parseInt($(".video-selector").val(), 10);
 
   loadVideo(videoIndex);
+  loadStartTime();
   loadCaptions(videoIndex);
   bindEventListeners();
   changePlaybackSpeed();
+}
+
+/*
+  Sets the correct video from url parameters
+*/
+function setVideoFromUrl() {
+  var videoIndex = getParameterByName("videoIndex");
+  if (videoIndex) {
+    $(".video-selector option").eq(videoIndex).attr('selected', true);
+  }
+}
+
+/*
+  Gets a URL parameter by name
+*/
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
+/*
+  Load video start time from url parameters
+*/
+function loadStartTime() {
+  var startTime = getParameterByName("startTime");
+  $(".main-video").get(0).currentTime = startTime;
+  var windowLocation = window.location.toString();
+  var base_url = windowLocation.substring(0, windowLocation.indexOf("?"));
+  window.history.replaceState({}, document.title, base_url);
+  $(".main-video").get(0).play();
 }
 
 /*
