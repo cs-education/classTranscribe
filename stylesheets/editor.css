@@ -117,3 +117,7 @@ h1 {
 .final-transcription-track-spacer {
   height: 1px;
 }
+
+::-webkit-scrollbar {
+    display: none;
+}
