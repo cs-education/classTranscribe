@@ -127,7 +127,7 @@ function findCurrentSegment(time) {
 
     currentSegment = $(".caption").eq(i);
     currentSegment.data("startingTime", timeAccumulator);
-    timeAccumulator += parseFloat(currentSegment.data("time"));
+    timeAccumulator += parseFloat(currentSegment.data("time")) + (2/64); // 2/64 accounts for border...
   }
   return currentSegment;
 }
