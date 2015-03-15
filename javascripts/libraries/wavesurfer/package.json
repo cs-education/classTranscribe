@@ -1,0 +1,27 @@
+{
+  "name": "wavesurfer.js",
+  "version": "1.0.18",
+  "description": "Interactive navigable audio visualization using Web Audio and Canvas",
+  "main": "build/wavesurfer.cjs.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublish": "make cjs",
+    "update": "make cjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/katspaugh/wavesurfer.js.git"
+  },
+  "author": "",
+  "license": "CC-BY 3.0",
+  "bugs": {
+    "url": "https://github.com/katspaugh/wavesurfer.js/issues"
+  },
+  "devDependencies": {
+    "uglify-js": "^2.4.0"
+  },
+  "homepage": "https://github.com/katspaugh/wavesurfer.js"
+}
