@@ -31,7 +31,7 @@ Class Transcribe is a project that utilizes crowdsourcing to quickly, reliably a
 2. Make necessary edits
 3. Follow steps 3 & 4 from part C to save captions
 
-### How to search through captions (Part E)
+### How to search through captions (Part F)
 1. Open `http://localhost:8000/search.html` (Captions should already be here from step 13)
 
 ##FAQs
