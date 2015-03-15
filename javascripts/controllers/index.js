@@ -69,8 +69,12 @@ function bindVideoEvents() {
 
   video.addEventListener("loadedmetadata", function () {
     loadWaveform(function () {
-      video.onplay = globalSurfer.play;
-      video.onpause = globalSurfer.pause;
+      video.onplay = function () {
+        globalSurfer.play();
+      }
+      video.onpause = function () {
+        globalSurfer.pause();
+      }
     });
   });
 }
