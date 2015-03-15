@@ -9,6 +9,9 @@
   // Video anchor used to define when the current transcription segment started
   var anchor = "0:00";
 
+  // Global reference to the wavesurfer
+  var globalSurfer;
+
 /*
   End Global Variables
 */
@@ -23,9 +26,19 @@ $(document).ready(function () {
 function begin() {
   var videoIndex = parseInt($(".video-selector").val(), 10);
 
-  loadVideo(videoIndex)
+  initializeUI();
+  loadVideo(videoIndex);
   bindEventListeners();
+  bindVideoEvents()
   changePlaybackSpeed();
+}
+
+/*
+  Initialize the UI to default states
+*/
+function initializeUI() {
+  $(".waveform-loading").removeClass("hidden");
+  $(".transcription-input").focus();
 }
 
 /*
@@ -38,11 +51,37 @@ function bindEventListeners() {
 }
 
 /*
+  Binds event listeners on the video
+*/
+function bindVideoEvents() {
+  var video = $(".main-video").get(0);
+
+  var lastUpdate = 0;
+  video.ontimeupdate = function () {
+    globalSurfer.skip(video.currentTime - globalSurfer.getCurrentTime());
+
+    if (Math.abs(lastUpdate - video.currentTime) > 9) {
+      var scrollLeft = video.currentTime * 64;
+      $(".waveform-container").animate({scrollLeft: scrollLeft}, 500);
+      lastUpdate = video.currentTime;
+    }
+  };
+
+  video.addEventListener("loadedmetadata", function () {
+    loadWaveform(function () {
+      video.onplay = globalSurfer.play;
+      video.onpause = globalSurfer.pause;
+    });
+  });
+}
+
+/*
   Changes the playback speed
 */
 function changePlaybackSpeed() {
   var playbackRate = parseFloat($(".playback-selector").val());
   $(".main-video").get(0).playbackRate = playbackRate;
+  loadWaveform($.noop);
 }
 
 /*
@@ -117,6 +156,54 @@ function getCurrentTime() {
     return currentTimeInMinutes + ":0" + currentTimeInSeconds;
   }
   return currentTimeInMinutes + ":" + currentTimeInSeconds;
+}
+
+/*
+  Load the waveform for a certain video
+*/
+function loadWaveform(cb) {
+  var videoIndex = parseInt($(".video-selector").val(), 10);
+  var wavesurfer = Object.create(WaveSurfer);
+  var videoSrc = VIDEOS[videoIndex][1];
+  var video = $(".main-video").get(0);
+
+  $("#waveform").empty();
+  $(".waveform-outer, .click-barrier").css("width", (video.duration * 64) + "px");
+
+  var options = {
+    container     : document.querySelector('#waveform'),
+    waveColor     : '#5195CE',
+    progressColor : '#005DB3',
+    loaderColor   : '#005DB3',
+    cursorColor   : 'silver',
+    pixelRatio    : 1,
+    minPxPerSec   : 5,
+    height        : 25,
+    audioRate     : parseFloat($(".playback-selector").val()),
+    normalize     : true,
+  };
+  wavesurfer.init(options);
+  wavesurfer.setVolume(0);
+  wavesurfer.load(videoSrc);
+
+  wavesurfer.on('ready', function () {
+    wavesurfer.skip(video.currentTime)
+    var scrollLeft = video.currentTime * 64 - 200;
+    $(".transcription-track, .final-transcription-track, .waveform-container").animate({scrollLeft: scrollLeft}, 500);
+    $(".waveform-loading").addClass("hidden");
+  });
+
+  var previousTime = 0;
+  wavesurfer.on('seek', function () {
+    var wavesurferTime = wavesurfer.getCurrentTime();
+    if (Math.abs(previousTime - wavesurferTime) > 0.2) {
+      video.currentTime = wavesurferTime;
+    }
+    previousTime = wavesurferTime;
+  })
+
+  globalSurfer = wavesurfer;
+  cb();
 }
 
 /*

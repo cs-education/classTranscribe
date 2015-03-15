@@ -13,6 +13,13 @@
   text-align: center;
 }
 
+.waveform-container {
+  position: relative;
+  overflow-x: scroll;
+  border: 1px solid silver;
+  margin-bottom: 10px;
+}
+
 .transcription-container {
   margin: 10px 0;
 }
@@ -37,4 +44,18 @@ h1 {
 .transcription-segment {
   color: gray;
   margin-bottom: 3px;
+}
+
+*:focus {
+    outline: 0;
+}
+
+.waveform-loading {
+  position: absolute;
+  padding: 5px;
+  font-size: 14px;
+}
+
+.waveform-loading.hidden {
+  display: none;
 }
