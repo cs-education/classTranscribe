@@ -8,7 +8,7 @@ Class Transcribe is a project that utilizes crowdsourcing to quickly, reliably a
 2. Switch into the classTranscribe directory `cd classTranscribe`
 3. Remove existing captions/transcriptions `rm captions/*; rm transcriptions/*`
 4. Modify `/javascripts/data/videos.js` to import the videos you wish to transcribe
-5. Start SimpleHTTPServer (Built into python by default) `python -m SimpleHTTPServer`
+5. Start the multi-threaded python webserver `python server.py`
 
 ### First pass transcription (Part B)
 1. Open `http://localhost:8000/index.html` to start transcribing (first pass)
