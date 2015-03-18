@@ -211,8 +211,33 @@ function loadWaveform(cb) {
 }
 
 /*
+  Converts transcriptions to caption format
+*/
+function transcriptionsToCaptions(transcriptions) {
+  return transcriptions.map(function (transcription) {
+    var startTime = timeStringToNum(transcription.start);
+    var endTime = timeStringToNum(transcription.end);
+    var width = Math.max(endTime - startTime, 1) * 64;
+    return {
+      text: transcription.text,
+      width: width
+    }
+  });
+}
+
+/*
+  Converts a time string to a time integer
+*/
+function timeStringToNum(timeString) {
+  var minutes = parseInt(timeString.split(":")[0], 10);
+  var seconds = parseInt(timeString.split(":")[1], 10);
+  return 60 * minutes + seconds;
+}
+
+/*
   Save the transcriptions
 */
 function save() {
-  console.log(JSON.stringify(transcriptions));
+  var captions = transcriptionsToCaptions(transcriptions);
+  console.log(JSON.stringify(captions));
 }

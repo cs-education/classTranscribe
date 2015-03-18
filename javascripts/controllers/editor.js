@@ -9,7 +9,7 @@ function begin() {
   var videoIndex = parseInt($(".video-selector").val(), 10);
 
   loadVideo(videoIndex);
-  loadTranscriptions(videoIndex);
+  loadCaptions(videoIndex);
   bindEventListeners();
   changePlaybackSpeed();
 }
@@ -60,80 +60,27 @@ function toggleVideo() {
 }
 
 /*
-  Load the first pass of transcriptions for a certain video
+  Load the captions for a certain video
 */
-function loadTranscriptions(videoIndex) {
-  var transcriptions = videoTranscriptions[videoIndex];
+function loadCaptions(videoIndex) {
+  var captions = videoCaptions[videoIndex];
 
-  $(".transcription-track").remove();
-  transcriptions.forEach(function (transcription, i) {
-    var template = '<div class="transcription-track transcription-track-track-' + i + '"></div>';
-    $(".editor-container").prepend(template);
+  $(".caption-track-final-caption").remove();
+  captions.forEach(function (caption) {
+    var template = '<div class="caption-track-final-caption" draggable="true" contentEditable="true" style="width:' + caption.width + 'px"></div>';
+    $(".final-caption-track").append(template);
+    $(".caption-track-final-caption").last().text(caption.text);
   });
 
-  transcriptions.forEach(function (transcription, i) {
-    transcription.forEach(function (segment) {
-      var width = (timeStringToNum(segment.end) - timeStringToNum(segment.start)) * 64;
-      width = Math.max(width, 64);
-      var template = '<div class="transcription-track-transcription" style="width:' + width + 'px">' + segment.text + '</div>';
-      $(".transcription-track-track-" + i).append(template);
-    });
+  $(".caption-track-final-caption").dblclick(function () {
+    var offsetLeft = $(this).offset().left;
+    var barOffsetLeft = $(".final-caption-red-bar").offset().left;
+    $(this).width(barOffsetLeft - offsetLeft);
   })
 
-  $(".transcription-track, .final-transcription-track").off().scroll(function() {
-    $(".transcription-track").scrollLeft($(this).scrollLeft());
-    $(".final-transcription-track").scrollLeft($(this).scrollLeft());
+  $(".final-caption-track").off().scroll(function() {
     updateTimeLine($(this).scrollLeft());
   });
-
-  $(".final-transcription-track-spacer").width(totalTranscriptionWidth() + 200); // Extra padding
-
-  $(".transcription-track-transcription").off().click(function () {
-    var template = '<div class="transcription-track-final-transcription" draggable="true" contentEditable="true">' + $(this).text() + '</div>';
-    $(".final-transcription-track").append(template);
-    $( ".transcription-track-final-transcription" ).dblclick(function () {
-      $(this).remove();
-    })
-    // $( ".transcription-track-final-transcription" ).draggable({ axis: "x" }); // Figure out later
-  });
-
-  $(".final-transcription-track").mousemove(function (e) {
-    if ($(e.target).hasClass('final-transcription-track')) {
-      var scrollLeft = $(this).scrollLeft();
-      $(".final-transcription-black-bar").css('left', (e.offsetX + scrollLeft) + "px");
-    }
-  });
-
-  $(".final-transcription-track").click(function (e){
-    if ($(e.target).hasClass('final-transcription-track')) {
-      var otherWidths = 0;
-      $(".transcription-track-final-transcription").slice(0, -1).each(function (i, el) {
-        otherWidths += $(el).outerWidth(); // for border
-      });
-      var scrollLeft = $(".final-transcription-track").scrollLeft();
-      $(".transcription-track-final-transcription").last().width(e.offsetX + scrollLeft - otherWidths - 2);
-    }
-  });
-}
-
-/*
-  Returns the total width of the transcription
-*/
-function totalTranscriptionWidth() {
-  var totalWidth = 0;
-  $(".transcription-track-track-0 .transcription-track-transcription").each(function(i) {
-    totalWidth += parseInt($(this).width(), 10);
-  });
-  return totalWidth;
-}
-
-/*
-  Converts a time string to a time integer
-*/
-function timeStringToNum(timeString) {
-  var minutes = parseInt(timeString.split(":")[0], 10);
-  var seconds = parseInt(timeString.split(":")[1], 10);
-  return 60 * minutes + seconds;
 }
 
 /*
@@ -167,14 +114,14 @@ function updateTimeLine(scroll) {
   Save the transcriptions
 */
 function save() {
-  var finalTranscriptions = [];
-  $(".transcription-track-final-transcription").each(function (i, el) {
-    finalTranscriptions.push({
+  var finalCaptions = [];
+  $(".caption-track-final-caption").each(function (i, el) {
+    finalCaptions.push({
       text: $(el).text(),
       width: $(el).width()
     })
   })
-  console.log(JSON.stringify(finalTranscriptions));
+  console.log(JSON.stringify(finalCaptions));
 }
 
 /*
@@ -185,7 +132,7 @@ setInterval(function () {
   var currentTime = $(".main-video").get(0).currentTime;
 
   if (currentTime != lastTime) {
-    $(".final-transcription-red-bar").css('left', currentTime * 64 + "px");
+    $(".final-caption-red-bar").css('left', currentTime * 64 + "px");
     lastTime = currentTime;
   }
 }, 100);
