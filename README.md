@@ -20,7 +20,7 @@ Class Transcribe is a project that utilizes crowdsourcing to quickly, reliably a
 1. Import first pass captions into editor interface by modifying `/javascripts/data/captions.js`
 2. Open `http://localhost:8000/editor.html` to start editing first pass captions
 3. Follow same save instructions from step 2 & 3 from part B when done with second pass
-4. Resave edited captions in captions/ folder and modifying `/javascripts/data/captions.js`
+4. Resave edited captions in captions/ folder and modify `/javascripts/data/captions.js` accordingly
 
 ### How to view captions (Part D)
 2. Open `http://localhost:8000/viewer.html` to start viewing captions
