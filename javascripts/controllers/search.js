@@ -26,7 +26,7 @@ function createReverseIndex() {
         }
       })
       prevWord = "";
-      currentTime += (caption.width / 64);
+      currentTime += (caption.width / 64) + (2/64);
     })
   })
 }

@@ -29,7 +29,7 @@ function begin() {
   initializeUI();
   loadVideo(videoIndex);
   bindEventListeners();
-  bindVideoEvents()
+  bindVideoEvents();
   changePlaybackSpeed();
 }
 
@@ -172,7 +172,7 @@ function loadWaveform(cb) {
   var video = $(".main-video").get(0);
 
   $("#waveform").empty();
-  $(".waveform-outer, .click-barrier").css("width", (video.duration * 64) + "px");
+  $(".waveform-outer").css("width", (video.duration * 64) + "px");
 
   var options = {
     container     : document.querySelector('#waveform'),
@@ -202,6 +202,7 @@ function loadWaveform(cb) {
     var wavesurferTime = wavesurfer.getCurrentTime();
     if (Math.abs(previousTime - wavesurferTime) > 0.2) {
       video.currentTime = wavesurferTime;
+      $(".transcription-input").focus();
     }
     previousTime = wavesurferTime;
   })
