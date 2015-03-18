@@ -55,7 +55,11 @@ function inputKeypress(e) {
   if (reverseIndex[query]) {
     console.log()
     reverseIndex[query].forEach(function (match) {
-      var template = '<div><a href="/viewer.html?videoIndex=' + match.videoIndex + '&startTime=' + match.startTime + '">' + updateHaystack(match.snippet, query) + '</a></div>';
+      var snippet = match.snippet;
+      query.split(/\s+/).forEach(function (word) {
+        snippet = updateHaystack(snippet, word);
+      });
+      var template = '<div><a href="/viewer.html?videoIndex=' + match.videoIndex + '&startTime=' + match.startTime + '">' + snippet + '</a></div>';
       console.log(template)
       $(".search-results-container").append(template);
     });
