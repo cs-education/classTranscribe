@@ -4,8 +4,10 @@
 
     <!-- Begin Javsacript -->
     <script src="javascripts/libraries/jquery-1.11.2.min.js"></script>
+    <script src="javascripts/libraries/jquery-ui.min.js"></script>
     <script src="javascripts/libraries/jquery.mousewheel.min.js"></script>
     <script src="javascripts/libraries/preventMacBackScroll.js"></script>
+    <script src="javascripts/libraries/resize.js"></script>
 
     <script src="javascripts/libraries/wavesurfer/src/wavesurfer.js"></script>
     <script src="javascripts/libraries/wavesurfer/src/util.js"></script>
@@ -22,6 +24,9 @@
     <!-- Begin Stylesheets -->
     <link rel="stylesheet" type="text/css" href="stylesheets/reset.css">
     <link rel="stylesheet" type="text/css" href="stylesheets/editor.css">
+    <link rel="stylesheet" type="text/css" href="stylesheets/libraries/jquery-ui.min.css">
+    <link rel="stylesheet" type="text/css" href="stylesheets/libraries/jquery-ui.theme.min.css">
+    <link rel="stylesheet" type="text/css" href="stylesheets/libraries/jquery-ui.structure.min.css">
     <!-- End Stylesheets -->
   </head>
   <body>
@@ -42,7 +47,9 @@
       </div>
       <div class="editor-container">
         <div class="final-caption-track-title">Final Track</div>
-        <div class="final-caption-track"></div>
+        <div class="final-caption-track">
+          <div class="final-caption-black-bar"></div>
+        </div>
       </div>
       <div class="waveform-container">
         <div class="waveform-loading">Loading Waveform...</div>

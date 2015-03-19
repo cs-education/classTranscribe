@@ -126,18 +126,36 @@ function loadCaptions(videoIndex) {
   captions.forEach(function (caption) {
     var template = '<div class="caption-track-final-caption" draggable="true" contentEditable="true" style="width:' + caption.width + 'px"></div>';
     $(".final-caption-track").append(template);
-    $(".caption-track-final-caption").last().text(caption.text);
+    $(".caption-track-final-caption").last().text(caption.text).resizable({
+        handles: 'e'
+    });
   });
 
   $(".caption-track-final-caption").dblclick(function () {
     var offsetLeft = $(this).offset().left - $(this).parent().offset().left + $(this).parent().scrollLeft();
     var barOffsetLeft = (globalSurfer.getCurrentTime() / globalSurfer.getDuration()) * $(".waveform-outer").width()
     $(this).width(Math.abs(barOffsetLeft - offsetLeft));
-    incrementMetricCount("editSegmentLength", Math.abs(barOffsetLeft - offsetLeft));
+    incrementMetricCount("editSegmentLengthDoubleClick", barOffsetLeft - offsetLeft);
   });
 
   $(".caption-track-final-caption").click(function () {
     incrementMetricCount("editSegmentText");
+  });
+
+  $(".caption-track-final-caption").on("resize", function () {
+    var offsetLeft = $(this).offset().left + $(this).width() - $(this).parent().offset().left + $(this).parent().scrollLeft();
+    $(".final-caption-black-bar").show().css('left', offsetLeft + "px");
+  });
+
+  var startWidth;
+  $(".caption-track-final-caption").on("resizestart", function () {
+    startWidth = $(this).width();
+  });
+
+  $(".caption-track-final-caption").on("resizestop", function () {
+    $(".final-caption-black-bar").hide();
+    var endWidth = $(this).width() - startWidth;
+    incrementMetricCount("editSegmentLengthDrag", endWidth);
   })
 
   $(".final-caption-track, .waveform-container").off().scroll(function() {
@@ -196,7 +214,7 @@ function loadWaveform(cb) {
     cursorColor   : 'silver',
     pixelRatio    : 1,
     minPxPerSec   : 5,
-    height        : 25,
+    height        : 100,
     audioRate     : parseFloat($(".playback-selector").val()),
     normalize     : true,
   };

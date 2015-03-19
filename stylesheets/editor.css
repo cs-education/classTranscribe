@@ -43,7 +43,7 @@
 .caption-track-final-caption {
   border: 1px dotted black;
   display: inline-block;
-  resize: horizontal;
+  /*resize: horizontal;*/
   overflow: auto;
   text-align: center;
   width: 63px;
@@ -96,6 +96,15 @@ h1 {
       -moz-transition: left 0.1s linear;
       -o-transition: left 0.1s linear;
       transition: left 0.1s linear;
+}
+
+.final-caption-black-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  border-left: 1px solid silver;
+  pointer-events: none;
 }
 
 ::-webkit-scrollbar {
