@@ -9,8 +9,14 @@
   // Video anchor used to define when the current transcription segment started
   var anchor = "0:00";
 
+  // Metrics object
+  var metrics = {};
+
   // Global reference to the wavesurfer
   var globalSurfer;
+
+  // Start time global reference
+  var startTime;
 
 /*
   End Global Variables
@@ -18,7 +24,15 @@
 
 $(document).ready(function () {
   begin();
+  initializeMetricsBaseInformation();
 });
+
+/*
+  Gets basic metrics information
+*/
+function initializeMetricsBaseInformation() {
+  metrics["name"] = window.prompt("What's your netID");
+}
 
 /*
   Started once the DOM finishes loading
@@ -67,6 +81,10 @@ function bindVideoEvents() {
     }
   };
 
+  video.onended = function(e) {
+    calculateTotalTime();
+  };
+
   video.addEventListener("loadedmetadata", function () {
     loadWaveform(function () {
       video.onplay = function () {
@@ -96,10 +114,17 @@ function inputKeypress(e) {
     solidifyTranscription(e);
   } else if (e.which === 96) {
     e.preventDefault();
+    incrementMetricCount("rewindTwoSeconds");
     rewindTwoSeconds();
   } else if (e.which === 126) {
     e.preventDefault();
+    incrementMetricCount("toggleVideo");
     toggleVideo();
+  }
+
+  if (!startTime) {
+    console.log("START TIME SET")
+    startTime = new Date();
   }
 }
 
@@ -201,6 +226,7 @@ function loadWaveform(cb) {
   wavesurfer.on('seek', function () {
     var wavesurferTime = wavesurfer.getCurrentTime();
     if (Math.abs(previousTime - wavesurferTime) > 2) {
+      incrementMetricCount("videoSeek", {time: previousTime - wavesurferTime});
       video.currentTime = wavesurferTime;
       $(".transcription-input").focus();
     }
@@ -236,9 +262,38 @@ function timeStringToNum(timeString) {
 }
 
 /*
+  Converts a time string to a time integer
+*/
+function incrementMetricCount(name, data) {
+  metrics[name] = (metrics[name] || {})
+  metrics[name].count = (metrics[name].count || 0) + 1;
+  metrics[name].data = data;
+}
+
+/*
+  Calculate total trancsription time
+*/
+function calculateTotalTime() {
+  if (!metrics["totalTime"]) {
+    console.log("TOTAL TIME SET")
+    metrics["totalTime"] = (new Date()).getTime() - startTime.getTime();
+  }
+}
+
+/*
   Save the transcriptions
 */
 function save() {
   var captions = transcriptionsToCaptions(transcriptions);
   console.log(JSON.stringify(captions));
+}
+
+/*
+  Save the metrics
+*/
+function stats() {
+  var videoIndex = parseInt($(".video-selector").val(), 10);
+  metrics["video"] = VIDEOS[videoIndex][0];
+  calculateTotalTime();
+  console.log(JSON.stringify(metrics));
 }
