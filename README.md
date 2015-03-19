@@ -29,12 +29,18 @@ Class Transcribe is a project that utilizes crowdsourcing to quickly, reliably a
 4. Resave edited captions in captions/ folder and modify `/javascripts/data/captions.js` accordingly
 
 ### How to view captions (Part D)
+
+![Transcription Viewer](http://i.imgur.com/cRPnyMl.png "Transcription Viewer")
+
 2. Open `http://localhost:8000/viewer.html` to start viewing captions
 
 ### How to edit captions (Part E)
 1. Follow steps 2-4 from part C to edit and save captions
 
 ### How to search through captions (Part F)
+
+![Transcription Search](http://i.imgur.com/VGM2ITS.png "Transcription Search")
+
 1. Open `http://localhost:8000/search.html` (Captions should already be here from step 13)
 
 ##FAQs
