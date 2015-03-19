@@ -154,7 +154,6 @@ function loadCaptions(videoIndex) {
   $(".caption-track-final-caption").on("resizestart, mousedown", function () {
     startWidth = $(this).width();
     $(".final-caption-black-bar").show();
-    incrementMetricCount("editSegmentLengthDrag", endWidth);
   });
 
   $(".caption-track-final-caption").on("resizestop, mouseup", function () {
