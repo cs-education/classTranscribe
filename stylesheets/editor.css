@@ -43,8 +43,7 @@
 .caption-track-final-caption {
   border: 1px dotted black;
   display: inline-block;
-  /*resize: horizontal;*/
-  overflow: auto;
+  overflow: hidden !important;
   text-align: center;
   width: 63px;
   padding: 5px 0;

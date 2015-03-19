@@ -142,17 +142,22 @@ function loadCaptions(videoIndex) {
     incrementMetricCount("editSegmentText");
   });
 
+  var video = $(".main-video").get(0);
   $(".caption-track-final-caption").on("resize", function () {
     var offsetLeft = $(this).offset().left + $(this).width() - $(this).parent().offset().left + $(this).parent().scrollLeft();
-    $(".final-caption-black-bar").show().css('left', offsetLeft + "px");
+    $(".final-caption-black-bar").css('left', offsetLeft + "px");
+
+    video.currentTime = ((offsetLeft + 1) / $(".waveform-outer").width()) * globalSurfer.getDuration();
   });
 
   var startWidth;
-  $(".caption-track-final-caption").on("resizestart", function () {
+  $(".caption-track-final-caption").on("resizestart, mousedown", function () {
     startWidth = $(this).width();
+    $(".final-caption-black-bar").show();
+    incrementMetricCount("editSegmentLengthDrag", endWidth);
   });
 
-  $(".caption-track-final-caption").on("resizestop", function () {
+  $(".caption-track-final-caption").on("resizestop, mouseup", function () {
     $(".final-caption-black-bar").hide();
     var endWidth = $(this).width() - startWidth;
     incrementMetricCount("editSegmentLengthDrag", endWidth);
@@ -243,6 +248,18 @@ function loadWaveform(cb) {
   globalSurfer = wavesurfer;
   cb();
 }
+
+/*
+  Returns the total width of the transcription
+*/
+function totalTranscriptionWidth() {
+  var totalWidth = 0;
+  $(".caption-track-final-caption").each(function(i) {
+    totalWidth += parseInt($(this).width(), 10) + (2/64);
+  });
+  return totalWidth;
+}
+
 
 /*
   Converts a time string to a time integer
