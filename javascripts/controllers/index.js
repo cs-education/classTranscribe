@@ -123,7 +123,6 @@ function inputKeypress(e) {
   }
 
   if (!startTime) {
-    console.log("START TIME SET")
     startTime = new Date();
   }
 }
@@ -267,7 +266,7 @@ function timeStringToNum(timeString) {
 function incrementMetricCount(name, data) {
   metrics[name] = (metrics[name] || {})
   metrics[name].count = (metrics[name].count || 0) + 1;
-  metrics[name].data = data;
+  metrics[name].data = (metrics[name].data || []).push(data);
 }
 
 /*
@@ -275,7 +274,6 @@ function incrementMetricCount(name, data) {
 */
 function calculateTotalTime() {
   if (!metrics["totalTime"]) {
-    console.log("TOTAL TIME SET")
     metrics["totalTime"] = (new Date()).getTime() - startTime.getTime();
   }
 }

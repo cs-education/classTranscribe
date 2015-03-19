@@ -1,9 +1,23 @@
 // Global reference to the wavesurfer
 var globalSurfer;
 
+// Metrics object
+var metrics = {};
+
+// Start time global reference
+var startTime;
+
 $(document).ready(function () {
   begin();
+  initializeMetricsBaseInformation();
 });
+
+/*
+  Gets basic metrics information
+*/
+function initializeMetricsBaseInformation() {
+  metrics["name"] = window.prompt("What's your netID");
+}
 
 /*
   Started once the DOM finishes loading
@@ -36,9 +50,11 @@ function bindEventListeners() {
   $(window).off().keypress(function (e) {
     if (e.which === 126) {
       e.preventDefault();
+      incrementMetricCount("toggleVideo");
       toggleVideo();
     } else if (e.which === 96) {
       e.preventDefault();
+      incrementMetricCount("rewindTwoSeconds");
       rewindTwoSeconds();
     }
   })
@@ -53,6 +69,10 @@ function bindVideoEvents() {
   var lastUpdate = 0;
   video.ontimeupdate = function () {
     globalSurfer.skip(video.currentTime - globalSurfer.getCurrentTime());
+  };
+
+  video.onended = function(e) {
+    calculateTotalTime();
   };
 
   video.addEventListener("loadedmetadata", function () {
@@ -90,9 +110,9 @@ function changePlaybackSpeed() {
 function toggleVideo() {
   var video = $(".main-video").get(0);
   if (video.paused == false) {
-      video.pause();
+    video.pause();
   } else {
-      video.play();
+    video.play();
   }
 }
 
@@ -110,9 +130,14 @@ function loadCaptions(videoIndex) {
   });
 
   $(".caption-track-final-caption").dblclick(function () {
-    var offsetLeft = $(this).offset().left;
-    var barOffsetLeft = $(".final-caption-red-bar").offset().left;
-    $(this).width(barOffsetLeft - offsetLeft);
+    var offsetLeft = $(this).offset().left - $(this).parent().offset().left + $(this).parent().scrollLeft();
+    var barOffsetLeft = (globalSurfer.getCurrentTime() / globalSurfer.getDuration()) * $(".waveform-outer").width()
+    $(this).width(Math.abs(barOffsetLeft - offsetLeft));
+    incrementMetricCount("editSegmentLength", Math.abs(barOffsetLeft - offsetLeft));
+  });
+
+  $(".caption-track-final-caption").click(function () {
+    incrementMetricCount("editSegmentText");
   })
 
   $(".final-caption-track, .waveform-container").off().scroll(function() {
@@ -200,6 +225,29 @@ function loadWaveform(cb) {
   cb();
 }
 
+/*
+  Converts a time string to a time integer
+*/
+function incrementMetricCount(name, data) {
+  if (!startTime) {
+    startTime = new Date();
+  }
+
+  metrics[name] = (metrics[name] || {})
+  metrics[name].count = (metrics[name].count || 0) + 1;
+  if (data) {
+    metrics[name].data = (metrics[name].data || []).concat(data);
+  }
+}
+
+/*
+  Calculate total trancsription time
+*/
+function calculateTotalTime() {
+  if (!metrics["totalTime"]) {
+    metrics["totalTime"] = (new Date()).getTime() - startTime.getTime();
+  }
+}
 
 /*
   Save the transcriptions
@@ -213,6 +261,17 @@ function save() {
     })
   })
   console.log(JSON.stringify(finalCaptions));
+}
+
+
+/*
+  Save the metrics
+*/
+function stats() {
+  var videoIndex = parseInt($(".video-selector").val(), 10);
+  metrics["video"] = VIDEOS[videoIndex][0];
+  calculateTotalTime();
+  console.log(JSON.stringify(metrics));
 }
 
 /*
