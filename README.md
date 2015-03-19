@@ -11,12 +11,18 @@ Class Transcribe is a project that utilizes crowdsourcing to quickly, reliably a
 5. Start the multi-threaded python webserver `python server.py`
 
 ### First pass transcription (Part B)
+
+![First Pass Transcription](http://i.imgur.com/RtDixJH.png "First Pass Transcription")
+
 1. Open `http://localhost:8000/index.html` to start transcribing (first pass)
 2. When done transcribing open the console (cmd + option + j for mac chrome)
 3. Enter `save()` into the console to output captions in JSON format
 4. Save captions in captions/ folder
 
 ### Second pass transcription (Part C)
+
+![First Pass Transcription](http://i.imgur.com/6bbshSt.png "First Pass Transcription")
+
 1. Import first pass captions into editor interface by modifying `/javascripts/data/captions.js`
 2. Open `http://localhost:8000/editor.html` to start editing first pass captions
 3. Follow same save instructions from step 2 & 3 from part B when done with second pass
