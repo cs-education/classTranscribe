@@ -224,10 +224,10 @@ function loadWaveform(cb) {
   var previousTime = 0;
   wavesurfer.on('seek', function () {
     var wavesurferTime = wavesurfer.getCurrentTime();
-    if (Math.abs(previousTime - wavesurferTime) > 2) {
-      incrementMetricCount("videoSeek", {time: previousTime - wavesurferTime});
+    if (Math.abs(previousTime - wavesurferTime) > 0.2) {
       video.currentTime = wavesurferTime;
       $(".transcription-input").focus();
+      incrementMetricCount("videoSeek", {time: wavesurferTime - previousTime});
     }
     previousTime = wavesurferTime;
   })
@@ -266,7 +266,9 @@ function timeStringToNum(timeString) {
 function incrementMetricCount(name, data) {
   metrics[name] = (metrics[name] || {})
   metrics[name].count = (metrics[name].count || 0) + 1;
-  metrics[name].data = (metrics[name].data || []).push(data);
+  if (data) {
+    metrics[name].data = (metrics[name].data || []).concat(data);
+  }
 }
 
 /*
