@@ -237,7 +237,7 @@ function loadWaveform(cb) {
   wavesurfer.on('seek', function () {
     var wavesurferTime = wavesurfer.getCurrentTime();
     if (Math.abs(previousTime - wavesurferTime) > 2) {
-      incrementMetricCount("videoSeek", {time: previousTime - wavesurferTime});
+      incrementMetricCount("videoSeek", {time: wavesurferTime - previousTime});
       video.currentTime = wavesurferTime;
       $(".transcription-input").focus();
     }

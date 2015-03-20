@@ -227,7 +227,7 @@ function loadWaveform(cb) {
     if (Math.abs(previousTime - wavesurferTime) > 0.2) {
       video.currentTime = wavesurferTime;
       $(".transcription-input").focus();
-      incrementMetricCount("videoSeek", {time: previousTime - wavesurferTime});
+      incrementMetricCount("videoSeek", {time: wavesurferTime - previousTime});
     }
     previousTime = wavesurferTime;
   })
