@@ -266,7 +266,9 @@ function timeStringToNum(timeString) {
 function incrementMetricCount(name, data) {
   metrics[name] = (metrics[name] || {})
   metrics[name].count = (metrics[name].count || 0) + 1;
-  metrics[name].data = (metrics[name].data || []).concat(data);
+  if (data) {
+    metrics[name].data = (metrics[name].data || []).concat(data);
+  }
 }
 
 /*
