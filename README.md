@@ -8,27 +8,41 @@ Class Transcribe is a project that utilizes crowdsourcing to quickly, reliably a
 2. Switch into the classTranscribe directory `cd classTranscribe`
 3. Remove existing captions `rm captions/*;`
 4. Modify `/javascripts/data/videos.js` to import the videos you wish to transcribe
-5. Start the multi-threaded python webserver `python server.py`
+6. Download and install the latest version of [node](https://nodejs.org/)
+7. Install http-server module `npm install http-server -g`
+5. Start the node http-server webserver in the root directory `http-server -p 8000`
 
 ### First Pass Transcription (Part B)
+
+![First Pass Transcription](http://i.imgur.com/RtDixJH.png "First Pass Transcription")
+
 1. Open `http://localhost:8000/index.html` to start transcribing (first pass)
 2. When done transcribing open the console (cmd + option + j for mac chrome)
 3. Enter `save()` into the console to output captions in JSON format
 4. Save captions in captions/ folder
 
 ### Second Pass Transcription (Part C)
+
+![First Pass Transcription](http://i.imgur.com/6bbshSt.png "First Pass Transcription")
+
 1. Import first pass captions into editor interface by modifying `/javascripts/data/captions.js`
 2. Open `http://localhost:8000/editor.html` to start editing first pass captions
 3. Follow same save instructions from step 2 & 3 from part B when done with second pass
 4. Resave edited captions in captions/ folder and modify `/javascripts/data/captions.js` accordingly
 
 ### How to View Captions (Part D)
+
+![Transcription Viewer](http://i.imgur.com/cRPnyMl.png "Transcription Viewer")
+
 2. Open `http://localhost:8000/viewer.html` to start viewing captions
 
 ### How to Edit Captions (Part E)
 1. Follow steps 2-4 from part C to edit and save captions
 
 ### How to Search Through Captions (Part F)
+
+![Transcription Search](http://i.imgur.com/VGM2ITS.png "Transcription Search")
+
 1. Open `http://localhost:8000/search.html` (Captions should already be here from step 13)
 
 ##FAQs
