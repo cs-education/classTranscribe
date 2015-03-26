@@ -23,9 +23,21 @@
 */
 
 $(document).ready(function () {
+  setVideoFromUrl()
   begin();
   initializeMetricsBaseInformation();
 });
+
+/*
+  Sets the correct video from url parameters
+*/
+function setVideoFromUrl() {
+  var stackURL = document.URL.split("/");
+  if (stackURL.length === 6) {
+    var videoIndex = parseInt(stackURL[4]);
+    $(".video-selector option").eq(videoIndex).attr('selected', true);
+  }
+}
 
 /*
   Gets basic metrics information
