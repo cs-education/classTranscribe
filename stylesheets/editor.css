@@ -119,3 +119,21 @@ h1 {
 .waveform-loading.hidden {
   display: none;
 }
+
+.submit {
+  margin-top: 15px;
+  width: 100%;
+  padding: 15px;
+  background-color: white;
+  border: 2px solid silver;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.submit:hover {
+  cursor: pointer;
+}
+
+.submit.unclickable:hover {
+  cursor: auto !important;
+}
