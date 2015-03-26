@@ -31,7 +31,11 @@ $(document).ready(function () {
   Gets basic metrics information
 */
 function initializeMetricsBaseInformation() {
-  metrics["name"] = window.prompt("What's your netID");
+  var stackURL = document.URL.split("/");
+  if (stackURL.length === 6) {
+    var user = stackURL.pop();
+    metrics["name"] = user;
+  }
 }
 
 /*
@@ -53,6 +57,22 @@ function begin() {
 function initializeUI() {
   $(".waveform-loading").removeClass("hidden");
   $(".transcription-input").focus();
+  $(".submit").click(function () {
+    var $that = $(this);
+    $that.text("Submitting Transcription...");
+    $.ajax({
+      type: "POST",
+      url: "/first",
+      data: {
+        stats: stats(),
+        transcriptions: save()
+      },
+      success: function (data) {
+        $that.text("Transcription Submitted!");
+        $that.addClass("unclickable");
+      }
+    });
+  });
 }
 
 /*
@@ -275,7 +295,7 @@ function incrementMetricCount(name, data) {
   Calculate total trancsription time
 */
 function calculateTotalTime() {
-  if (!metrics["totalTime"]) {
+  if (!metrics["totalTime"] && startTime) {
     metrics["totalTime"] = (new Date()).getTime() - startTime.getTime();
   }
 }
@@ -286,6 +306,7 @@ function calculateTotalTime() {
 function save() {
   var captions = transcriptionsToCaptions(transcriptions);
   console.log(JSON.stringify(captions));
+  return JSON.stringify(captions);
 }
 
 /*
@@ -296,4 +317,5 @@ function stats() {
   metrics["video"] = VIDEOS[videoIndex][0];
   calculateTotalTime();
   console.log(JSON.stringify(metrics));
+  return JSON.stringify(metrics);
 }
