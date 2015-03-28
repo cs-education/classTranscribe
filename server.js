@@ -14,7 +14,9 @@ router.get('/', function (request, response) {
 var firstPassHTML = fs.readFileSync('index.html').toString();
 router.get('/first/:videoIndex/:id', function (request, response) {
   response.writeHead(200, {
-    'Content-Type': 'text/html'
+    'Content-Type': 'text/html',
+    "Access-Control-Allow-Origin" : "*",
+    "Access-Control-Allow-Methods" : "POST, GET, PUT, DELETE, OPTIONS"
   });
   response.end(firstPassHTML);
 });
@@ -48,7 +50,9 @@ router.post('/second', function (request, response) {
 var secondPassHTML = fs.readFileSync('editor.html').toString();
 router.get('/second/:videoIndex/:id', function (request, response) {
   response.writeHead(200, {
-    'Content-Type': 'text/html'
+    'Content-Type': 'text/html',
+    "Access-Control-Allow-Origin" : "*",
+    "Access-Control-Allow-Methods" : "POST, GET, PUT, DELETE, OPTIONS"
   });
   response.end(secondPassHTML);
 });
