@@ -60,7 +60,6 @@ function begin() {
   loadVideo(videoIndex);
   bindEventListeners();
   bindVideoEvents();
-  changePlaybackSpeed();
 }
 
 /*
@@ -104,12 +103,16 @@ function bindVideoEvents() {
 
   var lastUpdate = 0;
   video.ontimeupdate = function () {
-    globalSurfer.skip(video.currentTime - globalSurfer.getCurrentTime());
+    var globalSurferTime = globalSurfer.getCurrentTime();
+    var videoCurrentTime = video.currentTime;
+    if (Math.abs(globalSurferTime - videoCurrentTime) > 0.1) {
+      globalSurfer.skip(videoCurrentTime - globalSurferTime);
+    }
 
-    if (Math.abs(lastUpdate - video.currentTime) > 9) {
-      var scrollLeft = video.currentTime * 64;
+    if (Math.abs(lastUpdate - videoCurrentTime) > 9) {
+      var scrollLeft = videoCurrentTime * 64;
       $(".waveform-container").animate({scrollLeft: scrollLeft}, 500);
-      lastUpdate = video.currentTime;
+      lastUpdate = videoCurrentTime;
     }
   };
 
@@ -118,6 +121,7 @@ function bindVideoEvents() {
   };
 
   video.addEventListener("loadedmetadata", function () {
+    changePlaybackSpeed();
     loadWaveform(function () {
       video.onplay = function () {
         globalSurfer.play();
