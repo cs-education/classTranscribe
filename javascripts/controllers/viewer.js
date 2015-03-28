@@ -52,11 +52,14 @@ function getParameterByName(name) {
 */
 function loadStartTime() {
   var startTime = getParameterByName("startTime");
-  $(".main-video").get(0).currentTime = startTime;
-  var windowLocation = window.location.toString();
-  var base_url = windowLocation.substring(0, windowLocation.indexOf("?"));
-  window.history.replaceState({}, document.title, base_url);
-  $(".main-video").get(0).play();
+  var video = $(".main-video").get(0);
+  video.addEventListener("loadedmetadata", function () {
+    video.currentTime = startTime;
+    var windowLocation = window.location.toString();
+    var base_url = windowLocation.substring(0, windowLocation.indexOf("?"));
+    window.history.replaceState({}, document.title, base_url);
+    video.play();
+  });
 }
 
 /*
