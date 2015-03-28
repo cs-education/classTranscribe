@@ -46,7 +46,6 @@ function begin() {
   loadCaptions(videoIndex);
   bindEventListeners();
   bindVideoEvents();
-  changePlaybackSpeed();
 }
 
 /*
@@ -100,7 +99,11 @@ function bindVideoEvents() {
 
   var lastUpdate = 0;
   video.ontimeupdate = function () {
-    globalSurfer.skip(video.currentTime - globalSurfer.getCurrentTime());
+    var globalSurferTime = globalSurfer.getCurrentTime();
+    var videoCurrentTime = video.currentTime;
+    if (Math.abs(globalSurferTime - videoCurrentTime) > 0.1) {
+      globalSurfer.skip(video.currentTime - globalSurfer.getCurrentTime());
+    }
   };
 
   video.onended = function(e) {
@@ -108,6 +111,7 @@ function bindVideoEvents() {
   };
 
   video.addEventListener("loadedmetadata", function () {
+    changePlaybackSpeed();
     loadWaveform(function () {
       video.onplay = function () {
         globalSurfer.play();
