@@ -35,6 +35,7 @@ createReverseIndex();
 
 $(document).ready(function () {
   bindEventListeners();
+  $(".search-box").focus();
 });
 
 /*
