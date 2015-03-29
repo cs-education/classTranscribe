@@ -1,7 +1,9 @@
 # ClassTranscribe
 Class Transcribe is a project that utilizes crowdsourcing to quickly, reliably and accurately transcribe college lectures.
 
-## How to get started
+Check out the live site here: [http://classtranscribe.com](http://classtranscribe.com)
+
+## How to run your own instance of ClassTranscribe
 
 ### Getting Set Up (Part A)
 1. First clone the repository by running `git clone git@github.com:bobrenjc93/classTranscribe.git`
