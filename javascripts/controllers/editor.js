@@ -238,7 +238,7 @@ function updateTimeLine(scroll) {
 function loadWaveform(cb) {
   var videoIndex = parseInt($(".video-selector").val(), 10);
   var wavesurfer = Object.create(WaveSurfer);
-  var videoSrc = VIDEOS[videoIndex][1];
+  var videoSrc = VIDEOS[videoIndex][2] || VIDEOS[videoIndex][1];
   var video = $(".main-video").get(0);
 
   $("#waveform").empty();
