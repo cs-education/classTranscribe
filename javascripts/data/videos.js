@@ -21,13 +21,22 @@ var VIDEOS = [
   ["Mini Video: Getline", "https://cs-education.github.io/sysassets/mp4/0180-getline.mp4"],
   ["Mini Video: SIGINT SIGALRM", "https://cs-education.github.io/sysassets/mp4/0190-SIGINT-SIGALRM.mp4"],
   ["Mini Video: Fork Waitpid Forkbomb", "https://cs-education.github.io/sysassets/mp4/0200-forkwaitpid-forkbomb.mp4"],
-  ["Full Lecture Video 0 Part 0", "https://s3-us-west-2.amazonaws.com/classtranscribe/media_part0.webm"],
-  ["Full Lecture Video 0 Part 1", "https://s3-us-west-2.amazonaws.com/classtranscribe/media_part1.webm"],
-  ["Full Lecture Video 0 Part 2", "https://s3-us-west-2.amazonaws.com/classtranscribe/media_part2.webm"],
-  ["Full Lecture Video 0 Part 3", "https://s3-us-west-2.amazonaws.com/classtranscribe/media_part3.webm"],
-  ["Full Lecture Video 0 Part 4", "https://s3-us-west-2.amazonaws.com/classtranscribe/media_part4.webm"],
-  ["Full Lecture Video 0 Part 5", "https://s3-us-west-2.amazonaws.com/classtranscribe/media_part5.webm"],
-  ["Full Lecture Video 0 Part 6", "https://s3-us-west-2.amazonaws.com/classtranscribe/media_part6.webm"],
+  // Lecture 0
+  ["Full Lecture Video 0 Part 0", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_0/media_part0.webm"],
+  ["Full Lecture Video 0 Part 1", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_0/media_part1.webm"],
+  ["Full Lecture Video 0 Part 2", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_0/media_part2.webm"],
+  ["Full Lecture Video 0 Part 3", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_0/media_part3.webm"],
+  ["Full Lecture Video 0 Part 4", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_0/media_part4.webm"],
+  ["Full Lecture Video 0 Part 5", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_0/media_part5.webm"],
+  ["Full Lecture Video 0 Part 6", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_0/media_part6.webm"],
+  // Lecture 1
+  ["Full Lecture Video 1 Part 0", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_1/media_1_part0.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_1/media_1_part0.mp3"],
+  ["Full Lecture Video 1 Part 1", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_1/media_1_part1.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_1/media_1_part1.mp3"],
+  ["Full Lecture Video 1 Part 2", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_1/media_1_part2.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_1/media_1_part2.mp3"],
+  ["Full Lecture Video 1 Part 3", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_1/media_1_part3.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_1/media_1_part3.mp3"],
+  ["Full Lecture Video 1 Part 4", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_1/media_1_part4.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_1/media_1_part4.mp3"],
+  ["Full Lecture Video 1 Part 5", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_1/media_1_part5.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_1/media_1_part5.mp3"],
+  ["Full Lecture Video 1 Part 6", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_1/media_1_part6.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_1/media_1_part6.mp3"],
 ];
 
 $(document).ready(function () {
