@@ -21,9 +21,9 @@ Class Transcribe is a project that utilizes crowdsourcing to quickly, reliably a
 
 ### Second Pass Transcription (Part C)
 
-![First Pass Transcription](http://i.imgur.com/6bbshSt.png "First Pass Transcription")
+![Second Pass Transcription](http://i.imgur.com/6bbshSt.png "Second Pass Transcription")
 
-1. Import first pass captions into editor interface by modifying `/javascripts/data/captions.js`
+1. Import first pass captions into the second pass interface by modifying `/javascripts/data/captions.js`
 2. Open `http://localhost/second/[Desired Video Index]/[Your name]` to start editing first pass captions.
 3. Follow same save instructions from step 2 & 3 from part B when done with second pass.
 4. Import newly created caption into `/javascripts/data/captions.js`.
