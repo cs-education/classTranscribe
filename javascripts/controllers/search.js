@@ -1,4 +1,4 @@
-var reverseIndex = {};
+var reverseIndex = Object.create(null);
 
 function createReverseIndex() {
   videoCaptions.forEach(function (captions, i) {
@@ -54,14 +54,12 @@ function inputKeypress(e) {
   var re = new RegExp("(^|\s)(" + query + ")(\s|$)","g");
   query = query.replace(/[^a-zA-Z\d\s:]+/g,""); // Remove all non-alphanumeric characters
   if (reverseIndex[query]) {
-    console.log()
     reverseIndex[query].forEach(function (match) {
       var snippet = match.snippet;
       query.split(/\s+/).forEach(function (word) {
         snippet = updateHaystack(snippet, word);
       });
       var template = '<div><a href="/viewer.html?videoIndex=' + match.videoIndex + '&startTime=' + match.startTime + '">' + snippet + '</a></div>';
-      console.log(template)
       $(".search-results-container").append(template);
     });
   }
