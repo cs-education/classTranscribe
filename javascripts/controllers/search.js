@@ -41,7 +41,9 @@ function createReverseIndex() {
   })
 }
 
+a = new Date()
 createReverseIndex();
+console.log (new Date() - a);
 
 $(document).ready(function () {
   bindEventListeners();
@@ -62,7 +64,7 @@ function inputKeypress(e) {
   $(".search-results-container").empty()
   var query = $(".search-box").val().toLowerCase();
   var re = new RegExp("(^|\s)(" + query + ")(\s|$)","g");
-  query = query.replace(/[^a-zA-Z\d\s:]+/g,""); // Remove all non-alphanumeric characters
+  query = query.trim().replace(/[^a-zA-Z\d\s:]+/g,""); // Remove all non-alphanumeric characters
   var results = Object.create(null);
   if (reverseIndex[query]) {
     reverseIndex[query].forEach(function (match) {
@@ -77,7 +79,8 @@ function inputKeypress(e) {
   }
   var prevWord = "";
   var prevprevWord = "";
-  query.split(/\s+/).forEach(function (word) {
+  query.trim().split(/\s+/).forEach(function (word) {
+    console.log(word);
     if (reverseIndex[word]) {
       if (prevWord && reverseIndex[prevWord + " " + word]) {
         if (prevprevWord && reverseIndex[prevprevWord + " " + prevWord + " " + word]) {
