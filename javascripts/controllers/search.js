@@ -4,6 +4,7 @@ function createReverseIndex() {
   videoCaptions.forEach(function (captions, i) {
     var currentTime = 0;
     var prevWord = "";
+    var prevprevWord = "";
     captions.forEach(function (caption) {
       caption.text.split(/\s+/).forEach(function (word) {
         word = word.replace(/[\W_]+/g,"").toLowerCase(); // Remove all non-alphanumeric characters
@@ -21,6 +22,16 @@ function createReverseIndex() {
               startTime: currentTime,
               snippet: caption.text
             });
+            if (prevprevWord.length) {
+              console.log(prevprevWord + " " + prevWord + " " + word);
+              reverseIndex[prevprevWord + " " + prevWord + " " + word] = (reverseIndex[prevprevWord + " " + prevWord + " " + word] || []);
+              reverseIndex[prevprevWord + " " + prevWord + " " + word].push({
+                videoIndex: i,
+                startTime: currentTime,
+                snippet: caption.text
+              });
+            }
+            prevprevWord = prevWord;
           }
           prevWord = word;
         }
