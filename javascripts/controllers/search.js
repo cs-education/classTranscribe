@@ -23,7 +23,6 @@ function createReverseIndex() {
               snippet: caption.text
             });
             if (prevprevWord.length) {
-              console.log(prevprevWord + " " + prevWord + " " + word);
               reverseIndex[prevprevWord + " " + prevWord + " " + word] = (reverseIndex[prevprevWord + " " + prevWord + " " + word] || []);
               reverseIndex[prevprevWord + " " + prevWord + " " + word].push({
                 videoIndex: i,
@@ -64,6 +63,7 @@ function inputKeypress(e) {
   var query = $(".search-box").val().toLowerCase();
   var re = new RegExp("(^|\s)(" + query + ")(\s|$)","g");
   query = query.replace(/[^a-zA-Z\d\s:]+/g,""); // Remove all non-alphanumeric characters
+  var results = Object.create(null);
   if (reverseIndex[query]) {
     reverseIndex[query].forEach(function (match) {
       var snippet = match.snippet;
@@ -72,8 +72,54 @@ function inputKeypress(e) {
       });
       var template = '<div><a href="/viewer.html?videoIndex=' + match.videoIndex + '&startTime=' + match.startTime + '">' + snippet + '</a></div>';
       $(".search-results-container").append(template);
+      results[match.snippet] = true;
     });
   }
+  var prevWord = "";
+  var prevprevWord = "";
+  query.split(/\s+/).forEach(function (word) {
+    if (reverseIndex[word]) {
+      if (prevWord && reverseIndex[prevWord + " " + word]) {
+        if (prevprevWord && reverseIndex[prevprevWord + " " + prevWord + " " + word]) {
+          reverseIndex[prevprevWord + " " + prevWord + " " + word].forEach(function (match) {
+            if (!results[match.snippet]) {
+              var snippet = match.snippet;
+              query.split(/\s+/).forEach(function (word) {
+                snippet = updateHaystack(snippet, word);
+              });
+              var template = '<div><a href="/viewer.html?videoIndex=' + match.videoIndex + '&startTime=' + match.startTime + '">' + snippet + '</a></div>';
+              $(".search-results-container").append(template);
+              results[match.snippet] = true;
+            }
+          });
+        }
+        reverseIndex[prevWord + " " + word].forEach(function (match) {
+          if (!results[match.snippet]) {
+            var snippet = match.snippet;
+            query.split(/\s+/).forEach(function (word) {
+              snippet = updateHaystack(snippet, word);
+            });
+            var template = '<div><a href="/viewer.html?videoIndex=' + match.videoIndex + '&startTime=' + match.startTime + '">' + snippet + '</a></div>';
+            $(".search-results-container").append(template);
+            results[match.snippet] = true;
+          }
+        });
+        prevprevWord = prevWord
+      }
+      reverseIndex[word].forEach(function (match) {
+        if (!results[match.snippet]) {
+          var snippet = match.snippet;
+          query.split(/\s+/).forEach(function (word) {
+            snippet = updateHaystack(snippet, word);
+          });
+          var template = '<div><a href="/viewer.html?videoIndex=' + match.videoIndex + '&startTime=' + match.startTime + '">' + snippet + '</a></div>';
+          $(".search-results-container").append(template);
+          results[match.snippet] = true;
+        }
+      });
+      prevWord = word;
+    }
+  });
 }
 
 /*
