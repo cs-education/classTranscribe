@@ -6,7 +6,7 @@ Check out the live site here: [http://classtranscribe.com](http://classtranscrib
 ## How to run your own instance of ClassTranscribe
 
 ### Getting Set Up (Part A)
-1. First clone the repository by running `git clone git@github.com:bobrenjc93/classTranscribe.git`
+1. First clone the repository by running `git clone git@github.com:cs-education/classTranscribe.git`
 2. Switch into the classTranscribe directory `cd classTranscribe`
 3. Remove existing captions `rm captions/*;`
 4. Modify `/javascripts/data/videos.js` to import the videos you wish to transcribe
