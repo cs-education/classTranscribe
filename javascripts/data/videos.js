@@ -37,6 +37,14 @@ var VIDEOS = [
   ["Full Lecture Video 1 Part 4", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_1/media_1_part4.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_1/media_1_part4.mp3"],
   ["Full Lecture Video 1 Part 5", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_1/media_1_part5.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_1/media_1_part5.mp3"],
   ["Full Lecture Video 1 Part 6", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_1/media_1_part6.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_1/media_1_part6.mp3"],
+  // Lecture 2
+  ["Full Lecture Video 2 Part 0", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_2/media_2_part0.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_2/media_2_part0.mp3"],
+  ["Full Lecture Video 2 Part 1", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_2/media_2_part1.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_2/media_2_part1.mp3"],
+  ["Full Lecture Video 2 Part 2", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_2/media_2_part2.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_2/media_2_part2.mp3"],
+  ["Full Lecture Video 2 Part 3", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_2/media_2_part3.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_2/media_2_part3.mp3"],
+  ["Full Lecture Video 2 Part 4", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_2/media_2_part4.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_2/media_2_part4.mp3"],
+  ["Full Lecture Video 2 Part 5", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_2/media_2_part5.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_2/media_2_part5.mp3"],
+  ["Full Lecture Video 2 Part 6", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_2/media_2_part6.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_2/media_2_part6.mp3"],
 ];
 
 $(document).ready(function () {
