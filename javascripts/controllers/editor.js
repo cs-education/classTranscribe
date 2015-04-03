@@ -274,12 +274,12 @@ function loadWaveform(cb) {
     var wavesurferTime = position * video.duration;
     video.currentTime = wavesurferTime;
 
-    var currentSegment = findCurrentSegment(wavesurferTime);
-    var previousSegment = currentSegment.prev(".caption-track-final-caption");
-    if (!previousSegment.length) previousSegment = currentSegment;
-    var offsetLeft = previousSegment.offset().left - previousSegment.parent().offset().left + previousSegment.parent().scrollLeft();
-    var barOffsetLeft = (wavesurferTime / globalSurfer.getDuration()) * $(".waveform-outer").width()
-    previousSegment.width(Math.abs(barOffsetLeft - offsetLeft) - 1);
+    // var currentSegment = findCurrentSegment(wavesurferTime);
+    // var previousSegment = currentSegment.prev(".caption-track-final-caption");
+    // if (!previousSegment.length) previousSegment = currentSegment;
+    // var offsetLeft = previousSegment.offset().left - previousSegment.parent().offset().left + previousSegment.parent().scrollLeft();
+    // var barOffsetLeft = (wavesurferTime / globalSurfer.getDuration()) * $(".waveform-outer").width()
+    // previousSegment.width(Math.abs(barOffsetLeft - offsetLeft) - 1);
 
     $(".transcription-input").focus();
     incrementMetricCount("videoSeek", {time: wavesurferTime - previousTime});
