@@ -269,19 +269,44 @@ function loadWaveform(cb) {
     $(".waveform-loading").addClass("hidden");
   });
 
-  var previousTime = 0;
-  wavesurfer.on('seek', function () {
-    var wavesurferTime = wavesurfer.getCurrentTime();
-    if (Math.abs(previousTime - wavesurferTime) > 0.2) {
-      incrementMetricCount("videoSeek", {time: wavesurferTime - previousTime});
-      video.currentTime = wavesurferTime;
-      $(".transcription-input").focus();
-    }
-    previousTime = wavesurferTime;
-  })
+  wavesurfer.drawer.on('click', function (e, position) {
+    var previousTime = wavesurfer.getCurrentTime();
+    var wavesurferTime = position * video.duration;
+    video.currentTime = wavesurferTime;
+
+    var currentSegment = findCurrentSegment(wavesurferTime);
+    var previousSegment = currentSegment.prev(".caption-track-final-caption");
+    if (!previousSegment.length) previousSegment = currentSegment;
+    var offsetLeft = previousSegment.offset().left - previousSegment.parent().offset().left + previousSegment.parent().scrollLeft();
+    var barOffsetLeft = (wavesurferTime / globalSurfer.getDuration()) * $(".waveform-outer").width()
+    previousSegment.width(Math.abs(barOffsetLeft - offsetLeft) - 1);
+
+    $(".transcription-input").focus();
+    incrementMetricCount("videoSeek", {time: wavesurferTime - previousTime});
+  });
 
   globalSurfer = wavesurfer;
   cb();
+}
+
+/*
+  Find the current segment given a video time
+*/
+function findCurrentSegment(time) {
+  var numCaptions = $(".caption-track-final-caption").length;
+  var timeAccumulator = 0;
+
+  var currentSegment = $(".caption-track-final-caption").first();
+  for (var i = 0; i < numCaptions; i++) {
+    if (timeAccumulator > time) {
+      break;
+    }
+
+    currentSegment = $(".caption-track-final-caption").eq(i);
+    currentSegment.data("startingTime", timeAccumulator);
+    timeAccumulator += parseFloat(currentSegment.width() / 64) + (2/64); // 2/64 accounts for border...
+  }
+  return currentSegment;
 }
 
 /*
