@@ -257,16 +257,13 @@ function loadWaveform(cb) {
     $(".waveform-loading").addClass("hidden");
   });
 
-  var previousTime = 0;
-  wavesurfer.on('seek', function () {
-    var wavesurferTime = wavesurfer.getCurrentTime();
-    if (Math.abs(previousTime - wavesurferTime) > 0.2) {
-      video.currentTime = wavesurferTime;
-      $(".transcription-input").focus();
-      incrementMetricCount("videoSeek", {time: wavesurferTime - previousTime});
-    }
-    previousTime = wavesurferTime;
-  })
+  wavesurfer.drawer.on('click', function (e, position) {
+    var previousTime = wavesurfer.getCurrentTime();
+    var wavesurferTime = position * video.duration;
+    video.currentTime = wavesurferTime;
+    $(".transcription-input").focus();
+    incrementMetricCount("videoSeek", {time: wavesurferTime - previousTime});
+  });
 
   globalSurfer = wavesurfer;
   cb();
