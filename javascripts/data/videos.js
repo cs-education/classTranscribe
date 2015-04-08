@@ -45,6 +45,23 @@ var VIDEOS = [
   ["Full Lecture Video 2 Part 4", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_2/media_2_part4.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_2/media_2_part4.mp3"],
   ["Full Lecture Video 2 Part 5", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_2/media_2_part5.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_2/media_2_part5.mp3"],
   ["Full Lecture Video 2 Part 6", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_2/media_2_part6.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_2/media_2_part6.mp3"],
+  // Lecture 3
+  ["Full Lecture Video 3 Part 0", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_3/media_3_part0.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_3/media_3_part0.mp3"],
+  ["Full Lecture Video 3 Part 1", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_3/media_3_part1.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_3/media_3_part1.mp3"],
+  ["Full Lecture Video 3 Part 2", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_3/media_3_part2.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_3/media_3_part2.mp3"],
+  ["Full Lecture Video 3 Part 3", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_3/media_3_part3.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_3/media_3_part3.mp3"],
+  ["Full Lecture Video 3 Part 4", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_3/media_3_part4.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_3/media_3_part4.mp3"],
+  ["Full Lecture Video 3 Part 5", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_3/media_3_part5.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_3/media_3_part5.mp3"],
+  ["Full Lecture Video 3 Part 6", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_3/media_3_part6.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_3/media_3_part6.mp3"],
+  // Lecture 4
+  ["Full Lecture Video 4 Part 0", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_4/media_4_part0.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_4/media_4_part0.mp3"],
+  ["Full Lecture Video 4 Part 1", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_4/media_4_part1.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_4/media_4_part1.mp3"],
+  ["Full Lecture Video 4 Part 2", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_4/media_4_part2.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_4/media_4_part2.mp3"],
+  ["Full Lecture Video 4 Part 3", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_4/media_4_part3.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_4/media_4_part3.mp3"],
+  ["Full Lecture Video 4 Part 4", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_4/media_4_part4.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_4/media_4_part4.mp3"],
+  ["Full Lecture Video 4 Part 5", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_4/media_4_part5.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_4/media_4_part5.mp3"],
+  ["Full Lecture Video 4 Part 6", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_4/media_4_part6.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/lecture_4/media_4_part6.mp3"],
+
 ];
 
 $(document).ready(function () {
