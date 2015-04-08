@@ -68,19 +68,20 @@ function inputKeypress(e) {
   var results = Object.create(null);
   if (reverseIndex[query]) {
     reverseIndex[query].forEach(function (match) {
-      var snippet = match.snippet;
-      query.split(/\s+/).forEach(function (word) {
-        snippet = updateHaystack(snippet, word);
-      });
-      var template = '<div><a href="/viewer.html?videoIndex=' + match.videoIndex + '&startTime=' + match.startTime + '">' + snippet + '</a></div>';
-      $(".search-results-container").append(template);
-      results[match.snippet] = true;
+      if (!results[match.snippet]) {
+        var snippet = match.snippet;
+        query.split(/\s+/).forEach(function (word) {
+          snippet = updateHaystack(snippet, word);
+        });
+        var template = '<div><a href="/viewer.html?videoIndex=' + match.videoIndex + '&startTime=' + match.startTime + '">' + snippet + '</a></div>';
+        $(".search-results-container").append(template);
+        results[match.snippet] = true;
+      }
     });
   }
   var prevWord = "";
   var prevprevWord = "";
   query.trim().split(/\s+/).forEach(function (word) {
-    console.log(word);
     if (reverseIndex[word]) {
       if (prevWord && reverseIndex[prevWord + " " + word]) {
         if (prevprevWord && reverseIndex[prevprevWord + " " + prevWord + " " + word]) {
