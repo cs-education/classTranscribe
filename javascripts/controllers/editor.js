@@ -202,7 +202,7 @@ function loadCaptions(videoIndex) {
     $(".final-caption-track").scrollLeft($(this).scrollLeft());
     $(".waveform-container").scrollLeft($(this).scrollLeft());
     updateTimeLine($(this).scrollLeft());
-    if( $(".waveform-container").scrollLeft() + $(".waveform-container").width() >= $(".waveform-outer").width()) {
+    if( $(".final-caption-track").scrollLeft() + $(".final-caption-track").width() + 252 >= $(".waveform-container").scrollLeft() + $(".waveform-container").width()) {
       $(".final-caption-track").scrollLeft($(".waveform-container").scrollLeft());
     }
   });
