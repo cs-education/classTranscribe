@@ -196,12 +196,15 @@ function loadCaptions(videoIndex) {
     $(".final-caption-black-bar").hide();
     var endWidth = $(this).width() - startWidth;
     incrementMetricCount("editSegmentLengthDrag", endWidth);
-  })
+  });
 
-  $(".final-caption-track, .waveform-container").off().scroll(function() {
+  $(".final-caption-track, .waveform-container").off().scroll(function (e) {
     $(".final-caption-track").scrollLeft($(this).scrollLeft());
     $(".waveform-container").scrollLeft($(this).scrollLeft());
     updateTimeLine($(this).scrollLeft());
+    if( $(".waveform-container").scrollLeft() + $(".waveform-container").width() >= $(".waveform-outer").width()) {
+      $(".final-caption-track").scrollLeft($(".waveform-container").scrollLeft());
+    }
   });
 }
 
