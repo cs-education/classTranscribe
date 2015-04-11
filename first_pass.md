@@ -5,6 +5,9 @@ Hi! Welcome to a quick introduction on how to transcribe using ClassTranscribe.
 
 ![image](http://i.imgur.com/vqSHWbT.gif)
 
+### What happens if I make a mistake?
+Don't worry! Just carry on. The second pass transcription will take care of it.
+
 ## 2. Click on waveform to jump forwards or backwards
 ![image](http://i.imgur.com/kbZG09m.gif)
 
