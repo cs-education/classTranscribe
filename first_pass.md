@@ -17,7 +17,7 @@ Hi! Welcome to a quick introduction on how to transcribe using ClassTranscribe.
 ## 5. Use hot ` hot key to jump back two seconds
 ![image](http://i.imgur.com/eMMg9ar.png)
 
-## 6. Use hot shift + ` hot key to pause video
+## 6. Use hot shift + ` hot key to pause/play video
 ![image](http://i.imgur.com/TkefEBb.png)
 
 ## 7. Follow the following consistency guidelines
