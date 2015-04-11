@@ -17,10 +17,10 @@ Don't worry! Just carry on. The second pass transcription will take care of it.
 ## 4. Modify playback speed according to your own preferences
 ![image](http://i.imgur.com/I3OFj4F.png)
 
-## 5. Use hot ` hot key to jump back two seconds
+## 5. Use ` hot key to jump back two seconds
 ![image](http://i.imgur.com/eMMg9ar.png)
 
-## 6. Use hot shift + ` hot key to pause/play video
+## 6. Use shift + ` hot key to pause/play video
 ![image](http://i.imgur.com/TkefEBb.png)
 
 ## 7. Follow the following consistency guidelines
