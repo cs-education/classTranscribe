@@ -1,7 +1,7 @@
 # First Pass Interface Tutorial
 Hi! Welcome to a quick introduction on how to transcribe using ClassTranscribe.
 
-## 1. Type as you listen to the video and press enter key after every logical break to solidify transcription segment
+## 1. Type as you listen to the video and press enter after every logical break
 
 ![image](http://i.imgur.com/vqSHWbT.gif)
 
