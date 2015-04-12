@@ -23,7 +23,7 @@
 */
 
 $(document).ready(function () {
-  setVideoFromUrl()
+  setVideoFromUrl();
   begin();
   initializeMetricsBaseInformation();
 });
@@ -93,6 +93,9 @@ function bindEventListeners() {
   $(".video-selector").off().change(begin);
   $(".playback-selector").off().change(changePlaybackSpeed);
   $(".transcription-input").off().keypress(inputKeypress);
+  $(".consent-agree").click(function () {
+    $(".consent-container").remove();
+  });
 }
 
 /*

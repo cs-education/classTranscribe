@@ -76,3 +76,55 @@ h1 {
 .submit.unclickable:hover {
   cursor: auto !important;
 }
+
+.consent-container {
+  background-color: rgba(0,0,0,0.95);
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  z-index: 100;
+}
+
+.consent-box {
+  width: 550px;
+  max-height: 80%;
+  margin: 0 auto;
+  background-color: white;
+  border: 1px solid silver;
+  border-radius: 5px;
+  margin-top: 50px;
+  padding: 20px;
+  overflow: scroll;
+}
+
+.consent-title {
+  font-weight: bold;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.consent-body {
+  height: 555px;
+  overflow: scroll;
+  font-size: 12px;
+}
+
+.consent-body p {
+  margin-bottom: 5px;
+}
+
+.consent-agree {
+  width: 100%;
+  padding: 10px;
+  background-color: white;
+  border: 2px solid silver;
+  margin-bottom: 0;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.consent-agree:hover {
+  cursor: pointer;
+}
