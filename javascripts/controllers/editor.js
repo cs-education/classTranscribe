@@ -208,8 +208,8 @@ function loadCaptions(videoIndex) {
   });
 
   $(".final-caption-track, .waveform-container").mousewheel(function(event, delta) {
-    $(".final-caption-track").get(0).scrollLeft -= (delta * 30);
-    $(".waveform-container").get(0).scrollLeft -= (delta * 30);
+    $(".final-caption-track").get(0).scrollLeft -= (delta * 20);
+    $(".waveform-container").get(0).scrollLeft -= (delta * 20);
     event.preventDefault();
   });
 }
