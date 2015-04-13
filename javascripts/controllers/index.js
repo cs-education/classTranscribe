@@ -15,6 +15,12 @@
   // Global reference to the wavesurfer
   var globalSurfer;
 
+  // Video state
+  var videoPlaying = false;
+
+  // Surfer state
+  var surferPlaying = false;
+
   // Start time global reference
   var startTime;
 
@@ -112,6 +118,10 @@ function bindVideoEvents() {
       globalSurfer.skip(videoCurrentTime - globalSurferTime);
     }
 
+    if (videoPlaying && !surferPlaying) {
+      globalSurfer.play();
+    }
+
     if (Math.abs(lastUpdate - videoCurrentTime) > 9) {
       var scrollLeft = videoCurrentTime * 64;
       $(".waveform-container").animate({scrollLeft: scrollLeft}, 500);
@@ -127,9 +137,11 @@ function bindVideoEvents() {
     changePlaybackSpeed();
     loadWaveform(function () {
       video.onplay = function () {
+        videoPlaying = true;
         globalSurfer.play();
       }
       video.onpause = function () {
+        videoPlaying = false;
         globalSurfer.pause();
       }
     });
@@ -258,6 +270,14 @@ function loadWaveform(cb) {
     var scrollLeft = video.currentTime * 64 - 200;
     $(".transcription-track, .final-transcription-track, .waveform-container").animate({scrollLeft: scrollLeft}, 500);
     $(".waveform-loading").addClass("hidden");
+  });
+
+  wavesurfer.on('play', function () {
+    surferPlaying = true;
+  });
+
+  wavesurfer.on('pause', function () {
+    surferPlaying = false;
   });
 
   wavesurfer.drawer.on('click', function (e, position) {
