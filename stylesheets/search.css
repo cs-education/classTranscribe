@@ -24,32 +24,38 @@ h1 {
   padding: 15px;
   width: 100%;
   font-size: 20px;
+  border: 1px solid rgba(210, 210, 210, 0.8);
 }
 
 .search-results-container div {
-  padding: 10px;
-  border: 1px solid gray;
+  border: 1px solid rgba(210, 210, 210, 0.8);
   border-top: none;
-}
-
-.search-results-container div:first-child {
-  border-top: 1px solid gray;
-}
-
-.search-results-container div {
   cursor: pointer;
 }
 
+.search-results-container div:hover {
+  background-color: rgba(245, 245, 245, 0.5);
+}
+
+.search-results-container div:first-child {
+  border-top: 1px solid rgba(210, 210, 210, 0.8);
+}
+
 .search-results-container div a {
-  color: #1a0dab;
+  color: #3b5998;
   text-decoration: none;
+  padding: 13px;
+  display: block;
 }
 
 .search-results-container div a:hover {
-  color: #1a0dab;
-  text-decoration: underline;
+  color: #3b5998;
 }
 
 b {
   font-weight: bold;
+}
+
+* {
+  outline: none;
 }
