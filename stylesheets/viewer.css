@@ -34,3 +34,7 @@ h1 {
   font-weight: bold;
   color: black;
 }
+
+.caption {
+  padding: 1px 0;
+}
