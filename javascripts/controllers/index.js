@@ -29,6 +29,7 @@
 */
 
 $(document).ready(function () {
+  disableMacBack();
   setVideoFromUrl();
   begin();
   initializeMetricsBaseInformation();

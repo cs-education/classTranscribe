@@ -94,7 +94,8 @@ function bindEventListeners() {
       incrementMetricCount("rewindTwoSeconds");
       rewindTwoSeconds();
     }
-  })
+  });
+  disableMacBack();
 }
 
 /*
