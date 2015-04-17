@@ -2,6 +2,7 @@ var http = require('http');
 var Router = require('node-simple-router');
 var fs = require('fs');
 var router = Router();
+var zlib = require('zlib');
 
 var indexHTML = fs.readFileSync('search.html').toString();
 router.get('/', function (request, response) {
@@ -56,6 +57,22 @@ router.get('/second/:videoIndex/:id', function (request, response) {
   });
   response.end(secondPassHTML);
 });
+
+router.get('/javascripts/data/captions.js', function (request, response) {
+  var raw = fs.createReadStream('public/javascripts/data/captions.js');
+  var acceptEncoding = request.headers['accept-encoding'] || '';
+  if (acceptEncoding.match(/\bdeflate\b/)) {
+    response.writeHead(200, { 'content-encoding': 'deflate' });
+    raw.pipe(zlib.createDeflate()).pipe(response);
+  } else if (acceptEncoding.match(/\bgzip\b/)) {
+    response.writeHead(200, { 'content-encoding': 'gzip' });
+    raw.pipe(zlib.createGzip()).pipe(response);
+  } else {
+    response.writeHead(200, {});
+    raw.pipe(response);
+  }
+});
+
 
 var server = http.createServer(router);
 server.listen(80);
