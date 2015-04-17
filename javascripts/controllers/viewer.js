@@ -15,6 +15,35 @@ $(document).ready(function () {
 });
 
 /*
+  Asynchronously Load Scripts
+*/
+var loadedScripts = Object.create(null);
+function asyncLoadScript(src, cb)
+{
+  if (loadedScripts[src]) {
+    cb();
+  } else {
+    var s;
+    var r;
+    var t;
+    r = false;
+    s = document.createElement('script');
+    s.type = 'text/javascript';
+    s.src = src;
+    s.onload = s.onreadystatechange = function() {
+      if (!r && (!this.readyState || this.readyState == 'complete'))
+      {
+        r = true;
+        loadedScripts[src] = true;
+        cb();
+      }
+    };
+    t = document.getElementsByTagName('script')[0];
+    t.parentNode.insertBefore(s, t);
+  }
+}
+
+/*
   Started once the DOM finishes loading
 */
 function begin() {
@@ -22,7 +51,9 @@ function begin() {
 
   loadVideo(videoIndex);
   loadStartTime();
-  loadCaptions(videoIndex);
+  asyncLoadScript("/javascripts/data/captions.js", function () {
+    loadCaptions(videoIndex);
+  });
   bindEventListeners();
   changePlaybackSpeed();
 }
