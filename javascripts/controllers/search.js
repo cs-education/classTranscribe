@@ -71,6 +71,7 @@ function inputKeypress(e) {
     reverseIndex[query].forEach(function (match) {
       if (!results[match.snippet]) {
         var snippet = match.snippet.toLowerCase();
+        var query = $(".search-box").val().toLowerCase();
         query.split(/\s+/).forEach(function (word) {
           snippet = updateHaystack(snippet, word);
         });
@@ -89,6 +90,7 @@ function inputKeypress(e) {
           reverseIndex[prevprevWord + " " + prevWord + " " + word].forEach(function (match) {
             if (!results[match.snippet]) {
               var snippet = match.snippet.toLowerCase();
+              var query = $(".search-box").val().toLowerCase();
               query.split(/\s+/).forEach(function (word) {
                 snippet = updateHaystack(snippet, word);
               });
@@ -101,6 +103,7 @@ function inputKeypress(e) {
         reverseIndex[prevWord + " " + word].forEach(function (match) {
           if (!results[match.snippet]) {
             var snippet = match.snippet.toLowerCase();
+            var query = $(".search-box").val().toLowerCase();
             query.split(/\s+/).forEach(function (word) {
               snippet = updateHaystack(snippet, word);
             });
@@ -114,6 +117,7 @@ function inputKeypress(e) {
       reverseIndex[word].forEach(function (match) {
         if (!results[match.snippet]) {
           var snippet = match.snippet.toLowerCase();
+          var query = $(".search-box").val().toLowerCase();
           query.split(/\s+/).forEach(function (word) {
             snippet = updateHaystack(snippet, word);
           });
