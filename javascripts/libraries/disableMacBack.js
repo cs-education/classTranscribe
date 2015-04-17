@@ -1,4 +1,5 @@
-function disableMacBack() {
+function disableMacBack(whitelist) {
+  whitelist = whitelist || [];
   (function ( $ ) {
     $(window).on('mousewheel', function(e) {
       var deltaX = e.originalEvent.wheelDeltaX * -1;
@@ -6,17 +7,17 @@ function disableMacBack() {
       var x = Math.abs(deltaX);
       var y = Math.abs(deltaY);
 
-      var el = $(document.body);
-
-      if (deltaY < 0) {
-        el.scrollTop(el.scrollTop() - deltaY);
-      } else {
-        if (el.scrollTop() > 0) {
+      if (whitelist.indexOf(e.target) === -1) {
+        var el = $(document.body);
+        if (deltaY < 0) {
           el.scrollTop(el.scrollTop() - deltaY);
+        } else {
+          if (el.scrollTop() > 0) {
+            el.scrollTop(el.scrollTop() - deltaY);
+          }
         }
+        e.preventDefault();
       }
-
-      e.preventDefault();
     });
   }( jQuery ));
 }

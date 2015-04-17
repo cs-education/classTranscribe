@@ -29,7 +29,6 @@
 */
 
 $(document).ready(function () {
-  disableMacBack();
   setVideoFromUrl();
   begin();
   initializeMetricsBaseInformation();
@@ -271,6 +270,15 @@ function loadWaveform(cb) {
     var scrollLeft = video.currentTime * 64 - 200;
     $(".transcription-track, .final-transcription-track, .waveform-container").animate({scrollLeft: scrollLeft}, 500);
     $(".waveform-loading").addClass("hidden");
+    disableMacBack($("canvas").toArray());
+    $("canvas").mousewheel(function(e) {
+      var deltaX = e.originalEvent.wheelDeltaX * -1;
+      var deltaY = e.originalEvent.wheelDeltaY;
+      if (Math.abs(deltaY) > Math.abs(deltaX)) {
+        $(".waveform-container").get(0).scrollLeft -= (deltaY);
+        e.preventDefault();
+      }
+    });
   });
 
   wavesurfer.on('play', function () {

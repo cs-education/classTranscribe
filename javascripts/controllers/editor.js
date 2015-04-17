@@ -95,7 +95,6 @@ function bindEventListeners() {
       rewindTwoSeconds();
     }
   });
-  disableMacBack();
 }
 
 /*
@@ -157,7 +156,7 @@ function changePlaybackSpeed() {
 */
 function toggleVideo() {
   var video = $(".main-video").get(0);
-  if (video.paused == false) {
+  if (video.paused === false) {
     video.pause();
   } else {
     video.play();
@@ -219,10 +218,14 @@ function loadCaptions(videoIndex) {
     }
   });
 
-  $(".final-caption-track, .waveform-container").mousewheel(function(event, delta) {
-    $(".final-caption-track").get(0).scrollLeft -= (delta * 10);
-    $(".waveform-container").get(0).scrollLeft -= (delta * 10);
-    event.preventDefault();
+  $(".final-caption-track, .waveform-container").mousewheel(function(e) {
+    var deltaX = e.originalEvent.wheelDeltaX * -1;
+    var deltaY = e.originalEvent.wheelDeltaY;
+    if (Math.abs(deltaY) > Math.abs(deltaX)) {
+      $(".final-caption-track").get(0).scrollLeft -= (deltaY);
+      $(".waveform-container").get(0).scrollLeft -= (deltaY);
+      e.preventDefault();
+    }
   });
 }
 
@@ -288,6 +291,7 @@ function loadWaveform(cb) {
     var scrollLeft = video.currentTime * 64 - 200;
     $(".final-caption-track, .waveform-container").animate({scrollLeft: scrollLeft}, 500);
     $(".waveform-loading").addClass("hidden");
+    disableMacBack($(".final-caption-track, .waveform-container, canvas").toArray());
   });
 
   wavesurfer.on('play', function () {
