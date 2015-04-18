@@ -127,11 +127,12 @@ function inputKeypress(e) {
     return b.length - a.length;
   });
 
+  var numResults = 0;
   subStrings.forEach(function (subString) {
     var query = subString;
     if (reverseIndex[query]) {
       reverseIndex[query].forEach(function (match) {
-        if (!results[match.snippet]) {
+        if (!results[match.snippet] && numResults < 100) {
           var snippet = match.snippet.toLowerCase();
           var query = $(".search-box").val().toLowerCase();
           query.trim().split(/\s+/).forEach(function (word) {
@@ -140,6 +141,7 @@ function inputKeypress(e) {
           var template = '<div><a href="/viewer.html?videoIndex=' + match.videoIndex + '&startTime=' + match.startTime + '">' + snippet + '</a></div>';
           $(".search-results-container").append(template);
           results[match.snippet] = true;
+          numResults++;
         }
       });
     }
