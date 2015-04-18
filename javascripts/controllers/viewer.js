@@ -120,14 +120,21 @@ function loadCaptions(i) {
     var template = '<div class="caption" data-time="' + captionTime + '">' + caption.text.toLowerCase() + '</div>';
     $(".transcription-viewer-container").append(template);
   });
-  updateHighlightedCaption(0);
+
+  $(".caption").click(function () {
+    var video = $(".main-video").get(0);
+    video.currentTime = findSegmentTime($(this));
+    updateHighlightedCaption($(this));
+  });
+
+  var currentSegment = findCurrentSegment(0);
+  updateHighlightedCaption(currentSegment);
 }
 
 /*
   Update the highlighted caption given the current time
 */
-function updateHighlightedCaption(currentTime) {
-  var currentSegment = findCurrentSegment(currentTime);
+function updateHighlightedCaption(currentSegment) {
   scrollToSegment(currentSegment);
   $(".selected-caption").removeClass("selected-caption");
   currentSegment.addClass("selected-caption");
@@ -142,7 +149,8 @@ setInterval(function () {
   var currentTime = $(".main-video").get(0).currentTime;
 
   if (currentTime > (lastTime + segmentLength) || currentTime < lastTime) {
-    updateHighlightedCaption(currentTime);
+    var currentSegment = findCurrentSegment(currentTime);
+    updateHighlightedCaption(currentSegment);
   }
 }, 50);
 
@@ -164,6 +172,24 @@ function findCurrentSegment(time) {
     timeAccumulator += parseFloat(currentSegment.data("time")) + (2/64); // 2/64 accounts for border...
   }
   return currentSegment;
+}
+
+/*
+  Find the time that the segment starts
+*/
+function findSegmentTime(segment) {
+  var numCaptions = $(".caption").length;
+  var timeAccumulator = 0;
+
+  var currentSegment = $(".caption").first();
+  for (var i = 0; i < numCaptions; i++) {
+    currentSegment = $(".caption").eq(i);
+    if (segment.is(currentSegment)) {
+      break;
+    }
+    timeAccumulator += parseFloat(currentSegment.data("time")) + (2/64); // 2/64 accounts for border...
+  }
+  return timeAccumulator;
 }
 
 /*
