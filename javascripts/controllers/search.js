@@ -54,7 +54,7 @@ $(document).ready(function () {
   Binds event listeners on input elements
 */
 function bindEventListeners() {
-  var debouncedInputKeypress = debounce(inputKeypress, 200);
+  var debouncedInputKeypress = throttle(inputKeypress, 200);
   $(".search-box").off().keyup(debouncedInputKeypress);
   $(".search-box").keyup(); // Trigger event to account for auto fill
 }
@@ -74,6 +74,22 @@ function debounce (func, wait, immediate) {
     clearTimeout(timeout);
     timeout = setTimeout(later, wait);
     if (callNow) func.apply(context, args);
+  };
+}
+
+/*
+  Helper throttle function
+*/
+function throttle (cb, limit) {
+  var wait = false;
+  return function () {
+    if (!wait) {
+      cb.call();
+      wait = true;
+      setTimeout(function () {
+        wait = false;
+      }, limit);
+    }
   };
 }
 
