@@ -142,12 +142,12 @@ function inputKeypress(e) {
       var valid = true;
       query.slice(1).forEach(function (word) {
         var containsWord = false;
-        result.snippet.split(/\s+/).forEach(function (snippetWord) {
+        result.snippet.replace(/[.,!"]/g,"").split(/\s+/).forEach(function (snippetWord) {
           if (snippetWord === word) {
             containsWord = true;
           }
         });
-        valid = containsWord;
+        valid = valid && containsWord;
       });
       return valid;
     });
