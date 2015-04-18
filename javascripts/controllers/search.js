@@ -55,7 +55,9 @@ $(document).ready(function () {
 */
 function bindEventListeners() {
   var debouncedInputKeypress = throttle(inputKeypress, 200);
-  $(".search-box").off().keyup(debouncedInputKeypress);
+  var debouncedSendGAEvent = debounce(sendGAEvent, 1000);
+  $(".search-box").off().keyup(debouncedInputKeypress)
+                        .keyup(debouncedSendGAEvent);
   $(".search-box").keyup(); // Trigger event to account for auto fill
 }
 
@@ -103,20 +105,51 @@ function sendGAEvent() {
   }
 }
 
-var debouncedSendGAEvent = debounce(sendGAEvent, 1000);
+/*
+  Generate all combinations of a words array
+*/
+function getCombinations(words) {
+  var result = [];
+  var f = function(prefix, words) {
+    for (var i = 0; i < words.length; i++) {
+      result.push(prefix.concat(words[i]));
+      f(prefix.concat(words[i]), words.slice(i + 1));
+    }
+  };
+  f([], words);
+  return result;
+}
 
 /*
   Captures the input keypresses and reacts accordingly
 */
 function inputKeypress(e) {
-  debouncedSendGAEvent();
   $(".search-results-container").empty();
-  var query = $(".search-box").val().toLowerCase();
-
-  query = query.trim().replace(/[^a-zA-Z\d\s:]+/g,""); // Remove all non-alphanumeric characters
   var results = Object.create(null);
-  if (reverseIndex[query]) {
-    reverseIndex[query].forEach(function (match) {
+  var query = $(".search-box").val().toLowerCase();
+  query = query.trim().replace(/[^a-zA-Z\d\s:]+/g,"").split(/\s+/); // Remove all non-alphanumeric characters
+
+
+  var subQueries = getCombinations(query);
+
+  subQueries = subQueries.sort(function (a,b) {
+    return b.length - a.length;
+  });
+
+  subQueries.forEach(function (subQuery) {
+    var query = subQuery;
+    var firstQueryResults = reverseIndex[query[0]] || [];
+    firstQueryResults = firstQueryResults.filter(function (result) {
+      var valid = true;
+      query.slice(1).forEach(function (word) {
+        if (result.snippet.indexOf(word) === -1) {
+          valid = false;
+        }
+      });
+      return valid;
+    });
+
+    firstQueryResults.forEach(function (match) {
       if (!results[match.snippet]) {
         var snippet = match.snippet.toLowerCase();
         var query = $(".search-box").val().toLowerCase();
@@ -128,39 +161,6 @@ function inputKeypress(e) {
         results[match.snippet] = true;
       }
     });
-  }
-
-  query = query.trim().split(/\s+/);
-
-  var subStrings = [];
-  for (var i = 0; i < query.length; i++) {
-    for (var j = i; j < query.length; j++) {
-      subStrings.push(query.slice(i, j+1).join(" "));
-    }
-  }
-
-  subStrings = subStrings.sort(function (a,b) {
-    return b.length - a.length;
-  });
-
-  var numResults = 0;
-  subStrings.forEach(function (subString) {
-    var query = subString;
-    if (reverseIndex[query]) {
-      reverseIndex[query].forEach(function (match) {
-        if (!results[match.snippet] && numResults < 100) {
-          var snippet = match.snippet.toLowerCase();
-          var query = $(".search-box").val().toLowerCase();
-          query.trim().split(/\s+/).forEach(function (word) {
-            snippet = updateHaystack(snippet, word);
-          });
-          var template = '<div><a href="/viewer.html?videoIndex=' + match.videoIndex + '&startTime=' + match.startTime + '">' + snippet + '</a></div>';
-          $(".search-results-container").append(template);
-          results[match.snippet] = true;
-          numResults++;
-        }
-      });
-    }
   });
 }
 
