@@ -73,7 +73,6 @@ function begin() {
 */
 function initializeUI() {
   $(".waveform-loading").removeClass("hidden");
-  $(".transcription-input").focus();
   $(".submit").click(function () {
     var $that = $(this);
     $that.text("Submitting Transcription...");
@@ -101,6 +100,7 @@ function bindEventListeners() {
   $(".transcription-input").off().keypress(inputKeypress);
   $(".consent-agree").click(function () {
     $(".consent-container").remove();
+    $(".transcription-input").focus();
   });
 }
 
