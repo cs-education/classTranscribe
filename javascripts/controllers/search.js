@@ -59,12 +59,43 @@ function bindEventListeners() {
 }
 
 /*
+  Helper debounce function
+*/
+function debounce (func, wait, immediate) {
+  var timeout;
+  return function() {
+    var context = this, args = arguments;
+    var later = function() {
+      timeout = null;
+      if (!immediate) func.apply(context, args);
+    };
+    var callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow) func.apply(context, args);
+  };
+}
+
+/*
+  Send a search event to GA
+*/
+function sendGAEvent() {
+  var searchQuery = $(".search-box").val();
+  if (searchQuery.length) {
+    ga('send', 'event', 'homepage', 'search', searchQuery);
+  }
+}
+
+var debouncedSendGAEvent = debounce(sendGAEvent, 1000);
+
+/*
   Captures the input keypresses and reacts accordingly
 */
 function inputKeypress(e) {
-  $(".search-results-container").empty()
+  debouncedSendGAEvent();
+  $(".search-results-container").empty();
   var query = $(".search-box").val().toLowerCase();
-  var re = new RegExp("(^|\s)(" + query + ")(\s|$)","g");
+
   query = query.trim().replace(/[^a-zA-Z\d\s:]+/g,""); // Remove all non-alphanumeric characters
   var results = Object.create(null);
   if (reverseIndex[query]) {
@@ -81,6 +112,7 @@ function inputKeypress(e) {
       }
     });
   }
+
   var prevWord = "";
   var prevprevWord = "";
   query.trim().split(/\s+/).forEach(function (word) {
