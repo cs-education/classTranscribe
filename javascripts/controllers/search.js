@@ -104,7 +104,7 @@ function inputKeypress(e) {
       if (!results[match.snippet]) {
         var snippet = match.snippet.toLowerCase();
         var query = $(".search-box").val().toLowerCase();
-        query.split(/\s+/).forEach(function (word) {
+        query.trim().split(/\s+/).forEach(function (word) {
           snippet = updateHaystack(snippet, word);
         });
         var template = '<div><a href="/viewer.html?videoIndex=' + match.videoIndex + '&startTime=' + match.startTime + '">' + snippet + '</a></div>';
@@ -114,44 +114,27 @@ function inputKeypress(e) {
     });
   }
 
-  var prevWord = "";
-  var prevprevWord = "";
-  query.trim().split(/\s+/).forEach(function (word) {
-    if (reverseIndex[word]) {
-      if (prevWord && reverseIndex[prevWord + " " + word]) {
-        if (prevprevWord && reverseIndex[prevprevWord + " " + prevWord + " " + word]) {
-          reverseIndex[prevprevWord + " " + prevWord + " " + word].forEach(function (match) {
-            if (!results[match.snippet]) {
-              var snippet = match.snippet.toLowerCase();
-              var query = $(".search-box").val().toLowerCase();
-              query.split(/\s+/).forEach(function (word) {
-                snippet = updateHaystack(snippet, word);
-              });
-              var template = '<div><a href="/viewer.html?videoIndex=' + match.videoIndex + '&startTime=' + match.startTime + '">' + snippet + '</a></div>';
-              $(".search-results-container").append(template);
-              results[match.snippet] = true;
-            }
-          });
-        }
-        reverseIndex[prevWord + " " + word].forEach(function (match) {
-          if (!results[match.snippet]) {
-            var snippet = match.snippet.toLowerCase();
-            var query = $(".search-box").val().toLowerCase();
-            query.split(/\s+/).forEach(function (word) {
-              snippet = updateHaystack(snippet, word);
-            });
-            var template = '<div><a href="/viewer.html?videoIndex=' + match.videoIndex + '&startTime=' + match.startTime + '">' + snippet + '</a></div>';
-            $(".search-results-container").append(template);
-            results[match.snippet] = true;
-          }
-        });
-        prevprevWord = prevWord;
-      }
-      reverseIndex[word].forEach(function (match) {
+  query = query.trim().split(/\s+/);
+
+  var subStrings = [];
+  for (var i = 0; i < query.length; i++) {
+    for (var j = i; j < query.length; j++) {
+      subStrings.push(query.slice(i, j+1).join(" "));
+    }
+  }
+
+  subStrings = subStrings.sort(function (a,b) {
+    return b.length - a.length;
+  });
+
+  subStrings.forEach(function (subString) {
+    var query = subString;
+    if (reverseIndex[query]) {
+      reverseIndex[query].forEach(function (match) {
         if (!results[match.snippet]) {
           var snippet = match.snippet.toLowerCase();
           var query = $(".search-box").val().toLowerCase();
-          query.split(/\s+/).forEach(function (word) {
+          query.trim().split(/\s+/).forEach(function (word) {
             snippet = updateHaystack(snippet, word);
           });
           var template = '<div><a href="/viewer.html?videoIndex=' + match.videoIndex + '&startTime=' + match.startTime + '">' + snippet + '</a></div>';
@@ -159,7 +142,6 @@ function inputKeypress(e) {
           results[match.snippet] = true;
         }
       });
-      prevWord = word;
     }
   });
 }
