@@ -141,9 +141,13 @@ function inputKeypress(e) {
     firstQueryResults = firstQueryResults.filter(function (result) {
       var valid = true;
       query.slice(1).forEach(function (word) {
-        if (result.snippet.indexOf(word) === -1) {
-          valid = false;
-        }
+        var containsWord = false;
+        result.snippet.split(/\s+/).forEach(function (snippetWord) {
+          if (snippetWord === word) {
+            containsWord = true;
+          }
+        });
+        valid = containsWord;
       });
       return valid;
     });
