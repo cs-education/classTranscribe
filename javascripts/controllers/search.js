@@ -7,7 +7,7 @@ function createReverseIndex() {
     var prevprevWord = "";
     captions.forEach(function (caption) {
       caption.text.split(/\s+/).forEach(function (word) {
-        word = word.toLowerCase();
+        word = word.replace(/[.,!"]/g,"").toLowerCase();
         if (word) {
           reverseIndex[word] = (reverseIndex[word] || []);
           reverseIndex[word].push({
@@ -127,7 +127,7 @@ function inputKeypress(e) {
   $(".search-results-container").empty();
   var results = Object.create(null);
   var query = $(".search-box").val().toLowerCase();
-  query = query.trim().split(/\s+/);
+  query = query.trim().replace(/[.,!"]/g,"").split(/\s+/);
 
   var subQueries = getCombinations(query);
 
