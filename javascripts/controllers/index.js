@@ -191,7 +191,7 @@ function rewindTwoSeconds() {
 */
 function toggleVideo() {
   var video = $(".main-video").get(0);
-  if (video.paused == false) {
+  if (video.paused === false) {
       video.pause();
   } else {
       video.play();
@@ -266,7 +266,7 @@ function loadWaveform(cb) {
   wavesurfer.load(videoSrc);
 
   wavesurfer.on('ready', function () {
-    wavesurfer.skip(video.currentTime)
+    wavesurfer.skip(video.currentTime);
     var scrollLeft = video.currentTime * 64 - 200;
     $(".transcription-track, .final-transcription-track, .waveform-container").animate({scrollLeft: scrollLeft}, 500);
     $(".waveform-loading").addClass("hidden");
@@ -312,7 +312,7 @@ function transcriptionsToCaptions(transcriptions) {
     return {
       text: transcription.text,
       width: width
-    }
+    };
   });
 }
 
@@ -329,7 +329,7 @@ function timeStringToNum(timeString) {
   Converts a time string to a time integer
 */
 function incrementMetricCount(name, data) {
-  metrics[name] = (metrics[name] || {})
+  metrics[name] = (metrics[name] || {});
   metrics[name].count = (metrics[name].count || 0) + 1;
   if (data) {
     metrics[name].data = (metrics[name].data || []).concat(data);

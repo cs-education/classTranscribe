@@ -117,7 +117,7 @@ function loadCaptions(i) {
   var captions = videoCaptions[i];
   captions.forEach(function (caption) {
     var captionTime = (caption.width / 64).toFixed(2);
-    var template = '<div class="caption" data-time="' + captionTime + '">' + caption.text.toLowerCase() + '</div>'
+    var template = '<div class="caption" data-time="' + captionTime + '">' + caption.text.toLowerCase() + '</div>';
     $(".transcription-viewer-container").append(template);
   });
   updateHighlightedCaption(0);

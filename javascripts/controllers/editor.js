@@ -180,7 +180,7 @@ function loadCaptions(videoIndex) {
 
   $(".caption-track-final-caption").dblclick(function () {
     var offsetLeft = $(this).offset().left - $(this).parent().offset().left + $(this).parent().scrollLeft();
-    var barOffsetLeft = (globalSurfer.getCurrentTime() / globalSurfer.getDuration()) * $(".waveform-outer").width()
+    var barOffsetLeft = (globalSurfer.getCurrentTime() / globalSurfer.getDuration()) * $(".waveform-outer").width();
     $(this).width(Math.abs(barOffsetLeft - offsetLeft));
     incrementMetricCount("editSegmentLengthDoubleClick", barOffsetLeft - offsetLeft);
   });
@@ -287,7 +287,7 @@ function loadWaveform(cb) {
   wavesurfer.load(videoSrc);
 
   wavesurfer.on('ready', function () {
-    wavesurfer.skip(video.currentTime)
+    wavesurfer.skip(video.currentTime);
     var scrollLeft = video.currentTime * 64 - 200;
     $(".final-caption-track, .waveform-container").animate({scrollLeft: scrollLeft}, 500);
     $(".waveform-loading").addClass("hidden");
@@ -362,7 +362,7 @@ function incrementMetricCount(name, data) {
     startTime = new Date();
   }
 
-  metrics[name] = (metrics[name] || {})
+  metrics[name] = (metrics[name] || {});
   metrics[name].count = (metrics[name].count || 0) + 1;
   if (data) {
     metrics[name].data = (metrics[name].data || []).concat(data);

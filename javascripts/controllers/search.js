@@ -34,14 +34,14 @@ function createReverseIndex() {
           }
           prevWord = word;
         }
-      })
+      });
       prevWord = "";
       currentTime += (caption.width / 64) + (2/64);
-    })
-  })
+    });
+  });
 }
 
-a = new Date()
+a = new Date();
 createReverseIndex();
 console.log (new Date() - a);
 
@@ -144,7 +144,7 @@ function inputKeypress(e) {
             results[match.snippet] = true;
           }
         });
-        prevprevWord = prevWord
+        prevprevWord = prevWord;
       }
       reverseIndex[word].forEach(function (match) {
         if (!results[match.snippet]) {
