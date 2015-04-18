@@ -122,7 +122,7 @@ function bindVideoEvents() {
       globalSurfer.play();
     }
 
-    if (Math.abs(lastUpdate - videoCurrentTime) > 9) {
+    if (Math.abs(lastUpdate - videoCurrentTime) > 9 || lastUpdate > videoCurrentTime) {
       var scrollLeft = videoCurrentTime * 64;
       $(".waveform-container").animate({scrollLeft: scrollLeft}, 500);
       lastUpdate = videoCurrentTime;
@@ -139,11 +139,11 @@ function bindVideoEvents() {
       video.onplay = function () {
         videoPlaying = true;
         globalSurfer.play();
-      }
+      };
       video.onpause = function () {
         videoPlaying = false;
         globalSurfer.pause();
-      }
+      };
     });
   });
 }
