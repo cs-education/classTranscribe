@@ -54,7 +54,8 @@ $(document).ready(function () {
   Binds event listeners on input elements
 */
 function bindEventListeners() {
-  $(".search-box").off().keyup(inputKeypress);
+  var debouncedInputKeypress = debounce(inputKeypress, 200);
+  $(".search-box").off().keyup(debouncedInputKeypress);
   $(".search-box").keyup(); // Trigger event to account for auto fill
 }
 
