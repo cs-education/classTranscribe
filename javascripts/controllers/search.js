@@ -7,7 +7,7 @@ function createReverseIndex() {
     var prevprevWord = "";
     captions.forEach(function (caption) {
       caption.text.split(/\s+/).forEach(function (word) {
-        word = word.replace(/[\W_]+/g,"").toLowerCase(); // Remove all non-alphanumeric characters
+        word = word.toLowerCase();
         if (word) {
           reverseIndex[word] = (reverseIndex[word] || []);
           reverseIndex[word].push({
@@ -54,7 +54,7 @@ $(document).ready(function () {
   Binds event listeners on input elements
 */
 function bindEventListeners() {
-  var debouncedInputKeypress = throttle(inputKeypress, 200);
+  var debouncedInputKeypress = debounce(inputKeypress, 200);
   var debouncedSendGAEvent = debounce(sendGAEvent, 1000);
   $(".search-box").off().keyup(debouncedInputKeypress)
                         .keyup(debouncedSendGAEvent);
@@ -127,8 +127,7 @@ function inputKeypress(e) {
   $(".search-results-container").empty();
   var results = Object.create(null);
   var query = $(".search-box").val().toLowerCase();
-  query = query.trim().replace(/[^a-zA-Z\d\s:]+/g,"").split(/\s+/); // Remove all non-alphanumeric characters
-
+  query = query.trim().split(/\s+/);
 
   var subQueries = getCombinations(query);
 
