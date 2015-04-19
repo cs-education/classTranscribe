@@ -123,7 +123,9 @@ function loadCaptions(i) {
 
   $(".caption").click(function () {
     var video = $(".main-video").get(0);
-    video.currentTime = findSegmentTime($(this));
+    var startingTime = findSegmentTime($(this));
+    $(this).data("startingTime", startingTime);
+    video.currentTime = startingTime;
     updateHighlightedCaption($(this));
   });
 
