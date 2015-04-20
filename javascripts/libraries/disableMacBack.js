@@ -1,7 +1,7 @@
 function disableMacBack(whitelist) {
   whitelist = whitelist || [];
   (function ( $ ) {
-    $(window).off().on('mousewheel', function(e) {
+    $(window).off('mousewheel').on('mousewheel', function(e) {
       var deltaX = e.originalEvent.wheelDeltaX * -1;
       var deltaY = e.originalEvent.wheelDeltaY;
       var x = Math.abs(deltaX);
