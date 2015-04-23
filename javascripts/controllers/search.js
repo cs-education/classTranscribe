@@ -127,7 +127,7 @@ function inputKeypress(e) {
   $(".search-results-container").empty();
   var results = Object.create(null);
   var query = $(".search-box").val().toLowerCase();
-  query = query.trim().replace(/[.,!"]/g,"").split(/\s+/);
+  query = query.trim().replace(/[.,!?"]/g,"").split(/\s+/);
 
   var subQueries = getCombinations(query);
 
