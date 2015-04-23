@@ -14,6 +14,9 @@ Don't worry! Just carry on. The second pass transcription will take care of it.
 ## 3. Use shift + ` hot key to pause/play video [VERY USEFUL]
 ![image](http://i.imgur.com/TkefEBb.png)
 
+## 3. Use tab hot key to utilize autocomplete functionality [VERY USEFUL]
+![image](http://i.imgur.com/nym1lKi.png =100x20)
+
 ## 4. Modify playback speed according to your own preferences [VERY USEFUL]
 ![image](http://i.imgur.com/I3OFj4F.png)
 
@@ -27,6 +30,7 @@ Don't worry! Just carry on. The second pass transcription will take care of it.
 * When transcribing terms... ask yourself: If you were to search for this term, what would you search for? Then write that term down. (ie. write "printf" instead of "print f")
 * Generally don't worry about capitalization. Use punctuation as you see fit.
 * Write out "non-technical numbers" as words. Write out "technical numbers" as numbers. ie. “Print hello six times” and “There are 8 bits in a byte”.
+* If you can't understand a certain speech segment, just fill it with some placeholder ie. [gibberish] and move on.
 
 ## 8. When you are finished, click "Submit Transcription"
 ![image](http://i.imgur.com/u3S34g5.png)
