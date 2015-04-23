@@ -7,7 +7,7 @@ function createReverseIndex() {
     var prevprevWord = "";
     captions.forEach(function (caption) {
       caption.text.split(/\s+/).forEach(function (word) {
-        word = word.replace(/[.,!"]/g,"").toLowerCase();
+        word = word.replace(/[.,!"?]/g,"").toLowerCase();
         if (word) {
           reverseIndex[word] = (reverseIndex[word] || []);
           reverseIndex[word].push({
@@ -142,7 +142,7 @@ function inputKeypress(e) {
       var valid = true;
       query.slice(1).forEach(function (word) {
         var containsWord = false;
-        result.snippet.replace(/[.,!"]/g,"").split(/\s+/).forEach(function (snippetWord) {
+        result.snippet.replace(/[.,!?"]/g,"").split(/\s+/).forEach(function (snippetWord) {
           if (snippetWord === word) {
             containsWord = true;
           }
