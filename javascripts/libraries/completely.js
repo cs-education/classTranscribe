@@ -168,6 +168,7 @@ function completely(container, config) {
         onChange:     function() { rs.repaint() }, // defaults to repainting.
         startFrom:    0,
         options:      [],
+        addedWords: Object.create(null),
         wrapper : wrapper,      // Only to allow  easy access to the HTML elements to the final user (possibly for minor customizations)
         input :  txtInput,      // Only to allow  easy access to the HTML elements to the final user (possibly for minor customizations)
         hint  :  txtHint,       // Only to allow  easy access to the HTML elements to the final user (possibly for minor customizations)
@@ -183,11 +184,30 @@ function completely(container, config) {
         hideDropDown : function() {
           dropDownController.hide();
         },
+        initializeOptionsHash : function () {
+            var optionsHash = Object.create(null);
+            this.options.forEach(function (option) {
+                optionsHash[option.substring(0,4)] = (optionsHash[option.substring(0,4)] || []);
+                optionsHash[option.substring(0,4)].push(option);
+            });
+            this.optionsHash = optionsHash;
+        },
+        addToOptionsHash : function (option) {
+            if (!this.addedWords[option]) {
+                this.optionsHash[option.substring(0,4)] = (this.optionsHash[option.substring(0,4)] || []);
+                this.optionsHash[option.substring(0,4)].push(option);
+                this.addedWords[option] = true;
+            }
+        },
         repaint : function() {
             var text = txtInput.value;
             var startFrom =  rs.startFrom;
             var options =    rs.options;
             var optionsLength = options.length;
+
+            if (!this.optionsHash) {
+                this.initializeOptionsHash();
+            }
 
             // breaking text in leftSide and token.
             var token = text.substring(startFrom);
@@ -195,18 +215,20 @@ function completely(container, config) {
 
             // updating the hint.
             txtHint.value ='';
-            for (var i=0;i<optionsLength;i++) {
-                var opt = options[i];
-                if (opt.indexOf(token)===0) {         // <-- how about upperCase vs. lowercase
+
+            if (token.length > 3) {
+                options = this.optionsHash[token.substring(0,4)];
+                optionsLength = (options || []).length;
+                for (var i=0;i<optionsLength;i++) {
+                    var opt = options[i];
                     if (this.lastOpt !== opt) {
                         txtHint.style.color = "rgba(0,0,0,0)";
                     }
                     txtHint.value = leftSide + opt + "                             ";
                     setTimeout(function () {
                         $(".transcription-input").eq(0).scrollLeft($(".transcription-input-main").scrollLeft());
-                        setTimeout(function () {
-                            txtHint.style.color = "#aaa";
-                        }, 0);
+                        while ($(".transcription-input").eq(0).scrollLeft() != $(".transcription-input-main").scrollLeft()) {}
+                        txtHint.style.color = "#aaa";
                     }, 0);
                     this.lastOpt = opt;
                     break;
