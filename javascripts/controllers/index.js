@@ -177,7 +177,7 @@ function changePlaybackSpeed() {
   Captures the input keypresses and reacts accordingly
 */
 function inputKeypress(e) {
-  $(".transcription-input-main").scrollLeft(0);
+  // $(".transcription-input-main").scrollLeft(0);
   if (e.which === 13) {
     solidifyTranscription(e);
   } else if (e.which === 96) {
