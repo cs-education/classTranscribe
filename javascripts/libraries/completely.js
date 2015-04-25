@@ -221,18 +221,20 @@ function completely(container, config) {
                 optionsLength = (options || []).length;
                 for (var i=0;i<optionsLength;i++) {
                     var opt = options[i];
-                    if (this.lastOpt !== opt) {
-                        txtHint.style.color = "rgba(0,0,0,0)";
+                    if (opt.indexOf(token) > -1) {
+                        if (this.lastOpt !== opt) {
+                            txtHint.style.color = "rgba(0,0,0,0)";
+                        }
+                        txtHint.value = leftSide + opt + "                             ";
+                        setTimeout(function () {
+                            $(".transcription-input").eq(0).scrollLeft($(".transcription-input-main").scrollLeft());
+                            var counter = 0;
+                            while ($(".transcription-input").eq(0).scrollLeft() != $(".transcription-input-main").scrollLeft() && counter < 100000) {counter++;}
+                            txtHint.style.color = "#aaa";
+                        }, 0);
+                        this.lastOpt = opt;
+                        break;
                     }
-                    txtHint.value = leftSide + opt + "                             ";
-                    setTimeout(function () {
-                        $(".transcription-input").eq(0).scrollLeft($(".transcription-input-main").scrollLeft());
-                        var counter = 0;
-                        while ($(".transcription-input").eq(0).scrollLeft() != $(".transcription-input-main").scrollLeft() && counter < 100000) {counter++;}
-                        txtHint.style.color = "#aaa";
-                    }, 0);
-                    this.lastOpt = opt;
-                    break;
                 }
             }
 
