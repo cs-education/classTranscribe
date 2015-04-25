@@ -12,15 +12,15 @@
 var inputFile = process.argv[2];
 var cp = require('child_process');
 
-var segments = ["0:00"
-                ,"8:03"
-                ,"16:12"
-                ,"23:55"
-                ,"31:34"
-                ,"39:40"
-                ,"44:47"
-                ,"51:50"
-               ];
+var segments = ["1:43"
+,"7:35"
+,"13:45"
+,"21:11"
+,"29:27"
+,"37:24"
+,"44:36"
+,"51:25"
+];
 
 var splitCommands = [];
 segments.slice(0, -1).forEach(function (segment, i) {
