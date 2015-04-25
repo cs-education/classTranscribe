@@ -32,7 +32,7 @@ Don't worry! Just carry on. The second pass transcription will take care of it.
 * Write out "non-technical numbers" as words. Write out "technical numbers" as numbers. ie. “Print hello six times” and “There are 8 bits in a byte”.
 * If you can't understand a certain speech segment, just fill it with some placeholder ie. [gibberish] and move on.
 
-## 8. When you are finished, click "Submit Transcription"
+## 8. When you are finished, click "Submit Transcription" [IMPORTANT IMPORTANT IMPORTANT]
 ![image](http://i.imgur.com/u3S34g5.png)
 
 
