@@ -101,6 +101,8 @@ function initializeUI() {
 function initializeCompletely() {
   var input = document.getElementById('completely-input-container');
 
+  $(input).empty();
+
   completelyRef = completely(input);
 
   completelyRef.onChange = function (text) {
