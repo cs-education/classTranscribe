@@ -1,4 +1,4 @@
-# First Pass Interface Tutorial
+# First Pass Interface Tutorial 
 Hi! Welcome to a quick introduction on how to transcribe using ClassTranscribe.
 
 ## 1. Type as you listen to the video and press enter after every logical break
@@ -7,6 +7,9 @@ Hi! Welcome to a quick introduction on how to transcribe using ClassTranscribe.
 
 ### What happens if I make a mistake?
 Don't worry! Just carry on. The second pass transcription will take care of it.
+
+### How long should each segment be?
+A sentence or two is a good general rule of thumb.
 
 ## 2. Use ` hot key to jump back two seconds [VERY USEFUL]
 ![image](http://i.imgur.com/eMMg9ar.png)
@@ -32,7 +35,7 @@ Don't worry! Just carry on. The second pass transcription will take care of it.
 * Write out "non-technical numbers" as words. Write out "technical numbers" as numbers. ie. “Print hello six times” and “There are 8 bits in a byte”.
 * If you can't understand a certain speech segment, just fill it with some placeholder ie. [gibberish] and move on.
 
-## 8. When you are finished, click "Submit Transcription"
+## 8. When you are finished, click "Submit Transcription" [IMPORTANT IMPORTANT IMPORTANT]
 ![image](http://i.imgur.com/u3S34g5.png)
 
 
