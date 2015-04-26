@@ -15,35 +15,6 @@ $(document).ready(function () {
 });
 
 /*
-  Asynchronously Load Scripts
-*/
-var loadedScripts = Object.create(null);
-function asyncLoadScript(src, cb)
-{
-  if (loadedScripts[src]) {
-    cb();
-  } else {
-    var s;
-    var r;
-    var t;
-    r = false;
-    s = document.createElement('script');
-    s.type = 'text/javascript';
-    s.src = src;
-    s.onload = s.onreadystatechange = function() {
-      if (!r && (!this.readyState || this.readyState == 'complete'))
-      {
-        r = true;
-        loadedScripts[src] = true;
-        cb();
-      }
-    };
-    t = document.getElementsByTagName('script')[0];
-    t.parentNode.insertBefore(s, t);
-  }
-}
-
-/*
   Started once the DOM finishes loading
 */
 function begin() {
@@ -51,9 +22,7 @@ function begin() {
 
   loadVideo(videoIndex);
   loadStartTime();
-  asyncLoadScript("/javascripts/data/captions.js", function () {
-    loadCaptions(videoIndex);
-  });
+  loadCaptions(videoIndex);
   bindEventListeners();
   changePlaybackSpeed();
 }
@@ -83,8 +52,9 @@ function getParameterByName(name) {
 */
 function loadStartTime() {
   var startTime = getParameterByName("startTime");
-  var video = $(".main-video").get(0);
-  video.addEventListener("loadedmetadata", function () {
+  var video = $(".main-video").off("loadedmetadata").get(0);
+
+  $(".main-video").on("loadedmetadata", function () {
     video.currentTime = startTime;
     var windowLocation = window.location.toString();
     var base_url = windowLocation.substring(0, windowLocation.indexOf("?"));
@@ -114,23 +84,29 @@ function changePlaybackSpeed() {
 */
 function loadCaptions(i) {
   $(".transcription-viewer-container").empty();
-  var captions = videoCaptions[i];
-  captions.forEach(function (caption) {
-    var captionTime = (caption.width / 64).toFixed(2);
-    var template = '<div class="caption" data-time="' + captionTime + '">' + caption.text.toLowerCase() + '</div>';
-    $(".transcription-viewer-container").append(template);
-  });
+  $.ajax({
+    type: "GET",
+    url: "/captions/" + i,
+    success: function (data) {
+      var captions = data.captions;
+      captions.forEach(function (caption) {
+        var captionTime = (caption.width / 64).toFixed(2);
+        var template = '<div class="caption" data-time="' + captionTime + '">' + caption.text.toLowerCase() + '</div>';
+        $(".transcription-viewer-container").append(template);
+      });
 
-  $(".caption").click(function () {
-    var video = $(".main-video").get(0);
-    var startingTime = findSegmentTime($(this));
-    $(this).data("startingTime", startingTime);
-    video.currentTime = startingTime;
-    updateHighlightedCaption($(this));
-  });
+      $(".caption").click(function () {
+        var video = $(".main-video").get(0);
+        var startingTime = findSegmentTime($(this));
+        $(this).data("startingTime", startingTime);
+        video.currentTime = startingTime;
+        updateHighlightedCaption($(this));
+      });
 
-  var currentSegment = findCurrentSegment(0);
-  updateHighlightedCaption(currentSegment);
+      var currentSegment = findCurrentSegment(0);
+      updateHighlightedCaption(currentSegment);
+    }
+  });
 }
 
 /*
