@@ -229,7 +229,7 @@ function completely(container, config) {
                         setTimeout(function () {
                             $(".transcription-input").eq(0).scrollLeft($(".transcription-input-main").scrollLeft());
                             var counter = 0;
-                            while ($(".transcription-input").eq(0).scrollLeft() != $(".transcription-input-main").scrollLeft() && counter < 100000) {counter++;}
+                            while ($(".transcription-input").eq(0).scrollLeft() != $(".transcription-input-main").scrollLeft() && counter < 10000) {counter++;}
                             txtHint.style.color = "#aaa";
                         }, 0);
                         this.lastOpt = opt;
