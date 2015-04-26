@@ -22,6 +22,7 @@ function createReverseIndex() {
 
 a = new Date();
 createReverseIndex();
+$(".search-box").keyup();
 console.log (new Date() - a);
 
 $(document).ready(function () {
