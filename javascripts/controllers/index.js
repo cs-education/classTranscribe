@@ -276,6 +276,8 @@ function loadWaveform(cb) {
   var videoSrc = VIDEOS[videoIndex][2] || VIDEOS[videoIndex][1];
   var video = $(".main-video").get(0);
 
+  surferPlaying = false;
+
   $("#waveform").empty();
   $(".waveform-outer").css("width", (video.duration * 64) + "px");
 
