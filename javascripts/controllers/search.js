@@ -3,8 +3,6 @@ var reverseIndex = Object.create(null);
 function createReverseIndex() {
   videoCaptions.forEach(function (captions, i) {
     var currentTime = 0;
-    var prevWord = "";
-    var prevprevWord = "";
     captions.forEach(function (caption) {
       caption.text.split(/\s+/).forEach(function (word) {
         word = word.replace(/[.,!"?()]/g,"").toLowerCase();
@@ -15,27 +13,8 @@ function createReverseIndex() {
             startTime: currentTime,
             snippet: caption.text
           });
-          if (prevWord.length) {
-            reverseIndex[prevWord + " " + word] = (reverseIndex[prevWord + " " + word] || []);
-            reverseIndex[prevWord + " " + word].push({
-              videoIndex: i,
-              startTime: currentTime,
-              snippet: caption.text
-            });
-            if (prevprevWord.length) {
-              reverseIndex[prevprevWord + " " + prevWord + " " + word] = (reverseIndex[prevprevWord + " " + prevWord + " " + word] || []);
-              reverseIndex[prevprevWord + " " + prevWord + " " + word].push({
-                videoIndex: i,
-                startTime: currentTime,
-                snippet: caption.text
-              });
-            }
-            prevprevWord = prevWord;
-          }
-          prevWord = word;
         }
       });
-      prevWord = "";
       currentTime += (caption.width / 64) + (2/64);
     });
   });
