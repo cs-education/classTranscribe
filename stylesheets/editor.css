@@ -64,8 +64,9 @@
 
 h1 {
   font-weight: bold;
-  font-size: 36px;
-  font-family: cursive !important;
+  font-size: 45px;
+  font-family: 'Bilbo Swash Caps', cursive !important;
+  font-style: italic;
 }
 
 .timestamp-container {
