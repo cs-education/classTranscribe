@@ -31,6 +31,12 @@
   End Global Variables
 */
 
+window.onbeforeunload = function() {
+  if ($(".submit").text() !== "Transcription Submitted!") {
+    return 'Are you sure you want to leave without submitting your transcription?';
+  }
+};
+
 $(document).ready(function () {
   setVideoFromUrl();
   begin();
