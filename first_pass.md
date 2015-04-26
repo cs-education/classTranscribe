@@ -30,7 +30,7 @@ A sentence or two is a good general rule of thumb.
 ![image](http://i.imgur.com/kbZG09m.gif)
 
 ## 7. Follow the following consistency guidelines
-* When transcribing terms... ask yourself: If you were to search for this term, what would you search for? Then write that term down. (ie. write "printf" instead of "print f")
+* When transcribing terms... ask yourself: If I were to search for this term, what would I search for? Then write that term down. (ie. write "printf" instead of "print f")
 * Generally don't worry about capitalization. Use punctuation as you see fit.
 * Write out "non-technical numbers" as words. Write out "technical numbers" as numbers. ie. “Print hello six times” and “There are 8 bits in a byte”.
 * If you can't understand a certain speech segment, just fill it with some placeholder ie. [gibberish] and move on.
