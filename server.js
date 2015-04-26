@@ -73,6 +73,15 @@ router.get('/javascripts/data/captions.js', function (request, response) {
   }
 });
 
+var captions = require('./public/javascripts/data/captions.js');
+router.get('/captions/:index', function (request, response) {
+  response.writeHead(200, {
+    'Content-Type': 'application/json'
+  });
+  var index = parseInt(request.params.index);
+  response.end(JSON.stringify({captions: captions[index]}));
+});
+
 
 var server = http.createServer(router);
 server.listen(80);
