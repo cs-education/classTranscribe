@@ -3,15 +3,25 @@ var reverseIndex = Object.create(null);
 function createReverseIndex() {
   videoCaptions.forEach(function (captions, i) {
     var currentTime = 0;
-    captions.forEach(function (caption) {
+    captions.forEach(function (caption, j) {
+      var prevCaptionSnippet = (captions[j-1] && captions[j-1].text) || "";
+      var nextCaptionSnippet = (captions[j+1] && captions[j+1].text) || "";
+
+      var previousSnippetTime = prevCaptionSnippet.length
+                              ? currentTime - (captions[j-1].width / 64) - (2/64)
+                              : currentTime
+                              ;
+
       caption.text.split(/\s+/).forEach(function (word) {
         word = word.replace(/[.,!"?()]/g,"").toLowerCase();
         if (word) {
           reverseIndex[word] = (reverseIndex[word] || []);
           reverseIndex[word].push({
             videoIndex: i,
-            startTime: currentTime,
-            snippet: caption.text
+            startTime: previousSnippetTime,
+            snippet: caption.text,
+            prevSnippet: prevCaptionSnippet,
+            nextSnippet: nextCaptionSnippet
           });
         }
       });
@@ -135,11 +145,52 @@ function inputKeypress(e) {
     firstQueryResults.forEach(function (match) {
       if (!results[match.snippet]) {
         var snippet = match.snippet.toLowerCase();
+        var prevSnippet = match.prevSnippet.toLowerCase();
+        var nextSnippet = match.nextSnippet.toLowerCase();
+
         var query = $(".search-box").val().toLowerCase();
         query.trim().split(/\s+/).forEach(function (word) {
+          prevSnippet = updateHaystack(prevSnippet, word);
           snippet = updateHaystack(snippet, word);
+          nextSnippet = updateHaystack(nextSnippet, word);
         });
-        var template = '<div><a href="/viewer.html?videoIndex=' + match.videoIndex + '&startTime=' + match.startTime + '">' + snippet + '</a></div>';
+
+        var minutes = timeToMinutes(match.startTime);
+        var seconds = timeToSeconds(match.startTime);
+
+        var timeAgo = "";
+        if (minutes === 0 && seconds === 0) {
+          timeAgo += "Beginning of ";
+        } else {
+          if (minutes > 0 && minutes < 2) {
+            timeAgo += minutes + " Minute ";
+          } else if (minutes > 2) {
+            timeAgo += minutes + " Minutes ";
+          }
+
+          if (seconds > 0 && seconds < 2) {
+            timeAgo += seconds + " Second into ";
+          } else if (seconds > 2) {
+            timeAgo += seconds + " Seconds into ";
+          } else {
+            timeAgo += "into ";
+          }
+        }
+
+        var template = '<div><a href="/viewer.html?videoIndex='
+                     + match.videoIndex
+                     + '&startTime='
+                     + match.startTime
+                     + '"><blockquote><p>'
+                     + prevSnippet
+                     + " "
+                     + snippet
+                     + " "
+                     + nextSnippet
+                     + '<cite>'
+                     + timeAgo + VIDEOS[match.videoIndex][0]
+                     + '</cite'
+                     + '</p></blockquote></a></div>';
         $(".search-results-container").append(template);
         results[match.snippet] = true;
       }
@@ -159,4 +210,18 @@ function updateHaystack(input, needle) {
 */
 function escapeRegExp(str) {
   return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+}
+
+/*
+  Returns minutes of a time
+*/
+function timeToMinutes(time) {
+  return Math.floor(time / 60);
+}
+
+/*
+  Returns seconds of a time
+*/
+function timeToSeconds(time) {
+  return Math.floor(time % 60);
 }

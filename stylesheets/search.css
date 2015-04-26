@@ -8,8 +8,14 @@
   margin: 0 auto;
 }
 
-.header-container, .search-container {
+.header-container {
   margin: 10px 0;
+  text-align: center;
+}
+
+.search-container {
+  margin-top: 10px;
+  margin-bottom: -1px;
   text-align: center;
 }
 
@@ -28,10 +34,15 @@ h1 {
   border: 1px solid rgba(210, 210, 210, 0.8);
 }
 
+.search-box:focus {
+  border: 1px solid rgb(59, 153, 252);
+}
+
 .search-results-container div {
   border: 1px solid rgba(210, 210, 210, 0.8);
   border-top: none;
   cursor: pointer;
+  z-index: 2;
 }
 
 .search-results-container div:hover {
@@ -43,14 +54,14 @@ h1 {
 }
 
 .search-results-container div a {
-  color: #3b5998;
+  color: #222;
   text-decoration: none;
-  padding: 13px;
+  padding: 25px 30px;
   display: block;
 }
 
 .search-results-container div a:hover {
-  color: #3b5998;
+  color: #222;
 }
 
 b {
@@ -59,4 +70,36 @@ b {
 
 * {
   outline: none;
+}
+
+blockquote {
+  font-family: Georgia, serif;
+  font-size: 15px;
+  font-style: italic;
+  width: 500px;
+  margin: 0.25em 0;
+  padding: 0.25em 10px 0.25em 45px;
+  line-height: 1.45;
+  position: relative;
+  color: #383838;
+}
+blockquote:before {
+  display: block;
+  content: "\201C";
+  font-size: 70px;
+  position: absolute;
+  left: -5px;
+  top: -25px;
+  color: #7a7a7a;
+}
+
+blockquote cite {
+  color: #999999;
+  font-size: 14px;
+  display: block;
+  margin-top: 5px;
+}
+
+blockquote cite:before {
+  content: "\2014 \2009";
 }
