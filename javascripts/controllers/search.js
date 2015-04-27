@@ -1,3 +1,5 @@
+$(".search-box").focus();
+
 var reverseIndex = Object.create(null);
 
 function createReverseIndex() {
@@ -37,7 +39,6 @@ console.log (new Date() - a);
 
 $(document).ready(function () {
   bindEventListeners();
-  $(".search-box").focus();
 });
 
 /*
