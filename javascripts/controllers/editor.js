@@ -154,7 +154,10 @@ function rewindTwoSeconds() {
 function changePlaybackSpeed() {
   var playbackRate = parseFloat($(".playback-selector").val());
   $(".main-video").get(0).playbackRate = playbackRate;
-  loadWaveform($.noop);
+  if (globalSurfer) {
+    globalSurfer.setPlaybackRate(playbackRate);
+  }
+  $(".transcription-input").focus();
 }
 
 /*
@@ -270,6 +273,8 @@ function loadWaveform(cb) {
   var wavesurfer = Object.create(WaveSurfer);
   var videoSrc = VIDEOS[videoIndex][2] || VIDEOS[videoIndex][1];
   var video = $(".main-video").get(0);
+
+  surferPlaying = false;
 
   $("#waveform").empty();
 

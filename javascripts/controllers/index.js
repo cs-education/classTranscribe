@@ -76,6 +76,8 @@ function begin() {
   loadVideo(videoIndex);
   bindEventListeners();
   bindVideoEvents();
+
+  $(".transcription-input-main").focus();
 }
 
 /*
@@ -181,7 +183,10 @@ function bindVideoEvents() {
 function changePlaybackSpeed() {
   var playbackRate = parseFloat($(".playback-selector").val());
   $(".main-video").get(0).playbackRate = playbackRate;
-  loadWaveform($.noop);
+  if (globalSurfer) {
+    globalSurfer.setPlaybackRate(playbackRate);
+  }
+  $(".transcription-input").focus();
 }
 
 /*
