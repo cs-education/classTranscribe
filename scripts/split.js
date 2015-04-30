@@ -13,13 +13,13 @@ var inputFile = process.argv[2];
 var cp = require('child_process');
 
 var segments = ["0:00"
-,"7:36"
-,"15:21"
-,"23:12"
-,"31:03"
-,"39:06"
-,"45:36"
-,"51:18"
+,"8:00"
+,"15:51"
+,"23:18"
+,"31:18"
+,"38:40"
+,"45:17"
+,"52:00"
 ];
 
 var splitCommands = [];
