@@ -14,7 +14,7 @@ function createReverseIndex() {
                               : currentTime
                               ;
 
-      caption.text.split(/\s+/).forEach(function (word) {
+      caption.text.replace(/-/g, " ").split(/\s+/).forEach(function (word) {
         word = word.replace(/[.,!"?()]/g,"").toLowerCase();
         if (word) {
           reverseIndex[word] = (reverseIndex[word] || []);
@@ -115,7 +115,7 @@ function inputKeypress(e) {
   $(".search-results-container").empty();
   var results = Object.create(null);
   var query = $(".search-box").val().toLowerCase();
-  query = query.trim().replace(/[.,!"?()]/g,"").split(/\s+/);
+  query = query.trim().replace(/[.,!"?()]/g,"").replace(/-/g, " ").split(/\s+/);
 
   var subQueries = getCombinations(query);
 
