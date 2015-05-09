@@ -141,7 +141,7 @@ function inputKeypress(e) {
     });
 
     firstQueryResults.forEach(function (match) {
-      if (!results[match.snippet]) {
+      if (!results[(match.prevSnippet || match.snippet)]) {
         var snippet = match.snippet.toLowerCase();
         var prevSnippet = match.prevSnippet.toLowerCase();
         var nextSnippet = match.nextSnippet.toLowerCase();
@@ -190,7 +190,7 @@ function inputKeypress(e) {
                      + '</cite'
                      + '</p></blockquote></a></div>';
         $(".search-results-container").append(template);
-        results[match.snippet] = true;
+        results[(match.prevSnippet || match.snippet)] = true;
       }
     });
   });
