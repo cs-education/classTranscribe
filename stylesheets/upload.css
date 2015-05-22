@@ -1,0 +1,49 @@
+* {
+  font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif !important;
+}
+
+.main-container {
+  padding-top: 20px;
+  width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.header-container {
+  margin: 10px 0;
+  text-align: center;
+}
+
+h1 {
+  font-weight: bold;
+  font-size: 45px;
+  font-family: 'Bilbo Swash Caps', cursive !important;
+  font-style: italic;
+}
+
+h2 {
+  margin-bottom: 10px;
+}
+
+#UploadBox {
+  text-align: left;
+  display: inline-block;
+}
+
+#UploadButton {
+  padding: 10px;
+  width: 100%;
+  background-color: white;
+  margin-top: 5px;
+  border: 1px solid black;
+  font-size: 14px;
+}
+
+#UploadButton:hover {
+  cursor: pointer;
+}
+
+#ProgressContainer {
+  text-align: center;
+}
+
