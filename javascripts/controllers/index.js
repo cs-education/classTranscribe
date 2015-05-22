@@ -48,7 +48,13 @@ $(document).ready(function () {
 */
 function setVideoFromUrl() {
   var stackURL = document.URL.split("/");
-  if (stackURL.length === 6) {
+  if (stackURL.indexOf("upload") > -1) {
+    var template = '<option class="video-option" value="0">Upload Video</option>';
+    $(".video-selector").empty().append(template);
+    var videoURL = document.URL.split("=")[1];
+    var audioURL = videoURL.replace("webm", "mp3");
+    VIDEOS = [["Uploaded Video", videoURL.replace(".webm",""), audioURL]];
+  } else if (stackURL.length === 6) {
     var videoIndex = parseInt(stackURL[4]);
     $(".video-selector option").eq(videoIndex).attr('selected', true);
   }
@@ -86,20 +92,29 @@ function begin() {
 function initializeUI() {
   $(".waveform-loading").removeClass("hidden");
   $(".submit").click(function () {
-    var $that = $(this);
-    $that.text("Submitting Transcription...");
-    $.ajax({
-      type: "POST",
-      url: "/first",
-      data: {
-        stats: stats(),
-        transcriptions: save()
-      },
-      success: function (data) {
-        $that.text("Transcription Submitted!");
-        $that.addClass("unclickable");
-      }
-    });
+    var stackURL = document.URL.split("/");
+    if (stackURL.indexOf("upload") > -1) {
+      // Save transcriptions to local storage
+      localStorage.setItem("transcriptions", save());
+      // Redirect to second pass
+      window.onbeforeunload = null;
+      window.location = document.URL.replace("first", "second");
+    } else {
+      var $that = $(this);
+      $that.text("Submitting Transcription...");
+      $.ajax({
+        type: "POST",
+        url: "/first",
+        data: {
+          stats: stats(),
+          transcriptions: save()
+        },
+        success: function (data) {
+          $that.text("Transcription Submitted!");
+          $that.addClass("unclickable");
+        }
+      });
+    }
   });
 }
 
@@ -127,10 +142,6 @@ function bindEventListeners() {
   $(".video-selector").off().change(begin);
   $(".playback-selector").off().change(changePlaybackSpeed);
   $(".transcription-input-main").off().keypress(inputKeypress);
-  $(".consent-agree").click(function () {
-    $(".consent-container").remove();
-    $(".transcription-input-main").focus();
-  });
 }
 
 /*

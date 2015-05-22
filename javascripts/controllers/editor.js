@@ -30,7 +30,14 @@ $(document).ready(function () {
 */
 function setVideoFromUrl() {
   var stackURL = document.URL.split("/");
-  if (stackURL.length === 6) {
+  if (stackURL.indexOf("upload") > -1) {
+    var template = '<option class="video-option" value="0">Upload Video</option>';
+    $(".video-selector").empty().append(template);
+    var videoURL = document.URL.split("=")[1];
+    var audioURL = videoURL.replace("webm", "mp3");
+    VIDEOS = [["Uploaded Video", videoURL.replace(".webm",""), audioURL]];
+    videoCaptions =[JSON.parse(localStorage.getItem("transcriptions"))]
+  } else if (stackURL.length === 6) {
     var videoIndex = parseInt(stackURL[4]);
     $(".video-selector option").eq(videoIndex).attr('selected', true);
   }
@@ -67,20 +74,39 @@ function initializeUI() {
   $(".waveform-loading").removeClass("hidden");
   $(".transcription-input").focus();
   $(".submit").click(function () {
-    var $that = $(this);
-    $that.text("Submitting Transcription...");
-    $.ajax({
-      type: "POST",
-      url: "/second",
-      data: {
-        stats: stats(),
-        transcriptions: save()
-      },
-      success: function (data) {
-        $that.text("Transcription Submitted!");
-        $that.addClass("unclickable");
-      }
-    });
+    var stackURL = document.URL.split("/");
+    if (stackURL.indexOf("upload") > -1) {
+      window.onbeforeunload = null;
+
+      $.ajax({
+        type: "POST",
+        url: "/download",
+        data: {
+          stats: stats(),
+          transcriptions: save()
+        },
+        success: function (data) {
+          window.location = "/download/webvtt/" + data["fileNumber"];
+          $that.text("Transcription Downloaded!");
+          $that.addClass("unclickable");
+        }
+      });
+    } else {
+      var $that = $(this);
+      $that.text("Submitting Transcription...");
+      $.ajax({
+        type: "POST",
+        url: "/second",
+        data: {
+          stats: stats(),
+          transcriptions: save()
+        },
+        success: function (data) {
+          $that.text("Transcription Submitted!");
+          $that.addClass("unclickable");
+        }
+      });
+    }
   });
 }
 
