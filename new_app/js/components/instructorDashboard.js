@@ -14,31 +14,24 @@ var currentClass = url[2];
 WebAPIUtils.getAllStudents(currentClass);
 
 function getStateFromStores() {
+    var studentTemp = InstructorDashboardStore.getAllStudents();
+    console.log(studentTemp);
     return {
-        students: InstructorDashboardStore.getAllStudents(currentClass)
+        students: studentTemp
     };
 }
 
 var staticClassList = [{name: 'cs225', classID: 1, instructor: 'Chase Giegle'}, {name: 'cs241', classID: 2, instructor: 'Lawrence Angrave'}];
-var staticStudentList = [{name: 'Oliver', netID: 'omelvin2'}, {name: 'Bob', netID: 'jren'}];
+
 var InstructorDashboard = React.createClass({
-    getInitialState: function() {
-        return getStateFromStores();
-    },
-    componentDidMount: function() {
-        InstructorDashboardStore.addChangeListener(this._onChange);
-    },
     render: function() {
         return (
             <div className="instructorDashboard">
-                <ClassList data={staticClassList}></ClassList>
+                {/*<ClassList data={staticClassList}></ClassList>*/}
                 <h2>cs241</h2>
-                <StudentList data={staticStudentList}></StudentList>
+                <StudentList></StudentList>
             </div>
         );
-    },
-    _onChange: function() {
-        this.setState(getStateFromStores());
     }
 });
 
@@ -59,20 +52,36 @@ var ClassList = React.createClass({
     }
 });
 
+//I'm not sure if the student data should be passed down from InstructorDashboard or retrieved from the store here
 var StudentList = React.createClass({
+    getInitialState: function() {
+        return getStateFromStores();
+    },
+    componentDidMount: function() {
+        InstructorDashboardStore.addChangeListener(this._onChange);
+    },
     render: function() {
-        var studentNodes = staticStudentList.map(function (student) {
-            return (
-                <li key={student.netID}>
-                    {student.name} - {student.netID}
-                </li>
-            );
-        });
+        var studentNodes;
+        if(this.state.students[0] !== undefined) {
+            studentNodes = this.state.students.map(function (student) {
+                return (
+                    <li key={student.studentID}>
+                        {student.firstName} {student.lastName} - {student.studentID}
+                    </li>
+                );
+            });
+        } else {
+            studentNodes = "loading";
+        }
         return (
             <ul className="studentList">
                 {studentNodes}
             </ul>
         )
+    },
+    _onChange: function() {
+        console.log('_onChange');
+        this.setState(getStateFromStores());
     }
 });
 

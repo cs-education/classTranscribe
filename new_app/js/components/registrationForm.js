@@ -32,7 +32,6 @@ var RegistrationForm = React.createClass({
     },
     handleSubmit: function(e) {
         e.preventDefault();
-        alert('hi');
 
         if (this.state.firstName === '' || this.state.lastName === '' || this.state.password !== this.state.confirmedPassword) {
             //TODO: visual validation

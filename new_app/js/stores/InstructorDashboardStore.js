@@ -29,6 +29,7 @@ var InstructorDashboardStore = assign({}, EventEmitter.prototype, {
     },
 
     getAllStudents: function() {
+        console.log(_students);
         return _students;
     }
 
@@ -39,6 +40,7 @@ InstructorDashboardStore.dispatchToken = AppDispatcher.register(function(action)
     switch(action.type) {
 
         case AppConstants.GET_STUDENTS:
+            _students = action.students;
             InstructorDashboardStore.emitChange();
             break;
 
