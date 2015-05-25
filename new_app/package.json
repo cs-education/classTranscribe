@@ -2,10 +2,16 @@
   "name": "classTranscribe",
   "main": "js/app.js",
   "dependencies": {
+    "body-parser": "^1.12.4",
+    "cookie-parser": "^1.3.5",
+    "express": "^4.12.4",
+    "express-session": "^1.11.2",
     "flux": "^2.0.1",
     "jquery": "^2.1.4",
     "keymirror": "~0.1.0",
+    "mongoose": "^4.0.3",
     "object-assign": "^1.0.0",
+    "passport": "^0.2.2",
     "react": "^0.12.0"
   },
   "devDependencies": {

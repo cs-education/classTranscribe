@@ -7,12 +7,24 @@ var $ = require('jquery');
 
 module.exports = {
     getAllStudents: function(className) {
-        $.getJSON('/api/getStudents/' + className, function(data) {
+        $.getJSON('/api/' + className + '/getStudents/', function(data) {
             AppActions.receiveAllStudents(data);
         })
     },
 
-    registerStudent: function(payload) {
-        $
+    registerStudent: function(firstName, lastName, email, password, studentID, className) {
+        $.ajax({
+            method: "PUT",
+            url: "/api/registerStudent",
+            data: {
+                firstName   : firstName,
+                lastName    : lastName,
+                email       : email,
+                password    : password,
+                studentID   : studentID,
+                className   : className }
+        }).done(function(data) {
+
+        });
     }
 };

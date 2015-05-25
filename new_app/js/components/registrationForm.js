@@ -2,7 +2,14 @@
  * Created by omelvin on 5/21/15.
  * @jsx React.DOM
  */
+var React = require('react');
+var WebAPIUtils = require('../utils/WebAPIUtils');
 
+//assumes url is of form /:className/register/:studentID
+var url = window.location.pathname.split("/");
+//0 is blank
+var className = url[1];
+var studentID = url[3];
 
 var RegistrationForm = React.createClass({
     getInitialState: function() {
@@ -31,18 +38,7 @@ var RegistrationForm = React.createClass({
             //TODO: visual validation
             return;
         }
-        $.ajax({
-            method: "PUT",
-            url: "/api/registerStudent",
-            data: { firstName   : this.state.firstName,
-                lastName    : this.state.lastName,
-                email       : this.state.email,
-                password    : this.state.password,
-                studentID   : this.props.studentID,
-                className   : this.props.className }
-        }).done(function(data) {
-
-        });
+        WebAPIUtils.registerStudent(this.state.firstName, this.state.lastName, this.state.email, this.state.password, this.props.studentID, this.props.className);
     },
     render: function () {
         return (
@@ -78,13 +74,9 @@ var RegistrationForm = React.createClass({
     }
 });
 
-//assumes url is of form /:className/register/:studentID
-var url = window.location.pathname.split("/");
-//0 is blank
-var className = url[1];
-var studentID = url[3];
+module.exports = RegistrationForm;
 
-React.render(
-    <RegistrationForm studentID={studentID} className={className} />,
-    document.getElementById('main')
-)
+//React.render(
+//    <RegistrationForm studentID={studentID} className={className} />,
+//    document.getElementById('main')
+//);

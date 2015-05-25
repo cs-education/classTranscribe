@@ -2,7 +2,7 @@
  * Created by omelvin on 5/21/15.
  * @jsx React.DOM
  */
-
+var React = require('react');
 var AppActions = require('../actions/AppActions.js');
 
 var InstructorDashboardStore = require('../stores/InstructorDashboardStore');
@@ -61,7 +61,7 @@ var ClassList = React.createClass({
 
 var StudentList = React.createClass({
     render: function() {
-        var studentNodes = this.state.students.map(function (student) {
+        var studentNodes = staticStudentList.map(function (student) {
             return (
                 <li key={student.netID}>
                     {student.name} - {student.netID}
@@ -74,9 +74,11 @@ var StudentList = React.createClass({
             </ul>
         )
     }
-})
+});
 
-React.render(
-    <InstructorDashboard />,
-    document.getElementById('main')
-);
+module.exports = InstructorDashboard;
+
+//React.render(
+//    <InstructorDashboard />,
+//    document.getElementById('main')
+//);

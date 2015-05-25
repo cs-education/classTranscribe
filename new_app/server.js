@@ -34,7 +34,7 @@ var studentSchema = new mongoose.Schema({
 var Student = mongoConnection.model('Student', studentSchema);
 
 var app = express();
-console.log(__dirname)
+console.log(__dirname);
 //app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(__dirname));
 app.use(cookieParser());
@@ -83,7 +83,7 @@ function testSave(studentID) {
         if(err) { console.log(err )};
         console.log(retrievedStudent);
     })
-};
+}
 
 app.get('/api/:className/getStudents', function(req, res) {
    Student.find({className: req.params.className}, function(err, students) {
