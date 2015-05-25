@@ -3,11 +3,11 @@
  * @jsx React.DOM
  */
 
-var AppActions = require('../actions/AppActions.js');
+var AppActions = require('../../../js/actions/AppActions.js');
 
-var InstructorDashboardStore = require('../stores/InstructorDashboardStore');
+var InstructorDashboardStore = require('../../../js/stores/InstructorDashboardStore');
 
-var WebAPIUtils = require('../utils/WebAPIUtils');
+var WebAPIUtils = require('../.././WebAPIUtils');
 
 var url = window.location.pathname.split("/");
 var currentClass = url[2];

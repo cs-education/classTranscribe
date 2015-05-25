@@ -2,8 +2,8 @@
  * Created by omelvin on 5/22/15.
  */
 
-var AppDispatcher = require('../dispatcher/ChatAppDispatcher');
-var AppConstants = require('../constants/ChatConstants');
+var AppDispatcher = require('../dispatcher/AppDispatcher');
+var AppConstants = require('../constants/AppConstants');
 var EventEmitter = require('events').EventEmitter;
 var assign = require('object-assign');
 

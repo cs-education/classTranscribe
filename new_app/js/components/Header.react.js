@@ -8,8 +8,8 @@
  */
 
 var React = require('react');
-var TodoActions = require('../actions/TodoActions');
-var TodoTextInput = require('./TodoTextInput.react');
+//var TodoActions = require('../actions/TodoActions');
+//var TodoTextInput = require('./TodoTextInput.react');
 
 var Header = React.createClass({
 

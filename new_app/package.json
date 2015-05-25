@@ -1,9 +1,9 @@
 {
-  "name": "class transcribe",
-  "version": "0.0.3",
+  "name": "classTranscribe",
   "main": "js/app.js",
   "dependencies": {
     "flux": "^2.0.1",
+    "jquery": "^2.1.4",
     "keymirror": "~0.1.0",
     "object-assign": "^1.0.0",
     "react": "^0.12.0"
