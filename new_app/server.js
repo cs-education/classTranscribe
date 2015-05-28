@@ -50,7 +50,7 @@ app.get('/:className/register/:studentID', function(req, res) {
 
 //TODO: add privilege verification
 var instructorDashboardHTML = fs.readFileSync('instructorDashboard.html').toString();
-app.get('/instructorDashboard/:className', function(req, res) {
+app.get('/:className/instructorDashboard', function(req, res) {
     res.writeHead(200, {
         'Content-Type': 'text/html'
     });

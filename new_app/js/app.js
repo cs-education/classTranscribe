@@ -11,7 +11,7 @@ if(url[2] === 'register') {
         <RegistrationForm studentID={studentID} className={className} />,
         document.getElementById('app-container')
     )
-} else if(url[1] === 'instructorDashboard') {
+} else if(url[2] === 'instructorDashboard') {
     React.render(
         <InstructorDashboard />,
         document.getElementById('app-container')
