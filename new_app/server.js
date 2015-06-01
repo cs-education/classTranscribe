@@ -1,7 +1,3 @@
-/**
- * Created by omelvin on 5/21/15.
- */
-
 var fs = require('fs');
 var util = require('util');
 var http = require('http');
@@ -67,34 +63,28 @@ app.put('/api/registerStudent', function(req, res) {
         studentID   : req.body.studentID,
         className   : req.body.className
     });
-    console.log(newStudent.studentID);
+
     newStudent.save(function(err, result) {
         if (err) {
             console.error(err);
+        } else {
+            res.writeHead(204);
+            res.end();
         }
-        testSave(newStudent.studentID);
-        res.writeHead(204);
-        res.end();
     });
 });
 
-function testSave(studentID) {
-    Student.find({studentID: studentID}, function(err, retrievedStudent) {
-        if(err) { console.log(err )};
-        console.log(retrievedStudent);
-    })
-}
-
 app.get('/api/:className/getStudents', function(req, res) {
    Student.find({className: req.params.className}, function(err, students) {
-       if(err) {
+       if (err) {
            res.writeHead(500);
            res.end(err);
+       } else {
+           res.writeHead(200, {
+               'Content-Type': 'application/json'
+           });
+           res.end(JSON.stringify(students));
        }
-       res.writeHead(200, {
-           'Content-Type': 'application/json'
-       });
-       res.end(JSON.stringify(students));
    })
 });
 

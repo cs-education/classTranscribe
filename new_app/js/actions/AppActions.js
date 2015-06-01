@@ -1,7 +1,3 @@
-/**
- * Created by omelvin on 5/22/15.
- */
-
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var AppConstants = require('../constants/AppConstants');
 

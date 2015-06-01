@@ -13,23 +13,35 @@ var studentID = url[3];
 
 var RegistrationForm = React.createClass({
     getInitialState: function() {
-        return {email: this.props.studentID + "@illinois.edu", firstName: '', lastName: '', password: '', confirmedPassword: ''};
+        return {
+            email: this.props.studentID + "@illinois.edu",
+            firstName: '',
+            lastName: '',
+            password: '',
+            confirmedPassword: ''
+        };
     },
+
     handleEmailChange: function(event) {
         this.setState({email: event.target.value});
     },
+
     handleFirstNameChange: function(event) {
         this.setState({firstName: event.target.value});
     },
+
     handleLastNameChange: function(event) {
         this.setState({lastName: event.target.value});
     },
+
     handlePasswordChange: function(event) {
         this.setState({password: event.target.value});
     },
+
     handleConfirmedPasswordChange: function(event) {
         this.setState({confirmedPassword: event.target.value});
     },
+
     handleSubmit: function(e) {
         e.preventDefault();
 
@@ -39,6 +51,7 @@ var RegistrationForm = React.createClass({
         }
         WebAPIUtils.registerStudent(this.state.firstName, this.state.lastName, this.state.email, this.state.password, this.props.studentID, this.props.className);
     },
+
     render: function () {
         return (
             <form className="u-cf">
@@ -74,8 +87,3 @@ var RegistrationForm = React.createClass({
 });
 
 module.exports = RegistrationForm;
-
-//React.render(
-//    <RegistrationForm studentID={studentID} className={className} />,
-//    document.getElementById('main')
-//);

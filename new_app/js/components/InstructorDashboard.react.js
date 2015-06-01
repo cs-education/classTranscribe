@@ -1,7 +1,3 @@
-/**
- * Created by omelvin on 5/21/15.
- * @jsx React.DOM
- */
 var React = require('react');
 var AppActions = require('../actions/AppActions.js');
 
@@ -11,11 +7,11 @@ var WebAPIUtils = require('../utils/WebAPIUtils');
 
 var url = window.location.pathname.split("/");
 var currentClass = url[1];
+//think this should be initiated elsewhere
 WebAPIUtils.getAllStudents(currentClass);
 
 function getStateFromStores() {
     var studentTemp = InstructorDashboardStore.getAllStudents();
-    console.log(studentTemp);
     return {
         students: studentTemp
     };
@@ -57,12 +53,14 @@ var StudentList = React.createClass({
     getInitialState: function() {
         return getStateFromStores();
     },
+
     componentDidMount: function() {
         InstructorDashboardStore.addChangeListener(this._onChange);
     },
+
     render: function() {
         var studentNodes;
-        if(this.state.students[0] !== undefined) {
+        if (this.state.students[0] !== undefined) {
             studentNodes = this.state.students.map(function (student) {
                 return (
                     <li key={student.studentID}>
@@ -79,15 +77,10 @@ var StudentList = React.createClass({
             </ul>
         )
     },
+
     _onChange: function() {
-        console.log('_onChange');
         this.setState(getStateFromStores());
     }
 });
 
 module.exports = InstructorDashboard;
-
-//React.render(
-//    <InstructorDashboard />,
-//    document.getElementById('main')
-//);

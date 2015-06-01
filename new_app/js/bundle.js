@@ -27,8 +27,8 @@ module.exports = AppActions;
 },{"../constants/AppConstants":5,"../dispatcher/AppDispatcher":6,"../utils/WebAPIUtils":8}],2:[function(require,module,exports){
 var React = require('react');
 
-var RegistrationForm = require('./components/registrationForm');
-var InstructorDashboard = require('./components/instructorDashboard');
+var RegistrationForm = require('./components/RegistrationForm.react');
+var InstructorDashboard = require('./components/InstructorDashboard.react');
 
 var url = window.location.pathname.split("/");
 if(url[2] === 'register') {

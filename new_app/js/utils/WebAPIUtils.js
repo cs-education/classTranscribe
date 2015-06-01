@@ -1,7 +1,3 @@
-/**
- * Created by omelvin on 5/22/15.
- */
-
 var AppActions = require('../actions/AppActions');
 var $ = require('jquery');
 

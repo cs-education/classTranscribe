@@ -1,7 +1,7 @@
 var React = require('react');
 
-var RegistrationForm = require('./components/registrationForm');
-var InstructorDashboard = require('./components/instructorDashboard');
+var RegistrationForm = require('./components/RegistrationForm.react');
+var InstructorDashboard = require('./components/InstructorDashboard.react');
 
 var url = window.location.pathname.split("/");
 if(url[2] === 'register') {
@@ -17,19 +17,3 @@ if(url[2] === 'register') {
         document.getElementById('app-container')
     );
 }
-
-
-//var ClassTranscribeHome = React.createClass({
-//    render: function() {
-//        return (
-//            <div className="classTranscribeHome">
-//
-//            </div>
-//        );
-//    }
-//});
-
-//React.render(
-//    <ClassTranscribeHome />,
-//    document.getElementById('app-container')
-//);
