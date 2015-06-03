@@ -39,8 +39,8 @@ var Student = mongoConnection.model('Student', studentSchema);
 
 var app = express();
 app.set('views', __dirname + '/js/views');
-app.set('view engine', 'jsx');
-app.engine('jsx', reactViews.createEngine());
+app.set('view engine', 'js');
+app.engine('js', reactViews.createEngine());
 //app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(__dirname));
 app.use(cookieParser());

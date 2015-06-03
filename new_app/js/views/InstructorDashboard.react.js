@@ -8,7 +8,7 @@ var WebAPIUtils = require('../utils/WebAPIUtils');
 //var url = window.location.pathname.split("/");
 //var currentClass = url[1];
 ////think this should be initiated elsewhere
-//WebAPIUtils.getAllStudents(currentClass);
+WebAPIUtils.getAllStudents('cs241');
 
 function getStateFromStores() {
     var studentTemp = InstructorDashboardStore.getAllStudents();
@@ -23,8 +23,6 @@ var InstructorDashboard = React.createClass({
     render: function() {
         return (
             <div className="instructorDashboard">
-                {/*<ClassList data={staticClassList}></ClassList>*/}
-                <h2>{currentClass}</h2>
                 <StudentList></StudentList>
             </div>
         );
