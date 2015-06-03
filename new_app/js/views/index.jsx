@@ -3,8 +3,8 @@ var Router = require('react-router');
 var Route = Router.Route;
 var RouteHandler = Router.RouteHandler;
 
-var RegistrationForm = require('./../components/RegistrationForm.react');
-var InstructorDashboard = require('./../components/InstructorDashboard.react.js');
+var RegistrationForm = require('./RegistrationForm.react.jsx');
+var InstructorDashboard = require('./InstructorDashboard.react.jsx');
 
 var App = React.createClass({
     render: function () {
@@ -24,9 +24,11 @@ var routes = (
     </Route>
 );
 
-Router.run(routes, function (Root) {
-    React.render(
-        <Root/>,
-        document.getElementById('container')
-    );
-});
+module.exports = App;
+
+//Router.run(routes, function (Root) {
+//    React.render(
+//        <Root/>,
+//        document.getElementById('container')
+//    );
+//});

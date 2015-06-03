@@ -46,14 +46,6 @@ app.use(express.static(__dirname));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get('*', function (req, res) {
-    //Router.run(routes, req.path, function (Root, state) {
-    //    var html = React.renderToString(React.createElement(Root));
-    //    res.send(html);
-    //});
-    res.render('index');
-});
-
 //TODO: add passport for proper password encryption and session handling
 app.put('/api/registerStudent', function(req, res) {
     var newStudent = new Student({
@@ -87,6 +79,10 @@ app.get('/api/:className/getStudents', function(req, res) {
            res.end(JSON.stringify(students));
        }
    })
+});
+
+app.get('*', function (req, res) {
+    res.render('index');
 });
 
 var server = app.listen(8000);
