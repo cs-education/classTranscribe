@@ -1,20 +1,10 @@
-/**
- * Created by omelvin on 5/21/15.
- * @jsx React.DOM
- */
 var React = require('react');
 var WebAPIUtils = require('../utils/WebAPIUtils');
-
-//assumes url is of form /:className/register/:studentID
-var url = window.location.pathname.split("/");
-//0 is blank
-var className = url[1];
-var studentID = url[3];
 
 var RegistrationForm = React.createClass({
     getInitialState: function() {
         return {
-            email: this.props.studentID + "@illinois.edu",
+            email: this.props.params.studentID + "@illinois.edu",
             firstName: '',
             lastName: '',
             password: '',
@@ -49,7 +39,7 @@ var RegistrationForm = React.createClass({
             //TODO: visual validation
             return;
         }
-        WebAPIUtils.registerStudent(this.state.firstName, this.state.lastName, this.state.email, this.state.password, this.props.studentID, this.props.className);
+        WebAPIUtils.registerStudent(this.state.firstName, this.state.lastName, this.state.email, this.state.password, this.props.params.studentID, this.props.params.className);
     },
 
     render: function () {

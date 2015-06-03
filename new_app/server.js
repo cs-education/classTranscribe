@@ -8,10 +8,18 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var mongoose = require('mongoose');
+var React = require('react');
+var reactViews = require('express-react-views');
+var Router = require('react-router');
+var Route = Router.Route;
+var RouteHandler = Router.RouteHandler;
+
+var dbConfig = require('./dbConfig');
+//var routes = require('./js/routes');
 
 var devMode = true;
 
-var dbConfig = require('./dbConfig');
+
 var mongoConnection = mongoose.createConnection(dbConfig.mongoURI, dbConfig.mongoConfig);
 if(devMode) {
     mongoose.set('debug, true');
@@ -30,27 +38,20 @@ var studentSchema = new mongoose.Schema({
 var Student = mongoConnection.model('Student', studentSchema);
 
 var app = express();
-console.log(__dirname);
+app.set('views', __dirname + '/js/views');
+app.set('view engine', 'jsx');
+app.engine('jsx', reactViews.createEngine());
 //app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(__dirname));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-var registerHTML = fs.readFileSync('register.html').toString();
-app.get('/:className/register/:studentID', function(req, res) {
-    res.writeHead(200, {
-        'Content-Type': 'text/html'
-    });
-    res.end(registerHTML);
-});
-
-//TODO: add privilege verification
-var instructorDashboardHTML = fs.readFileSync('instructorDashboard.html').toString();
-app.get('/:className/instructorDashboard', function(req, res) {
-    res.writeHead(200, {
-        'Content-Type': 'text/html'
-    });
-    res.end(instructorDashboardHTML);
+app.get('*', function (req, res) {
+    //Router.run(routes, req.path, function (Root, state) {
+    //    var html = React.renderToString(React.createElement(Root));
+    //    res.send(html);
+    //});
+    res.render('index');
 });
 
 //TODO: add passport for proper password encryption and session handling
