@@ -7,8 +7,6 @@ var Link = Router.Link;
 var RegistrationForm = require('./RegistrationForm.react.js');
 var InstructorDashboard = require('./InstructorDashboard.react.js');
 
-//var routes = require('../routes');
-
 var App = React.createClass({
     render: function () {
         return (
@@ -36,11 +34,10 @@ if(typeof document !== 'undefined') {
     Router.run(routes, function (Root) {
         React.render(
             <Root />,
-            document.getElementById('container')
+            document.getElementsByClassName('container')[0]
         );
     });
 }
-
 
 //Router.run(routes, req.path, function (Root, state) {
 //    var html = React.renderToString(<Root data={data} />);
