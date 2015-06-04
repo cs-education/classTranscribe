@@ -7,7 +7,8 @@ var WebAPIUtils = require('../utils/WebAPIUtils');
 
 //var url = window.location.pathname.split("/");
 //var currentClass = url[1];
-////think this should be initiated elsewhere
+
+//think this should be initiated elsewhere
 WebAPIUtils.getAllStudents('cs241');
 
 function getStateFromStores() {

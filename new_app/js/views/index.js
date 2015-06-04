@@ -16,7 +16,6 @@ var App = React.createClass({
                 <h1>Class Transcribe</h1>
                 <ul>
                     <li><Link to="dashboard">Instructor Dashboard</Link></li>
-                    <li><Link to="registration">Register</Link></li>
                 </ul>
                 <RouteHandler/>
             </div>
@@ -27,13 +26,13 @@ var App = React.createClass({
 var routes = (
     <Route handler={App}>
         <Route name="dashboard" path="instructorDashboard" handler={InstructorDashboard}/>
-        <Route name="registration" path="registration" handler={RegistrationForm}/>
+        <Route name="registrationWithID" path=":className/registration/:studentID" handler={RegistrationForm}/>
     </Route>
 );
 
 module.exports = App;
 
-if(document != undefined) {
+if(typeof document !== 'undefined') {
     Router.run(routes, function (Root) {
         React.render(
             <Root />,

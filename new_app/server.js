@@ -82,6 +82,7 @@ app.get('/api/:className/getStudents', function(req, res) {
 });
 
 app.get('*', function (req, res) {
+    console.log(req.path);
     res.render('index');
 });
 

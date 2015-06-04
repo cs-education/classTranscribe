@@ -4,7 +4,7 @@ var WebAPIUtils = require('../utils/WebAPIUtils');
 var RegistrationForm = React.createClass({
     getInitialState: function() {
         return {
-            email: this.props.params.studentID + "@illinois.edu",
+            email:  this.props.params.studentID + "@illinois.edu",
             firstName: '',
             lastName: '',
             password: '',
@@ -45,7 +45,7 @@ var RegistrationForm = React.createClass({
     render: function () {
         return (
             <form className="u-cf">
-                <h2>Register for {this.props.className}</h2>
+                <h2>Register for {this.props.params.className}</h2>
                 <div className="row">
                     <div className="four columns">
                         <label htmlFor="emailInput">Your email</label>
