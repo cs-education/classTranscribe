@@ -15,8 +15,9 @@
     <script src="/javascripts/libraries/wavesurfer/src/drawer.js"></script>
     <script src="/javascripts/libraries/wavesurfer/src/drawer.canvas.js"></script>
 
-    <script src="/javascripts/data/videos.js"></script>
-    <script src="/javascripts/data/captions.js"></script>
+    {{#className}}
+      <script src="/javascripts/data/videos/{{className}}.js"></script>
+    {{/className}}
     <script src="/javascripts/controllers/editor.js"></script>
 
     <script src="/javascripts/libraries/disableMacBack.js"></script>

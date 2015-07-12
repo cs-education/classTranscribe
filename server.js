@@ -1,5 +1,6 @@
 var http = require('http');
 var Router = require('node-simple-router');
+var Mustache = require('mustache');
 var fs = require('fs');
 var router = Router();
 var zlib = require('zlib');
@@ -7,12 +8,17 @@ var path = require('path');
 var mime = require('mime');
 var webvtt = require('./scripts/webvtt');
 
-var indexHTML = fs.readFileSync('search.html').toString();
+var searchMustache = fs.readFileSync('search.mustache').toString();
 router.get('/', function (request, response) {
   response.writeHead(200, {
     'Content-Type': 'text/html'
   });
-  response.end(indexHTML);
+
+  var view = {
+    className: "cs241"
+  };
+  var html = Mustache.render(searchMustache, view);
+  response.end(html);
 });
 
 var uploadHTML = fs.readFileSync('upload.html').toString();
@@ -46,14 +52,19 @@ router.get('/download/webvtt/:fileNumber', function (request, reponse) {
   filestream.pipe(reponse);
 });
 
-var firstPassHTML = fs.readFileSync('index.html').toString();
+var firstPassMustache = fs.readFileSync('index.mustache').toString();
 router.get('/first/:videoIndex/:id', function (request, response) {
   response.writeHead(200, {
     'Content-Type': 'text/html',
     "Access-Control-Allow-Origin" : "*",
     "Access-Control-Allow-Methods" : "POST, GET, PUT, DELETE, OPTIONS"
   });
-  response.end(firstPassHTML);
+
+  var view = {
+    className: "cs225"
+  };
+  var html = Mustache.render(firstPassMustache, view);
+  response.end(html);
 });
 
 router.get('/Video/:fileName', function (request, response) {
@@ -109,14 +120,34 @@ router.post('/second', function (request, response) {
   response.end(JSON.stringify({success: true}));
 });
 
-var secondPassHTML = fs.readFileSync('editor.html').toString();
+var secondPassMustache = fs.readFileSync('editor.mustache').toString();
 router.get('/second/:videoIndex/:id', function (request, response) {
   response.writeHead(200, {
     'Content-Type': 'text/html',
     "Access-Control-Allow-Origin" : "*",
     "Access-Control-Allow-Methods" : "POST, GET, PUT, DELETE, OPTIONS"
   });
-  response.end(secondPassHTML);
+
+  var view = {
+    className: "cs225"
+  };
+  var html = Mustache.render(secondPassMustache, view);
+  response.end(html);
+});
+
+var viewerMustache = fs.readFileSync('viewer.mustache').toString();
+router.get('/viewer', function (request, response) {
+  response.writeHead(200, {
+    'Content-Type': 'text/html',
+    "Access-Control-Allow-Origin" : "*",
+    "Access-Control-Allow-Methods" : "POST, GET, PUT, DELETE, OPTIONS"
+  });
+
+  var view = {
+    className: "cs241"
+  };
+  var html = Mustache.render(viewerMustache, view);
+  response.end(html);
 });
 
 router.get('/javascripts/data/captions.js', function (request, response) {

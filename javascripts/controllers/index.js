@@ -93,28 +93,10 @@ function initializeUI() {
   $(".waveform-loading").removeClass("hidden");
   $(".submit").click(function () {
     var stackURL = document.URL.split("/");
-    if (stackURL.indexOf("upload") > -1) {
-      // Save transcriptions to local storage
-      localStorage.setItem("transcriptions", save());
-      // Redirect to second pass
-      window.onbeforeunload = null;
-      window.location = document.URL.replace("first", "second");
-    } else {
-      var $that = $(this);
-      $that.text("Submitting Transcription...");
-      $.ajax({
-        type: "POST",
-        url: "/first",
-        data: {
-          stats: stats(),
-          transcriptions: save()
-        },
-        success: function (data) {
-          $that.text("Transcription Submitted!");
-          $that.addClass("unclickable");
-        }
-      });
-    }
+    localStorage.setItem("transcriptions", save());
+    // Redirect to second pass
+    window.onbeforeunload = null;
+    window.location = document.URL.replace("first", "second");
   });
 }
 

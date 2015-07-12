@@ -16,7 +16,9 @@
     <script src="/javascripts/libraries/wavesurfer/src/drawer.js"></script>
     <script src="/javascripts/libraries/wavesurfer/src/drawer.canvas.js"></script>
 
-    <script src="/javascripts/data/videos.js"></script>
+    {{#className}}
+      <script src="/javascripts/data/videos/{{className}}.js"></script>
+    {{/className}}
     <script src="/javascripts/controllers/index.js"></script>
 
     <script>
