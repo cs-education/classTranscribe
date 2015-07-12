@@ -32,7 +32,7 @@ router.get('/upload', function (request, response) {
 router.post('/download', function(request, response) {
   var transcriptions = JSON.parse(request.post.transcriptions);
   var fileNumber = Math.round(Math.random() * 10000)
-  fs.writeFileSync("Public/Downloads/" + fileNumber + ".webvtt", webvtt(transcriptions));
+  fs.writeFileSync("public/Downloads/" + fileNumber + ".webvtt", webvtt(transcriptions));
   response.writeHead(200, {
     'Content-Type': 'application/json'
   });
@@ -40,7 +40,7 @@ router.post('/download', function(request, response) {
 });
 
 router.get('/download/webvtt/:fileNumber', function (request, reponse) {
-  var file = "Public/Downloads/" + request.params.fileNumber + ".webvtt";
+  var file = "public/Downloads/" + request.params.fileNumber + ".webvtt";
 
   var filename = path.basename(file);
   var mimetype = mime.lookup(file);
