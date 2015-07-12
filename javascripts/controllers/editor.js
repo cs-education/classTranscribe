@@ -40,6 +40,7 @@ function setVideoFromUrl() {
   } else if (stackURL.length === 6) {
     var videoIndex = parseInt(stackURL[4]);
     $(".video-selector option").eq(videoIndex).attr('selected', true);
+    videoCaptions =[JSON.parse(localStorage.getItem("transcriptions"))]
   }
 }
 
@@ -62,7 +63,7 @@ function begin() {
 
   initializeUI();
   loadVideo(videoIndex);
-  loadCaptions(videoIndex);
+  loadCaptions();
   bindEventListeners();
   bindVideoEvents();
 }
@@ -201,8 +202,8 @@ function toggleVideo() {
 /*
   Load the captions for a certain video
 */
-function loadCaptions(videoIndex) {
-  var captions = videoCaptions[videoIndex];
+function loadCaptions() {
+  var captions = videoCaptions[0];
 
   $(".caption-track-final-caption").remove();
   captions.forEach(function (caption) {

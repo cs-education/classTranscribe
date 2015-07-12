@@ -175,7 +175,7 @@ function inputKeypress(e) {
           }
         }
 
-        var template = '<div><a href="/viewer.html?videoIndex='
+        var template = '<div><a href="/viewer?videoIndex='
                      + match.videoIndex
                      + '&startTime='
                      + match.startTime
