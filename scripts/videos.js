@@ -6,15 +6,15 @@ for (var i = 0; i < 11; i++) {
     videoIndex +
     ' Part ' +
     i +
-    '", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_0' +
+    '", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_' +
     videoIndex +
-    '/Full_Lecture_Video_0' +
+    '/Full_Lecture_Video_' +
     videoIndex +
     '_part' +
     i +
-    '.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_0' +
+    '.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_' +
     videoIndex +
-    '/Full_Lecture_Video_0' +
+    '/Full_Lecture_Video_' +
     videoIndex +
     '_part' +
     i +
