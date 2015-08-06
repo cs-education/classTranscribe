@@ -1,6 +1,6 @@
 var videoIndex = process.argv[2];
 
-for (var i = 0; i < 12; i++) {
+for (var i = 0; i < 11; i++) {
   console.log(
     '["Full Lecture Video ' +
     videoIndex +

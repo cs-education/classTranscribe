@@ -366,6 +366,45 @@ var VIDEOS = [
   ["Full Lecture Video 15 Part 9", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_15/Full_Lecture_Video_15_part9.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_15/Full_Lecture_Video_15_part9.mp3"],
   ["Full Lecture Video 15 Part 10", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_15/Full_Lecture_Video_15_part10.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_15/Full_Lecture_Video_15_part10.mp3"],
   ["Full Lecture Video 15 Part 11", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_15/Full_Lecture_Video_15_part11.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_15/Full_Lecture_Video_15_part11.mp3"],
+
+  // Lecture 29
+  ["Full Lecture Video 29 Part 0", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_29/Full_Lecture_Video_29_part0.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_29/Full_Lecture_Video_29_part0.mp3"],
+  ["Full Lecture Video 29 Part 1", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_29/Full_Lecture_Video_29_part1.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_29/Full_Lecture_Video_29_part1.mp3"],
+  ["Full Lecture Video 29 Part 2", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_29/Full_Lecture_Video_29_part2.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_29/Full_Lecture_Video_29_part2.mp3"],
+  ["Full Lecture Video 29 Part 3", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_29/Full_Lecture_Video_29_part3.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_29/Full_Lecture_Video_29_part3.mp3"],
+  ["Full Lecture Video 29 Part 4", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_29/Full_Lecture_Video_29_part4.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_29/Full_Lecture_Video_29_part4.mp3"],
+  ["Full Lecture Video 29 Part 5", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_29/Full_Lecture_Video_29_part5.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_29/Full_Lecture_Video_29_part5.mp3"],
+  ["Full Lecture Video 29 Part 6", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_29/Full_Lecture_Video_29_part6.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_29/Full_Lecture_Video_29_part6.mp3"],
+  ["Full Lecture Video 29 Part 7", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_29/Full_Lecture_Video_29_part7.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_29/Full_Lecture_Video_29_part7.mp3"],
+  ["Full Lecture Video 29 Part 8", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_29/Full_Lecture_Video_29_part8.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_29/Full_Lecture_Video_29_part8.mp3"],
+  ["Full Lecture Video 29 Part 9", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_29/Full_Lecture_Video_29_part9.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_29/Full_Lecture_Video_29_part9.mp3"],
+  ["Full Lecture Video 29 Part 10", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_29/Full_Lecture_Video_29_part10.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_29/Full_Lecture_Video_29_part10.mp3"],
+
+  // Lecture 30
+  ["Full Lecture Video 30 Part 0", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_30/Full_Lecture_Video_30_part0.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_30/Full_Lecture_Video_30_part0.mp3"],
+  ["Full Lecture Video 30 Part 1", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_30/Full_Lecture_Video_30_part1.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_30/Full_Lecture_Video_30_part1.mp3"],
+  ["Full Lecture Video 30 Part 2", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_30/Full_Lecture_Video_30_part2.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_30/Full_Lecture_Video_30_part2.mp3"],
+  ["Full Lecture Video 30 Part 3", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_30/Full_Lecture_Video_30_part3.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_30/Full_Lecture_Video_30_part3.mp3"],
+  ["Full Lecture Video 30 Part 4", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_30/Full_Lecture_Video_30_part4.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_30/Full_Lecture_Video_30_part4.mp3"],
+  ["Full Lecture Video 30 Part 5", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_30/Full_Lecture_Video_30_part5.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_30/Full_Lecture_Video_30_part5.mp3"],
+  ["Full Lecture Video 30 Part 6", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_30/Full_Lecture_Video_30_part6.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_30/Full_Lecture_Video_30_part6.mp3"],
+  ["Full Lecture Video 30 Part 7", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_30/Full_Lecture_Video_30_part7.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_30/Full_Lecture_Video_30_part7.mp3"],
+  ["Full Lecture Video 30 Part 8", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_30/Full_Lecture_Video_30_part8.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_30/Full_Lecture_Video_30_part8.mp3"],
+  ["Full Lecture Video 30 Part 9", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_30/Full_Lecture_Video_30_part9.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_30/Full_Lecture_Video_30_part9.mp3"],
+  ["Full Lecture Video 30 Part 10", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_30/Full_Lecture_Video_30_part10.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_30/Full_Lecture_Video_30_part10.mp3"],
+
+  // Lecture 31
+  ["Full Lecture Video 31 Part 0", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_31/Full_Lecture_Video_31_part0.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_31/Full_Lecture_Video_31_part0.mp3"],
+  ["Full Lecture Video 31 Part 1", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_31/Full_Lecture_Video_31_part1.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_31/Full_Lecture_Video_31_part1.mp3"],
+  ["Full Lecture Video 31 Part 2", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_31/Full_Lecture_Video_31_part2.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_31/Full_Lecture_Video_31_part2.mp3"],
+  ["Full Lecture Video 31 Part 3", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_31/Full_Lecture_Video_31_part3.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_31/Full_Lecture_Video_31_part3.mp3"],
+  ["Full Lecture Video 31 Part 4", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_31/Full_Lecture_Video_31_part4.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_31/Full_Lecture_Video_31_part4.mp3"],
+  ["Full Lecture Video 31 Part 5", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_31/Full_Lecture_Video_31_part5.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_31/Full_Lecture_Video_31_part5.mp3"],
+  ["Full Lecture Video 31 Part 6", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_31/Full_Lecture_Video_31_part6.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_31/Full_Lecture_Video_31_part6.mp3"],
+  ["Full Lecture Video 31 Part 7", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_31/Full_Lecture_Video_31_part7.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_31/Full_Lecture_Video_31_part7.mp3"],
+  ["Full Lecture Video 31 Part 8", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_31/Full_Lecture_Video_31_part8.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_31/Full_Lecture_Video_31_part8.mp3"],
+  ["Full Lecture Video 31 Part 9", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_31/Full_Lecture_Video_31_part9.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_31/Full_Lecture_Video_31_part9.mp3"],
+  ["Full Lecture Video 31 Part 10", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_31/Full_Lecture_Video_31_part10.webm", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_31/Full_Lecture_Video_31_part10.mp3"],
 ];
 
 $(document).ready(function () {
