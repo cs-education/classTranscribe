@@ -14,17 +14,17 @@ var SelectedFile;
 
 function FileChosen(evnt) {
   SelectedFile = evnt.target.files[0];
-  document.getElementById('FileBox').value = SelectedFile.name;
+//  document.getElementById('FileBox').value = SelectedFile.name;
 }
 
-var socket = io.connect('http://localhost:8080');
+var socket = io.connect('http://classtranscribe.com:8080');
 var FReader;
 var Name;
 
 function StartUpload() {
   var fileName = document.getElementById('FileBox').value
   if (fileName != "") {
-    if (fileName.toLowerCase().indexOf(".mp4") > 0) {
+    if (true || fileName.toLowerCase().indexOf(".mp4") > 0) {
       FReader = new FileReader();
       Name = document.getElementById('FileBox').value;
       var Content = '<div id="ProgressContainer"><div id="ProgressBar"></div><span id="percent">0%</span>';
