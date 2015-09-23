@@ -15,9 +15,35 @@
     <script src="/javascripts/libraries/wavesurfer/src/drawer.js"></script>
     <script src="/javascripts/libraries/wavesurfer/src/drawer.canvas.js"></script>
 
-    {{#className}}
-      <script src="/javascripts/data/videos/{{className}}.js"></script>
-    {{/className}}
+    <script>
+      var taskName = "{{taskName}}";
+      var videoTitle = taskName.split("_").join(" ");
+      var videoIndex = taskName.split("_")[3];
+      var videoPart = taskName.split("_")[4];
+      var s3Url = "https://s3-us-west-2.amazonaws.com/classtranscribe/{{className}}/Lecture_" + videoIndex + "/" + taskName;
+
+      var VIDEOS = [
+        [videoTitle, s3Url + ".webm", s3Url + ".mp3"],
+      ];
+
+      $(document).ready(function () {
+        VIDEOS.forEach(function (video, i) {
+          var title = video[0];
+          var src = video[1];
+          var template = '<option class="video-option" value="' + i + '">' + title + '</option>';
+          $(".video-selector").append(template);
+        });
+      });
+
+      /*
+        Loads the selected video
+      */
+      function loadVideo(videoIndex) {
+        var videoSrc = VIDEOS[videoIndex][1];
+        $(".main-video-source").attr("src", videoSrc);
+        $(".main-video").get(0).load();
+      }
+    </script>
     <script src="/javascripts/controllers/editor.js"></script>
 
     <script src="/javascripts/libraries/disableMacBack.js"></script>

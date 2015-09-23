@@ -37,8 +37,8 @@ function setVideoFromUrl() {
     var audioURL = videoURL.replace("webm", "mp3");
     VIDEOS = [["Uploaded Video", videoURL.replace(".webm",""), audioURL]];
     videoCaptions =[JSON.parse(localStorage.getItem("transcriptions"))]
-  } else if (stackURL.length === 6) {
-    var videoIndex = parseInt(stackURL[4]);
+  } else {
+    var videoIndex = 0;
     $(".video-selector option").eq(videoIndex).attr('selected', true);
     videoCaptions =[JSON.parse(localStorage.getItem("transcriptions"))]
   }
@@ -49,10 +49,8 @@ function setVideoFromUrl() {
 */
 function initializeMetricsBaseInformation() {
   var stackURL = document.URL.split("/");
-  if (stackURL.length === 6) {
-    var user = stackURL.pop();
-    metrics["name"] = user;
-  }
+  var user = stackURL.slice(-2)[0]
+  metrics["name"] = user;
 }
 
 /*
