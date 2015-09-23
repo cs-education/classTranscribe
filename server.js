@@ -7,6 +7,7 @@ var zlib = require('zlib');
 var path = require('path');
 var mime = require('mime');
 var webvtt = require('./scripts/webvtt');
+var client = require('./modules/redis');
 
 var searchMustache = fs.readFileSync('search.mustache').toString();
 router.get('/', function (request, response) {
@@ -53,7 +54,8 @@ router.get('/download/webvtt/:fileNumber', function (request, reponse) {
 });
 
 var firstPassMustache = fs.readFileSync('index.mustache').toString();
-router.get('/first/:videoIndex/:id', function (request, response) {
+router.get('/first/:className/:id', function (request, response) {
+  var className = request.params.className.toUpperCase();
   response.writeHead(200, {
     'Content-Type': 'text/html',
     "Access-Control-Allow-Origin" : "*",
@@ -61,7 +63,8 @@ router.get('/first/:videoIndex/:id', function (request, response) {
   });
 
   var view = {
-    className: "cs225"
+    className: className,
+    taskName: request.get.task,
   };
   var html = Mustache.render(firstPassMustache, view);
   response.end(html);
@@ -121,7 +124,8 @@ router.post('/second', function (request, response) {
 });
 
 var secondPassMustache = fs.readFileSync('editor.mustache').toString();
-router.get('/second/:videoIndex/:id', function (request, response) {
+router.get('/second/:className/:id', function (request, response) {
+  var className = request.params.className.toUpperCase();
   response.writeHead(200, {
     'Content-Type': 'text/html',
     "Access-Control-Allow-Origin" : "*",
@@ -129,7 +133,8 @@ router.get('/second/:videoIndex/:id', function (request, response) {
   });
 
   var view = {
-    className: "cs225"
+    className: className,
+    taskName: request.get.task,
   };
   var html = Mustache.render(secondPassMustache, view);
   response.end(html);
@@ -148,6 +153,28 @@ router.get('/viewer', function (request, response) {
   };
   var html = Mustache.render(viewerMustache, view);
   response.end(html);
+});
+
+var queueMustache = fs.readFileSync('queue.mustache').toString();
+router.get('/queue/:className', function (request, response) {
+  var className = request.params.className.toUpperCase();
+  var args = ["ClassTranscribe::Tasks::" + className, "-inf", "+inf", "LIMIT", "0", "1"];
+  client.zrangebyscore(args, function (err, result) {
+    if (err) {
+      throw err;
+    }
+
+    var view = {
+      className: request.params.className,
+      taskName: result[0],
+    };
+    var html = Mustache.render(queueMustache, view);
+
+    args = ["ClassTranscribe::Tasks::" + className, "1", result[0]];
+    client.zincrby(args);
+
+    response.end(html);
+  });
 });
 
 router.get('/javascripts/data/captions.js', function (request, response) {
