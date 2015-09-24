@@ -55,6 +55,7 @@ if __name__ == "__main__":
     cur_start = 0
 
     segment_count = 0
+    printTime(0)
     while(True):
         longest_len = 0
         start_search = longest_end + (240 * rate / CHUNK_SIZE)
