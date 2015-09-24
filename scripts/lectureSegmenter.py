@@ -8,14 +8,14 @@ import math
 def sampleIndexToSeconds(index, chunk_size, rate):
     return index * (chunk_size) / rate
 
-def printTime(timeInSeconds):
+def addTime(time_strings, timeInSeconds):
     seconds = timeInSeconds % 60
     minutes = timeInSeconds / 60
 
     if seconds < 10:
-        sys.stdout.write('{}:0{} '.format(minutes, seconds))
+        time_strings.append('{}:0{}'.format(minutes, seconds))
     else:
-        sys.stdout.write('{}:{} '.format(minutes, seconds))
+        time_strings.append('{}:{}'.format(minutes, seconds))
 
 
 
@@ -48,7 +48,7 @@ if __name__ == "__main__":
     cur_start = 0
 
     segment_count = 0
-    printTime(0)
+    time_strings = ['0:00']
     while(True):
         longest_len = 0
         start_search = longest_end + (240 * rate / CHUNK_SIZE)
@@ -58,7 +58,7 @@ if __name__ == "__main__":
         end_time = sampleIndexToSeconds(end_search, CHUNK_SIZE, rate)
 
         if start_time > numSeconds or (start_time <= numSeconds and end_time >= numSeconds):
-            printTime(int(math.floor(numSeconds)))
+            addTime(time_strings, int(math.floor(numSeconds)))
             break
 
         for chunk_index in range(start_search, end_search):
@@ -80,4 +80,6 @@ if __name__ == "__main__":
             longest_end = chunk_index
 
         segment_count += 1
-        printTime(sampleIndexToSeconds(longest_end, CHUNK_SIZE, rate))
+        secs = sampleIndexToSeconds(longest_end, CHUNK_SIZE, rate)
+        addTime(time_strings, secs)
+    sys.stdout.write(' '.join(time_strings))
