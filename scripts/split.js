@@ -10,17 +10,9 @@
 })();
 
 var inputFile = process.argv[2];
-var cp = require('child_process');
+var segments = process.argv.slice(3);
 
-var segments = ["0:00"
-,"8:00"
-,"15:51"
-,"23:18"
-,"31:18"
-,"38:40"
-,"45:17"
-,"52:00"
-];
+var cp = require('child_process');
 
 var splitCommands = [];
 segments.slice(0, -1).forEach(function (segment, i) {
@@ -55,6 +47,7 @@ segments.slice(0, -1).forEach(function (segment, i) {
 executeSplitCommands();
 
 function executeSplitCommands() {
+
   if (splitCommands.length) {
     var splitCommand = splitCommands.shift();
     console.log(splitCommand)
