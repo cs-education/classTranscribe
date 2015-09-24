@@ -1,10 +1,8 @@
 import wave
 import audioop
 import sys
-import os
 import math
 
-from pydub import AudioSegment
 
 
 def sampleIndexToSeconds(index, chunk_size, rate):
@@ -83,5 +81,3 @@ if __name__ == "__main__":
 
         segment_count += 1
         printTime(sampleIndexToSeconds(longest_end, CHUNK_SIZE, rate))
-
-    os.remove(wavName)
