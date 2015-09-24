@@ -49,7 +49,7 @@ function setVideoFromUrl() {
 */
 function initializeMetricsBaseInformation() {
   var stackURL = document.URL.split("/");
-  var user = stackURL.slice(-2)[0]
+  var user = stackURL.slice(-2)[0];
   metrics["name"] = user;
 }
 
@@ -82,7 +82,8 @@ function initializeUI() {
         url: "/download",
         data: {
           stats: stats(),
-          transcriptions: save()
+          transcriptions: save(),
+          className: "DRES",
         },
         success: function (data) {
           window.location = "/download/webvtt/" + data["fileNumber"];
@@ -98,7 +99,8 @@ function initializeUI() {
         url: "/second",
         data: {
           stats: stats(),
-          transcriptions: save()
+          transcriptions: save(),
+          className: className,
         },
         success: function (data) {
           $that.text("Transcription Submitted!");
