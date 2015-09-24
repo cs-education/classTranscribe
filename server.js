@@ -8,6 +8,8 @@ var path = require('path');
 var mime = require('mime');
 var webvtt = require('./scripts/webvtt');
 var client = require('./modules/redis');
+var spawn = require('child_process').spawn;
+var mkdirp = require("mkdirp");
 
 var searchMustache = fs.readFileSync('search.mustache').toString();
 router.get('/', function (request, response) {
@@ -113,10 +115,39 @@ router.post('/first', function (request, response) {
 router.post('/second', function (request, response) {
   var stats = JSON.parse(request.post.stats);
   var transcriptions = JSON.parse(request.post.transcriptions);
-  var captionFileName = stats.video.replace(/\ /g,"_") + "-" + stats.name + ".json";
-  var statsFileName = stats.video.replace(/\ /g,"_") + "-" + stats.name + ".json";
-  fs.writeFileSync("captions/second/" + captionFileName, request.post.transcriptions, {mode: 0777});
-  fs.writeFileSync("stats/second/" + statsFileName, request.post.stats, {mode: 0777});
+  var className = request.post.className.toUpperCase();
+  var taskName = stats.video.replace(/\ /g,"_");
+  var captionFileName =  taskName + "-" + stats.name + ".json";
+  var statsFileName = taskName + "-" + stats.name + ".json";
+
+  mkdirp("captions/second/" + className, function (err) {
+    if (err) {
+      console.log(err);
+    }
+    fs.writeFileSync("captions/second/" + className + "/" + captionFileName, request.post.transcriptions, {mode: 0777});
+  });
+
+  mkdirp("stats/second/" + className, function (err) {
+    if (err) {
+      console.log(err);
+    }
+    fs.writeFileSync("stats/second/" + className + "/" + statsFileName, request.post.stats, {mode: 0777});
+
+    var command = './validation';
+    var args = ["stats/second/" + className + "/" + statsFileName];
+    var validationChild = spawn(command, args);
+    validationChild.stdout.on('data', function (code) {
+      code = code.toString().trim();
+      if (code === "1") {
+        console.log("Transcription is good!");
+        client.zrem("ClassTranscribe::Tasks::" + className, taskName);
+        client.sadd("ClassTranscribe::Finished::" + className, captionFileName);
+      } else {
+        client.lpush("ClassTranscribe::Failed::" + className, captionFileName);
+      }
+    });
+  });
+
   response.writeHead(200, {
     'Content-Type': 'application/json'
   });
@@ -201,6 +232,38 @@ router.get('/captions/:index', function (request, response) {
   response.end(JSON.stringify({captions: captions[index]}));
 });
 
+var progressMustache = fs.readFileSync('progress.mustache').toString();
+router.get('/progress/:className', function (request, response) {
+  var className = request.params.className.toUpperCase();
+
+  client.smembers("ClassTranscribe::Finished::" + className, function (err, members) {
+    if (err) {
+      console.log(err);
+    }
+
+    var leaderboard = {};
+    members.forEach(function (member) {
+      var user = member.split("-")[1].replace(".json", "");
+      leaderboard[user] = (leaderboard[user] || 0) + 1;
+    });
+
+    leaderboard = Object.keys(leaderboard).map(function (user) {
+      return {
+        user: user,
+        tasksCompleted: leaderboard[user],
+      };
+    }).sort(function (a,b) {
+      return b.tasksCompleted - a.tasksCompleted;
+    });
+
+    var view = {
+      leaderboard: leaderboard,
+    }
+
+    var html = Mustache.render(progressMustache, view);
+    response.end(html);
+  });
+});
 
 var server = http.createServer(router);
 server.listen(80);
