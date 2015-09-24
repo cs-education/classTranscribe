@@ -1,10 +1,8 @@
 import wave
 import audioop
 import sys
-import os
 import math
 
-from pydub import AudioSegment
 
 
 def sampleIndexToSeconds(index, chunk_size, rate):
@@ -23,14 +21,9 @@ def printTime(timeInSeconds):
 
 if __name__ == "__main__":
     """
-        This should be ran with a single arguement which is the path to mp3 file that needs to be segmented
+        This should be ran with a single arguement which is the path to wav file that needs to be segmented
     """
-    mp3Name = sys.argv[1]
-    wavName = mp3Name[:-4] + '.wav'
-
-    song = AudioSegment.from_mp3(mp3Name)
-    song.export(wavName, format='wav')
-
+    wavName = sys.argv[1]
     wav = wave.open(wavName, 'r')
 
     frames = wav.getnframes()
@@ -55,6 +48,7 @@ if __name__ == "__main__":
     cur_start = 0
 
     segment_count = 0
+    printTime(0)
     while(True):
         longest_len = 0
         start_search = longest_end + (240 * rate / CHUNK_SIZE)
@@ -87,5 +81,3 @@ if __name__ == "__main__":
 
         segment_count += 1
         printTime(sampleIndexToSeconds(longest_end, CHUNK_SIZE, rate))
-
-    os.remove(wavName)
