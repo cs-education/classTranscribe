@@ -92,6 +92,9 @@ function begin() {
 function initializeUI() {
   $(".waveform-loading").removeClass("hidden");
   $(".submit").click(function () {
+    if (!transcriptions.length) {
+      return alert("You haven't submitted any transcription segments yet");
+    }
     var stackURL = document.URL.split("/");
     localStorage.setItem("transcriptions", save());
     // Redirect to second pass
