@@ -6,6 +6,12 @@ function createReverseIndex() {
   videoCaptions.forEach(function (captions, i) {
     var currentTime = 0;
     captions.forEach(function (caption, j) {
+      console.log(caption.text.length)
+      if (caption.text.length > 150) {
+        console.log(caption.text)
+        return;
+      }
+
       var prevCaptionSnippet = (captions[j-1] && captions[j-1].text) || "";
       var nextCaptionSnippet = (captions[j+1] && captions[j+1].text) || "";
 
@@ -175,7 +181,7 @@ function inputKeypress(e) {
           }
         }
 
-        var template = '<div><a href="/viewer?videoIndex='
+        var template = '<div><a href="/viewer/' + className + '?videoIndex='
                      + match.videoIndex
                      + '&startTime='
                      + match.startTime
