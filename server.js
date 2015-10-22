@@ -195,6 +195,10 @@ router.get('/queue/:className', function (request, response) {
       throw err;
     }
 
+    if (!result.length) {
+      return response.end("No more tasks at the moment. Please check back later");
+    }
+
     var view = {
       className: request.params.className,
       taskName: result[0],
