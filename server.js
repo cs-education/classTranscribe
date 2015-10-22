@@ -11,6 +11,11 @@ var client = require('./modules/redis');
 var spawn = require('child_process').spawn;
 var mkdirp = require("mkdirp");
 
+var exampleTerms = {
+  "cs241": "printf",
+  "cs225": "pointer"
+}
+
 var searchMustache = fs.readFileSync('search.mustache').toString();
 router.get('/', function (request, response) {
   response.writeHead(200, {
@@ -18,7 +23,41 @@ router.get('/', function (request, response) {
   });
 
   var view = {
-    className: "cs241"
+    className: "cs241",
+    exampleTerm: exampleTerms["cs241"]
+  };
+  var html = Mustache.render(searchMustache, view);
+  response.end(html);
+});
+
+var viewerMustache = fs.readFileSync('viewer.mustache').toString();
+router.get('/viewer/:className', function (request, response) {
+  var className = request.params.className.toLowerCase();
+
+  response.writeHead(200, {
+    'Content-Type': 'text/html',
+    "Access-Control-Allow-Origin" : "*",
+    "Access-Control-Allow-Methods" : "POST, GET, PUT, DELETE, OPTIONS"
+  });
+
+  var view = {
+    className: className,
+  };
+  var html = Mustache.render(viewerMustache, view);
+  response.end(html);
+});
+
+var searchMustache = fs.readFileSync('search.mustache').toString();
+router.get('/:className', function (request, response) {
+  var className = request.params.className.toLowerCase();
+
+  response.writeHead(200, {
+    'Content-Type': 'text/html'
+  });
+
+  var view = {
+    className: className,
+    exampleTerm: exampleTerms[className]
   };
   var html = Mustache.render(searchMustache, view);
   response.end(html);
@@ -171,21 +210,6 @@ router.get('/second/:className/:id', function (request, response) {
   response.end(html);
 });
 
-var viewerMustache = fs.readFileSync('viewer.mustache').toString();
-router.get('/viewer', function (request, response) {
-  response.writeHead(200, {
-    'Content-Type': 'text/html',
-    "Access-Control-Allow-Origin" : "*",
-    "Access-Control-Allow-Methods" : "POST, GET, PUT, DELETE, OPTIONS"
-  });
-
-  var view = {
-    className: "cs241"
-  };
-  var html = Mustache.render(viewerMustache, view);
-  response.end(html);
-});
-
 var queueMustache = fs.readFileSync('queue.mustache').toString();
 router.get('/queue/:className', function (request, response) {
   var className = request.params.className.toUpperCase();
@@ -227,11 +251,19 @@ router.get('/javascripts/data/captions.js', function (request, response) {
   }
 });
 
-var captions = require('./public/javascripts/data/captions.js');
-router.get('/captions/:index', function (request, response) {
+var captionsMapping = {
+  "cs241": require('./public/javascripts/data/captions/cs241.js'),
+  "cs225": require('./public/javascripts/data/captions/cs225.js'),
+}
+
+router.get('/captions/:className/:index', function (request, response) {
+  var className = request.params.className.toLowerCase();
+  var captions = captionsMapping[className];
+
   response.writeHead(200, {
     'Content-Type': 'application/json'
   });
+
   var index = parseInt(request.params.index);
   response.end(JSON.stringify({captions: captions[index]}));
 });

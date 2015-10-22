@@ -2,7 +2,7 @@ var fs = require('fs');
 var client = require('./../modules/redis');
 
 var path = process.argv[2];
-var className = path.split("/").slice(-1)[0];
+var className = process.argv[3];
 
 console.log(path);
 

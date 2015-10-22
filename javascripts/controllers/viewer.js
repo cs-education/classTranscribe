@@ -86,7 +86,7 @@ function loadCaptions(i) {
   $(".transcription-viewer-container").empty();
   $.ajax({
     type: "GET",
-    url: "/captions/" + i,
+    url: "/captions/" + className + "/" + i,
     success: function (data) {
       var captions = data.captions;
       captions.forEach(function (caption) {
