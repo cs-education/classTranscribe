@@ -220,7 +220,7 @@ router.get('/queue/:className', function (request, response) {
     }
 
     if (!result.length) {
-      return response.end("No more tasks at the moment. Please check back later");
+      return response.end("No more tasks at the moment. More tasks are being uploaded as you read this. Please check back later.");
     }
 
     var view = {
