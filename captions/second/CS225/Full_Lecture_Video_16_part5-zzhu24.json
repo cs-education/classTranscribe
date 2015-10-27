@@ -1,0 +1,1 @@
+[{"text":"difference between 1.const functionname() 2.functionname(const __) 3. functionname() const()","width":1408},{"text":"we don't use the first one in CS 225, the second one garauntee that the parameter is not modified and the third one garauntee that the return value cannot be modified","width":6784}]
