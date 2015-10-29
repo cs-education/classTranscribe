@@ -236,21 +236,6 @@ router.get('/queue/:className', function (request, response) {
   });
 });
 
-router.get('/javascripts/data/captions.js', function (request, response) {
-  var raw = fs.createReadStream('public/javascripts/data/captions.js');
-  var acceptEncoding = request.headers['accept-encoding'] || '';
-  if (acceptEncoding.match(/\bdeflate\b/)) {
-    response.writeHead(200, { 'content-encoding': 'deflate' });
-    raw.pipe(zlib.createDeflate()).pipe(response);
-  } else if (acceptEncoding.match(/\bgzip\b/)) {
-    response.writeHead(200, { 'content-encoding': 'gzip' });
-    raw.pipe(zlib.createGzip()).pipe(response);
-  } else {
-    response.writeHead(200, {});
-    raw.pipe(response);
-  }
-});
-
 var captionsMapping = {
   "cs241": require('./public/javascripts/data/captions/cs241.js'),
   "cs225": require('./public/javascripts/data/captions/cs225.js'),
