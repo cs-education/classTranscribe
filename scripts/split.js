@@ -42,6 +42,18 @@ segments.slice(0, -1).forEach(function (segment, i) {
                      ];
 
   splitCommands.push(mp3Command);
+
+  var wavCommand = ["ffmpeg"
+                      ,"-i"
+                      ,[inputFile.split(".webm")[0], "_part", i, ".webm"].join("")
+                      ,"-f"
+                      ,"wav"
+                      ,"-ar"
+                      ,"22050"
+                      ,[inputFile.split(".webm")[0], "_part", i, ".wav"].join("")
+                     ];
+
+  splitCommands.push(wavCommand);
 });
 
 executeSplitCommands();
