@@ -1,6 +1,5 @@
 var redis = require("redis");
 var redisPass = process.env.REDIS_PASS;
-console.log(redisPass)
 
 if (!redisPass) throw "Need a password in environmental variables!";
 

@@ -52,6 +52,7 @@ if __name__ == "__main__":
 
 
     time_strings = []
+    # easiest solution is just look for inf loop then remove all dupelicate times from the end
 
     for rms_index, rms_val in enumerate(rms_vals):
         if rms_val > THRESHOLD:
@@ -84,6 +85,7 @@ if __name__ == "__main__":
         longest_len = 0
         start_search = longest_end + (240 * rate / CHUNK_SIZE)
         end_search = start_search + (120 * rate / CHUNK_SIZE)
+        
         if sampleIndexToSeconds(end_search, CHUNK_SIZE, rate) >= end_of_lecture_time:
             addTime(time_strings, end_of_lecture_time)
             break
@@ -116,4 +118,7 @@ if __name__ == "__main__":
         segment_count += 1
         secs = sampleIndexToSeconds(longest_end, CHUNK_SIZE, rate)
         addTime(time_strings, secs)
+        if time_strings[-1] == time_strings[-2]:
+            time_strings = time_strings[:-1]
+            break
     sys.stdout.write(' '.join(time_strings))

@@ -36,11 +36,10 @@ function progressEmail(netId, className, transcriptionCount) {
     'If you have any questions/concerns please email classtranscribe@gmail.com.',
     'Thank you for participating!',
     'The Class Transcribe Team'
-    ].join('\n\n');
+  ].join('\n\n');
   sendEmail(netId + emailSuffix, subject, body);
 }
 
 module.exports = {
-    progressEmail: progressEmail
+  progressEmail: progressEmail
 };
-
