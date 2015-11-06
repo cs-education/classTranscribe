@@ -13,7 +13,7 @@ client.smembers("ClassTranscribe::Finished::" + className, function (err, result
     var splitVideoWithName = videoWithName.split("-");
     var video = splitVideoWithName[0];
     var splitVideo = video.split("_");
-    var s3Url = "https://s3-us-west-2.amazonaws.com/classtranscribe/" + className + "/Lecture_" + splitVideo[3] + "/" + video + ".webm";
+    var s3Url = "https://s3-us-west-2.amazonaws.com/classtranscribe/" + className + "/Lecture_" + splitVideo[3] + "/" + video + ".mp4";
     console.log(JSON.stringify([splitVideo.join(" "), s3Url]) + ",");
   })
 })

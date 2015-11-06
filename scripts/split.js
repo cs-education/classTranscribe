@@ -27,30 +27,30 @@ segments.slice(0, -1).forEach(function (segment, i) {
                       ,segment
                       ,"-t"
                       ,timeDifference(segment, segments[i+1])
-                      ,[inputFile.split(".webm")[0], "_part", i, ".webm"].join("")
+                      ,[inputFile.split(".mp4")[0], "_part", i, ".mp4"].join("")
                      ];
   splitCommands.push(splitCommand);
 
   var mp3Command = ["ffmpeg"
                       ,"-i"
-                      ,[inputFile.split(".webm")[0], "_part", i, ".webm"].join("")
+                      ,[inputFile.split(".mp4")[0], "_part", i, ".mp4"].join("")
                       ,"-codec:a"
                       ,"libmp3lame"
                       ,"-qscale:a"
                       ,"2"
-                      ,[inputFile.split(".webm")[0], "_part", i, ".mp3"].join("")
+                      ,[inputFile.split(".mp4")[0], "_part", i, ".mp3"].join("")
                      ];
 
   splitCommands.push(mp3Command);
 
   var wavCommand = ["ffmpeg"
                       ,"-i"
-                      ,[inputFile.split(".webm")[0], "_part", i, ".webm"].join("")
+                      ,[inputFile.split(".mp4")[0], "_part", i, ".mp4"].join("")
                       ,"-f"
                       ,"wav"
                       ,"-ar"
                       ,"22050"
-                      ,[inputFile.split(".webm")[0], "_part", i, ".wav"].join("")
+                      ,[inputFile.split(".mp4")[0], "_part", i, ".wav"].join("")
                      ];
 
   splitCommands.push(wavCommand);
