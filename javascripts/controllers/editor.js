@@ -34,8 +34,8 @@ function setVideoFromUrl() {
     var template = '<option class="video-option" value="0">Upload Video</option>';
     $(".video-selector").empty().append(template);
     var videoURL = document.URL.split("=")[1];
-    var audioURL = videoURL.replace("webm", "mp3");
-    VIDEOS = [["Uploaded Video", videoURL.replace(".webm",""), audioURL]];
+    var audioURL = videoURL.replace("mp4", "mp3");
+    VIDEOS = [["Uploaded Video", videoURL.replace(".mp4",""), audioURL]];
     videoCaptions =[JSON.parse(localStorage.getItem("transcriptions"))]
   } else {
     var videoIndex = 0;

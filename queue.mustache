@@ -3,16 +3,10 @@
     <script src="/javascripts/libraries/jquery-1.11.2.min.js"></script>
     <script>
       $(document).ready(function () {
-        var is_chrome = navigator.userAgent.indexOf('Chrome') > -1;
-        var is_safari = navigator.userAgent.indexOf("Safari") > -1;
-        if (!is_chrome && is_safari) {
-          document.write("ClassTranscribe currently does not support Safari browsers. Please try again on Chrome or Firefox");
-        } else {
         var className = "{{className}}";
         var taskName = "{{taskName}}";
         var netID = window.prompt("What's your NetID?", "");
         window.location = "/first/" + className + "/" + netID + "/?task=" + taskName;
-        }
       });
     </script>
   </head>

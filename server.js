@@ -112,7 +112,7 @@ router.get('/first/:className/:id', function (request, response) {
 });
 
 router.get('/Video/:fileName', function (request, response) {
-  var file = path.resolve(__dirname + "/Video/", request.params.fileName + ".webm");
+  var file = path.resolve(__dirname + "/Video/", request.params.fileName + ".mp4");
   var range = request.headers.range;
   var positions = range.replace(/bytes=/, "").split("-");
   var start = parseInt(positions[0], 10);

@@ -24,7 +24,7 @@
       var s3Url = "https://s3-us-west-2.amazonaws.com/classtranscribe/{{className}}/Lecture_" + videoIndex + "/" + taskName;
 
       var VIDEOS = [
-        [videoTitle, s3Url + ".webm", s3Url + ".mp3"],
+        [videoTitle, s3Url + ".mp4", s3Url + ".mp3"],
       ];
 
       $(document).ready(function () {
@@ -78,7 +78,7 @@
       </div>
       <div class="video-container">
         <video class="main-video" width="600" controls>
-          <source class="main-video-source" src="http://angrave.github.io/sysassets/mp4/0010-HelloWorld-v2.mp4" type="video/webm">
+          <source class="main-video-source" src="http://angrave.github.io/sysassets/mp4/0010-HelloWorld-v2.mp4" type="video/mp4">
         </video>
       </div>
       <div class="video_control-container">

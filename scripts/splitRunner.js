@@ -5,11 +5,11 @@ var spawn = require('child_process').spawn;
 var path = process.argv[2];
 
 var videos = fs.readdirSync(path).filter(function (video) {
-  return video.indexOf("webm") > -1;
+  return video.indexOf("mp4") > -1;
 });
 
 videos = videos.map(function (video) {
-  return video.replace(".webm", "");
+  return video.replace(".mp4", "");
 });
 
 console.log(videos);
@@ -22,7 +22,7 @@ videos.forEach(function (video) {
   var lectureDir = path + "/Lecture_" + videoIndex;
   fs.mkdirSync(lectureDir);
   fs.renameSync(path + "/" + video + ".wav", lectureDir + "/Full_Lecture_Video_" + videoIndex + ".wav");
-  fs.renameSync(path + "/" + video + ".webm", lectureDir + "/Full_Lecture_Video_" + videoIndex + ".webm");
+  fs.renameSync(path + "/" + video + ".mp4", lectureDir + "/Full_Lecture_Video_" + videoIndex + ".mp4");
 });
 
 var folders = fs.readdirSync(path).filter(function (folder) {
@@ -43,7 +43,7 @@ folders.forEach(function (folder) {
     var command = 'node';
     var args = [
       "split.js",
-      path + "/" + folder + "/Full_Lecture_Video_" + folderIndex + ".webm"
+      path + "/" + folder + "/Full_Lecture_Video_" + folderIndex + ".mp4"
     ].concat(splitTimes.split(" "));
     var splitChild = spawn(command, args);
     splitChild.on('close', function() {
