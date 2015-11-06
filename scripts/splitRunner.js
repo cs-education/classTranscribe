@@ -14,6 +14,7 @@ videos = videos.map(function (video) {
 
 console.log(videos);
 
+
 videos.forEach(function (video) {
   var videoIndex = parseInt(video.split("_")[1], 10) + 1;
   videoIndex = videoIndex > 9 ? videoIndex : "0" + videoIndex;
