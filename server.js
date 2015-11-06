@@ -8,8 +8,9 @@ var path = require('path');
 var mime = require('mime');
 var webvtt = require('./scripts/webvtt');
 var client = require('./modules/redis');
+var mailer = require('./modules/mailer');
 var spawn = require('child_process').spawn;
-var mkdirp = require("mkdirp");
+var mkdirp = require('mkdirp');
 
 var exampleTerms = {
   "cs241": "printf",
@@ -257,34 +258,35 @@ var progressMustache = fs.readFileSync('progress.mustache').toString();
 router.get('/progress/:className', function (request, response) {
   var className = request.params.className.toUpperCase();
 
+  var view = {
+    className: className,
+  };
+  var html = Mustache.render(progressMustache, view);
+
+  response.end(html);
+});
+
+router.post('/progress/:className/:netId', function (request, response) {
+  var className = request.params.className.toUpperCase();
+  var netId = request.params.netId;
+
   client.smembers("ClassTranscribe::Finished::" + className, function (err, members) {
     if (err) {
       console.log(err);
     }
 
-    var leaderboard = {};
+    var count = 0;
     members.forEach(function (member) {
       var user = member.split("-")[1].replace(".json", "");
-      leaderboard[user] = (leaderboard[user] || 0) + 1;
+      if (user === netId) {
+        count++;
+      }
     });
 
-    leaderboard = Object.keys(leaderboard).map(function (user) {
-      return {
-        user: user,
-        tasksCompleted: leaderboard[user],
-      };
-    }).sort(function (a,b) {
-      return b.tasksCompleted - a.tasksCompleted;
-    });
-
-    var view = {
-      leaderboard: leaderboard,
-    }
-
-    var html = Mustache.render(progressMustache, view);
-    response.end(html);
+    mailer.progressEmail(netId, className, count);
+    response.end('success');
   });
-});
+})
 
 var server = http.createServer(router);
 server.listen(80);
