@@ -7,7 +7,7 @@ function createReverseIndex() {
     var currentTime = 0;
     captions.forEach(function (caption, j) {
       console.log(caption.text.length)
-      if (caption.text.length > 150) {
+      if (caption.text.length > 200) {
         console.log(caption.text)
         return;
       }
