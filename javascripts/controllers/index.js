@@ -65,10 +65,8 @@ function setVideoFromUrl() {
 */
 function initializeMetricsBaseInformation() {
   var stackURL = document.URL.split("/");
-  if (stackURL.length === 6) {
-    var user = stackURL.pop();
-    metrics["name"] = user;
-  }
+  var user = stackURL.slice(-2)[0];
+  metrics["name"] = user;
 }
 
 /*
@@ -92,14 +90,21 @@ function begin() {
 function initializeUI() {
   $(".waveform-loading").removeClass("hidden");
   $(".submit").click(function () {
-    if (!transcriptions.length) {
-      return alert("You haven't submitted any transcription segments yet");
-    }
-    var stackURL = document.URL.split("/");
-    localStorage.setItem("transcriptions", save());
-    // Redirect to second pass
-    window.onbeforeunload = null;
-    window.location = document.URL.replace("first", "second");
+    var $that = $(this);
+    $that.text("Submitting Transcription...");
+    $.ajax({
+      type: "POST",
+      url: "/first",
+      data: {
+        stats: stats(),
+        transcriptions: $(".transcription-input-main").val(),
+        className: className,
+      },
+      success: function (data) {
+        $that.text("Transcription Submitted!");
+        $that.addClass("unclickable");
+      }
+    });
   });
 }
 
