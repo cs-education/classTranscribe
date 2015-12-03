@@ -261,14 +261,14 @@ router.post('/progress/:className/:netId', function (request, response) {
   var className = request.params.className.toUpperCase();
   var netId = request.params.netId;
 
-  client.smembers("ClassTranscribe::First::" + className, function (err, members) {
+  client.smembers("ClassTranscribe::Finished::" + className, function (err, members) {
     if (err) {
       console.log(err);
     }
 
     var count = 0;
     members.forEach(function (member) {
-      var user = member.split("-")[1].replace(".txt", "");
+      var user = member.split("-")[1].replace(".json", "");
       if (user === netId) {
         count++;
       }
