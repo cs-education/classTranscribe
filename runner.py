@@ -15,8 +15,8 @@ full_lecture_index = "Lecture_" + video_index_netid[19:21] #Lecture_01
 wav_filename = video_index_netid[:video_index_netid.find("-")]
 wav_filename = wav_filename + ".wav"
 
-#https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_02/Full_Lecture_Video_02_part1.wav
-wav_url = "https://s3-us-west-2.amazonaws.com/classtranscribe/"
+#https://s3-us-west-2.amazonaws.com/classtranscribes3/CS225/Lecture_02/Full_Lecture_Video_02_part1.wav
+wav_url = "https://s3-us-west-2.amazonaws.com/classtranscribes3/"
 wav_url = wav_url + course_name + "/" + full_lecture_index + "/" + wav_filename
 
 print "starting to download"
