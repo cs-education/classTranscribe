@@ -14,7 +14,7 @@ var restoreFS = function (partToRestore) {
       client.smembers(key, function (err, members) {
         // there should only be one member
         if (members.length > 1) {
-          console.log('more than 1')
+          console.log('more than 1');
         }
 
         var transcription = members[0];
@@ -28,13 +28,13 @@ var restoreFS = function (partToRestore) {
           if (err) {
             console.log(err);
           }
-          console.log('creating ' + transcriptionPath)
+          console.log('creating ' + transcriptionPath);
           fs.writeFileSync(transcriptionPath, transcription, {mode: 0777});
-        })
+        });
       });
     });
   });
 }
 
-restoreFS("Transcriptions")
-restoreFS("Stats")
+restoreFS("Transcriptions");
+restoreFS("Stats");
