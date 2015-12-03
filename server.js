@@ -151,14 +151,18 @@ router.post('/first', function (request, response) {
     if (err) {
       console.log(err);
     }
-    fs.writeFileSync("captions/first/" + className + "/" + captionFileName, request.post.transcriptions, {mode: 0777});
+    transcriptionPath = "captions/first/" + className + "/" + captionFileName;
+    client.sadd("ClassTranscribe::Transcriptions::" + transcriptionPath, request.post.transcriptions);
+    fs.writeFileSync(transcriptionPath, request.post.transcriptions, {mode: 0777});
   });
 
   mkdirp("stats/first/" + className, function (err) {
     if (err) {
       console.log(err);
     }
-    fs.writeFileSync("stats/first/" + className + "/" + statsFileName, request.post.stats, {mode: 0777});
+    statsPath = "stats/first/" + className + "/" + statsFileName;
+    client.sadd("ClassTranscribe::Stats::" + statsPath, request.post.stats);
+    fs.writeFileSync(statsPath, request.post.stats, {mode: 0777});
 
     var command = 'python';
     var args = ["validator_new.py","stats/first/" + className + "/" + statsFileName];
