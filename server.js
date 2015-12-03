@@ -70,7 +70,7 @@ router.get('/upload', function (request, response) {
   response.writeHead(200, {
     'Content-Type': 'text/html'
   });
-  response.end(uploadHTML);
+  response.end("Endpoint Deprecated.");
 })
 
 router.post('/download', function(request, response) {
@@ -159,7 +159,7 @@ router.post('/first', function (request, response) {
       console.log(err);
     }
     fs.writeFileSync("stats/first/" + className + "/" + statsFileName, request.post.stats, {mode: 0777});
-    
+
     var command = 'python';
     var args = ["validator_new.py","stats/first/" + className + "/" + statsFileName];
     var validationChild = spawn(command, args);
@@ -170,9 +170,10 @@ router.post('/first', function (request, response) {
         client.zrem("ClassTranscribe::Tasks::" + className, taskName);
         client.sadd("ClassTranscribe::First::" + className, captionFileName);
       } else {
-        onsole.log("Transcription is bad!");
+        console.log("Transcription is bad!");
         client.lpush("ClassTranscribe::Failed::" + className, captionFileName);
       }
+      response.end("Validation Done");
     });
   });
 });
