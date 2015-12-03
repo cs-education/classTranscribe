@@ -268,7 +268,7 @@ router.post('/progress/:className/:netId', function (request, response) {
 
     var count = 0;
     members.forEach(function (member) {
-      var user = member.split("-")[1].replace(".json", "");
+      var user = member.split("-")[1].replace(".json", "").replace(".txt", "");
       if (user === netId) {
         count++;
       }
