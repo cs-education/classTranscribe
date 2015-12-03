@@ -1,6 +1,0 @@
-inflect
-requests
-simplejson
-jsonschema
-click
-tgt
