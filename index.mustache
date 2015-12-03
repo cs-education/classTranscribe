@@ -7,7 +7,6 @@
     <script src="/javascripts/libraries/jquery.mousewheel.min.js"></script>
     <script src="/javascripts/libraries/underscore.js"></script>
     <script src="/javascripts/libraries/disableMacBack.js"></script>
-    <script src="/javascripts/libraries/completely.js"></script>
 
     <script src="/javascripts/libraries/wavesurfer/src/wavesurfer.js"></script>
     <script src="/javascripts/libraries/wavesurfer/src/util.js"></script>
@@ -17,6 +16,7 @@
     <script src="/javascripts/libraries/wavesurfer/src/drawer.canvas.js"></script>
 
     <script>
+      window.className = "{{className}}";
       var taskName = "{{taskName}}";
       var videoTitle = taskName.split("_").join(" ");
       var videoIndex = taskName.split("_")[3];
@@ -70,7 +70,7 @@
   </head>
   <body>
     <div class="tutorial">
-      Please watch this video before starting: <br> <a target="_blank" href="https://youtu.be/CxMeISS2QcQ">https://youtu.be/CxMeISS2QcQ</a>
+      Please read this tutorial before starting: <br> <a target="_blank" href="http://tinyurl.com/classtranscribetutorial">http://tinyurl.com/classtranscribetutorial</a>
     </div>
     <div class="main-container">
       <div class="header-container">
@@ -97,11 +97,11 @@
         </div>
       </div>
       <div class="transcription-input-container">
-        <!-- <input class="transcription-input" type="text" placeholder="Start transcribing here..."></input> -->
-        <div id='completely-input-container'></div>
+        <textarea class="transcription-input-main" type="text" placeholder="Start transcribing here..."></textarea>
+        </div>
+        <div class="transcription-container"></div>
+        <button class="submit">Submit Transcription</button>
       </div>
-      <div class="transcription-container"></div>
-      <button class="submit">Submit Transcription</button>
     </div>
   </body>
  </html>
