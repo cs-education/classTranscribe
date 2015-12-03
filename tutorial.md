@@ -1,15 +1,8 @@
-# First Pass Interface Tutorial 
+# ClassTranscribe Tutorial 
 Hi! Welcome to a quick introduction on how to transcribe using ClassTranscribe.
 
-## 1. Type as you listen to the video and press enter after every logical break
-
-![image](http://i.imgur.com/vqSHWbT.gif)
-
-### What happens if I make a mistake?
-Don't worry! Just carry on. The second pass transcription will take care of it.
-
-### How long should each segment be?
-A sentence or two is a good general rule of thumb.
+## 1. Type as you listen to the video.
+![image](http://i.imgur.com/sPwv3Ip.gif)
 
 ## 2. Use ` hot key to jump back two seconds [VERY USEFUL]
 ![image](http://i.imgur.com/eMMg9ar.png)
@@ -39,4 +32,4 @@ A sentence or two is a good general rule of thumb.
 ![image](http://i.imgur.com/u3S34g5.png)
 
 
-That's it. Go ahead and visit your unique classtranscribe URL to get started!
+That's it. Go ahead and visit classes' classtranscribe URL to get started!
