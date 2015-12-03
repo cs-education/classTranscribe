@@ -1,0 +1,25 @@
+Okay.
+
+
+Alright.
+
+
+So the question on the board.
+
+
+
+The question on the board is:
+
+
+
+What happens if you have two pointers that point to the same things?
+
+
+
+
+Like this. Here's the set up. And you delete the memory through one of them.
+
+
+
+
+And this is a to be continued... Dun dun dun... It's truly a cliff hanger because this is insidious.

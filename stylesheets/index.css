@@ -14,6 +14,7 @@
   padding-top: 20px;
   width: 600px;
   margin: 0 auto;
+  margin-bottom: 15px;
 }
 
 .header-container, .video-container, .video_control-container {
@@ -43,6 +44,15 @@ h1 {
   width: 100%;
   padding: 15px 10px;
   font-size: 14px;
+}
+
+.transcription-input-main {
+  width: 100%;
+  border: 2px solid rgb(238, 238, 238);
+  padding: 10px;
+  font-size: 14px;
+  height: 150px;
+  resize: vertical;
 }
 
 .transcription-container {
