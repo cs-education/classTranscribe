@@ -6,13 +6,13 @@ for (var i = 0; i < 11; i++) {
     videoIndex +
     ' Part ' +
     i +
-    '", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_' +
+    '", "https://s3-us-west-2.amazonaws.com/classtranscribes3s3/CS225/Lecture_' +
     videoIndex +
     '/Full_Lecture_Video_' +
     videoIndex +
     '_part' +
     i +
-    '.mp4", "https://s3-us-west-2.amazonaws.com/classtranscribe/CS225/Lecture_' +
+    '.mp4", "https://s3-us-west-2.amazonaws.com/classtranscribes3s3/CS225/Lecture_' +
     videoIndex +
     '/Full_Lecture_Video_' +
     videoIndex +

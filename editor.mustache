@@ -21,7 +21,7 @@
       var videoTitle = taskName.split("_").join(" ");
       var videoIndex = taskName.split("_")[3];
       var videoPart = taskName.split("_")[4];
-      var s3Url = "https://s3-us-west-2.amazonaws.com/classtranscribe/{{className}}/Lecture_" + videoIndex + "/" + taskName;
+      var s3Url = "https://s3-us-west-2.amazonaws.com/classtranscribes3/{{className}}/Lecture_" + videoIndex + "/" + taskName;
 
       var VIDEOS = [
         [videoTitle, s3Url + ".mp4", s3Url + ".mp3"],
