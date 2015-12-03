@@ -71,7 +71,7 @@ router.get('/upload', function (request, response) {
   response.writeHead(200, {
     'Content-Type': 'text/html'
   });
-  response.end(uploadHTML);
+  response.end("Endpoint Deprecated.");
 })
 
 router.post('/download', function(request, response) {
@@ -143,57 +143,40 @@ router.get('/Video/:fileName', function (request, response) {
 
 router.post('/first', function (request, response) {
   var stats = JSON.parse(request.post.stats);
-  var transcriptions = JSON.parse(request.post.transcriptions);
-  var captionFileName = stats.video.replace(/\ /g,"_") + "-" + stats.name + ".json";
+  var transcriptions = request.post.transcriptions;//
+  var className = request.post.className.toUpperCase();//
   var statsFileName = stats.video.replace(/\ /g,"_") + "-" + stats.name + ".json";
-  fs.writeFileSync("captions/first/" + captionFileName, request.post.transcriptions, {mode: 0777});
-  fs.writeFileSync("stats/first/" + statsFileName, request.post.stats, {mode: 0777});
-  response.writeHead(200, {
-    'Content-Type': 'application/json'
-  });
-  response.end(JSON.stringify({success: true}));
-});
-
-router.post('/second', function (request, response) {
-  var stats = JSON.parse(request.post.stats);
-  var transcriptions = JSON.parse(request.post.transcriptions);
-  var className = request.post.className.toUpperCase();
+  var captionFileName = stats.video.replace(/\ /g,"_") + "-" + stats.name + ".txt";
   var taskName = stats.video.replace(/\ /g,"_");
-  var captionFileName =  taskName + "-" + stats.name + ".json";
-  var statsFileName = taskName + "-" + stats.name + ".json";
-
-  mkdirp("captions/second/" + className, function (err) {
+  mkdirp("captions/first/" + className, function (err) {
     if (err) {
       console.log(err);
     }
-    fs.writeFileSync("captions/second/" + className + "/" + captionFileName, request.post.transcriptions, {mode: 0777});
+    fs.writeFileSync("captions/first/" + className + "/" + captionFileName, request.post.transcriptions, {mode: 0777});
   });
 
-  mkdirp("stats/second/" + className, function (err) {
+  mkdirp("stats/first/" + className, function (err) {
     if (err) {
       console.log(err);
     }
-    fs.writeFileSync("stats/second/" + className + "/" + statsFileName, request.post.stats, {mode: 0777});
+    fs.writeFileSync("stats/first/" + className + "/" + statsFileName, request.post.stats, {mode: 0777});
 
-    var command = './validation';
-    var args = ["stats/second/" + className + "/" + statsFileName];
+    var command = 'python';
+    var args = ["validator_new.py","stats/first/" + className + "/" + statsFileName];
     var validationChild = spawn(command, args);
     validationChild.stdout.on('data', function (code) {
       code = code.toString().trim();
       if (code === "1") {
         console.log("Transcription is good!");
         client.zrem("ClassTranscribe::Tasks::" + className, taskName);
-        client.sadd("ClassTranscribe::Finished::" + className, captionFileName);
+        client.sadd("ClassTranscribe::First::" + className, captionFileName);
       } else {
+        console.log("Transcription is bad!");
         client.lpush("ClassTranscribe::Failed::" + className, captionFileName);
       }
+      response.end("Validation Done");
     });
   });
-
-  response.writeHead(200, {
-    'Content-Type': 'application/json'
-  });
-  response.end(JSON.stringify({success: true}));
 });
 
 var secondPassMustache = fs.readFileSync('editor.mustache').toString();
