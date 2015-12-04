@@ -1,3 +1,4 @@
+var fs = require('fs')
 var spawn = require('child_process').spawn;
 var client = require('./modules/redis');
 
@@ -32,6 +33,10 @@ function secondPass() {
       child.on('close', function (code) {
         console.log("Success!")
         if (code === 0) {
+          var fname = 'captions/first/' + className + '/' + videoIndexNetid + '.json';
+          var transcription = fs.readFileSync(fname);
+          client.sadd('ClassTranscribe::Transcriptions::' + fname, transcription);
+
           client.smove(key, "ClassTranscribe::Finished::" + className, member, function (err,status) {
             if (err) {
               console.log(err);
