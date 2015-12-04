@@ -3,6 +3,7 @@ import audioop
 import sys
 import math
 
+# import numpy as np
 
 
 def sampleIndexToSeconds(index, chunk_size, rate):
@@ -34,13 +35,16 @@ if __name__ == "__main__":
 
     # threshold for detecting speech. white noise seems to fall below this threshold
     THRESHOLD = math.pow(300, 3)
-    CHUNK_SIZE = 64
+    CHUNK_SIZE = 1024
 
+    original_rms_vals = []
     rms_vals = []
 
     for chunk_num in range(frames/CHUNK_SIZE):
         sample = wav.readframes(CHUNK_SIZE)
-        rms_vals.append(math.pow(audioop.rms(sample, width), 3))
+        rms = audioop.rms(sample, width)
+        original_rms_vals.append(rms)
+        rms_vals.append(math.pow(rms, 3))
 
     longest_start = 0
     longest_end = 0
@@ -50,6 +54,8 @@ if __name__ == "__main__":
 
     segment_count = 0
 
+    # np_rms_vals = np.array(original_rms_vals)
+    # std_dev = np.std(np_rms_vals)
 
     time_strings = []
     # easiest solution is just look for inf loop then remove all dupelicate times from the end
