@@ -33,7 +33,7 @@ function secondPass() {
       child.on('close', function (code) {
         console.log("Success!")
         if (code === 0) {
-          var fname = 'captions/first/' + className + '/' + videoIndexNetid + '.json';
+          var fname = 'captions/second/' + className + '/' + videoIndexNetid + '.json';
           var transcription = fs.readFileSync(fname);
           client.sadd('ClassTranscribe::Transcriptions::' + fname, transcription);
 
