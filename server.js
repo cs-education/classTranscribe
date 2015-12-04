@@ -274,10 +274,20 @@ router.post('/progress/:className/:netId', function (request, response) {
       }
     });
 
-    mailer.progressEmail(netId, className, count);
-    response.end('success');
+    client.keys("ClassTranscribe::Transcriptions::captions/first/*" + netId + "*", function (err, members) {
+      if (err) {
+        console.log(err);
+      }
+
+      count += members.length
+
+      mailer.progressEmail(netId, className, count);
+      response.end('success');
+    })
+
+    
   });
 })
 
 var server = http.createServer(router);
-server.listen(80);
+server.listen(8080);
