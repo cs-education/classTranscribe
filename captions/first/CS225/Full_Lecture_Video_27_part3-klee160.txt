@@ -1,0 +1,2 @@
+32 is already there. Yes, 16, let's try 16 and see what happens. See where 16 is gonna go? What's the lowest key out of balance when I insert 16?
+15, very good. 15 is the lowest one and it is the root of the sort of dog leggy thing. So let's do this, see what happens. Uh-oh, broken. Got it? See it? Alright, I wanna do a double one.  I mean, one where it's not quite so obvious. I'm gonna remove 16, insert 15.

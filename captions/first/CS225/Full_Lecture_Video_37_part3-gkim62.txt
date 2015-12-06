@@ -1,0 +1,57 @@
+Okay so or forwards or backwards right? There is no turning - it's plastic, if you tried to turn these cars they'll break.
+
+Right. So each car can only go, you're trying to get the red car out, and each car can only move forward and backward - it's a little puzzle.
+
+Alright, so the question is what's the graph? Now remember, remember, that to describe a graph, means to tell what the vertices represent and what the edges represent. So what the heck is that graph?
+
+You're welcome to come up here closer if you can't see very well from back there. You're just welcome to stand right up and come and look if you like.
+
+Let me see how well you can see.
+
+Can you see very well? Kind of, okay.
+
+Where it looks like there might be an edge between them, pretend there is.
+
+What is the graph - what are the vertices, and what are the edges? And then I'm gonna ask what are the green dots?
+
+Mmmmmm.
+
+Finishing positions is a good guess. It's a good guess. Yeah?
+
+Start with vertices.
+
+Yes, very good. So we say that the ver- each vertex is a state of the game, and that corresponds to a position, a set of positions, of all the cars. So presumably, that picture in the upper right hand corner, corresponds to one of the vertices in the graph. Okay? Any question about that? Yeah?
+
+Yes! Very good. So the edges between them are uh correspond to the ability to move from one position to another via a valid move. Okay? Alright, fine, What are the green dots? Yeah?
+
+Yeah! The path to completion, very good. So presumably this is the start configuration, and I'm guessing, I'm hoping, I guess, that in fact those green dots correspond to the shortest path to completion, okay? And that blue up there is done.
+
+Alright, so what's with all of fan out up there, with all the different the fan out in the path?
+
+Somebody who plays the game, tell me what happens at the very end.
+
+Somebody who's played the game, tell me what happens at the very end.
+
+Yeah? [student response] Uh huh?
+
+Ah! Okay, so I think, that that corresponds to ending of over here, but I don't think it describes this stuff.
+
+Yeah?
+
+Yeah okay, so sort of. That's a little closer. So those are all the shortest paths so presumably you wouldn't have any kind of "extra" moves. Gratuitous extra moves. The answer is when you're close to the end, there are lots of different ways to finish it off. Right, like you can move backward and, you know, I don't know. You can- you get to decide which one to move first and you know, you can finish the game up either way. So at the very end, there are lot more degrees of freedom to finishing the game efficiently, k?
+
+So this is a great game to play, while you're riding a bus, say over thanksgiving. I'm pretty sure there are mobile versions of it. In fact, all these think-fun puzzle games, are super fun and probably have mobile apps that correspond to them.
+
+Okay, uh I have a question for you, don't look at the graph yet, I have a question for you. When you were in about 4th grade, probably, your math teacher gave rules for checking for divisibility, right? What was the rule for checking to see if something was divisible by 2?
+
+Even, right, The, the one's digit was even. How about the rule for checking if something was divisible by 3?
+
+Some of the digits uh is a what? Divisible by 3- Oh my gosh, it's recursive!
+
+[students expressing stress at hearing recursive]
+
+You didn't know it! You were doing a recursive algorithm when you were in 3rd grade, right? Because what if the sum of the digits is 18? You added again, right?
+
+Ohoho, goosebumps, right here. Okay.
+
+Uhh alright, how about 4?

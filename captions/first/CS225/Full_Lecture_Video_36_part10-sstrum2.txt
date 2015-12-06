@@ -1,0 +1,7 @@
+This probably doesn't work. 
+Okay, yup. It's if you set up the system and you just use it to build up the relationship between the elements in your set and query it through that result.
+You guys, I have another minute. Okay, so this is it for disjoint sets. The next data structure  of interest is graphs. And the next thing we're going to do to talk about graphs is to look at some amazing examples. Yeah this is my facebook community in the bottom right. 
+What do you think that is? 
+This is my least favorite graph in the world. 
+This is a collaboration graph. 
+We'll talk about it next time, bye. 
