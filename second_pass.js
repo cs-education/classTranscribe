@@ -19,7 +19,7 @@ function secondPass() {
         console.log(err);
       }
 
-      member = members[0];
+      member = members[Math.floor(Math.random()*members.length)]; 
       var videoIndexNetid = member.replace(".txt", "");
       var command = 'python';
       var args = ["runner.py", className, videoIndexNetid];
