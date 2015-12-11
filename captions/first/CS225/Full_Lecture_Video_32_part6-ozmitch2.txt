@@ -1,0 +1,35 @@
+Even if, even if, ah, the thing I'm looking for is not in the table, okay?
+This one is for successful, this one is  unsuccessful.
+Up there, that same value, we would have keep um, same number of probes
+we have to keep our table only half full. 
+Our table only half
+For example, any question about that?
+I'm use to having this discussion in the context of the applet  so I don't pretend that this is particularly smooth. Alight, um, any questions? Is, it good?, So the idea is that these probes based strategies work fine if you don;t let your table get too full.
+No, that was just, four doesn't seem too many, four is a constant number, seems like it would be pretty quick, right?
+And I can say to somebody: "Oh, we"ll never have to go further than four"
+Arbitrary choice, But it turns out that, well, i'll save that punch line for a minute.
+Alright, any question about this?
+So, successful is that if it is in the table, unsuccessful if its not in the table
+So if your looking for a key that is actual the there somewhere vs if you're looking for a key that is not there, that's the only difference.
+Maybe I shouldn't even break them out.
+Maybe they should just be unsuccessful numbers.
+Alright, any other question about this? any other question about this?
+The take-away is,  if your table is not, if your table gets full, look how fast those functions go up. But if your table isn't very full. Your kinda in good shape for these things.
+Alright, so, uh, lets think about this a little bit.
+Alright, so when we were talking about queues. 
+If I asked you, I got this queue, what do I do if it fills?
+What do you say?
+What's your answer?
+What if the array fills, I should double the array, and copy that data. 
+Okay, that's what we use to have, here's what we have now, so look. We're not going to let the array fill. Were going to let the array get up to some alpha that we control, some load factor that we control, in practice the reasonable load factor that we use is approx two thirds. There's an analytical reason for using this load factor bu in practice its about two thirds. So what if the array becomes more that two thirds full replaces the question what if the array fills. What if the array, um, is, more that two thirds full? Alpha > 2/3. Now we don;t exactly double the array and copy the data, we find the first prime grater that twice the array size. Find first prime greater than twice array.size(). Because we like prime numbers. And I'll explain then if you want.
+Um, and then, instead of copying the data, we do something a little bit different.
+So, I want to do this example so that you see what we need to do. 
+So, suppose that we have hashed our values into this table, and this hash function, h(k) is a hash of some kind mod table-size which is 5, and we've hashed these three values into it, and another piece of data comes along. 
+Now, we're going to find the the first prime bigger than twice the array size and copy the data in, its just a straight copy, whats the problem with that?
+What is our new hash function look like?
+What is our new hash function look like?
+Its h1(k), mod11!
+Which means that you will never get these guys back, we changed the hash functions. So instead of copying the data, we rehash the data.We rehash the data with our new hash function. 
+
+
+

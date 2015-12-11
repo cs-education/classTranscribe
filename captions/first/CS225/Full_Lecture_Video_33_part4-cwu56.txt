@@ -1,0 +1,13 @@
+You guys are like on it today, yes?
+ Aye! It's a complete tree, a complete binary trees. 
+So good observations. So, I'm gonna write that down. 
+It is a complete binary tree. Ok, anything else?Yes? It's what?
+Ordered in its levelS but it isn't , OHH! It isn't ordered in its levels, that kind of a interesting in itself, right? yeah? 
+OHHH---, Very good, ok? So this is a complete tree, where each parent is less than its two children. Each parent 's key, each parent's key is less than the keys of its 2 children.
+Ohh, that's new, we haven't seen such a thing before. This two things together actually characterize the structure compeletely, though typically we will take an input implication of the second, and that implication is the following: that every path from the root to a leaf is monitonically increasing. Very good.
+So the implication of the second one that we're gonna use is- every path from root to leaf is increasing.
+Ok, this structure that you've now characterize has~ a special name, it's called a heap.
+It's acutally a binary min heap, but we just very quickly refer to it as a heap.
+Ok. So I want to do a quick recursive definition, ok? So the quick recursvie definition is a binary min heap is a complete tree,  with a following characteristics:
+T equal an empty tree is a binary min heap. 
+And if T equals a root together with a left subtree and a right subtree, ok? then the key of the root(the key of r) is less than the key of TreeL's root and TreeR's root, if they exist, and furthermore, TL and TR are heaps.

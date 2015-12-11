@@ -1,0 +1,99 @@
+Okay. Got it? Okay.
+
+So what we did see is that 16 came up right?
+
+If you remove 20, 16, the inorder predecessor will come up. But that one is too small.
+
+So I think it grabs one from... I just didn't see it.
+
+Should we do it? Alright. Last time, this is the last time, we should do analysis.
+
+20, taking 16 up, okay throwing things down. Theres a lot of throwing down.
+
+So this one's quite. This one's quite combative. It's a throwdown.
+
+Okay. Alright. Can we go on?
+
+Please? Who said please?
+
+I love that you feel comfortable enough to admit that you said please. Okay.
+
+So here's the more formal description of what these things, the constraints on these nodes. And there are some key parts. So an internal node is a non-leaf node.
+
+Internal means non-leaf.
+
+Non-leaf.
+
+The number of keys in the node is the number of children - 1.
+
+And, m-way tree, a b-tree of order m is an m-way tree. So maximum of m-way. You MIGHT have m children.
+
+All leaves are always on the same level, so this is new for us.
+
+All leaves hold no more than m-1 keys.
+
+So that's when throwing up happens.
+
+But the thing we didn't see very much, is that all non-root internal nodes have between, and this is the hm, ceiling of m/2, and m children, I believe.
+
+Let's see if that's written, is that right? Here?
+
+On your sheet it has it? Okay, good.
+
+That didn't make it through the various file transformations.
+
+Okay. So what does that mean about the number of keys? It's one less than ceiling of m/2. Right?
+
+The number of keys is then one less than ceiling of m/2 and m-1.
+
+Now, roots can be a leaf, so a single node, or it can have between 2 and m children. It's the only one that can have that few children.
+
+And the keys in the node are ordered.
+
+So, this is actually a key point.
+
+This piece right here, says that no node is very empty.
+
+So if this is as big as a node can be, notice that that says, that it is at least, one less than half full.
+
+Okay, so you can think of this, you can think of these nodes as being at least half full, about.
+
+It might be one less than that, but that's all.
+
+Okay, so all nodes, key observation is, that no node is very empty.
+
+No node, they changed the font, I don't know, is very empty.
+
+Except the root.
+
+Because we need some place to keep this [cuts off]
+
+Yeah?
+
+No! Aha! This is good.
+
+So let's reinforce that. 
+
+This always confuses me too, I don't know why. Okay, it says here, the root can have between 2 and m children. There is a difference between the number of keys it holds and the number of children it has.
+
+How many children does this have. One, two. Even though it has one key.
+
+Oh yeah! There's this minus one thing.
+
+Okay, any questions about all of this?
+
+Of course, I have a question for you.
+
+I want you to infer, from this picture, the order of this tree.
+
+No, it's not four.
+
+Has to be bigger than four, why?
+
+Yeah, because this one has four keys in this. Right?
+
+If four where the order of this tree, we would've had vomited three.
+
+Five? Why not six?
+
+This is actually a hard question. Why not six?

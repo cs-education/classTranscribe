@@ -1,0 +1,71 @@
+What?
+Who's talking to me?
+Is that you? Ok yes, what's your suggestion, thank you.
+
+Ah, okay so you want to write a recursive function to do this right? So write a recursive function that checks to see if these are out of balance, so the code that can check for balance is almost gonna look like a traversal. You can write the recursive code that says, okay, I'm gonna look and make sure my left subtree is balanced and my right subtree is balanced, AND, what else are you gonna check?
+
+Because, look, for 51, the left subtree is balanced, right? And the right subtree is balanced? so what else are you going to check?
+
+What are you gonna check? If you're sitting at 51, and you've made a recursive call, that came back, oh yep, your left subtree, perfectly balanced, no problem. Your subtree, balanced, no problem.
+
+So then what are you gonna do. Yeah?
+
+Check if its balanced. At that node what information do you need to do that?
+Yes, very good. You need the height of this subtree, and the height of this subtree. Okay, so here's what we're gonna do.
+
+We're going to augment the information stored in every node with the height of that node. And we're going to maintain that as we do insertions into the structure.
+
+Okay, so one of the, a little asterisk about what we're going to do, by way of foreshadowing, is: it would be helpful to store height in each node.
+
+We'll talk about exactly how to do that in a minute. This is all intuition.
+Okay, so, let's do some mechanics here. 
+Um, I wanna change this since I don't like this tree very much.
+I wanna change the structure of it.
+I noticed that the whole tree is out of balance right at 50.
+50 is the root of the tree that is out of balance.
+Yes? Is that true? Did I eyeball that correctly? Okay.
+But, so is 80.
+So i'm gonna actually focus the code we are gonna write together, the algorithm that we're going to employ, is going to focus on the lowest node in the tree that's out of balance.
+
+So here's what I'm gonna do. I'm gonna take this stick, and change it into a mountain.
+So that means, for that subtree, I'm going to change 90. I'm going to change that subtree to 90, 80, and 99.
+
+Okay and now we have to hook things back together. Now where do things go? I don't know for sure but here are my observations.
+
+I have one, two, three, four places I can hook subtrees into the original tree.
+
+And I have, one, two, three, four places I can hook subtrees into the new structure.
+
+That's good. If that were different we'd have a problem.
+
+So four places in the old structures, four places in the new structure.
+
+And if you notice, in the old structure, we have the following, we can make the following observation.
+Everything in this subtree labeled A here, is going to be less than everything in this subtree, which we're labeling B, because of the binary search tree property.
+
+Which is less than everything in this subtree, which is less than everything in this subtree.
+
+And furthermore, the relationships to their parent nodes correspond, and that will be true over here, and furthermore, the relationship to the parent nodes will be preserved if we only put A and B and C and D.
+
+Hook them up right here.
+
+Okay, so I'm gonna do this. I'm gonna put A here, whatever is in A I'm gonna put there.
+
+I'm gonna put B here, I'm gonna put C here, and I'm gonna put D here.
+
+Alright, so what is that? I'll do that in a different color so it's easier to see.
+
+So 80's left looks like this.
+
+B will now be 80's right, so that looks like this.
+
+C will now be 99's left, and D is empty. So there's nothing to do.
+
+So notice that this actually, for that subtree, for the subtree for 50's right child, we've actually reduced the height of 50's right child. Woohoo!
+
+Right, it used to have height 3, and now it has height 2. So that's cool.
+
+Now we just build the rest of the tree, just like it was before.
+
+We don't even have to think about it very much. 50 is still the root of the tree. 30 is still its left child, and 30 is still the parent of 20 and 40.
+

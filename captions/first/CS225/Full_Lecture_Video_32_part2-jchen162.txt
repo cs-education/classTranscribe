@@ -1,0 +1,10 @@
+one over the number of them, right?
+does that make sense
+in fact, in the context of this particular example what fraction of the whole table is this? about?
+there's no right answer here, we're wining it here at this point?
+what fraction of the whole table is that? a tenth? so the probabl
+say is about a tenth ok? so this happens with about ten percent probability but look what happens if it does happen? eventually
+if that happens a few times, this gets all closed up and in fact, that chunk becomes really big
+now what's the probability of hashing into that thing much larger, say 25 %now imagnine what would happen if we hash into it. that's say we get a value that puts us right here, we would wait, right? until finally an open spot would be found is there a question about that?
+and the minute that open spot is found, we increase the porbability of hashing into that thing because we increase the size of the chunk, so this is the problem of primary clustering.
+The problem of primary clustering and the description of it is simply in linear probing, so if you're using linear probing increases the size of chunk of occupied cells. magnitude of clusters of occupied cells which increases the likelihood that you're gonna hash into it in the future. The concrete analysis of this, i believe is done in 374, we are not allowed a probability prerequisite for this course. In fact, it compromises the performance of linear probing. So what are we going to do about tihs? Instead of taking steps of size 1, for looking the next available cell we are going to take steps of random size. Now, where would we get steps of random size?Where would we get steps of random size? I think using another hash function would be reasonable. So the remedy here is to take randomly sized steps and i'll show you what i mean in a minute. It's a control chaos. Randomly sized steps for probing.

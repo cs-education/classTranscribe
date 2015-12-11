@@ -1,0 +1,40 @@
+Okay, when you say - when you see - "HP," 
+raise your if you first think of Happy Potter.
+Raise your hand if you first think of Hewlett-Packard.
+What a phenomenon, right? What did you think of?
+Yeah! Right?
+Weirdest thing. The rest of the world, again, is what makes us unique.
+The rest of the world is very clearly Harry Potter, but not us. Nuh-uh.
+Embrace you geek-dom.
+I don't know what it means to dress as a Hewlett-Packard for Halloween,
+but I bet you guys could figure it out. 
+It's a little scary these days.
+I wasn't gonna make any jokes today! Darn it! Alright.
+So these are the keys - I'll change this back - these are the keys
+and these are the values.
+Oh, I have a fun thing! So this slide was made when my - seven, or six years ago probably. When my eighteen-year-old was twelve, okay, and he was the "cereal-killer."
+Okay? And that was the perfect twelve year old costume. 
+His name is Isaac and I didn't want to, like, 
+tell everybody's name. Oh wait. Darn it!
+No jokes today! I'm telling you! Okay.
+And this year our smallest child wanted to be the cereal killer so it was like this --
+our smallest child who is now eight - it was like this legacy that you have to be hot gluing mini-wheats to a t-shirt the night before Halloween. I dunno.
+So anyway, so this is our data.
+They keys are people's names. You can think of them, generally as strings if you want, but I think it would be kinda crazy to call somebody a, I dunno, "ice cream."
+"Hey Ice Cream Cone, come over here!"
+So we're not talking about general strings here. Presumably, for names we might have some, uh, type which is a name type and the elements of that set would be prescribed by some, uh, look-up table or something. Okay, so even though these look like strings.
+They look like strings. In fact, they may not be implemented to be such.
+Okay? Just as a, that's an aside, doesn't really apply to this example but it's something to think about.
+Okay, so our goal is to take my data including the keys and values and map them in some reasonable way so that the costumes live
+inside this table. Okay?
+So what's a good hash function for this?
+What's a good-- how can we take this key and create some function on it that maps each one of these things to a small integer value? Yes?
+Yeah, right. Okay. For just a sec we were super lucky. Right?
+We were super lucky because the people in my neighborhood happen ti have first letters that all go in order and so our hash function, the thing that can take the key that looks like this and map it to that is simply, uhm, 
+k[0] minus capital "A" works.
+So this will be interpreted as values and that difference will return some small integer. Okay? Any question about that? 
+And then that means we're gonna get black cat here,
+and HP here
+and spy
+and basketball player
+Oh, when you saw "bball," did you think basketball or baseball?"

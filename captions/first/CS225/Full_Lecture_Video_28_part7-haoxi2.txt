@@ -1,0 +1,30 @@
+So where we keep the data? If we don't store it in RAM, where do we keep it? 
+I love it when you guys all wrote that done  (・`ω´･) 
+So where do we keep the data?  
+Hard drives, good  
+Do you like that hard drive? 
+No? (っ °Д °;)っ Ya, you know once you do SSD, ya ok, but still, SSD are not RAM yet, right 
+There are still not quite as fast as memories that sets close to your processor 
+Alright, where else do we keep the data, if not on one of those things, where do we keep it?  
+Cache? Yeah, well, we gonna tie cache in with these. For now, for this class  
+In 233 and 391 you will learn about why that.. oh, 233 will definitely learn about why that is 
+Where do we keep it though, further away not closer to the machine?  
+Yeah, (´･ω･｀) you have relatives that really believe that the clouds in the air hold your data XD, you do, I know you do  (╯‵□′)╯︵┻━┻     
+How do they get up there? 
+Yeah, yeah, a sunny day, the internet is down, it's sunny \( ° △ °\|||)    
+Alright, here is the thing, alright, so where do we keep the data? All over the place not in RAM 
+Big O analysis assumes uniformed time for all operation means looking up an element in an array, adding two things together, processing a conditional, all these things take about the same amount of time, and it turns out that's a reasonable assumption if all of your data is equally accessible  
+OK, so, here is the rest of the story on processors and disks  
+A 2GHz machine gives around 2 million instructions per millisecond (⊙△⊙), its 10 to the negative 6 
+Alright, fine, that's a lot, now our operation tend to be not single operation, the comparison is like get the data, make the comparison, put things back  
+But still, the scale of this is lots of operations per millisecond 
+Ok, so even though one thing that we do eats up a few machine instructions, it's still on the scale of lots of computation per millisecond  
+Ok, now here is the problem  
+The seek time for getting your data, and I am actually gonna change this, I am gonna change this to write time because this is what I looked up before class 
+Is a round, how long do you think to write out a piece of data to your disk? 
+Well, I kind of write it down differently from what I intended to  
+I wanna get it right, it's 100 mb per second  
+So what transform that to millisecond for me, I can't think this in the class, divide by 6? divide by 3? 30? I don't know ￣▽￣     
+
+
+

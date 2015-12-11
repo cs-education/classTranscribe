@@ -1,0 +1,28 @@
+All right. All of these have stories. I think this is why we are gonna do this.
+All right. So here is another graph. You've probably seen graphs like this before. Um..this is a surface mesh, uh...of a little thing. OK, a surface mesh. But dataset itself, which is really just the vertices here. The data set itself is a classic dataset used in, um, graphics algorithms, used as a benchmark for any kind of new graphics algorithm that anybody ever wants to do. So they refer to the dataset itself as the Stanford bunny, for obvious reasons. It came..I mean it happen to have originated at Stanford in their graphic research group. And examples of its use as a benchmark 
+
+are, are there somebody with testing out too see how there, you know, how their, the lighting source worked with this shiny texture that map onto something in here. You know, hair is the hardest 
+
+thing to model. And so it's very common to have a ten-set modeling hair graphically. And the graph part of this is really fascinating. So this data set is way way way way way too dense. It has way 
+
+too many vertices. And so the goal is to come up with a reasonable way of shrinking that dataset into something tractable, something that can pop way quickly or something you can animate most 
+
+specifically something that can be man animated for example. And then to use the triangulation the triangle mass mesh must be between the vertices and surfaces on which to build your graphic 
+
+applications. So sitting underneath that shiny bunny is actually a whole bunch of triangles, each of which has coloring map onto it, in a particular way. OK, based on physics, the physics of light 
+
+and color, OK, and movement and angle, and lots of different things. So, the goal, then, is, in computational geometry is to take a dataset and to shrink it down in a meaningful way. Now this bunny 
+
+was created with pretty good, with a pretty good algorithm. It looks like because in areas of high curvature there are still lots of points. But in area of low curvature, like, you know, where the 
+
+cross the back of bunny, there aren't many points that is the triangle themselves are fairly close to the actual surface the bunny. OK, Any questions about that? So this is cool. This was when I 
+
+first came to grad school this was what I thought. I wanted to do 'cause it's just fond to think about. OK, so the graph itself is the vertices that actually do lie on the surface of some bunny, 
+
+somewhere, historically. And the edges are created algorithmically to represent the surface of bunny, to be representatives of the surface of the bunny. Now all right so what's the rest of the 
+
+story? The rest of the story was I was in my aunt's house in Saratoga, CA, which is kind of close to Stanford and we were in her family room. It's a family gathering I haven't seen her for a long 
+
+time, it was great. Sitting in the family room, looking up at her book shelf and there is the Stanford bunny, like. So little tarakada bunny, right? I had only ever seen it in that form. And I 
+
+guess... I'm like Ah..!!! GOD! Ah!!!! Ah!!!!!! So the most mysterious thing to fame I ever experienced. After I woke up...no I didn't really pass out get but you were to get that bunny! but it turns out the bunny is just some mass-produce little long ornament. There is probably thousands of them especially in Bay Area long ornament stores, or something like that. But!! But you know just a for moment before that I thought I was in the present of greatness. So this is rightly boy, who is now 8. OK any questions or comments about that? So if you are interested in computational geometry or graphics, of course there are experts in our department who will be very happy to talk to you. All right.

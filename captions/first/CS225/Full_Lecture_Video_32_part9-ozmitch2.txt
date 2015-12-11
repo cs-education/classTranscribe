@@ -1,0 +1,17 @@
+And the implication there is less than is defined on heaps and we don't have that constraint on hash tables.
+So why do we talk about binary search tree at all if hashing is so great? The answer to that is simply that in avl trees get us something else.
+They get us data nearest neighbor search
+They give the ability to, if we have distance defined we can evaluate how close we are to a particular key.
+Where as in hashing, two keys that are close in distance could be way far away from each other in the table BST assures that similar keys are close to each other in the tree.
+Hashing doesn't give you that.
+No such assurance.
+Hashing can make no such assurance.
+Now, what does this mean?
+It means that I can saving an AVL tree, okay here's a key, I know its not in the tree, but give me the closest one. 
+You can't do that in a hash table. 
+If I come to a hash table with a key and say "I know this isn't here give me the closest one" it will go "what?" and not able to respond efficiently. 
+Alright, ahhhhhhhhhhh! Bleh!
+
+
+
+

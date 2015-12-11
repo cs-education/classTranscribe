@@ -1,0 +1,16 @@
+Anybody in this room love their Surface pro 3?  Not one single person, what does that tell ya?  Alright well I don't know what to do here, we'll try. I'll let you share my pain.  I'm fairly certain I can connect.  "Connecting to class", yay.  Okay.  Hahaha.  Yeah, nothin' I got nothin'.  Absolutely nothin'.  So, you should quit your slideshow right if all else fails just quit your slideshow.  No?   Okay and so watch this.  Watch.  You watching?  You got it?  And.. "show".  Look, it even flashed.Okay, fine.  How do you restart it?  Just, power?  Slide to shut down your PC.  It's gonna have like 10 minutes of updates 'cause I never restart it.  What should we talk about? 
+
+Yeah what'd you do this weekend?  I'll tell you what I did this weekend, are you interested?  Yeah, okay I watched Gilmore Girls for the first time with my daughter.  It was awesome.  I'd never seen it before so it was great.  Alright, anybody, anything else?  Anybody wanna share?  Oh, I wanna know what you ate.  Did anybody eat anything good?  Food.  Unusual food.  No unusual food?  Chicken.  Who didn't eat chicken?  All weekend this weekend.  No chicken this weekend?  No chicken this weekend?  You guys have to indulge me here, okay?  This is just...  It's Monday.  Alright... uhhhh... let's see where are we here?  Updates are available, I'll bet you.  
+
+Welcome, don't even tell me welcome.  Yeah, don't tell me "good morning" either.  Connected.  Oh, that's nice.  Okay.  An update is being installed, YES!  Okay.  I'm almost there, guys.  This was the right advice.  I'm sorry.  Where's my pen?  
+
+Yaaaaay!  I can't believe you're late.  Jeez.  Gah.  Sorry everybody.  Ummm.
+
+Alright, we don't usually talk about hashing tables, that'd be like the world's fastest way to get somebody to go "Hah, that person doesn't know what they're talking about".  We usually talk about hash tables so let's do that.  I actually would like to hear what delightful things happened to you this weekend.  Ummm.  I stayed overnight in Siebel for a slumber party and it was not the first time I've ever stayed overnight in Siebel but it was the first time where I actually had a pillow to do so, so that was exciting.  
+
+Alright, hash table consists of what?  Okay, so this is like pulling stuff... this is like waking up friday or something.  So what the heck is a hash table?  And by asking you this I'm asking you about the implementation.  Okay?  So how do we implement a hash table?  What do we need for sure?  Name one thing.  Okay, you gotta raise your hand because I don't know what you said.  Somebody raise their hand that just spoke.  Yes?  An array, very good.  We need an array.  And that's just your plain old dynamic array, okay, indexed by numbers.  Okay?  It's the internals of the interface.  This is for implementation purposes.  Okay, what else do you need?  Yeah?  A hash function.  Good.  We talked last time about that function's qualities.  And what else do you need?  Oh...
+
+What did we talk about?   Yes?  Right, a collision resolution strategy.  
+
+
+

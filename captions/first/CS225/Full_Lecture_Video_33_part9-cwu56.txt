@@ -1,0 +1,15 @@
+Ok,any question about it?
+Simple code, complex, complex ideas, simple code. Alright, any questions? You good? Ok
+I wanna start with remove, we've got, according to my watch, we have 3 minutes, and so I wann leave you,I wanna leave you hanging in the middle of remove min, ok?
+So where's the minimum, always? At the root, I will return it everytime. The heap is broken!!
+We have broken the heap by removing the minimum. What are we gonna do? It's like cutting off you're right an left arm. What on earth are we gonna do?
+We need some glue, we need some glue to glue it back together.
+Where might the glue come from? 
+In this case, ok, so I am gonna do this in red, and that's a little bit of a hint, that is gonna get abrase later, ok? 
+So, uhm, we might say: Oh look! we can just move 5 up, right? and then we can just move 9 up, right? and then we could just move 12 up. 
+But then, its not a complete tree. Ohhh---, Ok, so I am gonna earse all that beacuse that breaks the completeness, which kind of breaks our whole reason for using the array to begin with, ok?
+The only element of the tree, the only node in the tree that I have easy acess to, that I can grab without breaking anything else is-11, ok?
+So, here's the justification, I know I need to remove something from the structure, I know I need to remove something from the structure. The easiest thing to remove from the whole thing is 11. So I am gonna remove 11 and use it as the glue, ok? where the thing I really wanna remove lives.
+Ok, so I am gonna remove 11, oops! I shouldnt do this part in red beacuse it's actually gonna work, usually. Ok? So we gonna remove 11, perfectly fine, use it as the glue up here, and we're good right? No! what are you gonna do? how are you gonna fix this? Swap 11 with- 5 in this example. In general, it's minimum child, ok? So we are gonna swap with the minimum child. So we swap 11 with 5, and then we swap 11 with 9. Oops! And then we swap 11 with 12. Uhm, No! no! no!, then we observe that 11 is greater than both of its parents, so we can quit, ok? 
+Any question about that? yeah? Hey you guys! He can't talk if you are loud, go ahead.
+Not necessarily, not necessarily, and first of all, anytime you say the word "shift", I am gonna go "hargh! hargh! hargh!", right? Uhm, but, but also you can also messed up the order by doing that: you dont know anything about the relative values of these keys with these keys. Alright see you next time, we will implement it next time.

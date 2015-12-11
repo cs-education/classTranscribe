@@ -1,0 +1,101 @@
+Okay.. any question about it?
+
+Simple code, complex... complex ideas, simple code.
+
+Alright, any questions?
+
+You good?
+
+Okay. 
+
+I wanna start with remove. We've got, according to my watch, we have three minutes and so I wanna leave you.. I wanna leave you hanging in the middle of removeMin, okay?
+
+So where's the minimum, always? At the root. Dunk!
+
+I'll.. I'll.. I'll return it every time. [GASP] The heap is broken!
+
+We have broken the heap by removing the minimum. 
+
+What are we gonna do?
+
+It's like cutting off your right and left arms, what on earth are we gonna do?
+
+We need some glue.
+
+We need some glue to glue it back together.
+
+Where might the glue come from?
+
+In this case, okay so I'm gonna do this in red and that's a little bit of a hint that it's gonna get erased later.
+
+Okay? Okay?
+
+So.. uh.. we might say oh look! We can just move five up, right?
+
+And then we could just move nine up, right?
+
+And then we could just move twelve up, 
+
+but then,
+
+it's not a complete tree!
+
+Ugh.....
+
+Okay. So I'm gonna erase all that cause that breaks the completeness which kind of breaks our whole reason for using the array to begin with.
+
+Okay.
+
+The only element of the tree, the only node in the tree that I have easy access to, that I can grab without breaking anything else is...
+
+eleven, okay?
+
+So here's.. here's the justification, I know I need to remove something from the structure, I know I need to remove something from the structure. 
+
+The easiest thing to remove from the whole thing is eleven.
+
+So I'm gonna remove eleven and use it as the glue, okay.
+
+Where.. I.. where the thing I really want to ..[gibberish].. remove lives.
+
+Okay so I'm gonna remove eleven. Whoops.
+
+I shouldn't do this part in red cause it's actually gonna work.
+
+[Gibberish].. usually.
+
+Okay so we're gonna remove eleven. Perfectly fine. Use it as the glue up here.
+
+And we're good right?
+
+No..., what are you gonna do? How're you gonna fix this?
+
+Swap eleven with... five in this example, in general it's minimum child, okay.
+
+So we're gonna swap with the minimum child. 
+
+So swap eleven with five.
+
+And then we swap eleven with nine.
+
+Oops.
+
+And then we swap eleven with twelve.
+
+Uh.. no.
+
+No.
+
+No.
+
+Then we observe that eleven is greater than both of its parents so we can quit, okay?
+
+Any question about that? Yeah?
+
+Okay you guys, he can't talk if you're loud. Go ahead.
+
+Not necessarily, not necessarily and first of all anytime you say the word shift, I'm gonna go [gibberish]... right?
+
+Um.. but, but also you can mess up the order by doing that. You don't know anything about the relative values of these keys with these keys, okay?
+
+Alright see you next time, we'll implement it next time.

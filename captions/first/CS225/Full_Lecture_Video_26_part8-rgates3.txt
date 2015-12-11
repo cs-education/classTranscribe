@@ -1,0 +1,19 @@
+So it kind of makes it like this is not calculus, right? The people were not wearing togas when they did this. 
+
+And the reason we choose this kind of height balance tree is I really strongly believe that if you've got a friend and a whiteboard, you could figure out how to do this yourself. It could just as easily have your names on it as these people who happen to be interested at that time.
+
+So, it makes it feel very accessible to me. Alright, so we're going to move toward implementation. You know the mechanics of doing a rotation but not how to deploy it at all, and that's okay. We're going to talk about that. We need to see; we need to think carefully about how to maintain the height, and we need to be careful about detecting the imbalance.
+
+So this one I feel like you already know. You understand the need for the second one. And the third one we haven't talked about at all.
+
+Okay, we already kind of talked about this. I forgot I had a slide for it. Is this tree height balanced? What's the lowest node in the tree that's out of balance?
+
+Five. Good. What kind of rotation would you expect to restore the balance? So this is intuition right now. There is no algorithm for you to apply. So this all just your intuition for what we've done so far. What kind of rotation? A right rotation. It would delight me to no end to see just somebody do like this during an exam. That would, like, be so fun.
+
+Alright, so yeah, a right rotation. Do you think it's single or double? Single, right. Because It's not right here that's long. It's already the weight is pushed way left. So good, your instinct is really good here. And the only thing I wanted to observe is that the height of this one was going to change. The height of this one was going to change, and in fact, the height of this one was going to change on the way up. It was a recursive call on the whole structure. Keep in mind that this piece might be a subtree of some much larger structure with who's height may also change because maybe this was the longest path, and so the height of that structure further up would change as well. Alright, any question about it? We already did this material on the previous slide.
+
+Okay, yay! It's the moment when we are going to identify the need for a rotation. Now, here's the thing. Last night, I puzzled over this slide for a while because I never like it. I never like how this slide goes. Here's why.
+
+It starts with the assumption that you have inserted into a particular place. The thing is that that's true. That is what is going to determine the rotation that we do. So I couldn't think of another way to do this. So if an insertion was in subtrees t3 or t4 and imbalance is detected at t, that's the setup. What determines whether an insertion was in subtrees t3 or t4? We were an insertion. What would that have meant?
+
+It meant that it was greater than t's right, right? So an insertion in subtrees t3 or t4 means it was greater than or equal to the key of t's right subtree. Fine, so those are sort of equivalent. Key is greater than or equal to t's right, the key that you're inserting. Alright, any question about that? That's what it means. They mean the same thing. Okay, and an imbalance is detected at t. Now remember that's just looking at the heights of the left and right subtree. That's looking at the heights of the left and right subtree. An imbalance means that it's heavier on the right, that imbalance is 2 then. The height difference is 2. Then, what do you think I'm gonna write here? What kind of rotation do you expect to fix this? Left. Good. Left rotation about t rebalances the tree. We gauge this so I actually think its easier to gauge this if we judge, if we judge the insertion position by the key greater than or equal to t's right. But actually we can also observe that the balance factor at t's right actually has to be 1.

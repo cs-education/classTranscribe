@@ -1,0 +1,75 @@
+alright
+I love this
+alright so these structures are called up-trees and they are awesome!
+okay? The first diagram that is drawn here is a forest of up-trees
+one of each up-trees has a single node and by conventional we draw it pointing
+we draw this little arrow point up to indicate that is the root
+okay? now how do we implement this thing?
+we implement it by denoting it as a root as negative one in a little table or array
+okay? any question about that?
+so I know if you give me a table that looks like that 
+then I know to draw this collections of up-trees
+now here's the thing we are going to use one up-tree per set
+so right now I've got four different sets each with one element
+ each of which is the root of up-tree
+okay? alright so now this is not interesting
+it's more interesting if I take an union
+so the question is what happens if I take a union of zero and one, for example?
+here's what I'm going to do
+here's zero ok 
+here's my up-tree that's zero
+here's my up-tree that's one
+I'm going to do this
+okay?
+I am going to take it and point it to this other element
+so in the picture I'm going to take it like this
+so zero points to one
+and in the table one is going to become zero's parent
+so this is the new representation of that
+okay? are you doing ok?
+now if I do a find on zero
+here's what's gonna happen
+I'm going to zero
+ok? who's your mama?
+it says "oh! one" 
+it goes to one and then  who's your mama?
+I have no mama
+I'm a root so one is returned
+ok? so Find(0) returns one after a walk up the tree
+ok? any questions about it?
+assure yourself if you do a find of zero and find of one you get the same thing
+ by do find a zero I got one if I find a one
+yeah! alright
+so let's do another union because this is interesting this is new
+lets' do another union
+let's do union wanna say something?
+ok zero and two
+this is actually really one to do
+ok? so this is the point which I'm going to make it important to do a find of zero and the find of two because the only arrows that we are going to change is going to be the roots arrows
+ok? so we are going to start here we are going to start with this representation 
+and effectively we have got a picture there 
+we gonna to a find of zero  to get one and a find of two to get two
+and we gonna to do this
+so zero is still going to point to one
+one is going to point two
+two is a root and three is a root
+ok? any questions about it?
+yea (student  asking  questions)
+yep they are roots right? they are roots of the top yes
+yep that's right but we have more than one
+now that picture is accurate as our last example
+ok? is it ok?
+alright yep?
+(students asking)
+zero points to one still
+see zero points to one?
+one now points to two
+and two is a root
+ok yea?
+(students asking)
+yes unions only happens at root unions only happens between things whose value is negative one
+ok? any question about that? yea?
+(students asking)
+
+
+

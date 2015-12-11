@@ -1,0 +1,139 @@
+Yup, yeah yeah. So he's asking about how many helper functions you need for this. 
+
+I need one for height, I need one for balance factor, I need one.. 
+
+I need four for the, uh.. four for the rotation cases. 
+
+Yeah, that's a lot but yeah. I need those constructors and you know, 
+
+this is.. this is what we're good at this point. 
+
+This is what's gonna get you a gazillion dollars, but not me. 
+
+Okay...
+
+Alright, AVL tree removal. 
+
+What happens if I remove nine? 
+
+Oh...... [gibberish]. 
+
+Oh yeah okay. 
+
+First of all, is this tree in balance? Is this a balanced tree? 
+
+Yes it is. 
+
+Okay, there is nothing obviously out of balance I don't think. 
+
+You can pretty much eyeball it here. 
+
+What happens if I remove nine? 
+
+It's even better, I got a better one. 
+
+What happens if I remove ten? Ha ha. 
+
+Yeah. 
+
+Alright. 
+
+Alright. So lets trace this a second. 
+
+This is just an example. I wanna remove, I'll remove nine. 
+
+Ten is structurally the same. Okay. 
+
+So we remove nine and we have every reason to believe,
+
+we have every reason to believe the process for removal mimics that of insert, 
+
+that is that we can kind of test after we change the structure of the tree 
+
+wether or not a rotation is necessary. 
+
+Now what's interesting about this of course, is that binary search tree removal invokes an in order predecessor, 
+
+which invokes.. may invoke further cutting off of the tree and so actually it's not even just in the um 
+
+removal where you need this checking of height but also 
+
+um in the.. in order predecessor evaluation portion. 
+
+So, but, we're not gonna do those details here, that's for lab. 
+
+For now, we're just gonna remove nine. 
+
+So now my question is what kind of rotation fixes this tree? 
+
+Some kind of left rotation, correct? 
+
+Some kind of left rotation. 
+
+Which kind of left rotation? 
+
+Single or double? 
+
+Double, that's right! 
+
+Because at that point the balance factor here, 
+
+the balance factor here would be two, 
+
+the balance factor here would be negative one. And so its a left right rotation that's necessary. 
+
+Oh that's why. 
+
+Because here you can use the same balance factor function ha ha I see. 
+
+So in the end, after we do this, I'm gonna put this in red because you'll be able to see it, you'll be able to see what happens. 
+
+In the end, I'm going to have eleven here, ten there, and twelve here, still. Okay. 
+
+And this will be gone because the rotation will result in this. 
+
+And then we will complete execution of that recursive call and come here and what happens? 
+
+Oh.....
+
+Now it's out of balance.
+
+Okay, you see that?
+
+Because it's long on this side, we've shortened one that was barely long enough right? 
+
+This side was barely long enough and we've shortened it.
+
+So that creates another imbalance. So what kind of rotation is gonna fix it?
+
+A right rotation, right!
+
+Yes. Very good.
+
+And what do you think? A right... or a double or a single?
+
+Single, I think either one of them works in this case but.. we might as well go single here, right?
+
+So, it's going to result in a right rotation about eight.
+
+Now, think about it. 
+
+This tree rooted at 8 might barely have been long enough and we shortened it. 
+
+Okay, it might be a subtree.
+
+This.. this tree that I have painted here might be a subtree in some larger structure and it might barely have been long enough, tall enough and we just shortened it. 
+
+So it's possible that actually fixing things at eight would cause the need for rotation farther up the structure.
+
+So it is possible in fact that when you do a removal, you may have to do rotations all the way up the tree.
+
+Okay, any question about that? You see how that's possible?
+
+Okay...  uhh.. let's move on.
+
+We'll see how far we get here.
+
+Just a little bit.
+
+So....

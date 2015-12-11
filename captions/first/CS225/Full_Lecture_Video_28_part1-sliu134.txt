@@ -1,0 +1,60 @@
+Any questions about that?
+So if we forget to say it, it will always mean at least big O possible.
+You probably recognize I could put a two to the n in there, in that quality would hold for almost everything that we do.
+Alright, let 's get started.
+So i am gonna draw last picture every quickly.
+I tried to do it in powerpoint and I'm just not a power powerpoint user.
+So I failed.
+Alright. Here is the running time of our function.
+So here the running time of our algorithm.
+That is the function that reflects it.
+We don't necessary know how it characterized. 
+We don't know... you know, it has to do with all kinds of things that are not necessarily analytic... like whether it's Thursday or something like that.
+We don't know what kind of function it looks like.
+But we have a feeling that there is this other function somewhere we can use to reflect the running time of our function.
+Now we also don't know what's this function look like.
+it might look like something like that.. 
+um actually this one, we do know what it looks like.
+um in the case of this particular example, we are going to argue that the running time is log size of the data.
+now the reason we suspect that inappropriate running time  is because the structure  of our tree.
+Because of the height of binary balanced tree.
+We didn't just pull this out of the air. It was sort of a good guess, based no the.. you know.. the way our tree split out data in half.
+In fact, you know , for regular binary trees we couldn't say this. 
+We couldn't day log n there. For regular binary search tree, that's an n.
+We couldn't guess log n, we can't prove it.
+OK! But, in the definition up here,we allow some mushiness.. 
+Basically, we allow for that function what ever it is, to be pushed up by a constant scale factor. OK, positive scale factor whose intension is to push that function up a little bit.
+And we also allow, so that's the c... We also allow for some mush at the start.
+Ok? Now, i'm going to draw the c times g of n in kind of a exaggerated way because there's something that I want to illustrate very concretely on the picture. 
+So I am gonna draw the c time g of n sort of like um.. this.
+So this is like c times g of n. 
+And maybe I had g of n drawn poorly.
+Doesn't really matter too much..
+OK..
+So now, is f of n greater than c time g of n? I mean sorry. is f of n less that c times g of n? like we want??  this inequality is f of n less than c times g of n.
+Sometimes  this is the right answer.
+Sometimes it is forever less than eventually??
+Yes OK.
+So we have a bound here.. right? here ..beyond which f of  n is forever less than c times g of n.
+If I were to label this point on the x axis,what would it be??
+OK. That's right. That's k.
+Good. OK. Any question about that?
+So this is ... doing this carefully here.. I actually think this should be done carefully in 173.
+Don't know if it is or not.
+ I am doing it carefully here because we are going to... it turns out that making this less than or equal to argument here is a pain in the neck.
+There are all kind of like potential error in rounding and ceiling and flooring..and  I don't wanna deal with that kind of stuff.
+I don't know about you. So what we are gonna do instead is invert the argument completely.
+So we are gonna try to invert this picture.
+So I haven't practice this in  a while.
+It's been four years since I draw this pictures. So let's see if I can do it.
+So where does f of n go now.. in the inverted picture. Oh boy...
+OK.. It goes like this, right?
+Is that what f of n looks like?
+OK.. one of them is done..
+g of n as I have drawn here does goes a little bit further from the axis and it stays forever on the black side of the f of n.
+G of n looks like this.
+And c times g of n, now, looks like .. ohhhh boy..
+it looks like this.
+Did I do it right.. ish??
+Oh.. 
+

@@ -1,0 +1,25 @@
+Uh, alright.
+So it turns out you cannot avoid collisions. You just can't. They are going to happen and
+the question is how do you handle them? The results you see here are classic approaches to handle collisions. You will have better ideas but everybody in your world expect you to know these and in fact all of your better ideas are going to be modificate and almost all of your better ideas are gonna to be modifications of some sense of these.
+So, the first one thatwe are going to talked about is the"separate Chaining" .
+And that's the vocabulary associated with it.
+Um, there's additional vocabulary, it is as known as the "Open hashing" Strategy. 
+Now the reason for that it, we are not going to put all of our data in a table. Instead, we are gonna use the table to gain access to the collection of our data.
+Alright, so here's what looks like.
+So here's a particular set, here's our set of data, um we are gonna say in general, the size of our data is N, and our hash function is easy in this case. It's just k mod the table size. Its the key mod table size. If you could actually imagine that our keyspace is more interesting, and we apply other hash functions to get down these integers and now what
+we are doing is just making it fitting in the table if you want.  If you want to think it that way. 
+Ok, so here's what we do. We take a key, we take a mod 7 and that's where we put the data, but we don't put the data in the table. Instead we put in the obserialy structure associated with the table and in this case we are gonna use a linked list.
+So, what is 16 mod 7, 2! so alright, 16 goes to here and we are going to put a linked list
+beside uh titled at tail 2. How about 8, where did 8 go? Into the linked list associated with cell one, how about 4?
+ok, how about 13, I can do it easy easy!
+Any questions? good? So 29 goes where? where is 29 go? 1, good.
+Should I put it at the end or front of the list? I want to do it fast. So where should I put it?
+From of the list!
+Right, so there's no reason not  to put that thing in the from of the list. So forgive me
+drawing it like this. I am doing a classroom hack here.
+OK, how about 11, where does 11 go? Even I can take 11 mod 7, and 22 ohhh brother.
+Alright, any questions about this? Make sense? Just a series of linked list.
+You like this?
+Why? What's bad about it?
+Feels like cope bat? Does it?Cock it, handle your collisions and I will let you collide, what could go wrong here?
+Yeah?
