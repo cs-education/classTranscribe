@@ -3,7 +3,9 @@ Hi! Welcome to a quick introduction on how to set up a ClassTranscribe instance.
 
 ### 1. Install docker if you don't already have it
 [linux](https://docs.docker.com/linux/step_one/)
+
 [mac](https://docs.docker.com/mac/step_one/)
+
 [windows](https://docs.docker.com/windows/step_one/)
 
 ### 2. Grab the docker image
@@ -11,6 +13,7 @@ Hi! Welcome to a quick introduction on how to set up a ClassTranscribe instance.
 
 ### 3. Launch the docker image into the CL
 `docker run -e "REDIS_PASS=<pass>" -e "REDIS_HOST=<host>" -e "MAILER_ID=<email>" -e "MAILER_PASS=<pass>" -p 80:80 -a stdout -a stdin -i -t obmelvin/class_transcribe:v3 /bin/bash`
+
 Note that REDIS_PASS/HOST and MAILER_ID/PASS should all be environmental variables.
 REDIS_PASS/HOST correspond to the password / hostname needed to connect to the desired redis instance.
 MAILER_ID/PASS is a gmail address and password that will be used to send the progress emails.
@@ -31,6 +34,7 @@ Update the repository with `git pull origin master`. This is necessary each time
 
 ### 7. How to reconnect to docker image
 `docker ps` to get the running images. Find the desired ID.
+
 `sudo docker exec -i -t <docker_ps_id> bash`
 
 
