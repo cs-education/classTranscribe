@@ -11,7 +11,7 @@ client.smembers("ClassTranscribe::Finished::" + className, function (err, result
   });
 
   results.forEach(function (videoWithName) {
-    var captions = fs.readFileSync("captions/second/" + className + "/" + videoWithName)
+    var captions = fs.readFileSync("captions/second/" + className + "/" + videoWithName.replace("txt","json"))
     console.log(captions + ",");
   })
 })
