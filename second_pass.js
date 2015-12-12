@@ -19,7 +19,7 @@ function secondPass() {
         console.log(err);
       }
 
-      member = members[Math.floor(Math.random()*members.length)]; 
+      member = members[Math.floor(Math.random()*members.length)];
       var videoIndexNetid = member.replace(".txt", "");
       var command = 'python';
       var args = ["runner.py", className, videoIndexNetid];
@@ -27,12 +27,14 @@ function secondPass() {
       child.on("error", function (err) {
         console.log("failed to execute the second process");
         console.log(err);
-      })
+      });
       child.stderr.on('data', process.stderr.write.bind(process.stderr));
       child.stdout.on('data', process.stdout.write.bind(process.stdout));
-      child.on('close', function (code) {
-        console.log("Success!")
-        if (code === 0) {
+      child.on('close', function (code, type) {
+        if (type === 'SIGKILL') {
+          console.log("Killed for taking too long")
+        } else if (code === 0) {
+          console.log("Task moved")
           var fname = 'captions/second/' + className + '/' + videoIndexNetid + '.json';
           var transcription = fs.readFileSync(fname);
           client.sadd('ClassTranscribe::Transcriptions::' + fname, transcription);
@@ -45,7 +47,12 @@ function secondPass() {
         }
 
         lock = false;
-      })
+      });
+
+      setTimeout(function () {
+        console.log("Killing p2fa process for taking too long")
+        child.kill('SIGKILL');
+      }, 1000 * 60 * 10);
     })
   })
 }
