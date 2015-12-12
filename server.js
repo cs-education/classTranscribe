@@ -274,18 +274,8 @@ router.post('/progress/:className/:netId', function (request, response) {
       }
     });
 
-    client.keys("ClassTranscribe::Transcriptions::captions/first/*" + netId + "*", function (err, members) {
-      if (err) {
-        console.log(err);
-      }
-
-      count += members.length
-
-      mailer.progressEmail(netId, className, count);
-      response.end('success');
-    })
-
-    
+    mailer.progressEmail(netId, className, count);
+    response.end('success');
   });
 })
 
