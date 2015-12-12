@@ -1,19 +1,20 @@
 var nodemailer = require('nodemailer')
 var mailerPass = process.env.MAILER_PASS;
+var mailID = process.env.MAILER_ID;
 
 if (!mailerPass) throw "Need a password in environmental variables!";
 
 var transporter = nodemailer.createTransport({
   service: 'Gmail',
   auth: {
-    user: 'classtranscribe@gmail.com',
+    user: mailID,
     pass: mailerPass
   }
 });
 
 function sendEmail(to, subject, body) {
   var mailOptions = {
-    from: 'Class Transcribe Team <classtranscribe@gmail.com>',
+    from: 'Class Transcribe Team <' + mailID + '>',
     to: to,
     subject: subject, 
     text: body
@@ -33,7 +34,7 @@ function progressEmail(netId, className, transcriptionCount) {
   var body = [
     'Hi,',
     'You have completed ' + transcriptionCount + ' transcriptions for ' + className + '.',
-    'If you have any questions/concerns please email classtranscribe@gmail.com.',
+    'If you have any questions/concerns please email ' + mailID + '.',
     'Thank you for participating!',
     'The Class Transcribe Team'
   ].join('\n\n');
