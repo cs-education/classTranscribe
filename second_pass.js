@@ -24,13 +24,34 @@ function secondPass() {
       var command = 'python';
       var args = ["runner.py", className, videoIndexNetid];
       var child = spawn(command, args);
+
+
+      var threeMinuteTimeout = setTimeout(function () {
+        console.log("Killing p2fa process for taking too long")
+        child.kill('SIGKILL');
+      }, 1000 * 60 * 3);
+
+      var tenMinuteTimeout = setTimeout(function () {
+        console.log("Killing p2fa process for taking too long")
+        child.kill('SIGKILL');
+      }, 1000 * 60 * 10);
+
       child.on("error", function (err) {
         console.log("failed to execute the second process");
         console.log(err);
       });
       child.stderr.on('data', process.stderr.write.bind(process.stderr));
       child.stdout.on('data', process.stdout.write.bind(process.stdout));
+      child.stdout.on('data', function (data) {
+        if(data.toString().indexOf("tmp/sound.wav -> tmp/tmp.plp") > -1) {
+          console.log("THIS WILL WORK");
+          clearTimeout(threeMinuteTimeout);
+        }
+      });
       child.on('close', function (code, type) {
+        clearTimeout(threeMinuteTimeout);
+        clearTimeout(tenMinuteTimeout);
+
         if (type === 'SIGKILL') {
           console.log("Killed for taking too long")
         } else if (code === 0) {
@@ -48,11 +69,6 @@ function secondPass() {
 
         lock = false;
       });
-
-      setTimeout(function () {
-        console.log("Killing p2fa process for taking too long")
-        child.kill('SIGKILL');
-      }, 1000 * 60 * 10);
     })
   })
 }
