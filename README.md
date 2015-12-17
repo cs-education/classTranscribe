@@ -14,7 +14,7 @@ existing lecture recordings and enable enhanced educational features including c
 6. Launch the transcription aligner as a background process `nohup sudo -E node second_pass.js >> public/second_pass.log &`. (Control-C to get out of command, transcription aligner will remain running).
 7. To reconnect to the container, run `sudo docker exec -i -t <docker_ps_id> bash`. Use `docker ps` to find `<docker_ps_id>`.
 
-## How to launch a Class
+## How to launch a class
 
 1. Download lecture videos for a course, place in a directory.
 2. Rename videos to follow format Lecture_`<lecture_index>`.`<any video file format (wmv/m4a/etc)>`.
@@ -47,7 +47,7 @@ existing lecture recordings and enable enhanced educational features including c
 > 
 > Thanks, `<professor_name>`
 
-## How to Upload Transcriptions
+## How to upload finished transcriptions
 
 1. Have the latest version of transcriptions in your local repository by running `git pull origin master`.
 2. Run `scripts/videoGenerator.js <class_name>` to generate a list of videos. Create/Modify `javascripts/data/videos/<classname>.js` accordingly.
