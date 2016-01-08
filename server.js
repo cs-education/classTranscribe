@@ -66,7 +66,6 @@ router.get('/:className', function (request, response) {
   response.end(html);
 });
 
-var uploadHTML = fs.readFileSync('upload.html').toString();
 router.get('/upload', function (request, response) {
   response.writeHead(200, {
     'Content-Type': 'text/html'
