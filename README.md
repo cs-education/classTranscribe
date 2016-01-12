@@ -7,9 +7,9 @@ existing lecture recordings and enable enhanced educational features including c
 ## How to run your own instance of ClassTranscribe
 
 1. Install Docker on your machine using one of the following OS specific tutorials: [linux](https://docs.docker.com/linux/step_one/), [mac](https://docs.docker.com/mac/step_one/) or [windows](https://docs.docker.com/windows/step_one/).
-2. Pull down the ClassTranscribe container by running `docker pull obmelvin/class_transcribe:v3`.
+2. Pull down the ClassTranscribe container by running `docker pull obmelvin/class_transcribe:v4`.
 3. If you are contributing to an existing ClassTranscribe instance, ask the admin for the redis and email credentials. Otherwise, you'll need run your own redis instance ([tutorial here](http://redis.io/topics/quickstart)) and set up a gmail account.
-4. Run the ClassTranscribe docker image locally by running `docker run -e "REDIS_PASS=<pass>" -e "REDIS_HOST=<host>" -e "MAILER_ID=<email>" -e "MAILER_PASS=<pass>" -p 80:80 -a stdout -a stdin -i -t obmelvin/class_transcribe:v3 /bin/bash`.
+4. Run the ClassTranscribe docker image locally by running `docker run -e "REDIS_PASS=<pass>" -e "REDIS_HOST=<host>" -e "MAILER_ID=<email>" -e "MAILER_PASS=<pass>" -p 80:80 -a stdout -a stdin -i -t obmelvin/class_transcribe:v4 /bin/bash`.
 5. Launch the server as a background process within the container `nohup sudo -E node server.js >> public/server.log &`. (Control-C to get out of command, server will remain running).
 6. Launch the transcription aligner as a background process `nohup sudo -E node second_pass.js >> public/second_pass.log &`. (Control-C to get out of command, transcription aligner will remain running).
 7. To reconnect to the container, run `sudo docker exec -i -t <docker_ps_id> bash`. Use `docker ps` to find `<docker_ps_id>`.
