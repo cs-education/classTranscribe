@@ -58,7 +58,7 @@ function loadStartTime() {
     video.currentTime = startTime;
     var windowLocation = window.location.toString();
     var base_url = windowLocation.substring(0, windowLocation.indexOf("?"));
-    window.history.replaceState({}, document.title, base_url);
+    // window.history.replaceState({}, document.title, base_url);
     video.play();
   });
 }
@@ -69,6 +69,8 @@ function loadStartTime() {
 function bindEventListeners() {
   $(".video-selector").off().change(begin);
   $(".playback-selector").off().change(changePlaybackSpeed);
+  $(".share-video-button").click(shareVideo);
+  $(".copy-text-button").click(copyVideoURL);
 }
 
 /*
@@ -178,4 +180,33 @@ function scrollToSegment(segment) {
   viewerContainer.animate({
       scrollTop: viewerContainer.scrollTop() - viewerContainer.offset().top + segment.offset().top - 100
   }, 500);
+}
+
+/*
+  Copies a url to clipboard to share the video at a specified time
+*/
+function shareVideo(event) {
+  var video = $(".main-video")[0];
+  var currentTime = Math.round(video.currentTime)
+  var baseUrl = window.location.href;
+  url = baseUrl.slice(0, baseUrl.lastIndexOf("=") + 1) + currentTime;
+
+  $(".copy-text-area").text(url);
+  $(".copy-text-area").show();
+  $(".copy-text-button").show();
+}
+
+function copyVideoURL(event) {
+  var copyTextarea = document.querySelector('.copy-text-area');
+  copyTextarea.select();
+  try {
+    var successful = document.execCommand('copy');
+    var msg = successful ? 'successful' : 'unsuccessful';
+    console.log('Copying text command was ' + msg);
+  } catch (err) {
+    console.log('Oops, unable to copy');
+  }
+
+  $(".copy-text-area").hide();
+  $(".copy-text-button").hide();
 }

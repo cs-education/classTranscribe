@@ -18,6 +18,15 @@
   margin: 10px 0;
 }
 
+.share-container {
+  height: 50px;
+}
+
+.copy-text-area, .copy-text-button {
+  display: none
+
+}
+
 h1 {
   font-weight: bold;
   font-size: 45px;
