@@ -19,8 +19,25 @@ var exampleTerms = {
   "ece210": "Energy Signals",
 }
 
-var searchMustache = fs.readFileSync('search.mustache').toString();
+
+var homeMustache = fs.readFileSync('home.mustache').toString();
 router.get('/', function (request, response) {
+  response.writeHead(200, {
+    'Content-Type': 'text/html'
+  });
+
+  var view = {
+    className: "cs241",
+    exampleTerm: exampleTerms["cs241"]
+  };
+  var html = Mustache.render(homeMustache, view);
+  response.end(html);
+});
+
+
+
+var searchMustache = fs.readFileSync('search.mustache').toString();
+router.get('/f', function (request, response) {
   response.writeHead(200, {
     'Content-Type': 'text/html'
   });
