@@ -1,0 +1,78 @@
+* {
+  font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif !important;
+}
+
+.main-container {
+  padding-top: 20px;
+  width: 600px;
+  margin: 0 auto;
+}
+
+.header-container {
+  margin: 10px 0;
+  text-align: center;
+}
+
+.information-container{
+  font-size: 25px;
+  font-family: Helvetica;
+  margin: 10px 0;
+  text-align: center;
+}
+
+.course:hover, .button:hover{
+  font-weight: bold;
+}
+
+.button{
+  padding-top: 50px;
+  width: 50%;
+  float: left;
+  padding-bottom: 40px;
+}
+
+.search-container {
+  margin-top: 10px;
+  margin-bottom: -1px;
+  text-align: center;
+}
+
+
+h1 {
+  padding-top: 40px;
+  font-weight: bold;
+  font-size: 45px;
+  font-family: Helvetica;
+}
+
+.search-box {
+  padding: 15px;
+  width: 100%;
+  font-size: 20px;
+  border: 1px solid rgba(210, 210, 210, 0.8);
+}
+
+.search-box:focus {
+  border: 1px solid rgb(59, 153, 252);
+}
+
+.course-container{
+  padding-top: 30px;
+  font-size: 25px;
+  font-family: Helvetica;
+  margin: 10px 0;
+  text-align: left;
+}
+
+li {
+  padding-top: 15px;
+}
+
+b {
+  font-weight: bold;
+}
+
+* {
+  outline: none;
+}
+
