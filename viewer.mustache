@@ -1,5 +1,9 @@
 <html>
   <head>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="HandheldFriendly" content="true">
+
     <title>Class Transcribe</title>
 
     <!-- Begin Javsacript -->
@@ -36,30 +40,61 @@
   </head>
   <body>
     <div class="main-container">
-      <div class="header-container">
-        <h1>Class Transcribe</h1>
-      </div>
-      <div class="video-container">
-        <video class="main-video" width="600" controls>
-          <source class="main-video-source" src="http://angrave.github.io/sysassets/mp4/0010-HelloWorld-v2.mp4" type="video/mp4">
-        </video>
-      </div>
-      <div class="video_control-container">
-        <select class="video-selector"></select>
-        <select class="playback-selector">
-          <option selected value="1">Playback 1x</option>
-          <option value="1.25">Playback 1.25x</option>
-          <option value="1.5">Playback 1.5x</option>
-          <option value="1.75">Playback 1.75x</option>
-          <option value="2">Playback 2x</option>
-        </select>
-      </div>
-      <div class="share-container">
-        <button class="share-video-button">Get URL at current time</button>
-        <textarea class="copy-text-area"></textarea>
-        <button class="copy-text-button">Copy to clipboard</button>
-      </div>
-      <div class="transcription-viewer-container"></div>
+
+
+      <section class="menu">
+
+        <div class="menu-content">
+        
+          <ul id="menu">
+            <li><a onClick = "window.location = '/';">HOME</a></li>
+            <li><a >Class Transcribe</a></li>
+          </ul>
+
+        </div>
+      
+      </section>
+
+      <section class = "video-frame">
+
+        <div class="video-container">
+            
+            <video class="main-video" controls>
+              <source class="main-video-source" src="http://angrave.github.io/sysassets/mp4/0010-HelloWorld-v2.mp4" type="video/mp4">
+            </video>
+        
+        </div>
+
+        <div class="video_control-container">
+          <select class="video-selector" ></select>
+          <select class="playback-selector">
+            <option selected value="1">Playback 1x</option>
+            <option value="1.25">Playback 1.25x</option>
+            <option value="1.5">Playback 1.5x</option>
+            <option value="1.75">Playback 1.75x</option>
+            <option value="2">Playback 2x</option>
+          </select>
+
+           <button class="share-video-button">Get URL at current time
+          </button>
+          <textarea class="copy-text-area"></textarea>
+        </div>
+      
+      <!--oliver's code-->
+        <!-- <div class="share-container">
+          <button class="share-video-button">Get URL at current time</button>
+          <textarea class="copy-text-area"></textarea>
+          <button class="copy-text-button">Copy to clipboard</button>
+        </div> -->
+
+
+        
+        <div class="transcription-viewer-container"></div>
+
+      </section>
+
+      <!-- end of video-frame-->
+
     </div>
   </body>
  </html>
