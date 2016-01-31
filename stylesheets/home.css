@@ -297,6 +297,8 @@ h1 span{
   height: 360;
 }
 
+
+
 .grid p {
   font-size: 30px;
   text-align:center;
@@ -315,6 +317,9 @@ h1 span{
   color: #bfbfbf;
   font-weight: bold;
   cursor: pointer;
+}
+.grid li .text:hover{
+   opacity: 0.9;
 }
 
 
