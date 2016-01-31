@@ -1,78 +1,406 @@
-* {
-  font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif !important;
+
+
+@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,200,300,700,900&subset=latin,latin-ext);
+
+
+html, body{
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size:15px;
+  -webkit-font-smoothing: subpixel-antialiased!important;
+  color:black;
+  font-weight:400;
+  height:100%;
 }
 
-.main-container {
-  padding-top: 20px;
-  width: 600px;
-  margin: 0 auto;
+a{
+  text-decoration:none;
+  outline:none;
 }
 
-.header-container {
-  margin: 10px 0;
-  text-align: center;
+/* title:welcome to Class Transcribe */
+h1{
+  font-size:80px;
+  color:white;
+  font-weight:bold;
+  text-transform:uppercase;
+  line-height:1.2;
 }
 
-.information-container{
-  font-size: 25px;
-  font-family: Helvetica;
-  margin: 10px 0;
-  text-align: center;
+p{
+  font-size:19px;
+  color:white;
+  margin-top:50px;
 }
 
-.course:hover, .button:hover{
-  font-weight: bold;
+/* title : class Transcribe color: blue*/
+h1 span{
+  color:#2fa68e;
 }
 
-.button{
-  padding-top: 50px;
-  width: 50%;
+
+::selection {
+  background: #fff;
+  color:#2fa68e;
+}
+
+::-moz-selection {
+  background: #fff;
+  color:#2fa68e;
+}
+
+
+.container{
+  position:absolute;
+  width:100%;
+  height:100%;
+}
+
+
+/* Start page */
+
+.start-page{
+  position:relative;
+  width:100%;
+  height:580px;
+  background:url('img/background.jpg') 0px 0px fixed;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100%,100%;
+}
+
+.start-page .opacity{
+  position:absolute;
+  width:100%;
+  height:580px;
+  background:rgba(0,0,0,0.5);
+}
+
+
+.start-page .content{
+  position:relative;
+  width:900px;
+  margin:0 auto;
+  height:580px;
+}
+
+.start-page .content .text{
+  position:absolute;
+  text-align:center;
+  margin:auto;
+  top:0; 
+  left:0; 
+  bottom:0; 
+  right:0;
+  width:500px;
+  height:220px;
+  letter-spacing: 1px;
+}
+
+/* Menu */
+
+.menu{
+  position:relative;
+  width:100%;
+  height:90px;
+  background:#2f363e;
+  z-index:1000;
+}
+
+.menu-content{
+  width:900px;
+  position:relative;
+  margin:0 auto;
+}
+
+
+.menu-content ul{
+  width:900px;
+  left:10%;
+  float:left;
+  text-align:center;
+  list-style:none;
+}
+
+.menu-content li{
+  margin-left: 10%;
+  display:inline-block;
+  position:relative;
+}
+
+.menu-content li a{
+  color:#a3b2c0;
+  font-size:16px;
+  display: block;
+  padding: 0 20px 0 20px;
+  line-height:90px;
+  -webkit-transition: all 0.2s ease-in;
+  -moz-transition: all 0.2s ease-in;
+  -ms-transition: all 0.2s ease-in;
+  -o-transition: all 0.2s ease-in;
+  transition: all 0.2s ease-in;
+}
+
+.menu-content li.active a{
+  background-color:#131a21;
+}
+
+.menu-content li a:hover{
+  color:white;
+}
+
+
+/* About us */
+
+.about-us{
+  position:relative;
+  width:900px;
+  margin:0 auto;
+  margin-bottom:10px;
+
+}
+
+.about-us h1{
+  font-size:56px;
+  color:black;
+  text-align:center;
+  margin-top:50px;
+  font-weight:bold;
+  text-transform:uppercase;
+  line-height:1.2;
+}
+
+.about-us hr{
+  color: black;
+  margin-top:30px;
+  background-color: black;
+  height: 1px;
+  width:340px;
+  border:0;
+
+}
+
+/*the three column*/
+.about-us div{
+  width: 30%;
+  margin-left: 15px;
+  margin-top:40px;
+  float:left;
+  margin-bottom:70px;
+  height:350px;
+}
+
+.about-us p.title{
+  color: #919191;
+  margin-top:40px;
+  width:100%;
+  font-size:15px;
+  text-align:center;
+}
+
+.about-us h2{
+  text-align:center;
+  margin-top:20px;
+  font-size:29px;
+  color:black;
+  line-height:1.2;
+  width:100%;
+  position:relative;
+  font-weight:bold;
+  text-transform:uppercase;
+}
+
+.about-us p{
+  text-align:left;
+  margin-top:20px;
+  font-size:15px;
+  width:100%;
+  color:#919191;
+  line-height:1.4;
+  position:relative;
+  font-weight:400;
+}
+
+
+
+/* course */
+
+.course{
+  position:relative;
+  width:100%;
+  background:#23282d;
+
+}
+
+.course .course-margin{
+  position:relative;
+  width:900px;
+  overflow:hidden;
+  margin:0 auto;
+}
+
+
+.course .course-margin h1{
+  font-size:56px;
+  color:white;
+  padding-top:50px;
+  text-align:center;
+  font-weight:bold;
+  text-transform:uppercase;
+  line-height:1.2;
+
+}
+
+.course .course-margin hr{
+  color: black;
+  margin-top:30px;
+  background-color: white;
+  height: 1px;
+  width:340px;
+  border:0;
+}
+
+/* course grid */
+
+.grid{
+  margin-top:70px;
+  width:100%;
+  position:relative;
+  margin-bottom:70px;
+  overflow:hidden;
+}
+
+.grid li{
+  width:300px;
+  height:225px;
   float: left;
-  padding-bottom: 40px;
+  position: relative;
+  overflow: auto;
 }
 
-.search-container {
-  margin-top: 10px;
-  margin-bottom: -1px;
-  text-align: center;
-}
-
-
-h1 {
-  padding-top: 40px;
-  font-weight: bold;
-  font-size: 45px;
-  font-family: Helvetica;
-}
-
-.search-box {
-  padding: 15px;
+.grid li:nth-child(2n) .text{
+  position: absolute;
   width: 100%;
-  font-size: 20px;
-  border: 1px solid rgba(210, 210, 210, 0.8);
+  height: 225px;
+  background: #2fa68e;
+  opacity:1;
+  background-color: #ff6666;
+}
+.grid li:nth-child(2n+1) .text{
+  position: absolute;
+  width: 100%;
+  height: 225px;
+  background: #2fa68e;
+  opacity:1;
+  background-color: #2fa68e;
+}
+.grid li:nth-child(1) .text{
+  height: 360;
 }
 
-.search-box:focus {
-  border: 1px solid rgb(59, 153, 252);
-}
-
-.course-container{
-  padding-top: 30px;
-  font-size: 25px;
-  font-family: Helvetica;
-  margin: 10px 0;
-  text-align: left;
-}
-
-li {
-  padding-top: 15px;
-}
-
-b {
+.grid p {
+  font-size: 30px;
+  text-align:center;
+  margin-top:80px;
   font-weight: bold;
+  color: #FFF;
 }
 
-* {
-  outline: none;
+.grid span {
+  font-size: 30px;
+  text-align:center;
+  color: #FFF;
+}
+
+.grid span:hover {
+  color: #bfbfbf;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+
+.grid li:nth-child(1) .text:hover {
+  cursor: s-resize;
+}
+
+
+.grid p.description {
+  font-size: 15px;
+  width:300px;
+  margin-top:20px;
+  text-align:center;
+  font-weight: 400;
+  color: #FFF;
+}
+
+
+.clear { 
+    clear:both; 
+}
+
+
+/*professor*/
+
+.professor{
+  position:relative;
+  width:900px;
+  margin:0 auto;
+  margin-bottom:10px;
+  background:#FFF;
+}
+
+.professor h1{
+  color: black;
+}
+
+
+/* Footer */
+
+
+.footer{
+  position:relative;
+  width:100%;
+  height:90px;
+  background:#23282d;
+
+}
+
+.footer .margin{
+  position:relative;
+  width:900px;
+  margin:0 auto;
+  height:90px;
+}
+
+.footer .margin .menu-footer{
+  width:450px;
+  margin:0 auto;
+  float:left;
+}
+
+
+.footer .margin .menu-footer a{
+  line-height:90px;
+  padding-right:25px;
+  color:#5f666e;
+  -webkit-transition: all 0.2s ease-in;
+  -moz-transition: all 0.2s ease-in;
+  -ms-transition: all 0.2s ease-in;
+  -o-transition: all 0.2s ease-in;
+  transition: all 0.2s ease-in;
+}
+
+.footer .margin .menu-footer a:hover{
+  color:#FFF;
+}
+
+
+.footer .margin .copyright{
+  width:420px;
+  margin:0 auto;
+  text-align:right;
+  float:left;
+  line-height:90px;
+  padding-right:25px;
+  color:#5f666e;
 }
 
