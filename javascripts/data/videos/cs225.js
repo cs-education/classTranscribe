@@ -1,7 +1,6 @@
 // Video sources
 var VIDEOS = [
   ["Full Lecture Video 01 part0","https://s3-us-west-2.amazonaws.com/classtranscribes3/CS225/Lecture_01/Full_Lecture_Video_01_part0.mp4"],
-  ["Full Lecture Video 01 part0","https://s3-us-west-2.amazonaws.com/classtranscribes3/CS225/Lecture_01/Full_Lecture_Video_01_part0.mp4"],
   ["Full Lecture Video 01 part1","https://s3-us-west-2.amazonaws.com/classtranscribes3/CS225/Lecture_01/Full_Lecture_Video_01_part1.mp4"],
   ["Full Lecture Video 01 part2","https://s3-us-west-2.amazonaws.com/classtranscribes3/CS225/Lecture_01/Full_Lecture_Video_01_part2.mp4"],
   ["Full Lecture Video 01 part3","https://s3-us-west-2.amazonaws.com/classtranscribes3/CS225/Lecture_01/Full_Lecture_Video_01_part3.mp4"],

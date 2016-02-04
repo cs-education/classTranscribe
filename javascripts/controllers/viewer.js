@@ -226,7 +226,12 @@ function shareVideo(event) {
   var video = $(".main-video")[0];
   var currentTime = Math.round(video.currentTime)
   var baseUrl = window.location.href;
-  url = baseUrl.slice(0, baseUrl.lastIndexOf("=") + 1) + currentTime;
+  if(baseUrl.indexOf('startTime') > 0) {
+    url = baseUrl.slice(0, baseUrl.lastIndexOf("=") + 1) + currentTime;
+  } else {
+    url = baseUrl + '&startTime=' + currentTime
+  }
+  
 
   $(".copy-text-area").text(url);
   $(".copy-text-area").show();

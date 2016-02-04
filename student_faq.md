@@ -18,4 +18,4 @@ Occasionally there are issues with the microphone that may cause a lecture recor
 
 ### More questions?
 
-Please email me at omelvin2@illinois.edu.
+Please email us at classtranscribe@gmail.com.
