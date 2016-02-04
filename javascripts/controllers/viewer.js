@@ -185,7 +185,44 @@ function scrollToSegment(segment) {
 /*
   Copies a url to clipboard to share the video at a specified time
 */
+// function shareVideo(event) {
+//   var video = $(".main-video")[0];
+//   var currentTime = Math.round(video.currentTime)
+//   var baseUrl = window.location.href;
+//   url = baseUrl.slice(0, baseUrl.lastIndexOf("=") + 1) + currentTime;
+
+//   $(".copy-text-area").text(url);
+//   $(".copy-text-area").show();
+//   $(".copy-text-button").show();
+// }
+
+// function copyVideoURL(event) {
+//   var copyTextarea = document.querySelector('.copy-text-area');
+//   copyTextarea.select();
+//   try {
+//     var successful = document.execCommand('copy');
+//     var msg = successful ? 'successful' : 'unsuccessful';
+//     console.log('Copying text command was ' + msg);
+//   } catch (err) {
+//     console.log('Oops, unable to copy');
+//   }
+
+//   $(".copy-text-area").hide();
+//   $(".copy-text-button").hide();
+// }
+
+function waitSeconds(iMilliSeconds) {
+    var counter= 0
+        , start = new Date().getTime()
+        , end = 0;
+    while (counter < iMilliSeconds) {
+        end = new Date().getTime();
+        counter = end - start;
+    }
+}
+
 function shareVideo(event) {
+  var originalText = $(".share-video-button").text();
   var video = $(".main-video")[0];
   var currentTime = Math.round(video.currentTime)
   var baseUrl = window.location.href;
@@ -193,20 +230,24 @@ function shareVideo(event) {
 
   $(".copy-text-area").text(url);
   $(".copy-text-area").show();
-  $(".copy-text-button").show();
-}
 
-function copyVideoURL(event) {
+
   var copyTextarea = document.querySelector('.copy-text-area');
   copyTextarea.select();
   try {
     var successful = document.execCommand('copy');
     var msg = successful ? 'successful' : 'unsuccessful';
+    $(".share-video-button").text("Successfully Copied");
     console.log('Copying text command was ' + msg);
   } catch (err) {
     console.log('Oops, unable to copy');
   }
 
   $(".copy-text-area").hide();
-  $(".copy-text-button").hide();
+
+  setTimeout(function(){ 
+    $(".share-video-button").text(originalText);
+  }, 1000);
+
+ 
 }

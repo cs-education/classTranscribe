@@ -22,13 +22,13 @@ var VIDEOS = [
   ["Mini Video: SIGINT SIGALRM", "https://cs-education.github.io/sysassets/mp4/0190-SIGINT-SIGALRM.mp4"],
   ["Mini Video: Fork Waitpid Forkbomb", "https://cs-education.github.io/sysassets/mp4/0200-forkwaitpid-forkbomb.mp4"],
   // Lecture 0
-  ["Full Lecture Video 0 Part 0", "https://s3-us-west-2.amazonaws.com/classtranscribes3/CS241/lecture_0/media_part0.mp4", "2015-01-21T18:25:43.511Z"],
-  ["Full Lecture Video 0 Part 1", "https://s3-us-west-2.amazonaws.com/classtranscribes3/CS241/lecture_0/media_part1.mp4", "2015-01-21T18:25:43.511Z"],
-  ["Full Lecture Video 0 Part 2", "https://s3-us-west-2.amazonaws.com/classtranscribes3/CS241/lecture_0/media_part2.mp4", "2015-01-21T18:25:43.511Z"],
-  ["Full Lecture Video 0 Part 3", "https://s3-us-west-2.amazonaws.com/classtranscribes3/CS241/lecture_0/media_part3.mp4", "2015-01-21T18:25:43.511Z"],
-  ["Full Lecture Video 0 Part 4", "https://s3-us-west-2.amazonaws.com/classtranscribes3/CS241/lecture_0/media_part4.mp4", "2015-01-21T18:25:43.511Z"],
-  ["Full Lecture Video 0 Part 5", "https://s3-us-west-2.amazonaws.com/classtranscribes3/CS241/lecture_0/media_part5.mp4", "2015-01-21T18:25:43.511Z"],
-  ["Full Lecture Video 0 Part 6", "https://s3-us-west-2.amazonaws.com/classtranscribes3/CS241/lecture_0/media_part6.mp4", "2015-01-21T18:25:43.511Z"],
+  ["Full Lecture Video 0 Part 0", "https://s3-us-west-2.amazonaws.com/classtranscribes3/CS241/lecture_0/media_part0.mp4", "https://s3-us-west-2.amazonaws.com/classtranscribes3/CS241/lecture_0/media_part0.mp3", "2015-01-21T18:25:43.511Z"],
+  ["Full Lecture Video 0 Part 1", "https://s3-us-west-2.amazonaws.com/classtranscribes3/CS241/lecture_0/media_part1.mp4", "https://s3-us-west-2.amazonaws.com/classtranscribes3/CS241/lecture_0/media_part1.mp3", "2015-01-21T18:25:43.511Z"],
+  ["Full Lecture Video 0 Part 2", "https://s3-us-west-2.amazonaws.com/classtranscribes3/CS241/lecture_0/media_part2.mp4", "https://s3-us-west-2.amazonaws.com/classtranscribes3/CS241/lecture_0/media_part2.mp3", "2015-01-21T18:25:43.511Z"],
+  ["Full Lecture Video 0 Part 3", "https://s3-us-west-2.amazonaws.com/classtranscribes3/CS241/lecture_0/media_part3.mp4", "https://s3-us-west-2.amazonaws.com/classtranscribes3/CS241/lecture_0/media_part3.mp3", "2015-01-21T18:25:43.511Z"],
+  ["Full Lecture Video 0 Part 4", "https://s3-us-west-2.amazonaws.com/classtranscribes3/CS241/lecture_0/media_part4.mp4", "https://s3-us-west-2.amazonaws.com/classtranscribes3/CS241/lecture_0/media_part4.mp3", "2015-01-21T18:25:43.511Z"],
+  ["Full Lecture Video 0 Part 5", "https://s3-us-west-2.amazonaws.com/classtranscribes3/CS241/lecture_0/media_part5.mp4", "https://s3-us-west-2.amazonaws.com/classtranscribes3/CS241/lecture_0/media_part5.mp3", "2015-01-21T18:25:43.511Z"],
+  ["Full Lecture Video 0 Part 6", "https://s3-us-west-2.amazonaws.com/classtranscribes3/CS241/lecture_0/media_part6.mp4", "https://s3-us-west-2.amazonaws.com/classtranscribes3/CS241/lecture_0/media_part6.mp3", "2015-01-21T18:25:43.511Z"],
   // Lecture 1
   ["Full Lecture Video 1 Part 0", "https://s3-us-west-2.amazonaws.com/classtranscribes3/CS241/lecture_1/media_1_part0.mp4", "https://s3-us-west-2.amazonaws.com/classtranscribes3/CS241/lecture_1/media_1_part0.mp3", "2015-01-23T18:25:43.511Z"],
   ["Full Lecture Video 1 Part 1", "https://s3-us-west-2.amazonaws.com/classtranscribes3/CS241/lecture_1/media_1_part1.mp4", "https://s3-us-west-2.amazonaws.com/classtranscribes3/CS241/lecture_1/media_1_part1.mp3", "2015-01-23T18:25:43.511Z"],
@@ -291,8 +291,18 @@ $(document).ready(function () {
   VIDEOS.forEach(function (video, i) {
     var title = video[0];
     var src = video[1];
-    var template = '<option class="video-option" value="' + i + '">' + title + '</option>';
+    var date = video[3];
+    var part_array = title.split(" ");
+    var part = parseInt(part_array[5]) + 1;
+    if (i <= 19){
+      var template = '<option class="video-option" value="' + i + '">' + title + '</option>';
+      $(".video-selector").append(template);
+    }
+    else{
+      var template = '<option class="video-option" value="' + i + '">' + date + ' -- Part' + part +'</option>';
     $(".video-selector").append(template);
+    }
+    
   });
 });
 
