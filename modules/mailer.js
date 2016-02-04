@@ -3,6 +3,7 @@ var mailerPass = process.env.MAILER_PASS;
 var mailID = process.env.MAILER_ID;
 
 if (!mailerPass) throw "Need a password in environmental variables!";
+if (!mailID) throw "Need a gmail address in environmental variables!";
 
 var transporter = nodemailer.createTransport({
   service: 'Gmail',
@@ -42,5 +43,6 @@ function progressEmail(netId, className, transcriptionCount) {
 }
 
 module.exports = {
+  sendEmail: sendEmail,
   progressEmail: progressEmail
 };
