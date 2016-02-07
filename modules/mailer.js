@@ -30,16 +30,18 @@ function sendEmail(to, subject, body) {
 }
 
 function progressEmail(netId, className, transcriptionCount) {
-  var emailSuffix = '@illinois.edu';
-  var subject = className + ' Class Transcribe Progress';
-  var body = [
-    'Hi,',
-    'You have completed ' + transcriptionCount + ' transcriptions for ' + className + '.',
-    'If you have any questions/concerns please email ' + mailID + '.',
-    'Thank you for participating!',
-    'The Class Transcribe Team'
-  ].join('\n\n');
-  sendEmail(netId + emailSuffix, subject, body);
+  if (netId != null) {
+    var emailSuffix = '@illinois.edu';
+    var subject = className + ' Class Transcribe Progress';
+    var body = [
+      'Hi,',
+      'You have completed ' + transcriptionCount + ' transcriptions for ' + className + '.',
+      'If you have any questions/concerns please email ' + mailID + '.',
+      'Thank you for participating!',
+      'The Class Transcribe Team'
+    ].join('\n\n');
+    sendEmail(netId + emailSuffix, subject, body);
+  }
 }
 
 module.exports = {
