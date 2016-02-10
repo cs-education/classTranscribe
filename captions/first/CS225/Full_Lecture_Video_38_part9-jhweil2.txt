@@ -1,0 +1,13 @@
+how do I do it? whats the algorithm?
+Set this to null, set this to null, etc.
+So that process is O(n).
+Any question about it?
+We are going to leave it blank and then resize downward, when it gets too sparse.
+So we don't have to shift the data, ok, but we do have to walk across looking for all of them.
+How about checking to see if two vertices are adjacent?
+O(1), yay, this is why this one is so beautiful. This is the constant time array lookup.
+Is this NULL? Is this NULL? etc.
+You also have to go down the v, so you have to go this way too. So its 2n instead of 1.
+Then finally, how long does it take to return a set of incident edges on a given vertex? Where do they come from? They come from a row in the table, right? And so this is O(n) as well.
+Is that better than this? Is that better than the previous slide? The answer is it depends. What does is depend on?
+Yes! How big the m is, whether m is bigger or smaller than n. In general it is better. It is pretty rare, you would not implement your graph using this structure if you didn't have very many edges, so in general this is the better approach. Next time we will get to take this recommendation and we will do an implementation called an adjacency list. [People leaving, no talking]

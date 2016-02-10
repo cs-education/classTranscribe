@@ -1,0 +1,25 @@
+Anna: "S", which is just a name, is going to be gone. We cannot access "S" anymore. So that second name is gone now, but that's not a big deal because it's still "C", so we return 18 here. And when we try to print out "C"'s age, we get 18. It's pretty cool, right? Is this good? What's good about it? Fast, syntax good, can access without copying the same data. What's bad about it?
+
+Student: (inaudible)
+
+Anna: Ya?
+
+Student: (inaudible)
+
+Anna: Yeah.
+
+Student: (inaudible)
+
+Anna: Yeah. But that was all along in passing by pointer. So we have to be very careful that we are still sharing data with the main, um, function. Yes. But the answer was actually "nothing". There is nothing bad about this. Just do it. So that is the answer -- that is the correct answer. But you can always find bad things in good things, right? So, here we go . So, but, really, nothing bad about it. Use passing by reference, whenever you can because it's just a good way of doing things. It's clean. Ya.
+
+Student: What happens if you deleted S in birthday.
+
+Anna: We cannot delete S in birthday because it's on the stack.
+
+Student: Oh, okay.
+
+Anna: So know those kinda of weird things. Ya?
+
+Student: Can we pass the pointer (inaudible).
+
+Anna: That's the question I wanted to hear. So can we come back to the previous slide and fix that one problem that we had. So I said we passing pointer by value, but could you pass pointer by reference? And the answer is yes, and you will do that a lot in lab trees. Two months from now, one and a half months from now. Good. And the reason for it is what if a variable does not live on the stack, you're stuck with a pointer to it. How do you safely pass the pointer so that you can null it? And the answer is pass the pointer by reference and the syntax for that would be passing s as a pointer by reference. Flag it out with the ampersand And you''ll be seeing that in the code. And instead of creating a local copy of a pointer, it would just create a new name for the old global pointer b. And then you could set it to null, exit, and know if it became null or not. Okay? Does that make sense? But it's a little jumping ahead. So I just want to prepare you for what will be coming later. But yes, you'll be surprised, you'll be seeing it and sometimes it's just confusing because there's just ampersands and asterisks all over the place, right? But that's how you read it. Okay, so that's cool. That's really cool. Passing, it seems that, passing parameters is ... is not that bad. But we are passing it to the function, what happens upon the exit. That's where things can go really really bad. Really interesting things can happen. Although it seems like it should be the same mechanism. So. I did talk about passing the parameter through the function form the calling function, but now I want to see what happens upon this function terminating execution. Did all the cleanup and sending the value back as the right-hand-side of the expression or any other expression it might be called in. And the ways to do that is by value and we did so far. We were just returning the integer value, the 8, that we updated by value. So we just copied it into the right hand side. So that's the default -- default way of doing it. But, as you can imagine, you could pass the return value by pointer, by value.

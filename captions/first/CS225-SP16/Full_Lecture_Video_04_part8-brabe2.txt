@@ -1,0 +1,29 @@
+It will not allow you to say "oh I don't know how much stack memory I will need I will tell you later". The system will not let you so you will have to, for your arrays, you will have to ask for space on the heap because the heap is not as high maintenance. The system does not have as much control over it. How different is it from C? Um, syntax. New keyword corresponds to alloc. Delete which we didn't see yet corresponds to free. If you know C, this is similar in some way to that. At least these two statements. Very very similar just different syntax. Okay, so, um, I'm gonna give you something fun which will tell us, sorry this is the wrong location. It is a movie created by one of our students from former semesters and it is about pointers and it kind of is foreshadowing for what is coming because it will talk a bit about NULL pointers and delete statements.
+
+[video "Binky Pointer Fun Video C++" plays]
+
+It's time for pointer fun. To get started, I guess we are going to need two pointers. These pointers
+
+[listed on screen as (int * x) and (int * y)]
+
+point to integers. Well, I see the two pointers but they don't seem to point to anything. That's right, pointers don't originally point to anything, called the pointees, and setting them up is a separate step. So how do you allocate a pointee? So this code
+
+[listed on screen as (x = new int)]
+
+allocates a new integer and sets x to point to it. Hey, that looks better. So make it do something. This code
+
+[listed on screen as (*x = 42)]
+
+sets the value of x by dereferencing the pointer.
+
+[some gibberish about a magic wand of dereferencing]
+
+Doing a dereference on pointer x uses the address to access the pointee. Hey, try using it to store 13 there using the other pointer. Hey, that didn't work. Say, Binky I don't think dereferencing y is a good idea because we never set it up and it is a separate step. We allocated the pointer y but we never set it to point to a pointee. Can we fix it so y points to the same pointee as x? Sure, there's no special syntax for the pointee.
+
+[shows code (y=x) on screen]
+
+Oh, I see. Now y points to the same place as x. Hey, now y is fixed so you can try to dereference to send the number 13 over. Uh, okay here goes. Hey, look at that now dereferencing works on y. And becuase the pointers are sharing that one pointee, they both see the 13.
+
+Just remember the three pointer rules. Number one, the basic structure is that you have pointer and it points over to a pointee. But the pointer and pointee are separate, and a common error is to set up the pointer but forget to give it a pointee. Number two, pointer dereferencing starts at the pointer and follows the arrow over to the pointee. As we know, this only works if there is a pointee which kind of gets back to rule number one. Number three, pointer assigment takes one pointer and changes it to point to the same pointee as another pointer so after the assignment both pointers point to the same pointee. This is sometimes called sharing. 
+
+Okay, so I'm gonna run a couple of examples and next time we'll go over some more complicated examples that will eventually lead us to setting up all of the array structures in the heap memory that can be a problem. So here's my code. This corresponds to the next slide so on the next slide, this is too simple so we're not gonna do this. We are gonna start with this one.

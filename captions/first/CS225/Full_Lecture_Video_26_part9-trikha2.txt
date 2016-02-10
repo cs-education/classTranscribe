@@ -1,0 +1,22 @@
+Now what, wait what, what if the balance factor were... first of all, what if the balance factor were two at t's right?
+The answer is we would be rotating there instead, ok so it can't be two.
+what if the balance factor were zero at t's right? 
+It would be that all of these were imbalance and there wouldn't be a difference of two there because we didn't change anything about the imbalance here. Inserting didn't change the height balance of the right hand side. So it can't be zero.
+It can't be negative one because that would have meant that this one was longer, so it couldn't create an imbalance of two there by lengthening this one, if this one was negative one. And it isn't negative two because that would be a different type of [gibberish] rotated differently down there anyways.
+ok, so the balance factor at t right has to be one, has to be too heavy on the right.
+ok, because that's what would have induced an imbalance up there, otherwise there wouldn't have been an imbalance. ok, because there wasn't before. that's the key word.
+ok, alright, fine.
+what if the insertion was in subtrees two or three?
+ok so if its here, that corresponds to our key being less than or equal to the key in t's right.
+we've got an imbalance at t, and in this case a right-left rotation will rebalance the tree, and we gage it by noting that in this case the balance factor is going to be negative one, instead of one.
+ok so its a little bit longer on the other side. 
+alright.
+so this is a white board untangling, and if i described it again i'd say it in the same words and it would not be any clearer. so, i think there are pictures to be drawn here and reasoning about why this must be longer on this side than on this side upon the insertion, and why that's a valid judge. but for now, for this moment, just... ok i'll figure that out in a minute.
+ok, so what is the insertion algorithm look like?
+its a recursive algorithm. so, I never ever ever unroll recurrences. except for today. today's the only day that we're going to unroll a recurrence, because it really really does emphasis what happens when we insert a node... say right here. so our goal's to insert a node here.
+should we do this monday?
+so raise you hand if you're gonna go to the football game?
+yay
+ILL-INI
+thank you.
+i've never done that before in my life.

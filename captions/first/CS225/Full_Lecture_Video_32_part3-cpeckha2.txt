@@ -1,0 +1,21 @@
+Okay so this is called double hashing, and the hash functions look something like this.
+Um its probe based hashing so you're going to count the number of probes that you need to do to find an empty cell.
+You're going to count them using this index i, but this time that number of probes is going to have a coefficient that is another hash function.
+So, I'm going to do the example with the following two hash functions. 
+Our first hash function is going to be what it was before. h1(k) is just k mod 7, and h2(k), the one that determines the step sizes is going to be, umm, oh what was it? Its 5 - k%5.
+ and I pulled that out of the air, I understand that I pulled that out of the air, okay, and that's just the example we are going to use. Um internally, for reals uh different hash functions are used, but this is actually done. 
+Okay, so how does this work on our particular example?
+These are the same numbers as last time so I know how to hash several of the first ones of them fairly quickly, that is they work with i=0. 16 hashes to 2, 8 hashes to 1, 4 hashes to 4, 13 hashes to 6, and now lets look at what happens to 29. 
+Okay? I'm going to show you explicitly the functions.
+h1(k) is 29%7 which is 1, so we try hashing into cell one. Um h2(k) here is oh no I forgot that this happens um, 5 - 29%5 which is also 1, shoot.
+ so in this case the steep sizes is one, okay? How could I fix that?
+ I don't know not on the fly. So this right here the distance is, h2(29). So then we have to you know that one's occupied too so we have to do it again, so in that case we move on to i = 2, and there's room so we plunk 29 down there. 
+Okay? Maybe we should do another one. What's 5 11%5, okay this one works. Let's do 11. h1(11) = 4. Yeah? h2(11) is 5 - 11%5, which is also 4, okay but this time it's okay.
+ So we attempt to hash 11 here, but we can't so now where do we go? One, two, three, four, our second hash of 11 is here, okay?
+ Because, oh so we need to yeah, yeah, there is going to be a mod 7 at the end of this, that is we wrap around. And now we do one, two, three, four, 11 maps here the third time. Okay?
+ Any question about this? Kinda mechanical, kinda mechanical, sorta unsatisfying on small examples, so again it would be nice to have that applet fixed. Send me an email if you love doing interactive web dev.
+ Alright, any questions about it? Yes, 5 I choose.
+ It works nicely if it's relatively prime to the table size, umm but those are for number theoretic reasons, and you know has to do with the groups and the uh, just what happens when you have two numbers that are relatively prime and cycles within those numbers. 
+So you'll never get on cycle with 5 and 7 you'll always hit one of the numbers. Does that make sense? okay. 
+Alright so, the hash function I pulled it out of the air. We're not going to ask you to come up with that.We'll ask you to deal with ones that we give you, but we won't ask you to come up with them. 
+Yeah Aurmound? Uh temporary variable, a variable that exists only inside the hash function.

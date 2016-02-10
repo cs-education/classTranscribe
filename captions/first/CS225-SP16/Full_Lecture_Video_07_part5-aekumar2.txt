@@ -1,0 +1,17 @@
+The order of operation is first to take, by default if you don't put parenthesis, it will try to still take the member variable of S, which doesn't exist, and then dereference that, which would be very wrong. So we have to explicitly put parenthesis to say that first dereference and then <giberish> age. Okay. Let's dereference S and increment Ben's age to 6. Question yeah? 
+<Student is inaudible>
+Dot is for member access. So whatever you take dot of has to be a user defined type.
+<Student is inaudbile>
+Oh, equivalent syntax, sorry, that is what I wanted to say here too. Equivalently, the same thing you could write, S->age. These are two equivalent ways of saying that S is not a student, S is not of user defined type. S is a pointer, dereference it first, and that will be student, and take that member, uh, variable age. So its just a syntactically equivalent thing to do. So we incremented the age, we printed out birthday, we're going to return, and let me put an * here again just to remind that there is a lot of passing by pointer, means a lot of *. So now the function stopped executing, it's going to remove all of the local variables. What are the local variables?
+<Students are inaudible>
+S is going to be gone. So S is gone, but we return the value 6, that's the return integer value, and assign it to new age. Question: what is going to be the print out of b.age?
+<Students inaudible>
+Compiler error, first of all, right? b is a pointer so let's fix that again. And what is the output? 6. So what's good about it?
+<Students inaudible>
+It allows you to modify that data without copying it. Which could be good or bad, you have to be careful about it. You really want that function to have the control over your data. So that is something to keep in mind, but in this case it is good. What else is good about it?
+<Students inaudible>
+It's fast. What's bad about it? 
+<Students inaudible>
+Yeah, can I say that sometimes you'll have pointers and you'll have no way around it but the bad thing is, what about writing all of these *? 
+<Student inaudible>
+Some memory access. Sometimes it could be slower than keeping that on the stack. However, if you already have data on the heap, you would have to do it. But, syntax complexity which sometimes is unavoidable, but in this case, we could do better. Anything else that bothers you? S is a pointer, b is a pointer. What could go wrong there, when I dereference pointers?

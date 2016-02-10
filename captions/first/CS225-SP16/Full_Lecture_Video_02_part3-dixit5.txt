@@ -1,0 +1,24 @@
+Yeah.
+Yeah, it will.
+So let's do this, it will because I do have a well defined class, it's just not an interesting class at all.
+So I'm gonna compile it and run it, and it's the same thing. 
+However, I don't have anything interesting in it.
+So, my next call is to define members of the class Sphere.
+So each class has two fields associated with it.
+One is called "public" and another is called "private". And the reason it has, C++ allows for these two fields is again encapsulation.
+It controls who- which other functions can access members of class Sphere. Okay?
+And if you don't put public and private, by default, all of the members will be private. 
+But I wanna be more specific here, okay. So we will go to my lecture slides now.
+Where are we? We're here, right? We have the main function. We just declared -[gibberish]- I just declared a variable of type Sphere, and now it's a design moment. 
+And I know that there will be two fields that are associated with the class.
+One is public and one is private. And um, here is a design moment.
+What do we want this class to do? What do we want the clients, that is the main function, the client program, to do with objects or instances of type Sphere.
+So, let's talk about a little about these fields. As I said, public and private is one of the methods of implementing encapsulation. Which means that everything in "public", the client code can access and use. And the client code will not be able to access and use anything in "private field", okay? 
+Which means that this is not allowed. This which gives us an opportunity to define something about Sphere such as say Radius, something that represents Sphere in the private field.
+So that's what I'm gonna write. I'm gonna say that my sphere representation, I'm gonna differentiate objects of sphere by their radius, so the sphere representation is gonna be radius.
+And I'm going to put it in private. Okay.
+Which means that the client code cannot see radius directly, cannot change it directly but my public members will be able to access it.
+Okay, so that's how the control is manipulated through the public and private fields. 
+Okay, so now we have a data associated with the class, but let's see what we can do, what the client might want to do with Spheres. What kind of things might we want to do with spheres. 
+I just declared one, which means I created an instance of one, right? What else might I wanna do?
+I know that it's defined by a radius - yeah, getRadius, which means I might want to extract and get some information about the - um, about the class. Okay, so I'll put a number 2, and number 3, and I'm going to say that some sphere functionality might be "getting information out of it".

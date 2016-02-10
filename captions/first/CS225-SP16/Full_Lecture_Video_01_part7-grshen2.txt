@@ -1,0 +1,19 @@
+And what do variables represent in the user-defined class type?
+Yeah?
+Some kind of properties, right?
+Some kind of values or data that is associated with it, and we'll go through examples, so this is kind of representation associated with the object, or, um, data associated with it.
+Because this, types are gonna be complex, so not like with primitive types where the value is just integer, there may be more information that we want to store in that, for each of the instances of this user-defined type.
+Ok, so I'm gonna go and write my first function with the first user-defined type, called sphere. So I'm gonna switch and please ignore this for a while, but I'm gonna create a program - a file, called program.cpp, in which I'm going to, let's see, so let me remove everything that I have so I have a clean directory. I'm going to create a file program.cpp and I'm gonna edit it.
+Let's see, is this font good for the last row? Let me try to increase it and then you tell me stop if it's enough. I think 24 was - so is this better? Do you see it well? Ok, cool.
+So I'm gonna start writing my first class, and I will start with using a keyword class. Which tells the compiler that I'm gonna start definition of the class with the name, whatever follows the keyword, which is I'll write sphere.
+So my class will have name sphere, and then I will put curly braces, which will indicate the properties of the sphere. So within these curly braces is where I will put my variable and functions associated with this class.
+But we're not gonna write yet, so my class is gonna be super simple at this point. It's just a class with nothing associated with it. And I'm gonna put a semi-colon here. Could you please ask me why I put a semicolon there. Or answer it, maybe. Maybe you know.
+Do you know why I put a semicolon there? What is a semicolon in C++? Delimiter, right? So it says stop, my comment has just ended. So why do I need it there?
+Anybody knows?
+Yeah?
+So what if I didn't put a semicolon. What would happen? Why does it have to have it there?
+So I could put myfavoriteSphere here. So I could have define my type together with declaring a variable of that type, and the compiler wouldn't know. If you omit this semicolon, it would be waiting for that name of the variable name in declaration, okay? So you have to put semicolon to say no there will be no declaration at this point, it's just a class itself.
+Okay, fine. So I have my first class, and according to the slides, to compile it we'll have to call my compiler that I have on this machine, and in the EWS computers, you'll have clang compiler. So the syntax will be slightly different, you'll have to put clang++ there. And then the name of the program that I want to compile. And my question to you is is this gonna compile or not?
+Why not?
+Right, so it complains. Usually when it compiles, no error messages, or no messages come up. No complaining is coming out. And there's a complaint in here, no executable was created and the purpose of compilation, so let me go back to my slide, the purpose of compilation is to first, when I run g++ on my program, it first checks for syntactic correctness, and second creates an executable. So if it didn't create an executable and had some kind of error messages, that means there's either syntactic problems, or something else went wrong with the executable.
+So I have a question to you. Why do they get error messages? What do you think is wrong, and I heard the answer. There's no main function. So,

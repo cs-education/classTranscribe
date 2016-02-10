@@ -1,0 +1,5 @@
+The teacher is asking what the 2 pointers in the line "flower ** plot;" could mean. It gives you 4 options. A pointer whose pointer whose target is a flower pointer, an array of flower pointers each of which can be used to build another array which can be different sizes, array of pointers where the target of each of the pointers is a flowers, pointer to an array of flower (not used very often). Then she shows pictures of what each of the options are. 
+
+She then asks us how we would allocate memory for each of these thing. How to assign data to plot and how to deallocate the memory(especially to an array of pointers to flowers).
+
+Her battery is at 10% and she needs to charge her laptop before it turns off on her.  
