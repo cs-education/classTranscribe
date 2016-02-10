@@ -1,19 +1,21 @@
-What is the purpose of ClassTranscribe?
+# ClassTranscribe FAQ For New Instructors 
+
+## What is the purpose of ClassTranscribe?
   ClassTranscribe is an open-source, web-based platform that leverages crowdsourcing to address the problem of accurate, reliable and fast transcriptions of college lectures. Completed transcriptions provide search functionality that augments existing lecture recordings and enable enhanced educational features including closed captioning.
 
-Can I see the search?
+## Can I see the search?
   Visit [here](http://classtranscribe.com/cs241) and try searching 'buffer overflow'
 
-How do I motivate students to complete tasks?
+## How do I motivate students to complete tasks?
   In the past professors have had success offering small (~1%) amounts of extra credit in exchange for completing a few tasks.
 
-How long does each task take?
+## How long does each task take?
   About 20 minutes. You can view the process [here](https://github.com/cs-education/classTranscribe/blob/master/tutorial.md).
 
-How do I know which students particpated?
+## How do I know which students particpated?
   At the end you will be provided with a CSV file containing netids along with the number of completed tasks.
 
-How do I sign up?
+## How do I sign up?
   Send an email to classtranscribe@gmail.com indicating your interest. Please provide the following details:
     num students in class
     whehther you have lecture recordigns, flipped videos or both
@@ -25,5 +27,5 @@ link for searchable site
 
 What can ClassTranscribe tell me about my class?
 
-Can I talk to a professor who has used ClassTranscribe previously?
+## Can I talk to a professor who has used ClassTranscribe previously?
   Please contact us at classtranscribe@gmail.com and we will put you in touch an instructor.
