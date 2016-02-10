@@ -15,6 +15,7 @@ var mkdirp = require('mkdirp');
 var exampleTerms = {
   "cs241": "printf",
   "cs225": "pointer",
+  "cs225-sp16": "pointer",
   "adv582": "focus group",
   "ece210": "Energy Signals",
 }
@@ -245,6 +246,8 @@ router.get('/queue/:className', function (request, response) {
 var captionsMapping = {
   "cs241": require('./public/javascripts/data/captions/cs241.js'),
   "cs225": require('./public/javascripts/data/captions/cs225.js'),
+  "cs225-sp16": require('./public/javascripts/data/captions/cs225-sp16.js'),
+  // "chem233-sp16": require('./public/javascripts/data/captions/chem233-sp16.js'),
   "adv582": require('./public/javascripts/data/captions/adv582.js'),
   "ece210": require('./public/javascripts/data/captions/ece210.js'),
 }
