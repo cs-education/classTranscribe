@@ -17,11 +17,12 @@
 
 ## How do I sign up?
   Send an email to classtranscribe@gmail.com indicating your interest. Please provide the following details:
+  
     * number of students in the class
     * whehther you have lecture recordigns, flipped style content or both
 
   I will then provide you with a Box folder to upload your videos. This is not restricted to classes where all video recordings already exist. Lectures can be uploaded and transcribed as they occur throughout the semester.
-  
+
   After your videos are turned into tasks you will be provided with an example email to send students notifying them about the process and providing tasks.
 
 
