@@ -376,7 +376,7 @@ h1 span{
   position:relative;
   margin:0 auto;
   border:8px solid #ebebeb;
-  background: url(../stylesheets/img/icons/responsive.png) #f3f3f3 no-repeat center center;
+  background: url(../stylesheets/img/icons/question.png) #f3f3f3 no-repeat center center;
   -moz-border-radius:174px;
   -webkit-border-radius:174px;
   border-radius: 174px;
@@ -390,7 +390,7 @@ h1 span{
 }
 
 .about-us .column-one .circle-one:hover{
-  background: url(../stylesheets/img/icons/responsive.png) #2fa68e no-repeat center center;
+  background: url(../stylesheets/img/icons/question.png) #2fa68e no-repeat center center;
 
 }
 
@@ -407,7 +407,7 @@ h1 span{
   position:relative;
   margin:0 auto;
   border:8px solid #ebebeb;
-  background: url(../stylesheets/img/icons/minimalist.png) #f3f3f3 no-repeat center center;
+  background: url(../stylesheets/img/icons/student.png) #f3f3f3 no-repeat center center;
   -moz-border-radius:174px;
   -webkit-border-radius:174px;
   border-radius: 174px;
@@ -421,7 +421,7 @@ h1 span{
 }
 
 .about-us .column-two .circle-two:hover{
-  background: url(../stylesheets/img/icons/minimalist.png) #2fa68e no-repeat center center;
+  background: url(../stylesheets/img/icons/student.png) #2fa68e no-repeat center center;
 }
 
 
@@ -438,7 +438,7 @@ h1 span{
   position:relative;
   margin:0 auto;
   border:8px solid #ebebeb;
-  background: url(../stylesheets/img/icons/free.png) #f3f3f3 no-repeat center center;
+  background: url(../stylesheets/img/icons/professor.png) #f3f3f3 no-repeat center center;
   -moz-border-radius:174px;
   -webkit-border-radius:174px;
   border-radius: 174px;
@@ -452,7 +452,7 @@ h1 span{
 }
 
 .about-us .column-three .circle-three:hover{ 
-  background: url(../stylesheets/img/icons/free.png) #2fa68e no-repeat center center;
+  background: url(../stylesheets/img/icons/professor.png) #2fa68e no-repeat center center;
 }
 
 
@@ -592,7 +592,6 @@ h1 span{
   font-weight:bold;
   text-transform:uppercase;
   line-height:1.2;
-
 }
 
 .contact hr{
@@ -612,23 +611,17 @@ h1 span{
   
 }
 
-.contact .content .form{
-  width:455px;
-  overflow:hidden;
-  height:auto;
-  float:left;
- 
-}
+
 
 .contact .content .contact-text{
   width:405px;
   overflow:hidden;
   height:auto;
-  float:left;
-  padding-left:40px;
   color:black;
   font-size:17px;
   line-height:1.7;
+  margin: 0 auto;
+  text-align:center;
 }
 
 strong{
@@ -636,40 +629,6 @@ strong{
 
 }
 
-input{
-
-  width:420px;
-  height:40px;
-  background:#23282d;
-  border:0;
-  color:white;
-  font-weight:bold;
-  line-height:40px;
-  padding-left:35px;
-  -moz-border-radius:4px;
-  -webkit-border-radius:4px;
-  border-radius: 4px;
-  font-family: 'Source Sans Pro', sans-serif;
-  font-size:17px;
-  margin-bottom:10px;
-}
-
-textarea{
-
-  width:420px;
-  height:283px;
-  background:#23282d;
-  border:0;
-  color:white;
-  font-weight:bold;
-  padding:15px 0 0 35px;
-  -moz-border-radius:4px;
-  -webkit-border-radius:4px;
-  border-radius: 4px;
-  font-family: 'Source Sans Pro', sans-serif;
-  font-size:17px;
-  margin-bottom:10px;
-}
 
 .contact .content .form .button{
   width:142px;
