@@ -205,6 +205,9 @@ function shareVideo(event) {
     var successful = document.execCommand('copy');
     var msg = successful ? 'successful' : 'unsuccessful';
     $(".share-video-button").text("Successfully Copied");
+    if(!successful) {
+      window.alert('Please copy the following link: ' + url)
+    }
     console.log('Copying text command was ' + msg);
   } catch (err) {
     console.log('Oops, unable to copy');
