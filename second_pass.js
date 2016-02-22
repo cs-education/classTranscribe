@@ -24,6 +24,8 @@ function secondPass() {
       var command = 'python';
       var args = ["runner.py", className, videoIndexNetid];
       var child = spawn(command, args);
+      console.log('className ' + className)
+      console.log('fileName ' + videoIndexNetid)
 
 
       var threeMinuteTimeout = setTimeout(function () {

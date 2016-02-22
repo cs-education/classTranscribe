@@ -5,9 +5,28 @@
 import sys
 import simplejson as json
 import os.path
+from string import punctuation
 
 import click
 import jsonschema
+
+
+def preprocess_text(text):
+    problem_words = {'*': 'pointer', '&': 'memory address'}
+
+    split_text = text.split()
+
+    for index, word in enumerate(split_text):
+        if word in problem_words:
+            split_text[index] = problem_words[word]
+        for char in word:
+            if char not in punctuation:
+                break
+            split_text[index - 1] = split_text[index - 1] + word
+            split_text[index] = ''
+
+
+    return ' '.join(split_text)
 
 
 @click.command()
@@ -16,6 +35,8 @@ import jsonschema
 @click.option('--speaker-name', default="Narrator", help="The name of the speaker")
 def text_to_transcript(text_file, output_file, speaker_name):
     text = open(text_file).read()
+
+    print(preprocess_text(text))
 
     filedir = os.path.dirname(os.path.realpath(__file__))
     schema_path = os.path.join(
