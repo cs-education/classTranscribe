@@ -59,7 +59,10 @@ function bindEventListeners() {
 
 function goToVideo() {
   var videoIndex = parseInt($(".video-selector").val(), 10);
-  window.location = "http://localhost/viewer/cs241?videoIndex=" + videoIndex;
+  var slashIndex = window.location.href.lastIndexOf("/")
+  var href = window.location.href
+  var urlBase = href.slice(0, slashIndex) + "/viewer" + href.slice(slashIndex)
+  window.location = urlBase + "?videoIndex=" + videoIndex;
 }
 
 /*
