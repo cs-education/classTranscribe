@@ -30,18 +30,35 @@
     <!-- Begin Stylesheets -->
     <link rel="stylesheet" type="text/css" href="/stylesheets/reset.css">
     <link rel="stylesheet" type="text/css" href="/stylesheets/search.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     <!-- End Stylesheets -->
   </head>
   <body>
     <div class="main-container">
-      <div class="header-container">
-        <h1>Class Transcribe</h1>
-      </div>
+
+      <section class="menu">
+
+        <div class="menu-content">
+        
+          <ul id="menu">
+            <li class="home"><a onClick = "window.location = '/';">HOME</a></li>
+            <li class="title"><a>Class Transcribe</a></li>
+          </ul>
+
+        </div>
+      
+      </section>
+
       <div class="search-container">
-        <input class="search-box" type="text" placeholder="Enter a {{className}} term (eg. {{exampleTerm}})"></input>
+          <input class="search-box" type="text" placeholder="Enter a {{className}} term (eg. {{exampleTerm}})"></input>
+          </div>
+          <div class="search-results-container"></div>
+
+          <div class="course-list-container">
+            <select class="video-selector"></select>
+          </div>
+          
       </div>
-      <div class="search-results-container"></div>
-    </div>
   </body>
 
   <script src="/javascripts/controllers/search.js"></script>

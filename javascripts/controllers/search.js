@@ -53,6 +53,13 @@ function bindEventListeners() {
   $(".search-box").off().keyup(debouncedInputKeypress)
                         .keyup(debouncedSendGAEvent);
   $(".search-box").keyup(); // Trigger event to account for auto fill
+  $(".video-selector").off().change(goToVideo);
+}
+
+
+function goToVideo() {
+  var videoIndex = parseInt($(".video-selector").val(), 10);
+  window.location = "http://localhost/viewer/cs241?videoIndex=" + videoIndex;
 }
 
 /*
@@ -200,6 +207,9 @@ function inputKeypress(e) {
       }
     });
   });
+  $('.main-container').css({
+        height : $(".search-results-container").height() + 800 + 'px'
+  })
 }
 
 /*
