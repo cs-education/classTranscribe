@@ -19,9 +19,12 @@ def preprocess_text(text):
     for index, word in enumerate(split_text):
         if word in problem_words:
             split_text[index] = problem_words[word]
+
+        is_floating_punctuation = False
         for char in word:
             if char not in punctuation:
-                break
+                is_floating_punctuation = True
+        if is_floating_punctuation:
             split_text[index - 1] = split_text[index - 1] + word
             split_text[index] = ''
 
@@ -36,7 +39,7 @@ def preprocess_text(text):
 def text_to_transcript(text_file, output_file, speaker_name):
     text = open(text_file).read()
 
-    print(preprocess_text(text))
+    text = preprocess_text(text)
 
     filedir = os.path.dirname(os.path.realpath(__file__))
     schema_path = os.path.join(
