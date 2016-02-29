@@ -33,6 +33,9 @@ def preprocess_text(text):
                     split_text[index] = ''
                 else:
                     split_text[index] = ''
+            else:
+                #¿why start a transcription with punctuation?
+                split_text[0] = ''
 
 
     return ' '.join(split_text)
