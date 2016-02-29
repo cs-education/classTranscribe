@@ -1,9 +1,0 @@
-initialize it with a bunch of exclamation points, actually exactly 10 of them, right.  Then I print it out and then I delete it and I do it two times but what I'm gonna do is I want to make this program such that it runs out of heap memory.  So why don't you take a couple of minutes thinking how to arrange that so we have the result and I'm gonna write down that program in the meantime, ok. So tell me exactly what needs to be modified in the program so that we have, so that we run out of heap memory.
-
-Ok, any ideas? What should we do? Huh? What if we don't delete S each time? So what happens is that if within the loop we ask for memory and then we free it with delete, we can do that many times.  But what if don't delete it, right? And what if we run this program, I don't know, oh let's run it, two times first, let's see if there is a problem of memory that we see upon just doing it twice, right, Well what if I do it a million times.  That's fine, right.  What if I do many more?  This is fine, actually.  Actually, ok, let's do 20 million, hah. Ok. A million. huh. Got it.  So bad allocation core dump, not enough memory. So this is kinda means that n, believe with strings its harder, with integers its even worse.  When you have large classes, large arrays, if you don't clean your memory you get core dump, and sometimes you don't it just slows down and that's even worse. 
-
-Thank you. she wants to show you core dump.  I'm gonna do that in ema...
-
-I'm not sure, ya I don't know how to interpret that
-
-But yes, the most importantly thing, the program would slow down if I didn't quite run out of memory but 'I was getting close that would slow down the execution if you weren't careful.

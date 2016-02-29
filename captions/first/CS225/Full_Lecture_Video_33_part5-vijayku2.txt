@@ -1,6 +1,0 @@
-But we're not going to end up relying very much on this definition. Here's a question: are complete trees full? Is every complete tree full? No. Is every complete tree a perfect tree? No. Is every perfect tree a complete tree? Yes. Ok, so lets talk about implementation of this thing. What I'm going to ask you to do is imagine how you would implement this thing and then tell me what the primary private member would look like. So think about how you would implement it and tell me what the primary private member of that implementation is. Tell me what you think.
-
-What do you think? It's a tree! How are you going to characterize this tree in code? Have you done things like this in the past? We can implement this using a TreeNode. A TreeNode pointer calls say the root. Perfectly reasonable implementation except that we don't have to do it that way. Instead, we can use an array. We know the complete structure about the tree. 
-
-Now, in MP6 that is true as well. We're going to use a vector to implement the tree but it's slightly different. Where is the root in this implementation? Early on in the array, at the front of the array. In MP6 the root's in the middle. Ok, now in a pointer based implementation of a tree, it's important to have the following pieces of information:
-1. You need instant access to a left child
