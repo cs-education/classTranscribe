@@ -106,8 +106,9 @@ def prep_mlf(trsfile, mlffile, word_dictionary, surround, between,
 
         lines = [dl["line"] for dl in dialog]
         speakers = [dl["speaker"] for dl in dialog]
-        if "emotion" in dialog[0]:
-            emotions = [dl["emotion"] for dl in dialog]
+        if len(dialog) > 1:
+            if "emotion" in dialog[0]:
+                emotions = [dl["emotion"] for dl in dialog]
     else:
         f = open(trsfile, 'r')
         lines = f.readlines()
@@ -171,7 +172,7 @@ def prep_mlf(trsfile, mlffile, word_dictionary, surround, between,
             # print new_up_wrd
             for wrd2 in new_up_wrd:
                 if (wrd2 not in dictionary) and (wrd2 not in dict_tmp):
-                    print wrd2
+                    # print wrd2
                     try:
                         if wrd2[-1] in ['s', 'S']:
                             twrd2 = int(wrd2[:-1])

@@ -28,8 +28,13 @@ def preprocess_text(text):
 
         if is_word_only_punctuation(word):
             if index > 0:
-                split_text[index - 1] += word
-                split_text[index] = ''
+                if split_text[index - 1] != '':
+                    split_text[index - 1] += word
+                    split_text[index] = ''
+                    last_index = 
+                else:
+                    split_text[index] = ''
+
 
     return ' '.join(split_text)
 
