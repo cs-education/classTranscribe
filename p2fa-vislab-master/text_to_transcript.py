@@ -40,11 +40,8 @@ def preprocess_text(text):
 @click.option('--speaker-name', default="Narrator", help="The name of the speaker")
 def text_to_transcript(text_file, output_file, speaker_name):
     text = open(text_file).read()
-    print(text)
 
     fixed_text = preprocess_text(text)
-    # fixed_text = text
-    print(fixed_text)
 
     filedir = os.path.dirname(os.path.realpath(__file__))
     schema_path = os.path.join(
