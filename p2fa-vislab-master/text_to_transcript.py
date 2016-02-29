@@ -31,7 +31,6 @@ def preprocess_text(text):
                 if split_text[index - 1] != '':
                     split_text[index - 1] += word
                     split_text[index] = ''
-                    last_index = 
                 else:
                     split_text[index] = ''
 
