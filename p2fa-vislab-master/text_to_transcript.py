@@ -10,24 +10,26 @@ from string import punctuation
 import click
 import jsonschema
 
+def is_word_only_punctuation(word):
+    for char in word:
+        if char not in punctuation:
+            return False
+    return True
 
 def preprocess_text(text):
     problem_words = {'*': 'pointer', '&': 'memory address'}
 
+    new_text = []
     split_text = text.split()
 
     for index, word in enumerate(split_text):
         if word in problem_words:
             split_text[index] = problem_words[word]
 
-        is_floating_punctuation = False
-        for char in word:
-            if char not in punctuation:
-                is_floating_punctuation = True
-        if is_floating_punctuation:
-            split_text[index - 1] = split_text[index - 1] + word
-            split_text[index] = ''
-
+        if is_word_only_punctuation(word):
+            if index > 0:
+                split_text[index - 1] += word
+                split_text[index] = ''
 
     return ' '.join(split_text)
 
@@ -38,8 +40,11 @@ def preprocess_text(text):
 @click.option('--speaker-name', default="Narrator", help="The name of the speaker")
 def text_to_transcript(text_file, output_file, speaker_name):
     text = open(text_file).read()
+    print(text)
 
-    text = preprocess_text(text)
+    fixed_text = preprocess_text(text)
+    # fixed_text = text
+    print(fixed_text)
 
     filedir = os.path.dirname(os.path.realpath(__file__))
     schema_path = os.path.join(
@@ -47,7 +52,7 @@ def text_to_transcript(text_file, output_file, speaker_name):
 
     transcript_schema = json.load(open(schema_path))
 
-    paragraphs = text.split("\n\n")
+    paragraphs = fixed_text.split("\n\n")
     out = []
     for para in paragraphs:
         para = para.replace("\n", " ")
