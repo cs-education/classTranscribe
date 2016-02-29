@@ -34,7 +34,7 @@ def preprocess_text(text):
                 else:
                     split_text[index] = ''
             else:
-                #¿why start a transcription with punctuation?
+                #why start a transcription with punctuation?
                 split_text[0] = ''
 
 
