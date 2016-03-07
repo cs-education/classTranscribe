@@ -6,7 +6,9 @@ you hear and then press 'submit transcription'!
 
 ### How do I know if my task was submitted succesfully?
 
-You can check your progress at http://classtranscribe.com/progress/CLASS_NAME. Note that this is temporarily unavailable, but will be fixed shortly. However, if you transcribed everything then your work will be saved and you shouldn't worry about this.
+Click the class appropriate link:
+* [CS225](http://www.classtranscribe.com/progress/CS225-SP16)
+* [CHEM233](http://www.classtranscribe.com/progress/CS233-SP16)
 
 ### My assigned video doesn't have sound at the start.
 

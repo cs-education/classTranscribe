@@ -280,21 +280,34 @@ router.post('/progress/:className/:netId', function (request, response) {
   var className = request.params.className.toUpperCase();
   var netId = request.params.netId;
 
-  client.smembers("ClassTranscribe::Finished::" + className, function (err, members) {
+  client.smembers("ClassTranscribe::First::" + className, function (err, firstMembers) {
     if (err) {
       console.log(err);
     }
 
-    var count = 0;
-    members.forEach(function (member) {
-      var user = member.split("-")[1].replace(".json", "").replace(".txt", "");
-      if (user === netId) {
-        count++;
-      }
-    });
+    client.smembers("ClassTranscribe::Finished::" + className, function (err, finishedMembers) {
+    if (err) {
+      console.log(err);
+    }
 
-    mailer.progressEmail(netId, className, count);
-    response.end('success');
+      var count = 0;
+      firstMembers.forEach(function (member) {
+        var user = member.split("-")[1].replace(".json", "").replace(".txt", "");
+        if (user === netId) {
+          count++;
+        }
+      });
+
+      finishedMembers.forEach(function (member) {
+        var user = member.split("-")[1].replace(".json", "").replace(".txt", "");
+        if (user === netId) {
+          count++;
+        }
+      });
+
+      mailer.progressEmail(netId, className, count);
+      response.end('success');
+    });
   });
 })
 
