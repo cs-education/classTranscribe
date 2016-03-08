@@ -220,7 +220,7 @@ router.get('/second/:className/:id', function (request, response) {
 var queueMustache = fs.readFileSync('queue.mustache').toString();
 router.get('/queue/:className', function (request, response) {
   var className = request.params.className.toUpperCase();
-  var args = ["ClassTranscribe::Tasks::" + className, "-inf", "+inf", "LIMIT", "0", "1"];
+  var args = ["ClassTranscribe::Tasks::" + className, "0", "99999", "LIMIT", "0", "1"];
   client.zrangebyscore(args, function (err, result) {
     if (err) {
       throw err;
