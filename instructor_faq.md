@@ -23,7 +23,7 @@ About 20 minutes. You can view the process [here](https://github.com/cs-educatio
 
 Send an email to classtranscribe@gmail.com indicating your interest. Please provide the following details:  
 * number of students in the class
-* whehther you have lecture recordigns, flipped style content or both
+* whehther you have lecture recordings, flipped style content or both
 
 I will then provide you with a Box folder to upload your videos. This is not restricted to classes where all video recordings already exist. Lectures can be uploaded and transcribed as they occur throughout the semester.
 
