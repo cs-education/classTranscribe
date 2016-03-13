@@ -26,7 +26,7 @@ def main():
 	course_uuid = handle_args()
 
 	session_url = "{}/ess/portal/section/{}".format(host_name, course_uuid)
-	json_url = "{}/ess/client/api/sections/{}/section-data.json".format(host_name, course_uuid)
+	json_url = "{}/ess/client/api/sections/{}/section-data.json?pageSize=100".format(host_name, course_uuid)
 
 	os.system('./download-echo.sh ' + course_uuid)
 	os.system('curl -b cookies ' + json_url + ' > test.json')
