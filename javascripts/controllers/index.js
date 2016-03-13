@@ -99,6 +99,9 @@ function initializeUI() {
       success: function (data) {
         $that.text("Transcription Submitted!");
         $that.addClass("unclickable");
+      },
+      error: function(data){
+        $that.text("Try Submitting Transcription Again.");
       }
     });
   });
