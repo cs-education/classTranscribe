@@ -8,6 +8,7 @@ you hear and then press 'submit transcription'!
 
 Click the class appropriate link:
 * [CS225](http://www.classtranscribe.com/progress/CS225-SP16)
+* [CS241](http://www.classtranscribe.com/progress/CS241-SP16)
 * [CHEM233](http://www.classtranscribe.com/progress/CHEM233-SP16)
 
 ### My assigned video doesn't have sound at the start.
