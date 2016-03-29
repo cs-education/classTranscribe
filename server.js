@@ -289,7 +289,6 @@ function highDensityQueue(response, className, netId, attemptNum) {
 
 function initPrioritizedTask(response, className, netId, attemptNum) {
   var numTasksToPrioritize = 10;
-
   // Can't call zcard if doesn't exist. Unable to be directly handled by err in zcard call
   // due to how the redis client works
   client.exists("ClassTranscribe::PrioritizedTasks::" + className, function (err, code) {
@@ -357,7 +356,7 @@ function queueResponse(response, queueName, netId, className, chosenTask, attemp
  * @param  {int} Number tasks desired in set
  * @return {string} task to be completed
  */
-function moveToPrioritizedQueue(response, className, netId, numberTasks, attemptNum) {
+function moveToPrioritizedQueue(response, className, netId, numberTasks, numTasksToPrioritize, attemptNum) {
   if (numberTasks < numTasksToPrioritize) {
       var numDifference = numTasksToPrioritize - numberTasks;
       var args = ["ClassTranscribe::Tasks::" + className, "0", "99999", 
