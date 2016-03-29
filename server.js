@@ -403,35 +403,37 @@ function clearInactiveTranscriptions() {
         return;
       }
 
-      for(var i = 0; i < result.length; i += 2) {
-        var netIDTaskTuple = result[i].split(":");
-        var netId = netIDTaskTuple[0];
-        var taskName = netIDTaskTuple[1];
-        var startDate = new Date(result[i + 1]);
+      if (!result.length) {
+        for(var i = 0; i < result.length; i += 2) {
+          var netIDTaskTuple = result[i].split(":");
+          var netId = netIDTaskTuple[0];
+          var taskName = netIDTaskTuple[1];
+          var startDate = new Date(result[i + 1]);
 
-        var timeDiff = Math.abs(curDate.getTime() - startDate.getTime());
-        var diffHours = Math.ceil(timeDiff / (1000 * 3600));
+          var timeDiff = Math.abs(curDate.getTime() - startDate.getTime());
+          var diffHours = Math.ceil(timeDiff / (1000 * 3600));
 
-        if (diffHours >= 2) {
-          client.hdel("ClassTranscribe::ActiveTranscribers::" + className, result[i]);
-          // dont' know which queue task is currently in
-          var taskArgs = ["ClassTranscribe::Tasks::" + className, taskName];
-          client.zscore(taskArgs, function (err, result) {
-            if (err) {
-              throw err;
-            } else if (result !== null) {
-              client.zincrby("ClassTranscribe::Tasks::" + className, -1, taskName);
-            }
-          })
+          if (diffHours >= 2) {
+            client.hdel("ClassTranscribe::ActiveTranscribers::" + className, result[i]);
+            // dont' know which queue task is currently in
+            var taskArgs = ["ClassTranscribe::Tasks::" + className, taskName];
+            client.zscore(taskArgs, function (err, result) {
+              if (err) {
+                throw err;
+              } else if (result !== null) {
+                client.zincrby("ClassTranscribe::Tasks::" + className, -1, taskName);
+              }
+            })
 
-          var priorityArgs = ["ClassTranscribe::PrioritizedTasks::" + className, taskName];
-          client.zscore(priorityArgs, function (err, result) {
-            if (err) {
-              throw err;
-            } else if (result !== null) {
-              client.zincrby("ClassTranscribe::Tasks::" + className, -1, taskName);
-            }
-          })
+            var priorityArgs = ["ClassTranscribe::PrioritizedTasks::" + className, taskName];
+            client.zscore(priorityArgs, function (err, result) {
+              if (err) {
+                throw err;
+              } else if (result !== null) {
+                client.zincrby("ClassTranscribe::Tasks::" + className, -1, taskName);
+              }
+            })
+          }
         }
       }
     })
