@@ -5,9 +5,12 @@
       $(document).ready(function () {
         var className = "{{className}}";
         var netID = window.prompt("What's your NetID?", "");
-        $.post('/progress/' + className + '/' + netID, function (data) {
-          document.write('An email was sent with your progress to ' + netID + '@illinois.edu');
-        });
+
+        if (netID !== null) {
+          $.post('/progress/' + className + '/' + netID, function (data) {
+            document.write('An email was sent with your progress to ' + netID + '@illinois.edu');
+          });
+        }
       });
     </script>
   </head>

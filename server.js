@@ -16,6 +16,7 @@ var exampleTerms = {
   "cs241": "printf",
   "cs225": "pointer",
   "cs225-sp16": "pointer",
+  "chem233-sp16": 'spectroscopy',
   "adv582": "focus group",
   "ece210": "Energy Signals",
 }
@@ -187,15 +188,32 @@ router.post('/first', function (request, response) {
     var validationChild = spawn(command, args);
     validationChild.stdout.on('data', function (code) {
       code = code.toString().trim();
-      if (code === "1") {
-        console.log("Transcription is good!");
-        client.zrem("ClassTranscribe::Tasks::" + className, taskName);
-        client.sadd("ClassTranscribe::First::" + className, captionFileName);
-      } else {
+      response.end("Validation Done");
+      if (code !== 1) {
         console.log("Transcription is bad!");
         client.lpush("ClassTranscribe::Failed::" + className, captionFileName);
+        return;
+      } else {
+        console.log("Transcription is good!");
       }
-      response.end("Validation Done");
+
+      client.zincrby("ClassTranscribe::Submitted::" + className, 1, taskName);
+      client.zscore("ClassTranscribe::Submitted::" + className, taskName, function(err, score) {
+        score = parseInt(score, 10);
+        if (err) {
+          return err;
+        }
+
+        if (score === 10) {
+          client.zrem("ClassTranscribe::Submitted::" + className, taskName);
+          client.zrem("ClassTranscribe::PrioritizedTasks::" + className, taskName);
+        }
+
+        client.sadd("ClassTranscribe::First::" + className, captionFileName);
+        var netIDTaskTuple = stats.name + ":" + taskName;
+        console.log('tuple delete: ' + netIDTaskTuple);
+        client.hdel("ClassTranscribe::ActiveTranscribers::" + className, netIDTaskTuple);
+      });
     });
   });
 });
@@ -220,34 +238,212 @@ router.get('/second/:className/:id', function (request, response) {
 var queueMustache = fs.readFileSync('queue.mustache').toString();
 router.get('/queue/:className', function (request, response) {
   var className = request.params.className.toUpperCase();
-  var args = ["ClassTranscribe::Tasks::" + className, "0", "99999", "LIMIT", "0", "1"];
+
+  var view = {
+    className: className
+  };
+
+  var html = Mustache.render(queueMustache, view);
+  response.end(html);
+});
+
+router.get('/queue/:className/:netId', function (request, response) {
+  var className = request.params.className.toUpperCase();
+  var netId = request.params.netId.toLowerCase();
+  highDensityQueue(response, className, netId, 0);
+});
+
+function highDensityQueue(response, className, netId, attemptNum) {
+  var args = ["ClassTranscribe::Tasks::" + className, "0", "99999", "WITHSCORES", "LIMIT", "0", "1"];
   client.zrangebyscore(args, function (err, result) {
     if (err) {
       throw err;
     }
 
+    // Tasks will only be empty if there are no tasks left or they've moved to PrioritizedTasks 
     if (!result.length) {
-      return response.end("No more tasks at the moment. More tasks are being uploaded as you read this. Please check back later.");
+      var args = ["ClassTranscribe::PrioritizedTasks::" + className, "0", "99999", 
+        "WITHSCORES", "LIMIT", "0", "1"];
+      client.zrangebyscore(args, function (err, result) {
+        if (!result.length) {
+          response.end("No more tasks at the moment. Please email classtranscribe@gmail.com.");
+        } else {
+          taskName = result[0];
+          taskScore = parseInt(result[1], 10);
+
+          queueResponse(response, "PrioritizedTasks", netId, className, taskName, attemptNum);
+        }
+      });
+    } else {
+      var taskName = result[0];
+      var taskScore = parseInt(result[1], 10);
+
+      if(taskScore >= 2) {
+        initPrioritizedTask(response, className, attemptNum);
+      } else {
+        queueResponse(response, "Tasks", netId, className, taskName, attemptNum);
+      }
+    }
+  });
+}
+
+function initPrioritizedTask(response, className, netId, attemptNum) {
+  var numTasksToPrioritize = 10;
+
+  // Can't call zcard if doesn't exist. Unable to be directly handled by err in zcard call
+  // due to how the redis client works
+  client.exists("ClassTranscribe::PrioritizedTasks::" + className, function (err, code) {
+    if (err) {
+      throw err;
     }
 
-    var view = {
-      className: request.params.className,
-      taskName: result[0],
-    };
-    var html = Mustache.render(queueMustache, view);
+    if (code === 0) {
+      moveToPrioritizedQueue(response, className, netId, 0, numTasksToPrioritize, attemptNum);
+    } else {
+      client.zcard("ClassTranscribe::PrioritizedTasks::" + className, function (err, numberTasks) {
+        if (err) {
+          throw err;
+        }
 
-    args = ["ClassTranscribe::Tasks::" + className, "1", result[0]];
-    client.zincrby(args);
-
-    response.end(html);
+        moveToPrioritizedQueue(response, className, netId, numberTasks, numTasksToPrioritize, attemptNum);
+      });
+    }
   });
-});
+}
+
+function queueResponse(response, queueName, netId, className, chosenTask, attemptNum) {
+  console.log(chosenTask);
+
+  if (attemptNum === 10) {
+    response.end('It looks like you have already completed the available tasks.\n' +
+      'If you believe this is incorrect please contact classtranscribe@gmail.com')
+    return;
+  }
+
+  var incrArgs = ["ClassTranscribe::" + queueName + "::" + className, "1", chosenTask];
+  client.zincrby(incrArgs);
+
+  var netIDTaskTuple = netId + ":" + chosenTask;
+  console.log('tuple ' + netIDTaskTuple);
+  var date = new Date();
+  var dateString = date.getTime();
+  var hsetArgs = ["ClassTranscribe::ActiveTranscribers::" + className, netIDTaskTuple, dateString];
+  client.hset(hsetArgs);
+
+  var fileName = chosenTask + "-" + netId + ".txt";
+  var isMemberArgs = ["ClassTranscribe::First::" + className, fileName]
+  client.sismember(isMemberArgs, function (err, result) {
+    if (result) {
+      highDensityQueue(response, className, netId, attemptNum + 1);
+    } else {
+      // If not in First it may be in Finished
+      isMemberArgs = ["ClassTranscribe::Finished::" + className, fileName]
+      client.sismember(isMemberArgs, function (err, result) {
+          if (result) {
+            highDensityQueue(response, className, netId, attemptNum + 1);
+          } else {
+            response.end(chosenTask);
+          }
+      });
+    }
+  });
+}
+
+/**
+ *  This function moves tasks from the Tasks to PrioritizedTasks queue, if needed.
+ *  Then returns a task to be completed
+ * 
+ * @param  {int} Number of tasks already in set
+ * @param  {int} Number tasks desired in set
+ * @return {string} task to be completed
+ */
+function moveToPrioritizedQueue(response, className, netId, numberTasks, attemptNum) {
+  if (numberTasks < numTasksToPrioritize) {
+      var numDifference = numTasksToPrioritize - numberTasks;
+      var args = ["ClassTranscribe::Tasks::" + className, "0", "99999", 
+        "WITHSCORES", "LIMIT", "0", numDifference];
+      client.zrangebyscore(args, function (err, tasks) {
+        if (err) {
+          throw err;
+        }
+
+        for(var i = 0; i < tasks.length; i += 2) {
+          var taskName = tasks[i];
+          var score = parseInt(tasks[i + 1], 10);
+          client.zrem("ClassTranscribe::Tasks::" + className, taskName);
+          client.zadd("ClassTranscribe::PrioritizedTasks::" + className, score, taskName);
+        }
+        getPrioritizedTask(response, className, netId, attemptNum);
+      });
+    } else {
+      getPrioritizedTask(response, className, netId, attemptNum);
+    }
+}
+
+function getPrioritizedTask(response, className, netId, attemptNum) {
+  var args = ["ClassTranscribe::PrioritizedTasks::" + className, "0", "99999", "LIMIT", "0", "1"];
+  client.zrangebyscore(args, function(err, tasks) {
+    if (err) {
+      throw err;
+    }
+    var task = tasks[0]
+    console.log('tasks from priority ' + task);
+    queueResponse(response, "PrioritizedTasks", netId, className, task, attemptNum);
+  });
+}
+
+function clearInactiveTranscriptions() {
+  var classesToClear = ["CS241-SP16", "CHEM233-SP16", "CS225-SP16"];
+  var curDate = new Date();
+
+  classesToClear.forEach(function (className) {
+    client.hgetall("ClassTranscribe::ActiveTranscribers::" + className, function (err, result) {
+      if (err) {
+        console.log(err);
+        return;
+      }
+
+      for(var i = 0; i < result.length; i += 2) {
+        var netIDTaskTuple = result[i].split(":");
+        var netId = netIDTaskTuple[0];
+        var taskName = netIDTaskTuple[1];
+        var startDate = new Date(result[i + 1]);
+
+        var timeDiff = Math.abs(curDate.getTime() - startDate.getTime());
+        var diffHours = Math.ceil(timeDiff / (1000 * 3600));
+
+        if (diffHours >= 2) {
+          client.hdel("ClassTranscribe::ActiveTranscribers::" + className, result[i]);
+          // dont' know which queue task is currently in
+          var taskArgs = ["ClassTranscribe::Tasks::" + className, taskName];
+          client.zscore(taskArgs, function (err, result) {
+            if (err) {
+              throw err;
+            } else if (result !== null) {
+              client.zincrby("ClassTranscribe::Tasks::" + className, -1, taskName);
+            }
+          })
+
+          var priorityArgs = ["ClassTranscribe::PrioritizedTasks::" + className, taskName];
+          client.zscore(priorityArgs, function (err, result) {
+            if (err) {
+              throw err;
+            } else if (result !== null) {
+              client.zincrby("ClassTranscribe::Tasks::" + className, -1, taskName);
+            }
+          })
+        }
+      }
+    })
+  });
+  
+}
 
 var captionsMapping = {
   "cs241": require('./public/javascripts/data/captions/cs241.js'),
   "cs225": require('./public/javascripts/data/captions/cs225.js'),
   "cs225-sp16": require('./public/javascripts/data/captions/cs225-sp16.js'),
-  // "chem233-sp16": require('./public/javascripts/data/captions/chem233-sp16.js'),
+  "chem233-sp16": require('./public/javascripts/data/captions/chem233-sp16.js'),
   "adv582": require('./public/javascripts/data/captions/adv582.js'),
   "ece210": require('./public/javascripts/data/captions/ece210.js'),
 }
@@ -310,6 +506,9 @@ router.post('/progress/:className/:netId', function (request, response) {
     });
   });
 })
+
+var thirtyMinsInMilliSecs = 30 * 60 * 1000;
+setInterval(clearInactiveTranscriptions, thirtyMinsInMilliSecs);
 
 var server = http.createServer(router);
 server.listen(80);

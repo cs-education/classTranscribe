@@ -4,10 +4,22 @@
     <script>
       $(document).ready(function () {
         var className = "{{className}}";
-        var taskName = "{{taskName}}";
         var netID = window.prompt("What's your NetID?", "");
-        window.location = "/first/" + className + "/" + netID + "/?task=" + taskName;
+        console.log(netID)
+        $.ajax({
+          type: "GET",
+          url: "/queue/" + className + "/" + netID,
+          success: function (taskName) {
+            if (taskName.indexOf("Full_Lecture") !== -1) {
+              window.location = "/first/" + className + "/" + netID + "/?task=" + taskName;
+            } else {
+              $(".messageArea").text(taskName);
+            }
+          }
+        });
+        
       });
     </script>
+    <div class='messageArea'></div>
   </head>
 </html>
