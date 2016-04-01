@@ -195,25 +195,25 @@ router.post('/first', function (request, response) {
         return;
       } else {
         console.log("Transcription is good!");
+        client.zincrby("ClassTranscribe::Submitted::" + className, 1, taskName);
+        client.zscore("ClassTranscribe::Submitted::" + className, taskName, function(err, score) {
+          score = parseInt(score, 10);
+          if (err) {
+            return err;
+          }
+
+          if (score === 10) {
+            client.zrem("ClassTranscribe::Submitted::" + className, taskName);
+            client.zrem("ClassTranscribe::PrioritizedTasks::" + className, taskName);
+          }
+
+          client.sadd("ClassTranscribe::First::" + className, captionFileName);
+          var netIDTaskTuple = stats.name + ":" + taskName;
+          console.log('tuple delete: ' + netIDTaskTuple);
+          client.hdel("ClassTranscribe::ActiveTranscribers::" + className, netIDTaskTuple);
+          sendProgressEmail(className, netId);
+        });
       }
-
-      client.zincrby("ClassTranscribe::Submitted::" + className, 1, taskName);
-      client.zscore("ClassTranscribe::Submitted::" + className, taskName, function(err, score) {
-        score = parseInt(score, 10);
-        if (err) {
-          return err;
-        }
-
-        if (score === 10) {
-          client.zrem("ClassTranscribe::Submitted::" + className, taskName);
-          client.zrem("ClassTranscribe::PrioritizedTasks::" + className, taskName);
-        }
-
-        client.sadd("ClassTranscribe::First::" + className, captionFileName);
-        var netIDTaskTuple = stats.name + ":" + taskName;
-        console.log('tuple delete: ' + netIDTaskTuple);
-        client.hdel("ClassTranscribe::ActiveTranscribers::" + className, netIDTaskTuple);
-      });
     });
   });
 });
@@ -402,7 +402,7 @@ function clearInactiveTranscriptions() {
         return;
       }
 
-      if (!result.length) {
+      if (result !== null) {
         for(var i = 0; i < result.length; i += 2) {
           var netIDTaskTuple = result[i].split(":");
           var netId = netIDTaskTuple[0];
@@ -476,7 +476,12 @@ router.get('/progress/:className', function (request, response) {
 router.post('/progress/:className/:netId', function (request, response) {
   var className = request.params.className.toUpperCase();
   var netId = request.params.netId;
+  sendProgressEmail(className, netId, function () {
+    response.end('success');
+  });
+});
 
+function sendProgressEmail(className, netId, callback) {
   client.smembers("ClassTranscribe::First::" + className, function (err, firstMembers) {
     if (err) {
       console.log(err);
@@ -503,10 +508,12 @@ router.post('/progress/:className/:netId', function (request, response) {
       });
 
       mailer.progressEmail(netId, className, count);
-      response.end('success');
+      if (callback) {
+        callback();
+      }
     });
   });
-})
+}
 
 var thirtyMinsInMilliSecs = 30 * 60 * 1000;
 setInterval(clearInactiveTranscriptions, thirtyMinsInMilliSecs);
