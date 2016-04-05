@@ -187,7 +187,7 @@ router.post('/first', function (request, response) {
     var args = ["validator_new.py","stats/first/" + className + "/" + statsFileName];
     var validationChild = spawn(command, args);
     validationChild.stdout.on('data', function (code) {
-      code = code.toString().trim();
+      code = parseInt(code.toString().trim());
       response.end("Validation Done");
       if (code !== 1) {
         console.log("Transcription is bad!");
