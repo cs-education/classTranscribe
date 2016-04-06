@@ -211,7 +211,7 @@ router.post('/first', function (request, response) {
           var netIDTaskTuple = stats.name + ":" + taskName;
           console.log('tuple delete: ' + netIDTaskTuple);
           client.hdel("ClassTranscribe::ActiveTranscribers::" + className, netIDTaskTuple);
-          sendProgressEmail(className, netId);
+          sendProgressEmail(className, stats.name);
         });
       }
     });
