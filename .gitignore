@@ -2,3 +2,10 @@
 stats
 captions
 oliver_scripts
+ct_credit
+*.csv
+tmp
+.vscode
+dict.tmp
+*.log
+node_modules
