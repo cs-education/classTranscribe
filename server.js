@@ -21,8 +21,9 @@ var exampleTerms = {
   "ece210": "Energy Signals",
 }
 
+var mustachePath = 'templates/';
 
-var homeMustache = fs.readFileSync('home.mustache').toString();
+var homeMustache = fs.readFileSync(mustachePath + 'home.mustache').toString();
 router.get('/', function (request, response) {
   response.writeHead(200, {
     'Content-Type': 'text/html'
@@ -36,9 +37,7 @@ router.get('/', function (request, response) {
   response.end(html);
 });
 
-
-
-var searchMustache = fs.readFileSync('search.mustache').toString();
+var searchMustache = fs.readFileSync(mustachePath + 'search.mustache').toString();
 router.get('/f', function (request, response) {
   response.writeHead(200, {
     'Content-Type': 'text/html'
@@ -52,7 +51,7 @@ router.get('/f', function (request, response) {
   response.end(html);
 });
 
-var viewerMustache = fs.readFileSync('viewer.mustache').toString();
+var viewerMustache = fs.readFileSync(mustachePath + 'viewer.mustache').toString();
 router.get('/viewer/:className', function (request, response) {
   var className = request.params.className.toLowerCase();
 
@@ -69,7 +68,7 @@ router.get('/viewer/:className', function (request, response) {
   response.end(html);
 });
 
-var searchMustache = fs.readFileSync('search.mustache').toString();
+var searchMustache = fs.readFileSync(mustachePath + 'search.mustache').toString();
 router.get('/:className', function (request, response) {
   var className = request.params.className.toLowerCase();
 
@@ -187,33 +186,16 @@ router.post('/first', function (request, response) {
     var args = ["validator_new.py","stats/first/" + className + "/" + statsFileName];
     var validationChild = spawn(command, args);
     validationChild.stdout.on('data', function (code) {
-      code = parseInt(code.toString().trim());
-      response.end("Validation Done");
-      if (code !== 1) {
+      code = code.toString().trim();
+      if (code === "1") {
+        console.log("Transcription is good!");
+        client.zincrby(["ClassTranscribe::Tasks::" + className, "1", taskName]);
+        client.sadd("ClassTranscribe::First::" + className, captionFileName);
+      } else {
         console.log("Transcription is bad!");
         client.lpush("ClassTranscribe::Failed::" + className, captionFileName);
-        return;
-      } else {
-        console.log("Transcription is good!");
-        client.zincrby("ClassTranscribe::Submitted::" + className, 1, taskName);
-        client.zscore("ClassTranscribe::Submitted::" + className, taskName, function(err, score) {
-          score = parseInt(score, 10);
-          if (err) {
-            return err;
-          }
-
-          if (score === 10) {
-            client.zrem("ClassTranscribe::Submitted::" + className, taskName);
-            client.zrem("ClassTranscribe::PrioritizedTasks::" + className, taskName);
-          }
-
-          client.sadd("ClassTranscribe::First::" + className, captionFileName);
-          var netIDTaskTuple = stats.name + ":" + taskName;
-          console.log('tuple delete: ' + netIDTaskTuple);
-          client.hdel("ClassTranscribe::ActiveTranscribers::" + className, netIDTaskTuple);
-          sendProgressEmail(className, stats.name);
-        });
       }
+      response.end("Validation Done");
     });
   });
 });
@@ -235,7 +217,7 @@ router.get('/second/:className/:id', function (request, response) {
   response.end(html);
 });
 
-var queueMustache = fs.readFileSync('queue.mustache').toString();
+var queueMustache = fs.readFileSync(mustachePath + 'queue.mustache').toString();
 router.get('/queue/:className', function (request, response) {
   var className = request.params.className.toUpperCase();
 
@@ -250,7 +232,25 @@ router.get('/queue/:className', function (request, response) {
 router.get('/queue/:className/:netId', function (request, response) {
   var className = request.params.className.toUpperCase();
   var netId = request.params.netId.toLowerCase();
-  highDensityQueue(response, className, netId, 0);
+
+  var className = request.params.className.toUpperCase();
+  var args = ["ClassTranscribe::Tasks::" + className, "-inf", "+inf", "LIMIT", "0", "1"];
+  client.zrangebyscore(args, function (err, result) {
+    if (err) {
+      throw err;
+    }
+
+    if (!result.length) {
+      return response.end("No more tasks at the moment. More tasks are being uploaded as you read this. Please check back later.");
+    }
+
+    var taskName = result[0];
+
+    args = ["ClassTranscribe::Tasks::" + className, "1", result[0]];
+    client.zincrby(args);
+
+    response.end(html);
+  });
 });
 
 function highDensityQueue(response, className, netId, attemptNum) {
@@ -461,7 +461,7 @@ router.get('/captions/:className/:index', function (request, response) {
   response.end(JSON.stringify({captions: captions[index]}));
 });
 
-var progressMustache = fs.readFileSync('progress.mustache').toString();
+var progressMustache = fs.readFileSync(mustachePath + 'progress.mustache').toString();
 router.get('/progress/:className', function (request, response) {
   var className = request.params.className.toUpperCase();
 
