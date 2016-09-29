@@ -114,7 +114,7 @@ router.get('/download/webvtt/:fileNumber', function (request, reponse) {
   filestream.pipe(reponse);
 });
 
-var firstPassMustache = fs.readFileSync('index.mustache').toString();
+var firstPassMustache = fs.readFileSync(mustachePath + 'index.mustache').toString();
 router.get('/first/:className/:id', function (request, response) {
   var className = request.params.className.toUpperCase();
   response.writeHead(200, {
@@ -200,7 +200,7 @@ router.post('/first', function (request, response) {
   });
 });
 
-var secondPassMustache = fs.readFileSync('editor.mustache').toString();
+var secondPassMustache = fs.readFileSync(mustachePath + 'editor.mustache').toString();
 router.get('/second/:className/:id', function (request, response) {
   var className = request.params.className.toUpperCase();
   response.writeHead(200, {
@@ -519,4 +519,4 @@ var thirtyMinsInMilliSecs = 30 * 60 * 1000;
 setInterval(clearInactiveTranscriptions, thirtyMinsInMilliSecs);
 
 var server = http.createServer(router);
-server.listen(80);
+server.listen(8000);
