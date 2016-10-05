@@ -12,6 +12,10 @@ var mailer = require('./modules/mailer');
 var spawn = require('child_process').spawn;
 var mkdirp = require('mkdirp');
 
+client.on("monitor", function (time, args, raw_reply) {
+    console.log(time + ": " + args); // 1458910076.446514:['set', 'foo', 'bar']
+});
+
 var exampleTerms = {
   "cs241": "printf",
   "cs225": "pointer",
@@ -250,7 +254,25 @@ router.get('/queue/:className', function (request, response) {
 router.get('/queue/:className/:netId', function (request, response) {
   var className = request.params.className.toUpperCase();
   var netId = request.params.netId.toLowerCase();
-  highDensityQueue(response, className, netId, 0);
+  
+  var args = ["ClassTranscribe::Tasks::" + className, "0", "99999", "LIMIT", "0", "1"];
+  client.zrangebyscore(args, function (err, result) {
+    if (err) {
+      throw err;
+    }
+
+    if (!result.length) {
+      return response.end("No more tasks at the moment. More tasks are being uploaded as you read this. Please check back later.");
+    }
+
+    var taskName = result[0];
+    // var fileName = chosenTask + "-" + netId + ".txt";
+
+    args = ["ClassTranscribe::Tasks::" + className, "1", result[0]];
+    client.zincrby(args);
+
+    response.end(taskName);
+  });
 });
 
 function highDensityQueue(response, className, netId, attemptNum) {
@@ -260,9 +282,9 @@ function highDensityQueue(response, className, netId, attemptNum) {
       throw err;
     }
 
-    // Tasks will only be empty if there are no tasks left or they've moved to PrioritizedTasks 
+    // Tasks will only be empty if there are no tasks left or they've moved to PrioritizedTasks
     if (!result.length) {
-      var args = ["ClassTranscribe::PrioritizedTasks::" + className, "0", "99999", 
+      var args = ["ClassTranscribe::PrioritizedTasks::" + className, "0", "99999",
         "WITHSCORES", "LIMIT", "0", "1"];
       client.zrangebyscore(args, function (err, result) {
         if (!result.length) {
@@ -351,7 +373,7 @@ function queueResponse(response, queueName, netId, className, chosenTask, attemp
 /**
  *  This function moves tasks from the Tasks to PrioritizedTasks queue, if needed.
  *  Then returns a task to be completed
- * 
+ *
  * @param  {int} Number of tasks already in set
  * @param  {int} Number tasks desired in set
  * @return {string} task to be completed
@@ -359,7 +381,7 @@ function queueResponse(response, queueName, netId, className, chosenTask, attemp
 function moveToPrioritizedQueue(response, className, netId, numberTasks, numTasksToPrioritize, attemptNum) {
   if (numberTasks < numTasksToPrioritize) {
       var numDifference = numTasksToPrioritize - numberTasks;
-      var args = ["ClassTranscribe::Tasks::" + className, "0", "99999", 
+      var args = ["ClassTranscribe::Tasks::" + className, "0", "99999",
         "WITHSCORES", "LIMIT", "0", numDifference];
       client.zrangebyscore(args, function (err, tasks) {
         if (err) {
@@ -437,7 +459,7 @@ function clearInactiveTranscriptions() {
       }
     })
   });
-  
+
 }
 
 var captionsMapping = {
@@ -516,7 +538,12 @@ function sendProgressEmail(className, netId, callback) {
 }
 
 var thirtyMinsInMilliSecs = 30 * 60 * 1000;
-setInterval(clearInactiveTranscriptions, thirtyMinsInMilliSecs);
+//setInterval(clearInactiveTranscriptions, thirtyMinsInMilliSecs);
+
+client.on('error', function (error) {
+	console.log('redis error');
+});
+
 
 var server = http.createServer(router);
 server.listen(80);
