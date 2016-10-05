@@ -1,8 +1,7 @@
 var http = require('http');
-var Router = require('node-simple-router');
+var express = require('express');
 var Mustache = require('mustache');
 var fs = require('fs');
-var router = Router();
 var zlib = require('zlib');
 var path = require('path');
 var mime = require('mime');
@@ -11,6 +10,8 @@ var client = require('./modules/redis');
 var mailer = require('./modules/mailer');
 var spawn = require('child_process').spawn;
 var mkdirp = require('mkdirp');
+
+var app = express();
 
 client.on("monitor", function (time, args, raw_reply) {
     console.log(time + ": " + args); // 1458910076.446514:['set', 'foo', 'bar']
@@ -27,7 +28,7 @@ var exampleTerms = {
 
 
 var homeMustache = fs.readFileSync('home.mustache').toString();
-router.get('/', function (request, response) {
+app.get('/', function (request, response) {
   response.writeHead(200, {
     'Content-Type': 'text/html'
   });
@@ -43,7 +44,7 @@ router.get('/', function (request, response) {
 
 
 var searchMustache = fs.readFileSync('search.mustache').toString();
-router.get('/f', function (request, response) {
+app.get('/f', function (request, response) {
   response.writeHead(200, {
     'Content-Type': 'text/html'
   });
@@ -57,7 +58,7 @@ router.get('/f', function (request, response) {
 });
 
 var viewerMustache = fs.readFileSync('viewer.mustache').toString();
-router.get('/viewer/:className', function (request, response) {
+app.get('/viewer/:className', function (request, response) {
   var className = request.params.className.toLowerCase();
 
   response.writeHead(200, {
@@ -74,7 +75,7 @@ router.get('/viewer/:className', function (request, response) {
 });
 
 var searchMustache = fs.readFileSync('search.mustache').toString();
-router.get('/:className', function (request, response) {
+app.get('/:className', function (request, response) {
   var className = request.params.className.toLowerCase();
 
   response.writeHead(200, {
@@ -89,14 +90,14 @@ router.get('/:className', function (request, response) {
   response.end(html);
 });
 
-router.get('/upload', function (request, response) {
+app.get('/upload', function (request, response) {
   response.writeHead(200, {
     'Content-Type': 'text/html'
   });
   response.end("Endpoint Deprecated.");
 })
 
-router.post('/download', function(request, response) {
+app.post('/download', function(request, response) {
   var transcriptions = JSON.parse(request.post.transcriptions);
   var fileNumber = Math.round(Math.random() * 10000)
   fs.writeFileSync("public/Downloads/" + fileNumber + ".webvtt", webvtt(transcriptions));
@@ -106,7 +107,7 @@ router.post('/download', function(request, response) {
   response.end(JSON.stringify({fileNumber: fileNumber}));
 });
 
-router.get('/download/webvtt/:fileNumber', function (request, reponse) {
+app.get('/download/webvtt/:fileNumber', function (request, reponse) {
   var file = "public/Downloads/" + request.params.fileNumber + ".webvtt";
 
   var filename = path.basename(file);
@@ -120,7 +121,7 @@ router.get('/download/webvtt/:fileNumber', function (request, reponse) {
 });
 
 var firstPassMustache = fs.readFileSync('index.mustache').toString();
-router.get('/first/:className/:id', function (request, response) {
+app.get('/first/:className/:id', function (request, response) {
   var className = request.params.className.toUpperCase();
   response.writeHead(200, {
     'Content-Type': 'text/html',
@@ -130,13 +131,13 @@ router.get('/first/:className/:id', function (request, response) {
 
   var view = {
     className: className,
-    taskName: request.get.task,
+    taskName: request.query.task,
   };
   var html = Mustache.render(firstPassMustache, view);
   response.end(html);
 });
 
-router.get('/Video/:fileName', function (request, response) {
+app.get('/Video/:fileName', function (request, response) {
   var file = path.resolve(__dirname + "/Video/", request.params.fileName + ".mp4");
   var range = request.headers.range;
   var positions = range.replace(/bytes=/, "").split("-");
@@ -163,7 +164,7 @@ router.get('/Video/:fileName', function (request, response) {
   });
 })
 
-router.post('/first', function (request, response) {
+app.post('/first', function (request, response) {
   var stats = JSON.parse(request.post.stats);
   var transcriptions = request.post.transcriptions;//
   var className = request.post.className.toUpperCase();//
@@ -223,7 +224,7 @@ router.post('/first', function (request, response) {
 });
 
 var secondPassMustache = fs.readFileSync('editor.mustache').toString();
-router.get('/second/:className/:id', function (request, response) {
+app.get('/second/:className/:id', function (request, response) {
   var className = request.params.className.toUpperCase();
   response.writeHead(200, {
     'Content-Type': 'text/html',
@@ -233,14 +234,14 @@ router.get('/second/:className/:id', function (request, response) {
 
   var view = {
     className: className,
-    taskName: request.get.task,
+    taskName: request.query.task,
   };
   var html = Mustache.render(secondPassMustache, view);
   response.end(html);
 });
 
 var queueMustache = fs.readFileSync('queue.mustache').toString();
-router.get('/queue/:className', function (request, response) {
+app.get('/queue/:className', function (request, response) {
   var className = request.params.className.toUpperCase();
 
   var view = {
@@ -251,7 +252,7 @@ router.get('/queue/:className', function (request, response) {
   response.end(html);
 });
 
-router.get('/queue/:className/:netId', function (request, response) {
+app.get('/queue/:className/:netId', function (request, response) {
   var className = request.params.className.toUpperCase();
   var netId = request.params.netId.toLowerCase();
   
@@ -471,7 +472,7 @@ var captionsMapping = {
   "ece210": require('./public/javascripts/data/captions/ece210.js'),
 }
 
-router.get('/captions/:className/:index', function (request, response) {
+app.get('/captions/:className/:index', function (request, response) {
   var className = request.params.className.toLowerCase();
   var captions = captionsMapping[className];
 
@@ -484,7 +485,7 @@ router.get('/captions/:className/:index', function (request, response) {
 });
 
 var progressMustache = fs.readFileSync('progress.mustache').toString();
-router.get('/progress/:className', function (request, response) {
+app.get('/progress/:className', function (request, response) {
   var className = request.params.className.toUpperCase();
 
   var view = {
@@ -495,7 +496,7 @@ router.get('/progress/:className', function (request, response) {
   response.end(html);
 });
 
-router.post('/progress/:className/:netId', function (request, response) {
+app.post('/progress/:className/:netId', function (request, response) {
   var className = request.params.className.toUpperCase();
   var netId = request.params.netId;
   sendProgressEmail(className, netId, function () {
@@ -544,6 +545,8 @@ client.on('error', function (error) {
 	console.log('redis error');
 });
 
+app.use(express.static('public'));
 
-var server = http.createServer(router);
-server.listen(80);
+app.listen(80, function () {
+  console.log('listening on port 80!');
+});
