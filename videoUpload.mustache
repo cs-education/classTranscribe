@@ -8,7 +8,7 @@
   <script src="/javascripts/libraries/jquery.mousewheel.min.js"></script>
   <script src="/javascripts/libraries/underscore.js"></script>
   <script src="/javascripts/libraries/disableMacBack.js"></script>
-
+  <script src="/javascripts/libraries/dropzone.js"></script>
   <script src="/javascripts/controllers/videoUpload.js"></script>
 
   <script>
@@ -36,6 +36,9 @@
   <div class="main-container">
     <input id="upload-input" type="file" name="uploads[]">
   </div>
+  <form action="/file-upload"
+      class="dropzone"
+      id="my-awesome-dropzone"></form>
 </body>
 
 </html>
