@@ -36,9 +36,16 @@
   <div class="main-container">
     <input id="upload-input" type="file" name="uploads[]">
   </div>
-  <form action="/file-upload"
-      class="dropzone"
-      id="my-awesome-dropzone"></form>
+  <form action="/file-upload" class="dropzone" id="myDropzone" enctype="multipart/form-data">
+     hi
+   </form>
+   <script>
+   Dropzone.options.myDropZone= {
+  init: function() {
+    this.on("addedfile", function(file) { alert("Added file."); });
+  }
+};
+   </script>
 </body>
 
 </html>
