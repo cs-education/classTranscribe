@@ -10,6 +10,8 @@ var client = require('./modules/redis');
 var mailer = require('./modules/mailer');
 var spawn = require('child_process').spawn;
 var mkdirp = require('mkdirp');
+var multer = require('multer');
+var bodyParser = require('body-parser');
 
 var app = express();
 app.use(bodyParser.json()); // for parsing application/json
@@ -60,7 +62,7 @@ app.get('/f', function (request, response) {
 });
 
 var videoUploadMustache = fs.readFileSync('videoUpload.mustache').toString();
-app.get('/videoUpload', function (request, response) {
+app.get('/videoUpload/:uuid', function (request, response) {
   response.writeHead(200, {
     'Content-Type': 'text/html'
   });
@@ -69,8 +71,12 @@ app.get('/videoUpload', function (request, response) {
   response.end(html);
 });
 
-app.post('/videoUpload/:className', function (request, response) {
-  var className = request.params.className.toUpperCase();
+app.post('/videoUpload/:uuid', function (request, response) {
+  var uuid = request.body.uuid;
+
+  // client.s
+
+  var className = request.body.className.toUpperCase();
   var lectureNum = request.body.lectureNum;
   var lectureTitle = request.body.lectureTitle;
   var description = request.body.description;
@@ -203,8 +209,8 @@ app.get('/Video/:fileName', function (request, response) {
 
 app.post('/first', function (request, response) {
   var stats = JSON.parse(request.post.stats);
-  var transcriptions = request.post.transcriptions;//
-  var className = request.post.className.toUpperCase();//
+  var transcriptions = request.post.transcriptions;
+  var className = request.post.className.toUpperCase();
   var statsFileName = stats.video.replace(/\ /g,"_") + "-" + stats.name + ".json";
   var captionFileName = stats.video.replace(/\ /g,"_") + "-" + stats.name + ".txt";
   var taskName = stats.video.replace(/\ /g,"_");
