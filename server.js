@@ -74,30 +74,35 @@ app.get('/videoUpload/:uuid', function (request, response) {
 app.post('/videoUpload/:uuid', function (request, response) {
   var uuid = request.body.uuid;
 
-  // client.s
+  var isMemberArgs = ['ClassTranscribe::AllowedUploaders', uuid]
+  client.sismember(isMemberArgs, function (err, result) {
+    if (result) {
+      var className = request.body.className.toUpperCase();
+      var lectureNum = request.body.lectureNum;
+      var lectureTitle = request.body.lectureTitle;
+      var description = request.body.description;
+      var date = request.body.date;
 
-  var className = request.body.className.toUpperCase();
-  var lectureNum = request.body.lectureNum;
-  var lectureTitle = request.body.lectureTitle;
-  var description = request.body.description;
-  var date = request.body.date;
+      // file upload goes here
 
-  // file upload goes here
+      client.sadd('ClassTranscribe::LectureNames::' + className, lectureNum);
 
-  client.sadd('ClassTranscribe::LectureNames::' + className, lectureNum);
+      var args = ['ClassTranscribe::LectureInfo::' + className + '::' + lectureNum,
+                  'lectureNum',
+                  lectureNum,
+                  'lectureTitle',
+                  lectureTitle,
+                  'date',
+                  date,
+                  'description',
+                  description];
+      client.hmset(args);
 
-  var args = ['ClassTranscribe::LectureInfo::' + className + '::' + lectureNum,
-              'lectureNum',
-              lectureNum,
-              'lectureTitle',
-              lectureTitle,
-              'date',
-              date,
-              'description',
-              description];
-  client.hmset(args);
-
-  // start conversion, splitting, upload and task creation
+      // start conversion, splitting, upload and task creation
+    } else {
+      response.status(401).end();
+    }
+  });
 })
 
 var viewerMustache = fs.readFileSync('viewer.mustache').toString();
