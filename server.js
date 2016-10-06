@@ -41,8 +41,6 @@ app.get('/', function (request, response) {
   response.end(html);
 });
 
-
-
 var searchMustache = fs.readFileSync('search.mustache').toString();
 app.get('/f', function (request, response) {
   response.writeHead(200, {
@@ -54,6 +52,16 @@ app.get('/f', function (request, response) {
     exampleTerm: exampleTerms["cs241"]
   };
   var html = Mustache.render(searchMustache, view);
+  response.end(html);
+});
+
+var videoUploadMustache = fs.readFileSync('videoUpload.mustache').toString();
+app.get('/videoUpload', function (request, response) {
+  response.writeHead(200, {
+    'Content-Type': 'text/html'
+  });
+
+  var html = Mustache.render(videoUploadMustache, view);
   response.end(html);
 });
 
