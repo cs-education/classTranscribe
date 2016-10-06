@@ -67,7 +67,7 @@ app.get('/videoUpload/:uuid', function (request, response) {
     'Content-Type': 'text/html'
   });
 
-  var html = Mustache.render(videoUploadMustache, view);
+  var html = Mustache.render(videoUploadMustache);
   response.end(html);
 });
 
