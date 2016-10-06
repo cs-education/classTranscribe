@@ -12,6 +12,10 @@ var spawn = require('child_process').spawn;
 var mkdirp = require('mkdirp');
 
 var app = express();
+app.use(bodyParser.json()); // for parsing application/json
+app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+app.use(express.static('public'));
+
 
 client.on("monitor", function (time, args, raw_reply) {
     console.log(time + ": " + args); // 1458910076.446514:['set', 'foo', 'bar']
@@ -64,6 +68,31 @@ app.get('/videoUpload', function (request, response) {
   var html = Mustache.render(videoUploadMustache, view);
   response.end(html);
 });
+
+app.post('/videoUpload/:className', function (request, response) {
+  var className = request.params.className.toUpperCase();
+  var lectureNum = request.body.lectureNum;
+  var lectureTitle = request.body.lectureTitle;
+  var description = request.body.description;
+  var date = request.body.date;
+
+  // file upload goes here
+
+  client.sadd('ClassTranscribe::LectureNames::' + className, lectureNum);
+
+  var args = ['ClassTranscribe::LectureInfo::' + className + '::' + lectureNum,
+              'lectureNum',
+              lectureNum,
+              'lectureTitle',
+              lectureTitle,
+              'date',
+              date,
+              'description',
+              description];
+  client.hmset(args);
+
+  // start conversion, splitting, upload and task creation
+})
 
 var viewerMustache = fs.readFileSync('viewer.mustache').toString();
 app.get('/viewer/:className', function (request, response) {
@@ -552,8 +581,6 @@ var thirtyMinsInMilliSecs = 30 * 60 * 1000;
 client.on('error', function (error) {
 	console.log('redis error');
 });
-
-app.use(express.static('public'));
 
 app.listen(80, function () {
   console.log('listening on port 80!');
