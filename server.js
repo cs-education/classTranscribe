@@ -24,6 +24,7 @@ var exampleTerms = {
   "chem233-sp16": 'spectroscopy',
   "adv582": "focus group",
   "ece210": "Energy Signals",
+  "cs446-fa16": "Decision Trees"
 }
 
 
@@ -470,6 +471,7 @@ var captionsMapping = {
   "chem233-sp16": require('./public/javascripts/data/captions/chem233-sp16.js'),
   "adv582": require('./public/javascripts/data/captions/adv582.js'),
   "ece210": require('./public/javascripts/data/captions/ece210.js'),
+  "cs446-fa16": require('./public/javascripts/data/captions/cs446-fa16.js'),
 }
 
 app.get('/captions/:className/:index', function (request, response) {
