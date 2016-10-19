@@ -84,10 +84,11 @@ app.post('/videoUpload/:uuid', function (request, response) {
       var date = request.body.date;
 
       // file upload goes here
+      var fileLocation = undefined;
 
       client.sadd('ClassTranscribe::LectureNames::' + className, lectureNum);
 
-      var args = ['ClassTranscribe::LectureInfo::' + className + '::' + lectureNum,
+      var hashArgs = ['ClassTranscribe::LectureInfo::' + className + '::' + lectureNum,
                   'lectureNum',
                   lectureNum,
                   'lectureTitle',
@@ -96,9 +97,13 @@ app.post('/videoUpload/:uuid', function (request, response) {
                   date,
                   'description',
                   description];
-      client.hmset(args);
+      client.hmset(hashArgs);
 
-      // start conversion, splitting, upload and task creation
+      var command = 'node';
+      var videoRunnerArgs = ["videoRunner.js", className, videoLocation];
+      var segmenterChild = spawn(command, videoRunnerArgs);
+
+      // TODO: some way to let user know if it was succesful 
     } else {
       response.status(401).end();
     }
