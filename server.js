@@ -44,27 +44,7 @@ app.get('/', function (request, response) {
     'Content-Type': 'text/html'
   });
 
-  var view = {
-    className: "cs241",
-    exampleTerm: exampleTerms["cs241"]
-  };
-  var html = Mustache.render(homeMustache, view);
-  response.end(html);
-});
-
-
-
-var searchMustache = fs.readFileSync(mustachePath + 'search.mustache').toString();
-app.get('/f', function (request, response) {
-  response.writeHead(200, {
-    'Content-Type': 'text/html'
-  });
-
-  var view = {
-    className: "cs241",
-    exampleTerm: exampleTerms["cs241"]
-  };
-  var html = Mustache.render(searchMustache, view);
+  var html = Mustache.render(homeMustache);
   response.end(html);
 });
 
