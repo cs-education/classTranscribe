@@ -81,13 +81,6 @@ app.get('/:className', function (request, response) {
   response.end(html);
 });
 
-app.get('/upload', function (request, response) {
-  response.writeHead(200, {
-    'Content-Type': 'text/html'
-  });
-  response.end("Endpoint Deprecated.");
-})
-
 app.post('/download', function(request, response) {
   var transcriptions = JSON.parse(request.body.transcriptions);
   var fileNumber = Math.round(Math.random() * 10000)
