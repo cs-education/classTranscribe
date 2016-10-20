@@ -14,6 +14,7 @@ var bodyParser = require('body-parser')
 
 var app = express();
 
+
 app.use(bodyParser.json());       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
@@ -23,6 +24,8 @@ app.use(express.static('public'));
 client.on("monitor", function (time, args, raw_reply) {
     console.log(time + ": " + args); // 1458910076.446514:['set', 'foo', 'bar']
 });
+
+var mustachePath = 'templates/';
 
 var exampleTerms = {
   "cs241": "printf",
@@ -35,7 +38,7 @@ var exampleTerms = {
 }
 
 
-var homeMustache = fs.readFileSync('home.mustache').toString();
+var homeMustache = fs.readFileSync(mustachePath + 'home.mustache').toString();
 app.get('/', function (request, response) {
   response.writeHead(200, {
     'Content-Type': 'text/html'
@@ -51,7 +54,7 @@ app.get('/', function (request, response) {
 
 
 
-var searchMustache = fs.readFileSync('search.mustache').toString();
+var searchMustache = fs.readFileSync(mustachePath + 'search.mustache').toString();
 app.get('/f', function (request, response) {
   response.writeHead(200, {
     'Content-Type': 'text/html'
@@ -65,7 +68,7 @@ app.get('/f', function (request, response) {
   response.end(html);
 });
 
-var viewerMustache = fs.readFileSync('viewer.mustache').toString();
+var viewerMustache = fs.readFileSync(mustachePath + 'viewer.mustache').toString();
 app.get('/viewer/:className', function (request, response) {
   var className = request.params.className.toLowerCase();
 
@@ -82,7 +85,7 @@ app.get('/viewer/:className', function (request, response) {
   response.end(html);
 });
 
-var searchMustache = fs.readFileSync('search.mustache').toString();
+var searchMustache = fs.readFileSync(mustachePath + 'search.mustache').toString();
 app.get('/:className', function (request, response) {
   var className = request.params.className.toLowerCase();
 
@@ -128,7 +131,7 @@ app.get('/download/webvtt/:fileNumber', function (request, reponse) {
   filestream.pipe(reponse);
 });
 
-var firstPassMustache = fs.readFileSync('index.mustache').toString();
+var firstPassMustache = fs.readFileSync(mustachePath + 'index.mustache').toString();
 app.get('/first/:className/:id', function (request, response) {
   var className = request.params.className.toUpperCase();
   response.writeHead(200, {
@@ -231,7 +234,7 @@ app.post('/first', function (request, response) {
   });
 });
 
-var secondPassMustache = fs.readFileSync('editor.mustache').toString();
+var secondPassMustache = fs.readFileSync(mustachePath + 'editor.mustache').toString();
 app.get('/second/:className/:id', function (request, response) {
   var className = request.params.className.toUpperCase();
   response.writeHead(200, {
@@ -248,7 +251,7 @@ app.get('/second/:className/:id', function (request, response) {
   response.end(html);
 });
 
-var queueMustache = fs.readFileSync('queue.mustache').toString();
+var queueMustache = fs.readFileSync(mustachePath + 'queue.mustache').toString();
 app.get('/queue/:className', function (request, response) {
   var className = request.params.className.toUpperCase();
 
@@ -493,7 +496,7 @@ app.get('/captions/:className/:index', function (request, response) {
   response.end(JSON.stringify({captions: captions[index]}));
 });
 
-var progressMustache = fs.readFileSync('progress.mustache').toString();
+var progressMustache = fs.readFileSync(mustachePath + 'progress.mustache').toString();
 app.get('/progress/:className', function (request, response) {
   var className = request.params.className.toUpperCase();
 
@@ -549,6 +552,10 @@ function sendProgressEmail(className, netId, callback) {
 
 var thirtyMinsInMilliSecs = 30 * 60 * 1000;
 //setInterval(clearInactiveTranscriptions, thirtyMinsInMilliSecs);
+
+client.on("monitor", function (time, args, raw_reply) {
+    console.log(time + ": " + args); // 1458910076.446514:['set', 'foo', 'bar']
+});
 
 client.on('error', function (error) {
 	console.log('redis error');
