@@ -554,7 +554,7 @@ client.on('error', function (error) {
 	console.log('redis error');
 });
 
-var port = 8080;
+var port = 80;
 app.listen(port, function () {
-  console.log(`listening on port ${port}!`);
+  console.log('listening on port ' + port + '!');
 });
