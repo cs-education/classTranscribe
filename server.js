@@ -1,6 +1,3 @@
-comment to bkrea
-
-
 var http = require('http');
 var express = require('express');
 var Mustache = require('mustache');
