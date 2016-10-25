@@ -554,15 +554,7 @@ client.on('error', function (error) {
 	console.log('redis error');
 });
 
-<<<<<<< HEAD
-app.use(express.static('public'));
-
-app.listen(80, function () {
-  console.log('listening on port 80!');
-});
-=======
 var port = 80;
 app.listen(port, function () {
   console.log('listening on port ' + port + '!');
 });
->>>>>>> refs/remotes/cs-education/master
