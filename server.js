@@ -12,12 +12,22 @@ var spawn = require('child_process').spawn;
 var mkdirp = require('mkdirp');
 var multer = require('multer');
 var bodyParser = require('body-parser');
+var reload = require('reload');
 
 var app = express();
+
+app.set('port', process.env.PORT || 80);
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 app.use(express.static('public'));
 
+
+// Reload the server and browser
+var server = http.createServer(app);
+reload(server,app);
+server.listen(app.get('port'), function(){
+  console.log("Web server listening on port " + app.get('port'));
+});
 
 client.on("monitor", function (time, args, raw_reply) {
     console.log(time + ": " + args); // 1458910076.446514:['set', 'foo', 'bar']
@@ -600,6 +610,6 @@ client.on('error', function (error) {
 	console.log('redis error');
 });
 
-app.listen(80, function () {
+/*app.listen(80, function () {
   console.log('listening on port 80!');
-});
+});*/

@@ -2,16 +2,22 @@
   font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif !important;
 }
 
+body {
+  background-color: grey;
+}
 .main-container {
-  padding-top: 20px;
-  width: 600px;
+  width: 80%;
+  height: 100%;
   margin: 0 auto;
   text-align: center;
+  background-color: lightblue;
 }
 
 .header-container {
-  margin: 10px 0;
   text-align: center;
+  height: 100px;
+  width: 100%;
+  background-color: grey;
 }
 
 h1 {
