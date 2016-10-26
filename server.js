@@ -162,7 +162,7 @@ app.get('/upload', function (request, response) {
 })
 
 app.post('/download', function(request, response) {
-  var transcriptions = JSON.parse(request.post.transcriptions);
+  var transcriptions = JSON.parse(request.body.transcriptions);
   var fileNumber = Math.round(Math.random() * 10000)
   fs.writeFileSync("public/Downloads/" + fileNumber + ".webvtt", webvtt(transcriptions));
   response.writeHead(200, {
@@ -229,9 +229,9 @@ app.get('/Video/:fileName', function (request, response) {
 })
 
 app.post('/first', function (request, response) {
-  var stats = JSON.parse(request.post.stats);
-  var transcriptions = request.post.transcriptions;
-  var className = request.post.className.toUpperCase();
+  var stats = JSON.parse(request.body.stats);
+  var transcriptions = request.body.transcriptions;
+  var className = request.body.className.toUpperCase();
   var statsFileName = stats.video.replace(/\ /g,"_") + "-" + stats.name + ".json";
   var captionFileName = stats.video.replace(/\ /g,"_") + "-" + stats.name + ".txt";
   var taskName = stats.video.replace(/\ /g,"_");
@@ -240,8 +240,8 @@ app.post('/first', function (request, response) {
       console.log(err);
     }
     transcriptionPath = "captions/first/" + className + "/" + captionFileName;
-    client.sadd("ClassTranscribe::Transcriptions::" + transcriptionPath, request.post.transcriptions);
-    fs.writeFileSync(transcriptionPath, request.post.transcriptions, {mode: 0777});
+    client.sadd("ClassTranscribe::Transcriptions::" + transcriptionPath, transcriptions);
+    fs.writeFileSync(transcriptionPath, transcriptions, {mode: 0777});
   });
 
   mkdirp("stats/first/" + className, function (err) {
@@ -249,8 +249,8 @@ app.post('/first', function (request, response) {
       console.log(err);
     }
     statsPath = "stats/first/" + className + "/" + statsFileName;
-    client.sadd("ClassTranscribe::Stats::" + statsPath, request.post.stats);
-    fs.writeFileSync(statsPath, request.post.stats, {mode: 0777});
+    client.sadd("ClassTranscribe::Stats::" + statsPath, request.body.stats);
+    fs.writeFileSync(statsPath, request.body.stats, {mode: 0777});
 
     var command = 'python';
     var args = ["validator_new.py","stats/first/" + className + "/" + statsFileName];
@@ -613,3 +613,4 @@ client.on('error', function (error) {
 /*app.listen(80, function () {
   console.log('listening on port 80!');
 });*/
+
