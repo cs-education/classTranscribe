@@ -15,7 +15,7 @@ var bodyParser = require('body-parser')
 
 var app = express();
 
-app.use(bodyParser.json());       // to support JSON-encoded bodies
+app.use(bodyParser.json());         // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 })); 
@@ -80,6 +80,67 @@ app.get('/:className', function (request, response) {
   var html = Mustache.render(searchMustache, view);
   response.end(html);
 });
+
+var progressDashboardMustache = fs.readFileSync('progressDashboard.mustache').toString();
+app.get('/viewProgress/:className/:uuid', function (request, response) {
+  var className = request.params.className;
+  var uuid = request.params.uuid;
+
+  var isMemberArgs = ['ClassTranscribe::AllowedUploaders', uuid]
+  client.sismember(isMemberArgs, function (err, result) {
+    if (result) {
+      progressDict = {}
+      client.smembers("ClassTranscribe::First::" + className, function (err, firstMembers) {
+        if (err) {
+          console.log(err);
+        }
+
+        client.smembers("ClassTranscribe::Finished::" + className, function (err, finishedMembers) {
+          if (err) {
+            console.log(err);
+          }
+
+          firstMembers.forEach(function (member) {
+            var netID = member.split("-")[1].replace(".json", "").replace(".txt", "");
+            if (progressDict.hasOwnProperty(netID)) {
+              progressDict[netID] = progressDict[netID] + 1;
+            } else {
+              progressDict[netID] = 1;
+            }
+          });
+
+          finishedMembers.forEach(function (member) {
+            var netID = member.split("-")[1].replace(".json", "").replace(".txt", "");
+            if (progressDict.hasOwnProperty(netID)) {
+              progressDict[netID] = progressDict[netID] + 1;
+            } else {
+              progressDict[netID] = 1;
+            }
+          });
+
+          var studentProgress = []
+          for (netID in progressDict) {
+            if (progressDict.hasOwnProperty(netID) && netID !== 'omelvin2') {
+              studentProgress.push({'netID': netID, 'count': progressDict[netID]});
+            }
+          }
+
+          response.writeHead(200, {
+            'Content-Type': 'text/html'
+          });
+
+          var view = {
+            className: className,
+            studentProgress: studentProgress
+          };
+          var html = Mustache.render(progressDashboardMustache, view);
+          response.end(html);
+        });
+      });
+    }
+  })
+});
+
 
 app.post('/download', function(request, response) {
   var transcriptions = JSON.parse(request.body.transcriptions);
