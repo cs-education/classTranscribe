@@ -109,12 +109,12 @@ jQuery(document).ready(function($){
 
   //cirle 2 click
   $( ".circle-two" ).click(function() {
-    window.location = "https://github.com/cs-education/classTranscribe/blob/master/student_faq.md";
+    window.location = "https://github.com/cs-education/classTranscribe/blob/master/documentation/student_faq.md";
   });
 
   //cirle 3 click
   $( ".circle-three" ).click(function() {
-    window.location = "https://github.com/cs-education/classTranscribe/blob/master/instructor_faq.md";
+    window.location = "https://github.com/cs-education/classTranscribe/blob/master/documentation/instructor_faq.md";
   });
 
   // button email send click
