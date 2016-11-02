@@ -8,12 +8,12 @@ var mime = require('mime');
 var webvtt = require('./modules/webvtt');
 var client = require('./modules/redis');
 var mailer = require('./modules/mailer');
+var validator = require('./modules/validator');
 var spawn = require('child_process').spawn;
 var mkdirp = require('mkdirp');
 var bodyParser = require('body-parser')
 
 var app = express();
-
 
 app.use(bodyParser.json());       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
@@ -172,38 +172,34 @@ app.post('/first', function (request, response) {
     client.sadd("ClassTranscribe::Stats::" + statsPath, request.body.stats);
     fs.writeFileSync(statsPath, request.body.stats, {mode: 0777});
 
-    var command = 'python';
-    var args = ["validator_new.py","stats/first/" + className + "/" + statsFileName];
-    var validationChild = spawn(command, args);
-    validationChild.stdout.on('data', function (code) {
-      code = parseInt(code.toString().trim());
-      response.end("Validation Done");
-      if (code !== 1) {
-        console.log("Transcription is bad!");
-        client.lpush("ClassTranscribe::Failed::" + className, captionFileName);
-        return;
-      } else {
-        console.log("Transcription is good!");
-        client.zincrby("ClassTranscribe::Submitted::" + className, 1, taskName);
-        client.zscore("ClassTranscribe::Submitted::" + className, taskName, function(err, score) {
-          score = parseInt(score, 10);
-          if (err) {
-            return err;
-          }
 
-          if (score === 10) {
-            client.zrem("ClassTranscribe::Submitted::" + className, taskName);
-            client.zrem("ClassTranscribe::PrioritizedTasks::" + className, taskName);
-          }
+    var isTranscriptionValid = validator.validateTranscription("stats/first/" + className + "/" + statsFileName)
 
-          client.sadd("ClassTranscribe::First::" + className, captionFileName);
-          var netIDTaskTuple = stats.name + ":" + taskName;
-          console.log('tuple delete: ' + netIDTaskTuple);
-          client.hdel("ClassTranscribe::ActiveTranscribers::" + className, netIDTaskTuple);
-          sendProgressEmail(className, stats.name);
-        });
-      }
-    });
+    if (isTranscriptionValid) {
+      console.log("Transcription is good!");
+      client.zincrby("ClassTranscribe::Submitted::" + className, 1, taskName);
+      client.zscore("ClassTranscribe::Submitted::" + className, taskName, function(err, score) {
+        score = parseInt(score, 10);
+        if (err) {
+          return err;
+        }
+
+        if (score === 10) {
+          client.zrem("ClassTranscribe::Submitted::" + className, taskName);
+          client.zrem("ClassTranscribe::PrioritizedTasks::" + className, taskName);
+        }
+
+        client.sadd("ClassTranscribe::First::" + className, captionFileName);
+        var netIDTaskTuple = stats.name + ":" + taskName;
+        console.log('tuple delete: ' + netIDTaskTuple);
+        client.hdel("ClassTranscribe::ActiveTranscribers::" + className, netIDTaskTuple);
+        sendProgressEmail(className, stats.name);
+      });
+    } else {
+      console.log("Transcription is bad!");
+      client.lpush("ClassTranscribe::Failed::" + className, captionFileName);
+      return;
+    }
   });
 });
 
