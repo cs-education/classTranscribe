@@ -1,3 +1,5 @@
+var fs = require('fs');
+
 if (process.argv.length < 3) {
   console.log("not enough arguments");
   process.exit(1);
@@ -9,7 +11,6 @@ console.log(alignedFile);
 var output = "[";
 
 //read aligned output
-var fs = require('fs');
 fs.readFile(alignedFile, 'utf8', function(err, data) {
   if (err) {
     throw err;
@@ -61,7 +62,6 @@ fs.readFile(alignedFile, 'utf8', function(err, data) {
     }
   }
 
-
   //in case student forget to add punctuation for the last sentence
   if (sentance.length > 10) {
     end = array[array.length - 1].end;
@@ -73,12 +73,10 @@ fs.readFile(alignedFile, 'utf8', function(err, data) {
     console.log(start, " ", end);
   }
 
-
   output = output.concat("]");
   output = output.replace(",]", ']');
-  //write to file
-  var wf = require('fs');
-  wf.writeFile("width.json", output, function(err) {
+
+  fs.writeFile("../width.json", output, function (err) {
     if (err) {
       return console.log(err);
     }
