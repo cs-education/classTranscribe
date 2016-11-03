@@ -16,7 +16,7 @@ console.log(videos);
 
 
 videos.forEach(function (video) {
-  var videoIndex = parseInt(video.split("_")[1], 10) + 1;
+  var videoIndex = parseInt(video.split("_")[1], 10);
   videoIndex = videoIndex > 9 ? videoIndex : "0" + videoIndex;
 
   var lectureDir = path + "/Lecture_" + videoIndex;

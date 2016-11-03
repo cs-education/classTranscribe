@@ -19,11 +19,11 @@ existing lecture recordings and enable enhanced educational features including c
 
 1. Download lecture videos for a course, place in a directory.
 2. Rename videos to follow format Lecture_`<lecture_index>`.`<any video file format (wmv/m4a/etc)>`.
-3. Copy convert.sh script to directory with videos `cp scripts/convert.sh <path_to_directory_with_videos>`.
+3. Copy convert.sh script to directory with videos `cp utility_scripts/convert.sh <path_to_directory_with_videos>`.
 4. Run convert.sh `<path_to_directory_with_videos>/convert.sh`. This will transcode all the videos and may take a while.
-5. Split videos into 4-6 minute chunks by running `node scripts/splitRunner.js <path_to_directory_with_videos>.
+5. Split videos into 4-6 minute chunks by running `node utility_scripts/splitRunner.js <path_to_directory_with_videos>`.
 6. Upload videos to S3 (May need to install s3cmd utility) `s3cmd put --acl-public -r ./ s3://<s3_bucket_name>/<class_name>/`.
-7. Initialize transcription tasks in redis queue by running `node scripts/taskInitializer.js <path_to_directory_with_videos> <class_name>`.
+7. Initialize transcription tasks in redis queue by running `node utility_scripts/taskInitializer.js <path_to_directory_with_videos> <class_name>`.
 8. Send an email to your students. Below is an example email template:
 
 > Dear `<class_name>` students, 
@@ -51,7 +51,7 @@ existing lecture recordings and enable enhanced educational features including c
 ## How to upload finished transcriptions
 
 1. Have the latest version of transcriptions in your local repository by running `git pull origin master`.
-2. Run `scripts/videoGenerator.js <class_name>` to generate a list of videos. Create/Modify `javascripts/data/videos/<classname>.js` accordingly.
-3. Run `scripts/captionGenerator.js <class_name>` to generate a list of captions. Create/Modify `javascripts/data/captions/<classname>.js` accordingly.
+2. Run `utility_scripts/videoGenerator.js <class_name>` to generate a list of videos. Create/Modify `javascripts/data/videos/<classname>.js` accordingly.
+3. Run `utility_scripts/captionGenerator.js <class_name>` to generate a list of captions. Create/Modify `javascripts/data/captions/<classname>.js` accordingly.
 4. If it's the first time uploading transcriptions, modify the `exampleTerms` and `captionsMapping` configuration in `server.js` to add example terms and mappings to the video and caption files accordingly.
 5. Restart the server. 
