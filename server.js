@@ -5,13 +5,15 @@ var fs = require('fs');
 var zlib = require('zlib');
 var path = require('path');
 var mime = require('mime');
-var webvtt = require('./modules/webvtt');
-var client = require('./modules/redis');
-var mailer = require('./modules/mailer');
-var validator = require('./modules/validator');
 var spawn = require('child_process').spawn;
 var mkdirp = require('mkdirp');
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser');
+var Promise = require('bluebird');
+
+var webvtt = require('./modules/webvtt');
+var client = Promise.promisifyAll(require('./modules/redis'));
+var mailer = require('./modules/mailer');
+var validator = require('./modules/validator');
 
 var app = express();
 
@@ -292,86 +294,86 @@ app.get('/queue/:className', function (request, response) {
   response.end(html);
 });
 
+/**
+ * client.moveQueue 
+ */
 app.get('/queue/:className/:netId', function (request, response) {
   var className = request.params.className.toUpperCase();
   var netId = request.params.netId.toLowerCase();
-  
-  var args = ["ClassTranscribe::Tasks::" + className, "0", "99999", "LIMIT", "0", "1"];
-  client.zrangebyscore(args, function (err, result) {
-    if (err) {
-      throw err;
-    }
 
-    if (!result.length) {
-      return response.end("No more tasks at the moment. More tasks are being uploaded as you read this. Please check back later.");
-    }
+  var updateQueue = Promise.promisify(updatePriorirityQueue);
 
-    var taskName = result[0];
-    // var fileName = chosenTask + "-" + netId + ".txt";
-
-    args = ["ClassTranscribe::Tasks::" + className, "1", result[0]];
-    client.zincrby(args);
-
-    response.end(taskName);
-  });
-});
-
-function highDensityQueue(response, className, netId, attemptNum) {
-  var args = ["ClassTranscribe::Tasks::" + className, "0", "99999", "WITHSCORES", "LIMIT", "0", "1"];
-  client.zrangebyscore(args, function (err, result) {
-    if (err) {
-      throw err;
-    }
-
-    // Tasks will only be empty if there are no tasks left or they've moved to PrioritizedTasks
-    if (!result.length) {
-      var args = ["ClassTranscribe::PrioritizedTasks::" + className, "0", "99999",
-        "WITHSCORES", "LIMIT", "0", "1"];
-      client.zrangebyscore(args, function (err, result) {
-        if (!result.length) {
-          response.end("No more tasks at the moment. Please email classtranscribe@gmail.com.");
-        } else {
-          taskName = result[0];
-          taskScore = parseInt(result[1], 10);
-
-          queueResponse(response, "PrioritizedTasks", netId, className, taskName, attemptNum);
-        }
-      });
+  updateQueue(className, netId).then(function (data) {
+    var taskArgs = ["ClassTranscribe::Tasks::" + className, "0", "99999", "WITHSCORES", "LIMIT", "0", "20"];
+    var priorityTaskArgs = ["ClassTranscribe::PrioritizedTasks::" + className, "0", "99999",
+        "WITHSCORES", "LIMIT", "0", "20"];
+    
+    return Promise.all([client.zrangebyscoreAsync(taskArgs), client.zrangebyscoreAsync(priorityTaskArgs)]);
+  }).spread(function (coverageResults, priorityResults) {
+    if (!coverageResults.length && !priorityResults.length) {
+      response.end("No more tasks at the moment. Please email classtranscribe@gmail.com.");
     } else {
-      var taskName = result[0];
-      var taskScore = parseInt(result[1], 10);
-
-      if(taskScore >= 2) {
-        initPrioritizedTask(response, className, attemptNum);
+      var taskScore = coverageResults[1]; // WITHSCORES returns an array alternating between item and score
+      if (taskScore <= 2) {
+        //coverage not yet achieved
+        return selectTaskNotCompletedByUser(className, netId, coverageResults);
       } else {
-        queueResponse(response, "Tasks", netId, className, taskName, attemptNum);
+        return selectTaskNotCompletedByUser(className, netId, priorityResults);
       }
     }
-  });
+  }).then(function (taskName) {
+    response.end(taskName);
+  })
+});
+
+function selectTaskNotCompletedByUser(className, netId, possibleTasks) {
+  for (var i = 0; i < possibleTasks.length; i += 2) {
+     
+  }
 }
 
-function initPrioritizedTask(response, className, netId, attemptNum) {
-  var numTasksToPrioritize = 10;
+function updatePriorirityQueue(className, netId, cb) {
+  var numTasksToPrioritize = 5;
   // Can't call zcard if doesn't exist. Unable to be directly handled by err in zcard call
   // due to how the redis client works
-  client.exists("ClassTranscribe::PrioritizedTasks::" + className, function (err, code) {
-    if (err) {
-      throw err;
-    }
-
+  client.existsAsync("ClassTranscribe::PrioritizedTasks::" + className).then(function (code) {
     if (code === 0) {
-      moveToPrioritizedQueue(response, className, netId, 0, numTasksToPrioritize, attemptNum);
+      return 0;
     } else {
-      client.zcard("ClassTranscribe::PrioritizedTasks::" + className, function (err, numberTasks) {
-        if (err) {
-          throw err;
-        }
-
-        moveToPrioritizedQueue(response, className, netId, numberTasks, numTasksToPrioritize, attemptNum);
-      });
+      return client.zcardAsync("ClassTranscribe::PrioritizedTasks::" + className);
     }
+  }).then(function (numTasksCurrentlyPrioritized) {
+    if (numTasksCurrentlyPrioritized < numTasksToPrioritize) {
+      var numDifference = numTasksToPrioritize - numTasksCurrentlyPrioritized;
+      var args = ["ClassTranscribe::Tasks::" + className, "0", "99999",
+        "WITHSCORES", "LIMIT", "0", numDifference];
+      return client.zrangebyscoreAsync(args);
+    }
+  }).then(function (tasks) {
+    for (var i = 0; i < tasks.length; i += 2) {
+      var taskName = tasks[i];
+      var score = parseInt(tasks[i + 1], 10);
+      if (score > 2) {
+        client.zrem("ClassTranscribe::Tasks::" + className, taskName);
+        client.zadd("ClassTranscribe::PrioritizedTasks::" + className, score, taskName);
+      }
+    }
+
+    cb(null, 'hi');
   });
 }
+
+// function updatePriorirityQueueAsync(className, netId) {
+//   return new Promise(function(resolve, reject){
+// 		updatePriorirityQueue(function(error, data){
+// 			if (err) {
+// 				reject(err);
+// 			} else {
+// 				resolve(data)
+// 			}
+// 		});
+// 	});
+// }
 
 function queueResponse(response, queueName, netId, className, chosenTask, attemptNum) {
   console.log(chosenTask);
@@ -408,49 +410,6 @@ function queueResponse(response, queueName, netId, className, chosenTask, attemp
           }
       });
     }
-  });
-}
-
-/**
- *  This function moves tasks from the Tasks to PrioritizedTasks queue, if needed.
- *  Then returns a task to be completed
- *
- * @param  {int} Number of tasks already in set
- * @param  {int} Number tasks desired in set
- * @return {string} task to be completed
- */
-function moveToPrioritizedQueue(response, className, netId, numberTasks, numTasksToPrioritize, attemptNum) {
-  if (numberTasks < numTasksToPrioritize) {
-      var numDifference = numTasksToPrioritize - numberTasks;
-      var args = ["ClassTranscribe::Tasks::" + className, "0", "99999",
-        "WITHSCORES", "LIMIT", "0", numDifference];
-      client.zrangebyscore(args, function (err, tasks) {
-        if (err) {
-          throw err;
-        }
-
-        for(var i = 0; i < tasks.length; i += 2) {
-          var taskName = tasks[i];
-          var score = parseInt(tasks[i + 1], 10);
-          client.zrem("ClassTranscribe::Tasks::" + className, taskName);
-          client.zadd("ClassTranscribe::PrioritizedTasks::" + className, score, taskName);
-        }
-        getPrioritizedTask(response, className, netId, attemptNum);
-      });
-    } else {
-      getPrioritizedTask(response, className, netId, attemptNum);
-    }
-}
-
-function getPrioritizedTask(response, className, netId, attemptNum) {
-  var args = ["ClassTranscribe::PrioritizedTasks::" + className, "0", "99999", "LIMIT", "0", "1"];
-  client.zrangebyscore(args, function(err, tasks) {
-    if (err) {
-      throw err;
-    }
-    var task = tasks[0]
-    console.log('tasks from priority ' + task);
-    queueResponse(response, "PrioritizedTasks", netId, className, task, attemptNum);
   });
 }
 
