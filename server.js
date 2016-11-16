@@ -81,7 +81,7 @@ app.get('/:className', function (request, response) {
   response.end(html);
 });
 
-var progressDashboardMustache = fs.readFileSync('progressDashboard.mustache').toString();
+var progressDashboardMustache = fs.readFileSync(mustachePath + 'progressDashboard.mustache').toString();
 app.get('/viewProgress/:className/:uuid', function (request, response) {
   var className = request.params.className;
   var uuid = request.params.uuid;
