@@ -33,7 +33,7 @@ function progressEmail(netId, className, transcriptionCount) {
   if (netId != null) {
     var emailSuffix = '@illinois.edu';
     var subject = className + ' Class Transcribe Progress';
-    var faqLink = 'https://github.com/cs-education/classTranscribe/blob/master/student_faq.md';
+    var faqLink = 'https://github.com/cs-education/classTranscribe/blob/master/documentation/student_faq.md';
     var body = [
       'Hi,',
       'You have completed ' + transcriptionCount + ' transcriptions for ' + className + '.',

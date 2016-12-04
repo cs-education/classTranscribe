@@ -8,3 +8,4 @@ dict.tmp
 *.log
 node_modules
 *.m4v
+**/commands.txt

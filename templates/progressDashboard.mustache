@@ -1,0 +1,26 @@
+<html>
+  <head>
+    <script src="/javascripts/libraries/jquery-1.11.2.min.js"></script>
+    <!--need to get count from redis put on page-->
+  </head>
+  <body>
+    <div>
+      <h2>{{className}}</h2>
+      <h5>List of particpants and number of tasks submitted</h5>
+      <ul>
+        {{#studentProgress}}
+        <li>{{netID}}, {{count}}</li>
+        {{/studentProgress}}
+      </ul>
+      {{^studentProgress}}No one has submitted a task :({{/studentProgress}}
+
+      <!--<h5>Lectures Segments Not Yet Transcribed</h5>
+      <ul>
+        {{#taskProgress}}
+        <li>{{taskName}}</li>
+        {{/taskProgress}}
+      </ul>
+      {{^taskProgress}}All tasks in the system have been transcribed at least once.{{/taskProgress}}-->
+    </div>
+  </body>
+</html>

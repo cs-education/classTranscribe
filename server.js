@@ -5,16 +5,17 @@ var fs = require('fs');
 var zlib = require('zlib');
 var path = require('path');
 var mime = require('mime');
-var webvtt = require('./scripts/webvtt');
+var webvtt = require('./modules/webvtt');
 var client = require('./modules/redis');
 var mailer = require('./modules/mailer');
+var validator = require('./modules/validator');
 var spawn = require('child_process').spawn;
 var mkdirp = require('mkdirp');
 var bodyParser = require('body-parser')
 
 var app = express();
 
-app.use(bodyParser.json());       // to support JSON-encoded bodies
+app.use(bodyParser.json());         // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 })); 
@@ -23,6 +24,8 @@ app.use(express.static('public'));
 client.on("monitor", function (time, args, raw_reply) {
     console.log(time + ": " + args); // 1458910076.446514:['set', 'foo', 'bar']
 });
+
+var mustachePath = 'templates/';
 
 var exampleTerms = {
   "cs241": "printf",
@@ -35,37 +38,17 @@ var exampleTerms = {
 }
 
 
-var homeMustache = fs.readFileSync('home.mustache').toString();
+var homeMustache = fs.readFileSync(mustachePath + 'home.mustache').toString();
 app.get('/', function (request, response) {
   response.writeHead(200, {
     'Content-Type': 'text/html'
   });
 
-  var view = {
-    className: "cs241",
-    exampleTerm: exampleTerms["cs241"]
-  };
-  var html = Mustache.render(homeMustache, view);
+  var html = Mustache.render(homeMustache);
   response.end(html);
 });
 
-
-
-var searchMustache = fs.readFileSync('search.mustache').toString();
-app.get('/f', function (request, response) {
-  response.writeHead(200, {
-    'Content-Type': 'text/html'
-  });
-
-  var view = {
-    className: "cs241",
-    exampleTerm: exampleTerms["cs241"]
-  };
-  var html = Mustache.render(searchMustache, view);
-  response.end(html);
-});
-
-var viewerMustache = fs.readFileSync('viewer.mustache').toString();
+var viewerMustache = fs.readFileSync(mustachePath + 'viewer.mustache').toString();
 app.get('/viewer/:className', function (request, response) {
   var className = request.params.className.toLowerCase();
 
@@ -82,7 +65,7 @@ app.get('/viewer/:className', function (request, response) {
   response.end(html);
 });
 
-var searchMustache = fs.readFileSync('search.mustache').toString();
+var searchMustache = fs.readFileSync(mustachePath + 'search.mustache').toString();
 app.get('/:className', function (request, response) {
   var className = request.params.className.toLowerCase();
 
@@ -98,12 +81,65 @@ app.get('/:className', function (request, response) {
   response.end(html);
 });
 
-app.get('/upload', function (request, response) {
-  response.writeHead(200, {
-    'Content-Type': 'text/html'
-  });
-  response.end("Endpoint Deprecated.");
-})
+var progressDashboardMustache = fs.readFileSync(mustachePath + 'progressDashboard.mustache').toString();
+app.get('/viewProgress/:className/:uuid', function (request, response) {
+  var className = request.params.className;
+  var uuid = request.params.uuid;
+
+  var isMemberArgs = ['ClassTranscribe::AllowedUploaders', uuid]
+  client.sismember(isMemberArgs, function (err, result) {
+    if (result) {
+      progressDict = {}
+      client.smembers("ClassTranscribe::First::" + className, function (err, firstMembers) {
+        if (err) {
+          console.log(err);
+        }
+
+        client.smembers("ClassTranscribe::Finished::" + className, function (err, finishedMembers) {
+          if (err) {
+            console.log(err);
+          }
+
+          firstMembers.forEach(function (member) {
+            var netID = member.split("-")[1].replace(".json", "").replace(".txt", "");
+            if (progressDict.hasOwnProperty(netID)) {
+              progressDict[netID] = progressDict[netID] + 1;
+            } else {
+              progressDict[netID] = 1;
+            }
+          });
+
+          finishedMembers.forEach(function (member) {
+            var netID = member.split("-")[1].replace(".json", "").replace(".txt", "");
+            if (progressDict.hasOwnProperty(netID)) {
+              progressDict[netID] = progressDict[netID] + 1;
+            } else {
+              progressDict[netID] = 1;
+            }
+          });
+
+          var studentProgress = []
+          for (netID in progressDict) {
+            if (progressDict.hasOwnProperty(netID) && netID !== 'omelvin2') {
+              studentProgress.push({'netID': netID, 'count': progressDict[netID]});
+            }
+          }
+
+          response.writeHead(200, {
+            'Content-Type': 'text/html'
+          });
+
+          var view = {
+            className: className,
+            studentProgress: studentProgress
+          };
+          var html = Mustache.render(progressDashboardMustache, view);
+          response.end(html);
+        });
+      });
+    }
+  })
+});
 
 app.post('/download', function(request, response) {
   var transcriptions = JSON.parse(request.body.transcriptions);
@@ -128,7 +164,7 @@ app.get('/download/webvtt/:fileNumber', function (request, reponse) {
   filestream.pipe(reponse);
 });
 
-var firstPassMustache = fs.readFileSync('index.mustache').toString();
+var firstPassMustache = fs.readFileSync(mustachePath + 'index.mustache').toString();
 app.get('/first/:className/:id', function (request, response) {
   var className = request.params.className.toUpperCase();
   response.writeHead(200, {
@@ -196,42 +232,38 @@ app.post('/first', function (request, response) {
     client.sadd("ClassTranscribe::Stats::" + statsPath, request.body.stats);
     fs.writeFileSync(statsPath, request.body.stats, {mode: 0777});
 
-    var command = 'python';
-    var args = ["validator_new.py","stats/first/" + className + "/" + statsFileName];
-    var validationChild = spawn(command, args);
-    validationChild.stdout.on('data', function (code) {
-      code = parseInt(code.toString().trim());
-      response.end("Validation Done");
-      if (code !== 1) {
-        console.log("Transcription is bad!");
-        client.lpush("ClassTranscribe::Failed::" + className, captionFileName);
-        return;
-      } else {
-        console.log("Transcription is good!");
-        client.zincrby("ClassTranscribe::Submitted::" + className, 1, taskName);
-        client.zscore("ClassTranscribe::Submitted::" + className, taskName, function(err, score) {
-          score = parseInt(score, 10);
-          if (err) {
-            return err;
-          }
 
-          if (score === 10) {
-            client.zrem("ClassTranscribe::Submitted::" + className, taskName);
-            client.zrem("ClassTranscribe::PrioritizedTasks::" + className, taskName);
-          }
+    var isTranscriptionValid = validator.validateTranscription("stats/first/" + className + "/" + statsFileName)
 
-          client.sadd("ClassTranscribe::First::" + className, captionFileName);
-          var netIDTaskTuple = stats.name + ":" + taskName;
-          console.log('tuple delete: ' + netIDTaskTuple);
-          client.hdel("ClassTranscribe::ActiveTranscribers::" + className, netIDTaskTuple);
-          sendProgressEmail(className, stats.name);
-        });
-      }
-    });
+    if (isTranscriptionValid) {
+      console.log("Transcription is good!");
+      client.zincrby("ClassTranscribe::Submitted::" + className, 1, taskName);
+      client.zscore("ClassTranscribe::Submitted::" + className, taskName, function(err, score) {
+        score = parseInt(score, 10);
+        if (err) {
+          return err;
+        }
+
+        if (score === 10) {
+          client.zrem("ClassTranscribe::Submitted::" + className, taskName);
+          client.zrem("ClassTranscribe::PrioritizedTasks::" + className, taskName);
+        }
+
+        client.sadd("ClassTranscribe::First::" + className, captionFileName);
+        var netIDTaskTuple = stats.name + ":" + taskName;
+        console.log('tuple delete: ' + netIDTaskTuple);
+        client.hdel("ClassTranscribe::ActiveTranscribers::" + className, netIDTaskTuple);
+        sendProgressEmail(className, stats.name);
+      });
+    } else {
+      console.log("Transcription is bad!");
+      client.lpush("ClassTranscribe::Failed::" + className, captionFileName);
+      return;
+    }
   });
 });
 
-var secondPassMustache = fs.readFileSync('editor.mustache').toString();
+var secondPassMustache = fs.readFileSync(mustachePath + 'editor.mustache').toString();
 app.get('/second/:className/:id', function (request, response) {
   var className = request.params.className.toUpperCase();
   response.writeHead(200, {
@@ -248,7 +280,7 @@ app.get('/second/:className/:id', function (request, response) {
   response.end(html);
 });
 
-var queueMustache = fs.readFileSync('queue.mustache').toString();
+var queueMustache = fs.readFileSync(mustachePath + 'queue.mustache').toString();
 app.get('/queue/:className', function (request, response) {
   var className = request.params.className.toUpperCase();
 
@@ -493,7 +525,7 @@ app.get('/captions/:className/:index', function (request, response) {
   response.end(JSON.stringify({captions: captions[index]}));
 });
 
-var progressMustache = fs.readFileSync('progress.mustache').toString();
+var progressMustache = fs.readFileSync(mustachePath + 'progress.mustache').toString();
 app.get('/progress/:className', function (request, response) {
   var className = request.params.className.toUpperCase();
 
@@ -549,6 +581,10 @@ function sendProgressEmail(className, netId, callback) {
 
 var thirtyMinsInMilliSecs = 30 * 60 * 1000;
 //setInterval(clearInactiveTranscriptions, thirtyMinsInMilliSecs);
+
+client.on("monitor", function (time, args, raw_reply) {
+    console.log(time + ": " + args); // 1458910076.446514:['set', 'foo', 'bar']
+});
 
 client.on('error', function (error) {
 	console.log('redis error');

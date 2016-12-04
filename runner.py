@@ -46,7 +46,7 @@ sys.stdout.flush()
 
 print "starting to getwidth"
 sys.stdout.flush()
-if os.system("node getWidth.js p2fa_out.json") != 0:
+if os.system("node utility_scripts/getWidth.js p2fa_out.json") != 0:
 	print "get_width failed"
 	sys.exit(1)
 print "finished to getwidth"
