@@ -29,7 +29,7 @@ passport.deserializeUser(function (user, done) {
     done(null, user);
 });
 
-var CALLBACK_URL = "/login/callback";
+var CALLBACK_URL = "https://classtranscribe.herokuapp.com/login/callback";
 var ENTRY_POINT = "https://idp.testshib.org/idp/profile/SAML2/Redirect/SSO";
 var ISSUER = 'ClassTranscribe';
 var LOGOUT_URL = "https://www.testshib.org/Shibboleth.sso/Logout";
