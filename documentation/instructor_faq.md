@@ -14,7 +14,7 @@ In the past professors have had success offering small (~1%) amounts of extra cr
 
 ## How long does each task take?
 
-About 20 minutes. You can view the process [here](https://github.com/cs-education/classTranscribe/blob/master/tutorial.md).
+About 20 minutes. You can view the process [here](https://github.com/cs-education/classTranscribe/blob/master/documentation/tutorial.md).
 
 ## How do I know which students particpated?
   At the end you will be provided with a CSV file containing netids along with the number of completed tasks.
