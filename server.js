@@ -11,7 +11,55 @@ var mailer = require('./modules/mailer');
 var validator = require('./modules/validator');
 var spawn = require('child_process').spawn;
 var mkdirp = require('mkdirp');
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser');
+
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
+var passport = require('passport');
+var saml = require('passport-saml');
+var dotenv = require('dotenv');
+
+dotenv.load();
+
+passport.serializeUser(function (user, done) {
+    done(null, user);
+});
+
+passport.deserializeUser(function (user, done) {
+    done(null, user);
+});
+
+var CALLBACK_URL = "/login/callback";
+var ENTRY_POINT = "https://idp.testshib.org/idp/profile/SAML2/Redirect/SSO";
+var ISSUER = 'ClassTranscribe';
+var LOGOUT_URL = "https://www.testshib.org/Shibboleth.sso/Logout";
+
+var samlStrategy = new saml.Strategy({
+    // URL that goes from the Identity Provider -> Service Provider
+    callbackUrl: CALLBACK_URL,
+    // URL that goes from the Service Provider -> Identity Provider
+    entryPoint: ENTRY_POINT,
+    // Usually specified as `/shibboleth` from site root
+    issuer: ISSUER,
+    logoutUrl: LOGOUT_URL,
+    identifierFormat: null,
+    // Service Provider private key
+    decryptionPvk: fs.readFileSync(__dirname + '/cert/key.pem', 'utf8'),
+    // Service Provider Certificate
+    privateCert: fs.readFileSync(__dirname + '/cert/key.pem', 'utf8'),
+    // Identity Provider's public key
+    cert: fs.readFileSync(__dirname + '/cert/idp_cert.pem', 'utf8'),
+    validateInResponseTo: false,
+    disableRequestedAuthnContext: true
+}, function (profile, done) {
+
+        /*user.saml = {};
+        user.saml.nameID = profile.nameID;
+        user.saml.nameIDFormat = profile.nameIDFormat;*/
+        return done(null, profile);
+});
+
+passport.use(samlStrategy);
 
 var app = express();
 
@@ -20,6 +68,21 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 })); 
 app.use(express.static('public'));
+app.use(cookieParser());
+app.use(bodyParser());
+app.use(session({ secret: "secret" }));
+app.use(passport.initialize());
+app.use(passport.session());
+
+function ensureAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) {
+        console.log("You are authenticated");
+        return next();
+    }
+    else {
+        return res.redirect('/login');
+    }
+}
 
 client.on("monitor", function (time, args, raw_reply) {
     console.log(time + ": " + args); // 1458910076.446514:['set', 'foo', 'bar']
@@ -48,6 +111,38 @@ app.get('/', function (request, response) {
   response.end(html);
 });
 
+app.get('/login',
+    passport.authenticate('saml', { failureRedirect: '/login/fail' }),
+    function (req, res) {
+      // TODO: change login redirect?
+        res.redirect('/');
+    }
+);
+
+app.post('/login/callback',
+    passport.authenticate('saml', { failureRedirect: '/login/fail' }),
+    function (req, res) {
+        /*
+            User information in: req["user"]
+        
+         */
+        res.redirect('/');
+    }
+);
+
+app.get('/login/fail',
+    function (req, res) {
+        res.status(401).send('Login failed');
+    }
+);
+
+app.get('/Metadata',
+    function (req, res) {
+        res.type('application/xml');
+        res.status(200).send(samlStrategy.generateServiceProviderMetadata(fs.readFileSync(__dirname + '/cert/cert.pem', 'utf8')));
+    }
+);
+
 var viewerMustache = fs.readFileSync(mustachePath + 'viewer.mustache').toString();
 app.get('/viewer/:className', function (request, response) {
   var className = request.params.className.toLowerCase();
@@ -66,7 +161,9 @@ app.get('/viewer/:className', function (request, response) {
 });
 
 var searchMustache = fs.readFileSync(mustachePath + 'search.mustache').toString();
-app.get('/:className', function (request, response) {
+app.get('/:className', 
+  ensureAuthenticated,
+  function (request, response) {
   var className = request.params.className.toLowerCase();
 
   response.writeHead(200, {
@@ -590,7 +687,7 @@ client.on('error', function (error) {
 	console.log('redis error');
 });
 
-var port = 80;
+var port = process.env.PORT || 8000;
 app.listen(port, function () {
   console.log('listening on port ' + port + '!');
 });
