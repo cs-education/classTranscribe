@@ -137,6 +137,15 @@ app.get('/login/fail',
     }
 );
 
+app.get('/logout', function (req, res) {
+  simpleLogout();
+});
+
+function simpleLogout(req, res) {
+  req.logout();
+  res.redirect('/');
+};
+
 app.get('/Metadata',
     function (req, res) {
         res.type('application/xml');
