@@ -129,6 +129,7 @@ app.post('/login/callback',
     
      */
     var redirectUrl = samlStrategy['Redirect'];
+    console.log(redirectUrl);
     if (redirectUrl != null) {
       res.redirect(redirectUrl);
     }
