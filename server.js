@@ -75,6 +75,17 @@ app.use(session({ secret: "secret" }));
 app.use(passport.initialize());
 app.use(passport.session());
 
+/*
+
+TODO: Redirect to correct url as such...
+  Likely have to parse req somehow
+
+  https://classtranscribe.herokuapp.com/viewer/cs446-fa16?videoIndex=3
+
+  TODO: What else will we need to protect?
+
+*/
+
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
     return next();
