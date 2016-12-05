@@ -50,7 +50,8 @@ var samlStrategy = new saml.Strategy({
     // Identity Provider's public key
     cert: fs.readFileSync(__dirname + '/cert/idp_cert.pem', 'utf8'),
     validateInResponseTo: false,
-    disableRequestedAuthnContext: true
+    disableRequestedAuthnContext: true,
+    forceAuthn: true
 }, function (profile, done) {
 
         /*user.saml = {};
