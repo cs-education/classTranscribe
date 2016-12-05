@@ -81,6 +81,7 @@ function ensureAuthenticated(req, res, next) {
   }
   else {
     samlStrategy['Redirect'] = req['route']['path'];
+    console.log("** In ensureAuthenticated: " + samlStrategy['Redirect']);
     return res.redirect('/login');
   }
 }
@@ -128,6 +129,7 @@ app.post('/login/callback',
     
      */
     var redirectUrl = samlStrategy['Redirect'];
+    console.log("** In /login/callback: " + redirectUrl);
     if (redirectUrl != null) {
       res.redirect(redirectUrl);
     }
