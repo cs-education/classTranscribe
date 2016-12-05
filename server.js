@@ -44,9 +44,9 @@ var samlStrategy = new saml.Strategy({
   logoutUrl: LOGOUT_URL,
   identifierFormat: null,
   // Service Provider private key
-  decryptionPvk: fs.readFileSync(__dirname + '/cert/key.pem', 'utf8'),
+  decryptionPvk: process.env.KEY,
   // Service Provider Certificate
-  privateCert: fs.readFileSync(__dirname + '/cert/key.pem', 'utf8'),
+  privateCert: process.env.KEY,
   // Identity Provider's public key
   cert: fs.readFileSync(__dirname + '/cert/idp_cert.pem', 'utf8'),
   validateInResponseTo: false,
@@ -167,7 +167,7 @@ function simpleLogout(req, res) {
 app.get('/Metadata',
   function (req, res) {
     res.type('application/xml');
-    res.status(200).send(samlStrategy.generateServiceProviderMetadata(fs.readFileSync(__dirname + '/cert/cert.pem', 'utf8')));
+    res.status(200).send(samlStrategy.generateServiceProviderMetadata(process.env.CERT));
   }
 );
 
