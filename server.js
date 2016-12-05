@@ -138,7 +138,7 @@ app.get('/login/fail',
 );
 
 app.get('/logout', function (req, res) {
-  simpleLogout();
+  simpleLogout(req, res);
 });
 
 function simpleLogout(req, res) {
