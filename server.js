@@ -128,10 +128,9 @@ app.post('/login/callback',
         User information in: req["user"]
     
      */
-    var redirectUrl = samlStrategy['Redirect'];
-    console.log(redirectUrl);
+    var redirectUrl = '/' + samlStrategy['Redirect'];
     if (redirectUrl != null) {
-      res.redirect('/' + redirectUrl);
+      res.redirect(redirectUrl);
     }
     else {
       res.redirect('/');
@@ -162,21 +161,23 @@ app.get('/Metadata',
 );
 
 var viewerMustache = fs.readFileSync(mustachePath + 'viewer.mustache').toString();
-app.get('/viewer/:className', function (request, response) {
-  var className = request.params.className.toLowerCase();
+app.get('/viewer/:className', 
+  ensureAuthenticated,
+  function (request, response) {
+    var className = request.params.className.toLowerCase();
 
-  response.writeHead(200, {
-    'Content-Type': 'text/html',
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "POST, GET, PUT, DELETE, OPTIONS"
+    response.writeHead(200, {
+      'Content-Type': 'text/html',
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "POST, GET, PUT, DELETE, OPTIONS"
+    });
+
+    var view = {
+      className: className,
+    };
+    var html = Mustache.render(viewerMustache, view);
+    response.end(html);
   });
-
-  var view = {
-    className: className,
-  };
-  var html = Mustache.render(viewerMustache, view);
-  response.end(html);
-});
 
 var searchMustache = fs.readFileSync(mustachePath + 'search.mustache').toString();
 app.get('/:className',
