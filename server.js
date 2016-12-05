@@ -92,7 +92,7 @@ function ensureAuthenticated(req, res, next) {
   }
   else {
     samlStrategy['Redirect'] = req.params.className.toLowerCase();
-    console.log("** In ensureAuthenticated: " + samlStrategy['Redirect']);
+    console.log("** In ensureAuthenticated: " + req);
     return res.redirect('/login');
   }
 }
