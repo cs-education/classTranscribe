@@ -82,6 +82,8 @@ TODO: Redirect to correct url as such...
 
   https://classtranscribe.herokuapp.com/viewer/cs446-fa16?videoIndex=3
 
+  localhost:8000/viewer/cs446-fa16?videoIndex=3
+
   TODO: What else will we need to protect?
 
 */
@@ -91,8 +93,8 @@ function ensureAuthenticated(req, res, next) {
     return next();
   }
   else {
-    samlStrategy['Redirect'] = req.params.className.toLowerCase();
-    console.log("** In ensureAuthenticated: " + req);
+    samlStrategy['Redirect'] = req['_parsedOriginalUrl']['path'];
+    //console.log(req['_parsedOriginalUrl']['path']);
     return res.redirect('/login');
   }
 }
@@ -139,7 +141,7 @@ app.post('/login/callback',
         User information in: req["user"]
     
      */
-    var redirectUrl = '/' + samlStrategy['Redirect'];
+    var redirectUrl = samlStrategy['Redirect'];
     if (redirectUrl != null) {
       res.redirect(redirectUrl);
     }
