@@ -306,14 +306,15 @@ app.get('/queue/:className/:netId', function (request, response) {
     console.log('completed tasks:\n' + completedTasks);
     console.log('possible tasks:\n' + possibleTasks);
     if (completedTasks && completedTasks.length > 0) {
-      var task = possibleTasks.find(function (task) {
+      var chosenTask; 
+      possibleTasks.forEach(function (task) {
         if (completedTasks.indexOf(task) < 0) {
-          return true;
+          chosenTask = task;  
         }
       });
-      console.log('chosen task: ' + task);
-      if (task) {
-        return task;
+      console.log('chosen task: ' + chosenTask);
+      if (chosenTask) {
+        return chosenTask;
       } else {
         return false;
       }
@@ -604,11 +605,11 @@ client.on('error', function (error) {
 	console.log('redis error');
 });
 
-process.on("unhandledRejection", function(reason, promise) {
-    // See Promise.onPossiblyUnhandledRejection for parameter documentation
-    console.log(reason);
-    console.log(promise);
-});
+// process.on("unhandledRejection", function(reason, promise) {
+//     // See Promise.onPossiblyUnhandledRejection for parameter documentation
+//     console.log(reason);
+//     console.log(promise);
+// });
 
 var port = 80;
 app.listen(port, function () {
