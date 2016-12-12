@@ -250,7 +250,7 @@ app.post('/first', function (request, response) {
         //   client.zrem("ClassTranscribe::PrioritizedTasks::" + className, taskName);
         // }
 
-        var key = `ClassTranscribe::Completed::${className}::${stats.name}`;
+        var key = 'ClassTranscribe::Completed::' + className + '::' + stats.name;
         client.sadd(key, taskName);
         client.sadd("ClassTranscribe::First::" + className, captionFileName);
         var netIDTaskTuple = stats.name + ":" + taskName;
@@ -299,7 +299,7 @@ app.get('/queue/:className/:netId', function (request, response) {
   var className = request.params.className.toUpperCase();
   var netId = request.params.netId.toLowerCase();
 
-  var key = `ClassTranscribe::Completed::${className}::${netId}`;
+  var key = 'ClassTranscribe::Completed::' + className + '::' + netId;
   var args = ["ClassTranscribe::Tasks::" + className, "0", "99999", "LIMIT", "0", "100"];
   Promise.all([client.smembersAsync(key), client.zrangebyscoreAsync(args)])
   .spread(function (completedTasks, possibleTasks) {
