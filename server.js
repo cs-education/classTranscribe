@@ -304,11 +304,16 @@ app.get('/queue/:className/:netId', function (request, response) {
   Promise.all([client.smembersAsync(key), client.zrangebyscoreAsync(args)])
   .spread(function (completedTasks, possibleTasks) {
     if (completedTasks.length > 0) {
-      return possibleTasks.find(function (task) {
+      var task = possibleTasks.find(function (task) {
         if (completedTasks.indexOf(task) < 0) {
           return true;
         }
       });
+      if (task) {
+        return task;
+      } else {
+        return false;
+      }
     } else {
       return possibleTasks[0];
     }
@@ -594,6 +599,12 @@ client.on("monitor", function (time, args, raw_reply) {
 
 client.on('error', function (error) {
 	console.log('redis error');
+});
+
+process.on("unhandledRejection", function(reason, promise) {
+    // See Promise.onPossiblyUnhandledRejection for parameter documentation
+    console.log(reason);
+    console.log(promise);
 });
 
 var port = 80;
