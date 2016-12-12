@@ -5,8 +5,9 @@ var fs = require('fs');
 var zlib = require('zlib');
 var path = require('path');
 var mime = require('mime');
+var Promise = require('bluebird');
 var webvtt = require('./modules/webvtt');
-var client = require('./modules/redis');
+var client = Promise.promisifyAll(require('./modules/redis'));
 var mailer = require('./modules/mailer');
 var validator = require('./modules/validator');
 var spawn = require('child_process').spawn;
@@ -244,11 +245,13 @@ app.post('/first', function (request, response) {
           return err;
         }
 
-        if (score === 10) {
-          client.zrem("ClassTranscribe::Submitted::" + className, taskName);
-          client.zrem("ClassTranscribe::PrioritizedTasks::" + className, taskName);
-        }
+        // if (score === 10) {
+        //   client.zrem("ClassTranscribe::Submitted::" + className, taskName);
+        //   client.zrem("ClassTranscribe::PrioritizedTasks::" + className, taskName);
+        // }
 
+        var key = `ClassTranscribe::Completed::${className}::${stats.name}`;
+        client.sadd(key, taskName);
         client.sadd("ClassTranscribe::First::" + className, captionFileName);
         var netIDTaskTuple = stats.name + ":" + taskName;
         console.log('tuple delete: ' + netIDTaskTuple);
@@ -295,25 +298,24 @@ app.get('/queue/:className', function (request, response) {
 app.get('/queue/:className/:netId', function (request, response) {
   var className = request.params.className.toUpperCase();
   var netId = request.params.netId.toLowerCase();
-  
-  var args = ["ClassTranscribe::Tasks::" + className, "0", "99999", "LIMIT", "0", "1"];
-  client.zrangebyscore(args, function (err, result) {
-    if (err) {
-      throw err;
+
+  var key = `ClassTranscribe::Completed::${className}::${netId}`;
+  var args = ["ClassTranscribe::Tasks::" + className, "0", "99999", "LIMIT", "0", "100"];
+  Promise.all([client.smembersAsync(key), client.zrangebyscoreAsync(args)])
+  .spread(function (completedTasks, possibleTasks) {
+    return possibleTasks.find(function (task) {
+      if (completedTasks.indexOf(task) < 0) {
+        return true;
+      }
+    });
+  }).then(function (task) {
+    if (task) {
+      client.zincrby(["ClassTranscribe::Tasks::" + className, "1", task]);
+      response.end(task);
+    } else {
+      response.end("It appears you have completed all available tasks.");
     }
-
-    if (!result.length) {
-      return response.end("No more tasks at the moment. More tasks are being uploaded as you read this. Please check back later.");
-    }
-
-    var taskName = result[0];
-    // var fileName = chosenTask + "-" + netId + ".txt";
-
-    args = ["ClassTranscribe::Tasks::" + className, "1", result[0]];
-    client.zincrby(args);
-
-    response.end(taskName);
-  });
+  })
 });
 
 function highDensityQueue(response, className, netId, attemptNum) {

@@ -9,3 +9,4 @@ dict.tmp
 node_modules
 *.m4v
 **/commands.txt
+fixDupesQueue.js
