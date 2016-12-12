@@ -303,11 +303,15 @@ app.get('/queue/:className/:netId', function (request, response) {
   var args = ["ClassTranscribe::Tasks::" + className, "0", "99999", "LIMIT", "0", "100"];
   Promise.all([client.smembersAsync(key), client.zrangebyscoreAsync(args)])
   .spread(function (completedTasks, possibleTasks) {
-    return possibleTasks.find(function (task) {
-      if (completedTasks.indexOf(task) < 0) {
-        return true;
-      }
-    });
+    if (completedTasks.length > 0) {
+      return possibleTasks.find(function (task) {
+        if (completedTasks.indexOf(task) < 0) {
+          return true;
+        }
+      });
+    } else {
+      return possibleTasks[0];
+    }
   }).then(function (task) {
     if (task) {
       client.zincrby(["ClassTranscribe::Tasks::" + className, "1", task]);
