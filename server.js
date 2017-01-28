@@ -127,10 +127,10 @@ app.get('/', function (request, response) {
 
   var html = Mustache.render(homeMustache);
   response.end(html);
-  return;
+
 
   //var list = [];
-  var testBool = true;
+  /*var testBool = true;
   var dummyUser = "John Doe";
 
   /*if (testBool) {
@@ -140,7 +140,7 @@ app.get('/', function (request, response) {
     list = [{text: "Log in"}]
   }*/
 
-  var list = {
+  /*var list = {
     "user": dummyUser,
     "wrapper": function (text, render) {
         return "<h1>" + render(text) + "</h1>";
