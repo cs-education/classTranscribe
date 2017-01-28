@@ -119,15 +119,41 @@ var exampleTerms = {
 
 
 var homeMustache = fs.readFileSync(mustachePath + 'home.mustache').toString();
+var par = fs.readFileSync(mustachePath + "partial.mustache").toString();
 app.get('/', function (request, response) {
   response.writeHead(200, {
     'Content-Type': 'text/html'
   });
 
-  var html = Mustache.render(homeMustache);
+  //var list = [];
+  var testBool = true;
+  var dummyUser = "John Doe";
+
+  /*if (testBool) {
+    list = [{user: dummyUser, text: "Log out"}]
+  }
+  else {
+    list = [{text: "Log in"}]
+  }*/
+
+  var list = {
+    "user": dummyUser,
+    "wrapper": function (text, render) {
+        return "<h1>" + render(text) + "</h1>";
+    }
+  }
+
+  //var html = response.render("home", {test: "testing"});
+  var html = Mustache.render(homeMustache, {
+    list: list
+  }, {
+      partial: par
+    })
   response.end(html);
 });
 
+var piwik = require("piwik").setup("https://classtranscribe.herokuapp.com", "abc");
+piwik.track({idsite: 1, url: "https://classtranscribe.herokuapp.com"}, console.log);
 app.get('/login',
   passport.authenticate('saml', { failureRedirect: '/login/fail' }),
   function (req, res) {
