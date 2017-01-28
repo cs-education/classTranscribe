@@ -75,6 +75,8 @@ app.use(session({ secret: "secret" }));
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.set('view engine', 'ejs');
+
 /*
 
 TODO: Redirect to correct url as such...
