@@ -119,11 +119,15 @@ var exampleTerms = {
 
 
 var homeMustache = fs.readFileSync(mustachePath + 'home.mustache').toString();
-var par = fs.readFileSync(mustachePath + "partial.mustache").toString();
+//var par = fs.readFileSync(mustachePath + "partial.mustache").toString();
 app.get('/', function (request, response) {
   response.writeHead(200, {
     'Content-Type': 'text/html'
   });
+
+  var html = Mustache.render(homeMustache);
+  response.end(html);
+  return;
 
   //var list = [];
   var testBool = true;
