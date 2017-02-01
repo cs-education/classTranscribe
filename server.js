@@ -77,6 +77,8 @@ app.use(passport.session());
 
 app.set('view engine', 'ejs');
 
+// view/:classname, /:classname, /
+
 /*
 
 TODO: Redirect to correct url as such...
@@ -118,42 +120,52 @@ var exampleTerms = {
 }
 
 
+var authenticatedPartial = fs.readFileSync(mustachePath + 'authenticated.mustache').toString();
+var notAuthenticatedPartial = fs.readFileSync(mustachePath + 'notAuthenticated.html').toString();
+
+function renderWithPartial(mustacheFile, request, response) {
+  var html;
+  if (request.isAuthenticated()) {
+    html = Mustache.render(mustacheFile, {
+      list: [{ user: request.user["urn:oid:0.9.2342.19200300.100.1.1"] }]
+    }, {
+        partial: authenticatedPartial
+      })
+  }
+  else {
+    html = Mustache.render(mustacheFile,
+      {
+        list: [{ user: null }]
+      }, {
+        partial: notAuthenticatedPartial
+      })
+  }
+  response.end(html);
+}
+
+
 var homeMustache = fs.readFileSync(mustachePath + 'home.mustache').toString();
-//var par = fs.readFileSync(mustachePath + "partial.mustache").toString();
 app.get('/', function (request, response) {
   response.writeHead(200, {
     'Content-Type': 'text/html'
   });
 
-  var html = Mustache.render(homeMustache);
-  response.end(html);
+  renderWithPartial(homeMustache, request, response);
+  /*
+    var header = getHeader(req);
+  
+  
+    var html = Mustache.render(homeMustache, {
+      list: header['list']
+    }, {
+        partial: header['partial']
+      });
+    response.end(html);
+  */
+});
 
+app.get('/profile', function (request, response) {
 
-  //var list = [];
-  /*var testBool = true;
-  var dummyUser = "John Doe";
-
-  /*if (testBool) {
-    list = [{user: dummyUser, text: "Log out"}]
-  }
-  else {
-    list = [{text: "Log in"}]
-  }*/
-
-  /*var list = {
-    "user": dummyUser,
-    "wrapper": function (text, render) {
-        return "<h1>" + render(text) + "</h1>";
-    }
-  }
-
-  //var html = response.render("home", {test: "testing"});
-  var html = Mustache.render(homeMustache, {
-    list: list
-  }, {
-      partial: par
-    })
-  response.end(html);*/
 });
 /*
 var piwik = require("piwik").setup("https://classtranscribe.herokuapp.com", "abc");
@@ -197,7 +209,9 @@ app.get('/logout', function (req, res) {
 
 function simpleLogout(req, res) {
   req.logout();
-  res.redirect('/');
+  req.session.destroy(function (err) {
+    res.redirect('/'); //Inside a callback… bulletproof!
+  });
 };
 
 app.get('/Metadata',
@@ -208,7 +222,7 @@ app.get('/Metadata',
 );
 
 var viewerMustache = fs.readFileSync(mustachePath + 'viewer.mustache').toString();
-app.get('/viewer/:className', 
+app.get('/viewer/:className',
   ensureAuthenticated,
   function (request, response) {
     var className = request.params.className.toLowerCase();
