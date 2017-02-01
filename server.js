@@ -197,6 +197,10 @@ app.post('/login/callback',
   }
 );
 
+app.get('/user', function(request, response) {
+  response.send(request.user);
+})
+
 app.get('/login/fail',
   function (req, res) {
     res.status(401).send('Login failed');
@@ -235,8 +239,12 @@ app.get('/viewer/:className',
 
     var view = {
       className: className,
+// ***
+      list: [{ user: request.user["urn:oid:0.9.2342.19200300.100.1.1"] }]
     };
-    var html = Mustache.render(viewerMustache, view);
+    var html = Mustache.render(viewerMustache, view, , {
+        partial: authenticatedPartial
+    });
     response.end(html);
   });
 
@@ -259,7 +267,7 @@ app.get('/:className',
     var view = {
       className: className,
       exampleTerm: exampleTerms[className],
-//
+// ***
       list: [{ user: request.user["urn:oid:0.9.2342.19200300.100.1.1"] }]
     };
     var html = Mustache.render(searchMustache, view, {
