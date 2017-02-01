@@ -242,7 +242,7 @@ app.get('/viewer/:className',
 // ***
       list: [{ user: request.user["urn:oid:0.9.2342.19200300.100.1.1"] }]
     };
-    var html = Mustache.render(viewerMustache, view, , {
+    var html = Mustache.render(viewerMustache, view, {
         partial: authenticatedPartial
     });
     response.end(html);
