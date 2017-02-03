@@ -172,6 +172,14 @@ var piwik = require("piwik").setup("https://classtranscribe.herokuapp.com", "abc
 piwik.track({idsite: 1, url: "https://classtranscribe.herokuapp.com"}, console.log);
 */
 
+app.get('/login',
+  passport.authenticate('saml', { failureRedirect: '/login/fail' }),
+  function (req, res) {
+    // TODO: change login redirect?
+    res.redirect('/');
+  }
+);
+
 app.post('/login/callback',
   passport.authenticate('saml', { failureRedirect: '/login/fail' }),
   function (req, res) {
