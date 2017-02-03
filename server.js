@@ -172,6 +172,30 @@ var piwik = require("piwik").setup("https://classtranscribe.herokuapp.com", "abc
 piwik.track({idsite: 1, url: "https://classtranscribe.herokuapp.com"}, console.log);
 */
 
+var PiwikTracker = require('piwik-tracker');
+
+// Initialize with your site ID and Piwik URL
+var piwik = new PiwikTracker(1, 'https://classtranscribe.herokuapp.com/piwik.php');
+
+// Optional: Respond to tracking errors
+piwik.on('error', function(err) {
+  console.log('error tracking request: ', err)
+})
+
+// Track a request URL:
+// Either as a simple string …
+piwik.track('https://classtranscribe.herokuapp.com');
+
+// … or provide further options:
+piwik.track({
+  url: 'https://classtranscribe.herokuapp.com',
+  action_name: 'DEADBEEF will be shown in your dashboard',
+  ua: 'Node.js v0.10.24',
+  cvar: JSON.stringify({
+    '1': ['custom variable name', 'custom variable value']
+  })
+});
+
 app.get('/login',
   passport.authenticate('saml', { failureRedirect: '/login/fail' }),
   function (req, res) {
