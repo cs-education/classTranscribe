@@ -11,18 +11,100 @@ var mailer = require('./modules/mailer');
 var validator = require('./modules/validator');
 var spawn = require('child_process').spawn;
 var mkdirp = require('mkdirp');
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser');
+
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
+var passport = require('passport');
+var saml = require('passport-saml');
+var dotenv = require('dotenv');
+
+dotenv.load();
+
+passport.serializeUser(function (user, done) {
+  done(null, user);
+});
+
+passport.deserializeUser(function (user, done) {
+  done(null, user);
+});
+
+var CALLBACK_URL = "https://classtranscribe.herokuapp.com/login/callback";
+var ENTRY_POINT = "https://idp.testshib.org/idp/profile/SAML2/Redirect/SSO";
+var ISSUER = 'ClassTranscribe';
+var LOGOUT_URL = "https://www.testshib.org/Shibboleth.sso/Logout";
+
+var samlStrategy = new saml.Strategy({
+  // URL that goes from the Identity Provider -> Service Provider
+  callbackUrl: CALLBACK_URL,
+  // URL that goes from the Service Provider -> Identity Provider
+  entryPoint: ENTRY_POINT,
+  // Usually specified as `/shibboleth` from site root
+  issuer: ISSUER,
+  logoutUrl: LOGOUT_URL,
+  identifierFormat: null,
+  // Service Provider private key
+  decryptionPvk: process.env.KEY,
+  // Service Provider Certificate
+  privateCert: process.env.KEY,
+  // Identity Provider's public key
+  cert: fs.readFileSync(__dirname + '/cert/idp_cert.pem', 'utf8'),
+  validateInResponseTo: false,
+  disableRequestedAuthnContext: true,
+  forceAuthn: true
+}, function (profile, done) {
+
+  /*user.saml = {};
+  user.saml.nameID = profile.nameID;
+  user.saml.nameIDFormat = profile.nameIDFormat;*/
+  return done(null, profile);
+});
+
+passport.use(samlStrategy);
 
 var app = express();
 
 app.use(bodyParser.json());         // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
-})); 
+}));
 app.use(express.static('public'));
+app.use(cookieParser());
+app.use(bodyParser());
+app.use(session({ secret: "secret" }));
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.set('view engine', 'ejs');
+
+// view/:classname, /:classname, /
+
+/*
+
+TODO: Redirect to correct url as such...
+  Likely have to parse req somehow
+
+  https://classtranscribe.herokuapp.com/viewer/cs446-fa16?videoIndex=3
+
+  localhost:8000/viewer/cs446-fa16?videoIndex=3
+
+  TODO: What else will we need to protect?
+
+*/
+
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  else {
+    samlStrategy['Redirect'] = req['_parsedOriginalUrl']['path'];
+    //console.log(req['_parsedOriginalUrl']['path']);
+    return res.redirect('/login');
+  }
+}
 
 client.on("monitor", function (time, args, raw_reply) {
-    console.log(time + ": " + args); // 1458910076.446514:['set', 'foo', 'bar']
+  console.log(time + ": " + args); // 1458910076.446514:['set', 'foo', 'bar']
 });
 
 var mustachePath = 'templates/';
@@ -38,48 +120,153 @@ var exampleTerms = {
 }
 
 
+var authenticatedPartial = fs.readFileSync(mustachePath + 'authenticated.mustache').toString();
+var notAuthenticatedPartial = fs.readFileSync(mustachePath + 'notAuthenticated.html').toString();
+
+function renderWithPartial(mustacheFile, request, response) {
+  var html;
+  if (request.isAuthenticated()) {
+    html = Mustache.render(mustacheFile, {
+      list: [{ user: request.user["urn:oid:0.9.2342.19200300.100.1.1"] }]
+    }, {
+        partial: authenticatedPartial
+      })
+  }
+  else {
+    html = Mustache.render(mustacheFile,
+      {
+        list: [{ user: null }]
+      }, {
+        partial: notAuthenticatedPartial
+      })
+  }
+  response.end(html);
+}
+
+
 var homeMustache = fs.readFileSync(mustachePath + 'home.mustache').toString();
 app.get('/', function (request, response) {
   response.writeHead(200, {
     'Content-Type': 'text/html'
   });
 
-  var html = Mustache.render(homeMustache);
-  response.end(html);
+  renderWithPartial(homeMustache, request, response);
+  /*
+    var header = getHeader(req);
+  
+  
+    var html = Mustache.render(homeMustache, {
+      list: header['list']
+    }, {
+        partial: header['partial']
+      });
+    response.end(html);
+  */
 });
+
+app.get('/profile', function (request, response) {
+
+});
+/*
+var piwik = require("piwik").setup("https://classtranscribe.herokuapp.com", "abc");
+piwik.track({idsite: 1, url: "https://classtranscribe.herokuapp.com"}, console.log);
+*/
+
+app.post('/login/callback',
+  passport.authenticate('saml', { failureRedirect: '/login/fail' }),
+  function (req, res) {
+    /*
+        User information in: req["user"]
+    
+     */
+    var redirectUrl = samlStrategy['Redirect'];
+    if (redirectUrl != null) {
+      res.redirect(redirectUrl);
+    }
+    else {
+      res.redirect('/');
+    }
+  }
+);
+
+app.get('/user', function(request, response) {
+  response.send(request.user);
+})
+
+app.get('/login/fail',
+  function (req, res) {
+    res.status(401).send('Login failed');
+  }
+);
+
+app.get('/logout', function (req, res) {
+  simpleLogout(req, res);
+});
+
+function simpleLogout(req, res) {
+  req.logout();
+  req.session.destroy(function (err) {
+    res.redirect('/'); //Inside a callback… bulletproof!
+  });
+};
+
+app.get('/Metadata',
+  function (req, res) {
+    res.type('application/xml');
+    res.status(200).send(samlStrategy.generateServiceProviderMetadata(process.env.CERT));
+  }
+);
 
 var viewerMustache = fs.readFileSync(mustachePath + 'viewer.mustache').toString();
-app.get('/viewer/:className', function (request, response) {
-  var className = request.params.className.toLowerCase();
+app.get('/viewer/:className',
+  ensureAuthenticated,
+  function (request, response) {
+    var className = request.params.className.toLowerCase();
 
-  response.writeHead(200, {
-    'Content-Type': 'text/html',
-    "Access-Control-Allow-Origin" : "*",
-    "Access-Control-Allow-Methods" : "POST, GET, PUT, DELETE, OPTIONS"
+    response.writeHead(200, {
+      'Content-Type': 'text/html',
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "POST, GET, PUT, DELETE, OPTIONS"
+    });
+
+    var view = {
+      className: className,
+// ***
+      list: [{ user: request.user["urn:oid:0.9.2342.19200300.100.1.1"] }]
+    };
+    var html = Mustache.render(viewerMustache, view, {
+        partial: authenticatedPartial
+    });
+    response.end(html);
   });
-
-  var view = {
-    className: className,
-  };
-  var html = Mustache.render(viewerMustache, view);
-  response.end(html);
-});
 
 var searchMustache = fs.readFileSync(mustachePath + 'search.mustache').toString();
-app.get('/:className', function (request, response) {
-  var className = request.params.className.toLowerCase();
+app.get('/:className',
+  ensureAuthenticated,
+  function (request, response) {
+    var className = request.params.className.toLowerCase();
 
-  response.writeHead(200, {
-    'Content-Type': 'text/html'
+    response.writeHead(200, {
+      'Content-Type': 'text/html'
+    });
+
+/*        html = Mustache.render(mustacheFile, {
+      list: [{ user: request.user["urn:oid:0.9.2342.19200300.100.1.1"] }]
+    }, {
+        partial: authenticatedPartial
+      })
+*/
+    var view = {
+      className: className,
+      exampleTerm: exampleTerms[className],
+// ***
+      list: [{ user: request.user["urn:oid:0.9.2342.19200300.100.1.1"] }]
+    };
+    var html = Mustache.render(searchMustache, view, {
+        partial: authenticatedPartial
+    });
+    response.end(html);
   });
-
-  var view = {
-    className: className,
-    exampleTerm: exampleTerms[className]
-  };
-  var html = Mustache.render(searchMustache, view);
-  response.end(html);
-});
 
 var progressDashboardMustache = fs.readFileSync(mustachePath + 'progressDashboard.mustache').toString();
 app.get('/viewProgress/:className/:uuid', function (request, response) {
@@ -121,7 +308,7 @@ app.get('/viewProgress/:className/:uuid', function (request, response) {
           var studentProgress = []
           for (netID in progressDict) {
             if (progressDict.hasOwnProperty(netID) && netID !== 'omelvin2') {
-              studentProgress.push({'netID': netID, 'count': progressDict[netID]});
+              studentProgress.push({ 'netID': netID, 'count': progressDict[netID] });
             }
           }
 
@@ -141,14 +328,14 @@ app.get('/viewProgress/:className/:uuid', function (request, response) {
   })
 });
 
-app.post('/download', function(request, response) {
+app.post('/download', function (request, response) {
   var transcriptions = JSON.parse(request.body.transcriptions);
   var fileNumber = Math.round(Math.random() * 10000)
   fs.writeFileSync("public/Downloads/" + fileNumber + ".webvtt", webvtt(transcriptions));
   response.writeHead(200, {
     'Content-Type': 'application/json'
   });
-  response.end(JSON.stringify({fileNumber: fileNumber}));
+  response.end(JSON.stringify({ fileNumber: fileNumber }));
 });
 
 app.get('/download/webvtt/:fileNumber', function (request, reponse) {
@@ -169,8 +356,8 @@ app.get('/first/:className/:id', function (request, response) {
   var className = request.params.className.toUpperCase();
   response.writeHead(200, {
     'Content-Type': 'text/html',
-    "Access-Control-Allow-Origin" : "*",
-    "Access-Control-Allow-Methods" : "POST, GET, PUT, DELETE, OPTIONS"
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "POST, GET, PUT, DELETE, OPTIONS"
   });
 
   var view = {
@@ -187,7 +374,7 @@ app.get('/Video/:fileName', function (request, response) {
   var positions = range.replace(/bytes=/, "").split("-");
   var start = parseInt(positions[0], 10);
 
-  fs.stat(file, function(err, stats) {
+  fs.stat(file, function (err, stats) {
     var total = stats.size;
     var end = positions[1] ? parseInt(positions[1], 10) : total - 1;
     var chunksize = (end - start) + 1;
@@ -200,9 +387,9 @@ app.get('/Video/:fileName', function (request, response) {
     });
 
     var stream = fs.createReadStream(file, { start: start, end: end })
-      .on("open", function() {
+      .on("open", function () {
         stream.pipe(response);
-      }).on("error", function(err) {
+      }).on("error", function (err) {
         response.end(err);
       });
   });
@@ -212,16 +399,16 @@ app.post('/first', function (request, response) {
   var stats = JSON.parse(request.body.stats);
   var transcriptions = request.body.transcriptions;//
   var className = request.body.className.toUpperCase();//
-  var statsFileName = stats.video.replace(/\ /g,"_") + "-" + stats.name + ".json";
-  var captionFileName = stats.video.replace(/\ /g,"_") + "-" + stats.name + ".txt";
-  var taskName = stats.video.replace(/\ /g,"_");
+  var statsFileName = stats.video.replace(/\ /g, "_") + "-" + stats.name + ".json";
+  var captionFileName = stats.video.replace(/\ /g, "_") + "-" + stats.name + ".txt";
+  var taskName = stats.video.replace(/\ /g, "_");
   mkdirp("captions/first/" + className, function (err) {
     if (err) {
       console.log(err);
     }
     transcriptionPath = "captions/first/" + className + "/" + captionFileName;
     client.sadd("ClassTranscribe::Transcriptions::" + transcriptionPath, transcriptions);
-    fs.writeFileSync(transcriptionPath, transcriptions, {mode: 0777});
+    fs.writeFileSync(transcriptionPath, transcriptions, { mode: 0777 });
   });
 
   mkdirp("stats/first/" + className, function (err) {
@@ -230,7 +417,7 @@ app.post('/first', function (request, response) {
     }
     statsPath = "stats/first/" + className + "/" + statsFileName;
     client.sadd("ClassTranscribe::Stats::" + statsPath, request.body.stats);
-    fs.writeFileSync(statsPath, request.body.stats, {mode: 0777});
+    fs.writeFileSync(statsPath, request.body.stats, { mode: 0777 });
 
 
     var isTranscriptionValid = validator.validateTranscription("stats/first/" + className + "/" + statsFileName)
@@ -238,7 +425,7 @@ app.post('/first', function (request, response) {
     if (isTranscriptionValid) {
       console.log("Transcription is good!");
       client.zincrby("ClassTranscribe::Submitted::" + className, 1, taskName);
-      client.zscore("ClassTranscribe::Submitted::" + className, taskName, function(err, score) {
+      client.zscore("ClassTranscribe::Submitted::" + className, taskName, function (err, score) {
         score = parseInt(score, 10);
         if (err) {
           return err;
@@ -268,8 +455,8 @@ app.get('/second/:className/:id', function (request, response) {
   var className = request.params.className.toUpperCase();
   response.writeHead(200, {
     'Content-Type': 'text/html',
-    "Access-Control-Allow-Origin" : "*",
-    "Access-Control-Allow-Methods" : "POST, GET, PUT, DELETE, OPTIONS"
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "POST, GET, PUT, DELETE, OPTIONS"
   });
 
   var view = {
@@ -295,7 +482,7 @@ app.get('/queue/:className', function (request, response) {
 app.get('/queue/:className/:netId', function (request, response) {
   var className = request.params.className.toUpperCase();
   var netId = request.params.netId.toLowerCase();
-  
+
   var args = ["ClassTranscribe::Tasks::" + className, "0", "99999", "LIMIT", "0", "1"];
   client.zrangebyscore(args, function (err, result) {
     if (err) {
@@ -341,7 +528,7 @@ function highDensityQueue(response, className, netId, attemptNum) {
       var taskName = result[0];
       var taskScore = parseInt(result[1], 10);
 
-      if(taskScore >= 2) {
+      if (taskScore >= 2) {
         initPrioritizedTask(response, className, attemptNum);
       } else {
         queueResponse(response, "Tasks", netId, className, taskName, attemptNum);
@@ -401,11 +588,11 @@ function queueResponse(response, queueName, netId, className, chosenTask, attemp
       // If not in First it may be in Finished
       isMemberArgs = ["ClassTranscribe::Finished::" + className, fileName]
       client.sismember(isMemberArgs, function (err, result) {
-          if (result) {
-            highDensityQueue(response, className, netId, attemptNum + 1);
-          } else {
-            response.end(chosenTask);
-          }
+        if (result) {
+          highDensityQueue(response, className, netId, attemptNum + 1);
+        } else {
+          response.end(chosenTask);
+        }
       });
     }
   });
@@ -421,30 +608,30 @@ function queueResponse(response, queueName, netId, className, chosenTask, attemp
  */
 function moveToPrioritizedQueue(response, className, netId, numberTasks, numTasksToPrioritize, attemptNum) {
   if (numberTasks < numTasksToPrioritize) {
-      var numDifference = numTasksToPrioritize - numberTasks;
-      var args = ["ClassTranscribe::Tasks::" + className, "0", "99999",
-        "WITHSCORES", "LIMIT", "0", numDifference];
-      client.zrangebyscore(args, function (err, tasks) {
-        if (err) {
-          throw err;
-        }
+    var numDifference = numTasksToPrioritize - numberTasks;
+    var args = ["ClassTranscribe::Tasks::" + className, "0", "99999",
+      "WITHSCORES", "LIMIT", "0", numDifference];
+    client.zrangebyscore(args, function (err, tasks) {
+      if (err) {
+        throw err;
+      }
 
-        for(var i = 0; i < tasks.length; i += 2) {
-          var taskName = tasks[i];
-          var score = parseInt(tasks[i + 1], 10);
-          client.zrem("ClassTranscribe::Tasks::" + className, taskName);
-          client.zadd("ClassTranscribe::PrioritizedTasks::" + className, score, taskName);
-        }
-        getPrioritizedTask(response, className, netId, attemptNum);
-      });
-    } else {
+      for (var i = 0; i < tasks.length; i += 2) {
+        var taskName = tasks[i];
+        var score = parseInt(tasks[i + 1], 10);
+        client.zrem("ClassTranscribe::Tasks::" + className, taskName);
+        client.zadd("ClassTranscribe::PrioritizedTasks::" + className, score, taskName);
+      }
       getPrioritizedTask(response, className, netId, attemptNum);
-    }
+    });
+  } else {
+    getPrioritizedTask(response, className, netId, attemptNum);
+  }
 }
 
 function getPrioritizedTask(response, className, netId, attemptNum) {
   var args = ["ClassTranscribe::PrioritizedTasks::" + className, "0", "99999", "LIMIT", "0", "1"];
-  client.zrangebyscore(args, function(err, tasks) {
+  client.zrangebyscore(args, function (err, tasks) {
     if (err) {
       throw err;
     }
@@ -466,7 +653,7 @@ function clearInactiveTranscriptions() {
       }
 
       if (result !== null) {
-        for(var i = 0; i < result.length; i += 2) {
+        for (var i = 0; i < result.length; i += 2) {
           var netIDTaskTuple = result[i].split(":");
           var netId = netIDTaskTuple[0];
           var taskName = netIDTaskTuple[1];
@@ -522,7 +709,7 @@ app.get('/captions/:className/:index', function (request, response) {
   });
 
   var index = parseInt(request.params.index);
-  response.end(JSON.stringify({captions: captions[index]}));
+  response.end(JSON.stringify({ captions: captions[index] }));
 });
 
 var progressMustache = fs.readFileSync(mustachePath + 'progress.mustache').toString();
@@ -552,9 +739,9 @@ function sendProgressEmail(className, netId, callback) {
     }
 
     client.smembers("ClassTranscribe::Finished::" + className, function (err, finishedMembers) {
-    if (err) {
-      console.log(err);
-    }
+      if (err) {
+        console.log(err);
+      }
 
       var count = 0;
       firstMembers.forEach(function (member) {
@@ -583,14 +770,14 @@ var thirtyMinsInMilliSecs = 30 * 60 * 1000;
 //setInterval(clearInactiveTranscriptions, thirtyMinsInMilliSecs);
 
 client.on("monitor", function (time, args, raw_reply) {
-    console.log(time + ": " + args); // 1458910076.446514:['set', 'foo', 'bar']
+  console.log(time + ": " + args); // 1458910076.446514:['set', 'foo', 'bar']
 });
 
 client.on('error', function (error) {
-	console.log('redis error');
+  console.log('redis error');
 });
 
-var port = 80;
+var port = process.env.PORT || 8000;
 app.listen(port, function () {
   console.log('listening on port ' + port + '!');
 });
