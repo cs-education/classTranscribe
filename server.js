@@ -254,7 +254,7 @@ app.get('/viewer/:className',
     });
     response.end(html);
   });
-/*
+
 var searchMustache = fs.readFileSync(mustachePath + 'search.mustache').toString();
 app.get('/:className',
   ensureAuthenticated,
@@ -265,13 +265,13 @@ app.get('/:className',
       'Content-Type': 'text/html'
     });
 
-/*        html = Mustache.render(mustacheFile, {
+        html = Mustache.render(mustacheFile, {
       list: [{ user: request.user["urn:oid:0.9.2342.19200300.100.1.1"] }]
     }, {
         partial: authenticatedPartial
       })
-*/
- /*   var view = {
+
+    var view = {
       className: className,
       exampleTerm: exampleTerms[className],
 // ***
@@ -282,7 +282,7 @@ app.get('/:className',
     });
     response.end(html);
   });
-*/
+
 var progressDashboardMustache = fs.readFileSync(mustachePath + 'progressDashboard.mustache').toString();
 app.get('/viewProgress/:className/:uuid', function (request, response) {
   var className = request.params.className;
