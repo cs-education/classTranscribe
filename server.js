@@ -6,7 +6,7 @@ var zlib = require('zlib');
 var path = require('path');
 var mime = require('mime');
 var webvtt = require('./modules/webvtt');
-var client = require('./modules/redis');
+//var client = require('./modules/redis');
 var mailer = require('./modules/mailer');
 var validator = require('./modules/validator');
 var spawn = require('child_process').spawn;
@@ -21,6 +21,8 @@ var dotenv = require('dotenv');
 
 dotenv.load();
 
+var https = require('https');
+
 passport.serializeUser(function (user, done) {
   done(null, user);
 });
@@ -29,10 +31,12 @@ passport.deserializeUser(function (user, done) {
   done(null, user);
 });
 
-var CALLBACK_URL = "https://classtranscribe.herokuapp.com/login/callback";
+var CALLBACK_URL = "https://192.17.96.13:7443/login/callback" 
 var ENTRY_POINT = "https://idp.testshib.org/idp/profile/SAML2/Redirect/SSO";
-var ISSUER = 'ClassTranscribe';
+var ISSUER = 'ClassTranscribe/Shibboleth';
 var LOGOUT_URL = "https://www.testshib.org/Shibboleth.sso/Logout";
+var KEY = fs.readFileSync(__dirname + '/cert/key.pem');
+var CERT = fs.readFileSync(__dirname + '/cert/cert.pem');
 
 var samlStrategy = new saml.Strategy({
   // URL that goes from the Identity Provider -> Service Provider
@@ -44,24 +48,27 @@ var samlStrategy = new saml.Strategy({
   logoutUrl: LOGOUT_URL,
   identifierFormat: null,
   // Service Provider private key
-  decryptionPvk: process.env.KEY,
+  decryptionPvk: KEY,
   // Service Provider Certificate
-  privateCert: process.env.KEY,
+  privateCert: KEY,
   // Identity Provider's public key
   cert: fs.readFileSync(__dirname + '/cert/idp_cert.pem', 'utf8'),
   validateInResponseTo: false,
   disableRequestedAuthnContext: true,
-  forceAuthn: true
+  forceAuthn: true,
+	isPassive: false,
+additionalParams: {}
 }, function (profile, done) {
-
-  /*user.saml = {};
+	console.log("here");
+ 	user.saml = {};
   user.saml.nameID = profile.nameID;
-  user.saml.nameIDFormat = profile.nameIDFormat;*/
+  user.saml.nameIDFormat = profile.nameIDFormat;
   return done(null, profile);
 });
 
 passport.use(samlStrategy);
 
+//var app = express();
 var app = express();
 
 app.use(bodyParser.json());         // to support JSON-encoded bodies
@@ -103,9 +110,9 @@ function ensureAuthenticated(req, res, next) {
   }
 }
 
-client.on("monitor", function (time, args, raw_reply) {
+/*client.on("monitor", function (time, args, raw_reply) {
   console.log(time + ": " + args); // 1458910076.446514:['set', 'foo', 'bar']
-});
+});*/
 
 var mustachePath = 'templates/';
 
@@ -221,7 +228,7 @@ function simpleLogout(req, res) {
 app.get('/Metadata',
   function (req, res) {
     res.type('application/xml');
-    res.status(200).send(samlStrategy.generateServiceProviderMetadata(process.env.CERT));
+    res.status(200).send(samlStrategy.generateServiceProviderMetadata(CERT));
   }
 );
 
@@ -277,7 +284,7 @@ app.get('/:className',
   });
 
 var progressDashboardMustache = fs.readFileSync(mustachePath + 'progressDashboard.mustache').toString();
-app.get('/viewProgress/:className/:uuid', function (request, response) {
+/*app.get('/viewProgress/:className/:uuid', function (request, response) {
   var className = request.params.className;
   var uuid = request.params.uuid;
 
@@ -335,7 +342,7 @@ app.get('/viewProgress/:className/:uuid', function (request, response) {
     }
   })
 });
-
+*/
 app.post('/download', function (request, response) {
   var transcriptions = JSON.parse(request.body.transcriptions);
   var fileNumber = Math.round(Math.random() * 10000)
@@ -360,7 +367,7 @@ app.get('/download/webvtt/:fileNumber', function (request, reponse) {
 });
 
 var firstPassMustache = fs.readFileSync(mustachePath + 'index.mustache').toString();
-app.get('/first/:className/:id', function (request, response) {
+/*app.get('/first/:className/:id', function (request, response) {
   var className = request.params.className.toUpperCase();
   response.writeHead(200, {
     'Content-Type': 'text/html',
@@ -457,7 +464,7 @@ app.post('/first', function (request, response) {
     }
   });
 });
-
+*/
 var secondPassMustache = fs.readFileSync(mustachePath + 'editor.mustache').toString();
 app.get('/second/:className/:id', function (request, response) {
   var className = request.params.className.toUpperCase();
@@ -476,7 +483,7 @@ app.get('/second/:className/:id', function (request, response) {
 });
 
 var queueMustache = fs.readFileSync(mustachePath + 'queue.mustache').toString();
-app.get('/queue/:className', function (request, response) {
+/*app.get('/queue/:className', function (request, response) {
   var className = request.params.className.toUpperCase();
 
   var view = {
@@ -605,7 +612,7 @@ function queueResponse(response, queueName, netId, className, chosenTask, attemp
     }
   });
 }
-
+*/
 /**
  *  This function moves tasks from the Tasks to PrioritizedTasks queue, if needed.
  *  Then returns a task to be completed
@@ -614,6 +621,8 @@ function queueResponse(response, queueName, netId, className, chosenTask, attemp
  * @param  {int} Number tasks desired in set
  * @return {string} task to be completed
  */
+
+/*
 function moveToPrioritizedQueue(response, className, netId, numberTasks, numTasksToPrioritize, attemptNum) {
   if (numberTasks < numTasksToPrioritize) {
     var numDifference = numTasksToPrioritize - numberTasks;
@@ -697,7 +706,7 @@ function clearInactiveTranscriptions() {
   });
 
 }
-
+*/
 var captionsMapping = {
   "cs241": require('./public/javascripts/data/captions/cs241.js'),
   "cs225": require('./public/javascripts/data/captions/cs225.js'),
@@ -776,16 +785,32 @@ function sendProgressEmail(className, netId, callback) {
 
 var thirtyMinsInMilliSecs = 30 * 60 * 1000;
 //setInterval(clearInactiveTranscriptions, thirtyMinsInMilliSecs);
-
+/*
 client.on("monitor", function (time, args, raw_reply) {
   console.log(time + ": " + args); // 1458910076.446514:['set', 'foo', 'bar']
 });
 
 client.on('error', function (error) {
-  console.log('redis error');
-});
-
-var port = process.env.PORT || 8000;
+	console.log(error);
+	//  console.log('redis error');
+});*/
+/*
+var port = process.env.PORT || 7000;
 app.listen(port, function () {
   console.log('listening on port ' + port + '!');
+});*/
+
+var httpsPort = 7443;
+var httpPort = 7080;
+
+var options = {
+	key: fs.readFileSync("./cert/key.pem"),
+	cert: fs.readFileSync( "./cert/cert.pem")
+};
+
+var httpsServer = https.createServer(options, app);
+
+httpsServer.listen(httpsPort, function() {
+	console.log("Listening on port " + httpsPort)
 });
+
