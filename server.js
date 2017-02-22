@@ -34,12 +34,12 @@ passport.deserializeUser(function (user, done) {
 
 var CALLBACK_URL = "https://192.17.96.13:7443/login/callback"
 var ENTRY_POINT = "https://idp.testshib.org/idp/profile/SAML2/Redirect/SSO";
-var ISSUER = 'ClassTranscribe/Shibboleth';
+var ISSUER = 'ClassTranscribe492/Shibboleth';
 var LOGOUT_URL = "https://www.testshib.org/Shibboleth.sso/Logout";
 var KEY = fs.readFileSync(__dirname + '/cert/key.pem');
 var CERT = fs.readFileSync(__dirname + '/cert/cert.pem');
 
-var samlStrategy = new saml.Strategy({
+samlStrategy = new saml.Strategy({
   // URL that goes from the Identity Provider -> Service Provider
   callbackUrl: CALLBACK_URL,
   // URL that goes from the Service Provider -> Identity Provider
@@ -60,16 +60,14 @@ var samlStrategy = new saml.Strategy({
   isPassive: false,
   additionalParams: {}
 }, function (profile, done) {
-  console.log("here");
-  user.saml = {};
-  user.saml.nameID = profile.nameID;
-  user.saml.nameIDFormat = profile.nameIDFormat;
+  usersaml = {};
+  usersaml.nameID = profile["issuer"]["_"];
+  usersaml.nameIDFormat = profile["issuer"]["$"];
   return done(null, profile);
 });
 
 passport.use(samlStrategy);
 
-//var app = express();
 var app = express();
 
 app.use(bodyParser.json());         // to support JSON-encoded bodies
@@ -188,7 +186,10 @@ app.get('/logout', function (req, res) {
 app.get('/Metadata',
   function (req, res) {
     res.type('application/xml');
-    res.status(200).send(samlStrategy.generateServiceProviderMetadata(CERT));
+//console.log(samlStrategy == null);
+//console.log(samlStrategy.generateServiceProviderMetadata(CERT) == null);
+//console.log(CERT == null);
+    res.status(200).send(samlStrategy.generateServiceProviderMetadata(fs.readFileSync(__dirname + "/cert/cert.pem", "utf8")));
   }
 );
 
@@ -312,11 +313,13 @@ var options = {
   key: fs.readFileSync("./cert/key.pem"),
   cert: fs.readFileSync("./cert/cert.pem")
 };
-
+/*
+app.listen(httpsPort, function() {
+console.log("Listening on " + httpsPort);
+});
+*/
 var httpsServer = https.createServer(options, app);
 
 httpsServer.listen(httpsPort, function () {
-  require('dns').lookup(require('os').hostname(), function (err, add, fam) {
-    console.log("Listening on " + add + ":" + httpsPort);
-  })
+  console.log("Listening on 192.17.96.13:" + httpsPort);
 });

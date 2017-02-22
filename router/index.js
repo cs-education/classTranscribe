@@ -5,5 +5,5 @@ module.exports = function(app) {
     app.use('/download', require('./routes/download'));
     app.use('/queue', require('./routes/queue'));
     app.use('/second', require('./routes/second'));
-    app.use('/login', require('./routes/login'));
+   app.use('/login', require('./routes/login'));
 }
