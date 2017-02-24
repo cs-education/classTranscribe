@@ -1,0 +1,35 @@
+var grunt = require('grunt');
+module.exports = function (grunt) {
+    require('load-grunt-tasks')(grunt);
+    
+
+    grunt.initConfig({
+        pkg: grunt.file.readJSON('package.json'),
+        uglify: {
+            build: {
+
+            }
+        },
+        php: {
+            dist: {
+                options: {
+		protocol: "https",
+
+		key: grunt.file.read("cert/cert/key.pem").toString(),
+		cert: grunt.file.read("cert/cert/cert.pem").toString(),
+		ca: grunt.file.read("cert/cert/cert.pem").toString(),
+		hostname: "0.0.0.0",
+                    port: 7001,
+                    keepalive: true,
+                    base: './piwik'
+                }
+            },
+        }
+    });
+
+    grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-express-server');
+
+    grunt.registerTask('default', ['php']);
+}

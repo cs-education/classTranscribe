@@ -5,11 +5,11 @@ path = require('path');
 mime = require('mime');
 client = require('./modules/redis');
 passport = require('passport');
+mailer = require('./modules/mailer');
 
 var http = require('http');
 var zlib = require('zlib');
 var webvtt = require('./modules/webvtt');
-var mailer = require('./modules/mailer');
 var validator = require('./modules/validator');
 var spawn = require('child_process').spawn;
 var mkdirp = require('mkdirp');
@@ -34,10 +34,10 @@ passport.deserializeUser(function (user, done) {
 
 var CALLBACK_URL = "https://192.17.96.13:7443/login/callback"
 var ENTRY_POINT = "https://idp.testshib.org/idp/profile/SAML2/Redirect/SSO";
-var ISSUER = 'ClassTranscribe492/Shibboleth';
+var ISSUER = 'ClassTranscribe4927/Shibboleth';
 var LOGOUT_URL = "https://www.testshib.org/Shibboleth.sso/Logout";
-var KEY = fs.readFileSync(__dirname + '/cert/key.pem');
-var CERT = fs.readFileSync(__dirname + '/cert/cert.pem');
+var KEY = fs.readFileSync(__dirname + '/cert/cert/key.pem');
+var CERT = fs.readFileSync(__dirname + '/cert/cert/cert.pem');
 
 samlStrategy = new saml.Strategy({
   // URL that goes from the Identity Provider -> Service Provider
@@ -53,7 +53,7 @@ samlStrategy = new saml.Strategy({
   // Service Provider Certificate
   privateCert: KEY,
   // Identity Provider's public key
-  cert: fs.readFileSync(__dirname + '/cert/idp_cert.pem', 'utf8'),
+  cert: fs.readFileSync(__dirname + '/cert/cert/idp_cert.pem', 'utf8'),
   validateInResponseTo: false,
   disableRequestedAuthnContext: true,
   forceAuthn: true,
@@ -186,10 +186,7 @@ app.get('/logout', function (req, res) {
 app.get('/Metadata',
   function (req, res) {
     res.type('application/xml');
-//console.log(samlStrategy == null);
-//console.log(samlStrategy.generateServiceProviderMetadata(CERT) == null);
-//console.log(CERT == null);
-    res.status(200).send(samlStrategy.generateServiceProviderMetadata(fs.readFileSync(__dirname + "/cert/cert.pem", "utf8")));
+    res.status(200).send(samlStrategy.generateServiceProviderMetadata(fs.readFileSync(__dirname + "/cert/cert/cert.pem", "utf8")));
   }
 );
 
@@ -301,7 +298,7 @@ client.on("monitor", function (time, args, raw_reply) {
 });
 
 client.on('error', function (error) {
-  //console.log('redis error');
+  console.log('redis error');
 });
 
 require('./router')(app);
@@ -310,16 +307,17 @@ var httpsPort = 7443;
 var httpPort = 7080;
 
 var options = {
-  key: fs.readFileSync("./cert/key.pem"),
-  cert: fs.readFileSync("./cert/cert.pem")
+  key: fs.readFileSync("./cert/cert/key.pem"),
+  cert: fs.readFileSync("./cert/cert/cert.pem")
 };
-/*
+
 app.listen(httpsPort, function() {
 console.log("Listening on " + httpsPort);
 });
-*/
+
+/*
 var httpsServer = https.createServer(options, app);
 
 httpsServer.listen(httpsPort, function () {
   console.log("Listening on 192.17.96.13:" + httpsPort);
-});
+});*/
