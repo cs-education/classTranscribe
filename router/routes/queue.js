@@ -1,4 +1,4 @@
-var router = express.Router();
+//var router = express.Router();
 
 var queueMustache = fs.readFileSync(mustachePath + 'queue.mustache').toString();
 router.get('/:className', function (request, response) {

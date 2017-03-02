@@ -5,11 +5,12 @@ path = require('path');
 mime = require('mime');
 client = require('./modules/redis');
 passport = require('passport');
+mailer = require('./modules/mailer');
+router = express.Router();
 
 var http = require('http');
 var zlib = require('zlib');
 var webvtt = require('./modules/webvtt');
-var mailer = require('./modules/mailer');
 var validator = require('./modules/validator');
 var spawn = require('child_process').spawn;
 var mkdirp = require('mkdirp');
@@ -110,7 +111,6 @@ var exampleTerms = {
   "cs446-fa16": "Decision Trees"
 }
 
-
 var authenticatedPartial = fs.readFileSync(mustachePath + 'authenticated.mustache').toString();
 var notAuthenticatedPartial = fs.readFileSync(mustachePath + 'notAuthenticated.html').toString();
 
@@ -156,14 +156,6 @@ app.get('/', function (request, response) {
   */
 });
 
-app.get('/profile', function (request, response) {
-
-});
-/*
-var piwik = require("piwik").setup("https://classtranscribe.herokuapp.com", "abc");
-piwik.track({idsite: 1, url: "https://classtranscribe.herokuapp.com"}, console.log);
-*/
-
 app.get('/logout', function (req, res) {
   if (usersaml != null) {
     //Here add the nameID and nameIDFormat to the user if you stored it someplace.
@@ -186,9 +178,6 @@ app.get('/logout', function (req, res) {
 app.get('/Metadata',
   function (req, res) {
     res.type('application/xml');
-//console.log(samlStrategy == null);
-//console.log(samlStrategy.generateServiceProviderMetadata(CERT) == null);
-//console.log(CERT == null);
     res.status(200).send(samlStrategy.generateServiceProviderMetadata(fs.readFileSync(__dirname + "/cert/cert.pem", "utf8")));
   }
 );
@@ -246,28 +235,41 @@ app.get('search/:className',
 
 app.get('/Video/:fileName', function (request, response) {
   var file = path.resolve(__dirname + "/Video/", request.params.fileName + ".mp4");
-  var range = request.headers.range;
-  var positions = range.replace(/bytes=/, "").split("-");
-  var start = parseInt(positions[0], 10);
 
-  fs.stat(file, function (err, stats) {
-    var total = stats.size;
-    var end = positions[1] ? parseInt(positions[1], 10) : total - 1;
-    var chunksize = (end - start) + 1;
+  fs.stat(file, function handle(err, stats) {
+    if (err) {
+      if (err.code === "ENOENT") {
+        response.send("File doesn't exist");
+      }
+      else {
+        response.send("Something unfathomable happened");
+      }
+    }
+    else {
+      var range = request.headers.range;
+      var positions = range.replace(/bytes=/, "").split("-");
+      var start = parseInt(positions[0], 10);
 
-    response.writeHead(206, {
-      "Content-Range": "bytes " + start + "-" + end + "/" + total,
-      "Accept-Ranges": "bytes",
-      "Content-Length": chunksize,
-      "Content-Type": "video/mp4"
-    });
+      fs.stat(file, function (err, stats) {
+        var total = stats.size;
+        var end = positions[1] ? parseInt(positions[1], 10) : total - 1;
+        var chunksize = (end - start) + 1;
 
-    var stream = fs.createReadStream(file, { start: start, end: end })
-      .on("open", function () {
-        stream.pipe(response);
-      }).on("error", function (err) {
-        response.end(err);
+        response.writeHead(206, {
+          "Content-Range": "bytes " + start + "-" + end + "/" + total,
+          "Accept-Ranges": "bytes",
+          "Content-Length": chunksize,
+          "Content-Type": "video/mp4"
+        });
+
+        var stream = fs.createReadStream(file, { start: start, end: end })
+          .on("open", function () {
+            stream.pipe(response);
+          }).on("error", function (err) {
+            response.end(err);
+          });
       });
+    }
   });
 });
 
@@ -301,6 +303,7 @@ client.on("monitor", function (time, args, raw_reply) {
 });
 
 client.on('error', function (error) {
+  console.log(error);
   //console.log('redis error');
 });
 

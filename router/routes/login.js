@@ -1,4 +1,4 @@
-var router = express.Router();
+//var router = express.Router();
 
 router.get('/',
   passport.authenticate('saml', { failureRedirect: '/login/fail' }),
