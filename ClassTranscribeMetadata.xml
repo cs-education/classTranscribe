@@ -1,0 +1,18 @@
+<EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" entityID="ClassTranscribe">
+<SPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+<KeyDescriptor>
+<ds:KeyInfo>
+<ds:X509Data>
+<ds:X509Certificate>
+MIIDBjCCAe4CCQDvd4DJdKxtqjANBgkqhkiG9w0BAQsFADBFMQswCQYDVQQGEwJB VTETMBEGA1UECBMKU29tZS1TdGF0ZTEhMB8GA1UEChMYSW50ZXJuZXQgV2lkZ2l0 cyBQdHkgTHRkMB4XDTE2MTIwNTE5MDYwMFoXDTQ0MDQyMTE5MDYwMFowRTELMAkG A1UEBhMCQVUxEzARBgNVBAgTClNvbWUtU3RhdGUxITAfBgNVBAoTGEludGVybmV0 IFdpZGdpdHMgUHR5IEx0ZDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEB AL8khfcIpHFHG+HKrpPtT4c827pirngMPe2IXRblDs1Yvezae6s7jpyArSTCpGNW CtUT50ovYT5/bm63D7VfRi+Lzl//Lrr6FQeppXD0BHDXuTyngd6YMXRQ6TfHg1F8 wyY4bx4/BxNN0+FIlksYx+2k0dxGV+fehlG/xN5dA/gtgc/M6XtVHT/MQFg7JQ7f uvbSKxlgPXH9O3Ws1bEj8y/J8Nz+INKXn0HcMoYy1jvd+8bnifSmhxHNrtd0Orx5 Fn5na7HkLYGnvR+ivY1mYAIZlE7ljRZLjSRkrYw1DkXmDtIRG5RRLWSauwMkM2Mf t5q7zZbaf/Npp65UuXEKIyUCAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAHSEw/3bl AmeuOVqGKnHjBzYF5P01yVmzlyKd+Xt+ZyMvFML6W7w6gTgksCz3zjRMaLq1GyaK mSWARQt/8kysQqteagdcezzIoojYefqY095r25KREk3j+X0XnkcC9/zuW+eogR/t CTAkfNk78++g7yj9NQV62nxwb3YoarfFm1X154orYtHr4tKvtK8I7vSUdJmvYf6k +sNZKJ/TLkWVQOZdBCsa0Qh3yWk82e/ZMv5OXWmtiI2INdMz7ZzzqL9AXLwtq0ep uJCjlT5kRxzCOL5UzCtwKuu4OV65VtC//ARHbR3t/+HNdqSm5HRFKNy6IXXbKLl4 jUfe7fAy3N/k0A==
+</ds:X509Certificate>
+</ds:X509Data>
+</ds:KeyInfo>
+<EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#aes256-cbc"/>
+<EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#aes128-cbc"/>
+<EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#tripledes-cbc"/>
+</KeyDescriptor>
+<NameIDFormat/>
+<AssertionConsumerService index="1" isDefault="true" Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://classtranscribe.herokuapp.com/login/callback"/>
+</SPSSODescriptor>
+</EntityDescriptor>

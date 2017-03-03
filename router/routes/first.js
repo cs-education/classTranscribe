@@ -1,10 +1,10 @@
-var router = express.Router();
+//var router = express.Router();
 
 //var mustachePath = 'templates/';
 
 /*
     /first
- */
+*/
 
 router.post('/', function (request, response) {
   var stats = JSON.parse(request.body.stats);

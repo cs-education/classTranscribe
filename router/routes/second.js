@@ -1,4 +1,4 @@
-var router = express.Router();
+//var router = express.Router();
 
 var secondPassMustache = fs.readFileSync(mustachePath + 'editor.mustache').toString();
 router.get('/:className/:id', function (request, response) {

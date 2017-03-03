@@ -1,4 +1,4 @@
-var router = express.Router();
+//var router = express.Router();
 
 var progressDashboardMustache = fs.readFileSync(mustachePath + 'progressDashboard.mustache').toString();
 router.get('/:className/:uuid', function (request, response) {
