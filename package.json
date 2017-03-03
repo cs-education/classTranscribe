@@ -26,12 +26,21 @@
     "grunt-contrib-uglify": "2.1.0",
     "grunt-express-server": "0.5.3",
     "grunt-php": "1.5.1",
-    "load-grunt-tasks": "3.5.2"
+    "load-grunt-tasks": "3.5.2",
+    "http-proxy":"1.16.2"
   },
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js & grunt"
+    "start": "node server.js & grunt",
+    "server": "node server.js"
+  },
+  "config": {
+    /*
+    "basePort":"7000",
+    "piwikPort":"7001",
+    "proxyPort":"7002"
+    */
   },
   "repository": {
     "type": "git",
