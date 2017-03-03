@@ -1,21 +1,30 @@
 module.exports = function(app) {
-    app.use('/', require('./routes/base'));
-    app.use('/first', require('./routes/first'));
-    app.use('/progress', require('./routes/progress'));
-    app.use('/viewProgress', require('./routes/viewProgress'));
-    app.use('/download', require('./routes/download'));
-    app.use('/queue', require('./routes/queue'));
-    app.use('/second', require('./routes/second'));
-    app.use('/login', require('./routes/login'));
-    app.use('/search', require('./routes/search'));
-    app.use('/video', require('./routes/video'));
-    app.use('/viewer', require('./routes/viewer'));
-    app.use('/captions', require('./routes/captions'));
-    app.use('/logout', require('./routes/logout'));
+
+/*
+	Pretty sure that order matters here.
+	There's probably a way to better enforce it, though.
+
+*/
+
+
+//    app.use('/login', require('./routes/login'));
+    app.use(require('./routes/base'));
+    app.use(require('./routes/login'));
+    app.use(require('./routes/logout'));
+    app.use(require('./routes/first'));
+    app.use(require('./routes/progress'));
+    app.use(require('./routes/viewProgress'));
+    app.use(require('./routes/download'));
+    app.use(require('./routes/queue'));
+    app.use(require('./routes/second'));
+    app.use(require('./routes/search'));
+    app.use(require('./routes/video'));
+    app.use(require('./routes/viewer'));
+    app.use(require('./routes/captions'));
 }
 
-var authenticatedPartial = fs.readFileSync(mustachePath + 'authenticated.mustache').toString();
-var notAuthenticatedPartial = fs.readFileSync(mustachePath + 'notAuthenticated.html').toString();
+authenticatedPartial = fs.readFileSync(mustachePath + 'authenticated.mustache').toString();
+notAuthenticatedPartial = fs.readFileSync(mustachePath + 'notAuthenticated.html').toString();
 
 renderWithPartial = function(mustacheFile, request, response) {
   var html;

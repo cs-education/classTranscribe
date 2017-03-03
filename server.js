@@ -43,8 +43,8 @@ app.set('view engine', 'ejs');
 
 mustachePath = 'templates/';
 
-/*
-var exampleTerms = {
+
+exampleTerms = {
   "cs241": "printf",
   "cs225": "pointer",
   "cs225-sp16": "pointer",
@@ -53,7 +53,6 @@ var exampleTerms = {
   "ece210": "Energy Signals",
   "cs446-fa16": "Decision Trees"
 }
-*/
 
 captionsMapping = {
   "cs241": require('./public/javascripts/data/captions/cs241.js'),
@@ -84,6 +83,23 @@ var options = {
   cert: fs.readFileSync("./cert/cert/cert.pem")
 };
 
-app.listen(port, function() {
-  console.log("Listening on " + port);
+/*
+In preparation for when we theoretically need to redirect http to https on the main site
+
+
+http.createServer(function(req, res) {
+	res.writeHead(301, { "Location": "https://" + req.headers["host"] + req.url });
+	res.end();
+}).listen(80);
+
+*/
+
+
+var httpsServer = https.createServer(options, app);
+httpsServer.listen(port, function() {
+	console.log("Class Transcribe on: " + port);
 });
+
+/*app.listen(port, function() {
+  console.log("Listening on " + port);
+});*/

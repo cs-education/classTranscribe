@@ -4,7 +4,7 @@
 
 
 
-router.get('/:className/:index', function (request, response) {
+router.get('/captions/:className/:index', function (request, response) {
   var className = request.params.className.toLowerCase();
   var captions = captionsMapping[className];
 

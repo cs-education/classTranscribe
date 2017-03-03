@@ -4,7 +4,7 @@
  */
 
 var viewerMustache = fs.readFileSync(mustachePath + 'viewer.mustache').toString();
-router.get('/:className',
+router.get('/viewer/:className',
   ensureAuthenticated,
   function (request, response) {
     var className = request.params.className.toLowerCase();

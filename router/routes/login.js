@@ -1,6 +1,6 @@
 //var router = express.Router();
 
-router.get('/',
+router.get('/login',
   passport.authenticate('saml', { failureRedirect: '/login/fail' }),
   function (req, res) {
     // TODO: change login redirect?
@@ -8,7 +8,7 @@ router.get('/',
   }
 );
 
-router.post('/callback',
+router.post('/login/callback',
   passport.authenticate('saml', { failureRedirect: '/login/fail' }),
   function (req, res) {
     /*
@@ -25,7 +25,7 @@ router.post('/callback',
   }
 );
 
-router.get('/fail',
+router.get('/login/fail',
   function (req, res) {
     res.status(401).send('Login failed');
   }

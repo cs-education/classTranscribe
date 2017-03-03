@@ -2,7 +2,7 @@
     /logout
 */
 
-router.get('/', function (req, res) {
+router.get('/logout', function (req, res) {
   if (usersaml != null) {
     //Here add the nameID and nameIDFormat to the user if you stored it someplace.
     req.user = {};

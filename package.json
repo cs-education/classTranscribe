@@ -33,16 +33,9 @@
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js & grunt",
-    "server": "node server.js"
+    "start": "node server.js & grunt & node proxyServer.js"
   },
-  "config": {
-    /*
-    "basePort":"7000",
-    "piwikPort":"7001",
-    "proxyPort":"7002"
-    */
-  },
+
   "repository": {
     "type": "git",
     "url": "https://github.com/cs-education/classTranscribe.git"

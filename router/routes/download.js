@@ -1,6 +1,6 @@
 //var router = express.Router();
 
-router.post('/', function (request, response) {
+router.post('/download', function (request, response) {
   var transcriptions = JSON.parse(request.body.transcriptions);
   var fileNumber = Math.round(Math.random() * 10000)
   fs.writeFileSync("public/Downloads/" + fileNumber + ".webvtt", webvtt(transcriptions));
@@ -10,7 +10,7 @@ router.post('/', function (request, response) {
   response.end(JSON.stringify({ fileNumber: fileNumber }));
 });
 
-router.get('/webvtt/:fileNumber', function (request, response) {
+router.get('/download/webvtt/:fileNumber', function (request, response) {
   var file = "public/Downloads/" + request.params.fileNumber + ".webvtt";
 
   fs.stat(file, function handle(err, stats) {

@@ -1,7 +1,7 @@
 //var router = express.Router();
 
 var progressMustache = fs.readFileSync(mustachePath + 'progress.mustache').toString();
-router.get('/:className', function (request, response) {
+router.get('/progress/:className', function (request, response) {
   var className = request.params.className.toUpperCase();
 
   var view = {
@@ -12,7 +12,7 @@ router.get('/:className', function (request, response) {
   response.end(html);
 });
 
-router.post('/:className/:netId', function (request, response) {
+router.post('/progress/:className/:netId', function (request, response) {
   var className = request.params.className.toUpperCase();
   var netId = request.params.netId;
   sendProgressEmail(className, netId, function () {

@@ -3,7 +3,7 @@
 
 */
 
-router.get('/:fileName', function (request, response) {
+router.get('/Video/:fileName', function (request, response) {
   var file = path.resolve(__dirname + "/Video/", request.params.fileName + ".mp4");
 
   fs.stat(file, function handle(err, stats) {

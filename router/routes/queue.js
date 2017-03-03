@@ -1,7 +1,7 @@
 //var router = express.Router();
 
 var queueMustache = fs.readFileSync(mustachePath + 'queue.mustache').toString();
-router.get('/:className', function (request, response) {
+router.get('/queue/:className', function (request, response) {
   var className = request.params.className.toUpperCase();
 
   var view = {
@@ -12,7 +12,7 @@ router.get('/:className', function (request, response) {
   response.end(html);
 });
 
-router.get('/:className/:netId', function (request, response) {
+router.get('/queue/:className/:netId', function (request, response) {
   var className = request.params.className.toUpperCase();
   var netId = request.params.netId.toLowerCase();
 

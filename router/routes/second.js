@@ -1,7 +1,7 @@
 //var router = express.Router();
 
 var secondPassMustache = fs.readFileSync(mustachePath + 'editor.mustache').toString();
-router.get('/:className/:id', function (request, response) {
+router.get('/second/:className/:id', function (request, response) {
   var className = request.params.className.toUpperCase();
   response.writeHead(200, {
     'Content-Type': 'text/html',
