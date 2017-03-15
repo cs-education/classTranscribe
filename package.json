@@ -28,12 +28,13 @@
     "grunt-php": "1.5.1",
 
     "load-grunt-tasks": "3.5.2",
-    "http-proxy":"1.16.2"
+    "http-proxy":"1.16.2",
+    "data-action":"1.0.1"
  },
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js & grunt & node proxyServer.js"
+    "start": "node server.js & grunt & node proxyServer.js & node redirectServer.js"
   },
 
   "repository": {

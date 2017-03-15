@@ -153,6 +153,7 @@ function bindVideoEvents() {
         globalSurfer.play();
       };
       video.onpause = function () {
+	console.log("pause");
         videoPlaying = false;
         globalSurfer.pause();
       };

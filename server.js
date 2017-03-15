@@ -1,3 +1,8 @@
+/*
+ * Serves the main Class Transcribe website on CT_PORT
+ */
+
+/* global variables */
 express = require('express');
 Mustache = require('mustache');
 fs = require('fs');
@@ -8,6 +13,9 @@ router = express.Router();
 
 client = require('./modules/redis');
 mailer = require('./modules/mailer');
+/* end global variables */
+
+
 var webvtt = require('./modules/webvtt');
 var validator = require('./modules/validator');
 
@@ -41,8 +49,8 @@ app.use(passport.session());
 
 app.set('view engine', 'ejs');
 
+/* I wasn't sure where to put these variables (that are used in various files */
 mustachePath = 'templates/';
-
 
 exampleTerms = {
   "cs241": "printf",
@@ -76,23 +84,12 @@ var thirtyMinsInMilliSecs = 30 * 60 * 1000;
 
 require('./router')(app);
 
-var port = process.env.BASE_PORT || 8000;
+var port = process.env.CT_PORT || 8000;
 
 var options = {
   key: fs.readFileSync("./cert/cert/key.pem"),
   cert: fs.readFileSync("./cert/cert/cert.pem")
 };
-
-/*
-In preparation for when we theoretically need to redirect http to https on the main site
-
-
-http.createServer(function(req, res) {
-	res.writeHead(301, { "Location": "https://" + req.headers["host"] + req.url });
-	res.end();
-}).listen(80);
-
-*/
 
 
 var httpsServer = https.createServer(options, app);
@@ -100,6 +97,4 @@ httpsServer.listen(port, function() {
 	console.log("Class Transcribe on: " + port);
 });
 
-/*app.listen(port, function() {
-  console.log("Listening on " + port);
-});*/
+

@@ -19,7 +19,8 @@ $(document).ready(function () {
 */
 function begin() {
   var videoIndex = parseInt($(".video-selector").val(), 10);
-
+  
+  addPiwikTracking();
   loadVideo(videoIndex);
   loadStartTime();
   loadCaptions(videoIndex);
@@ -27,11 +28,36 @@ function begin() {
   changePlaybackSpeed();
 }
 
+function addPiwikTracking() {
+  var video = $('.main-video');
+
+/* == TODO ==
+    Does not consider if the page is not in focus
+    Better parameters?
+        category, action, [name], [value]
+    Other functions we can track? (i.e. video.on(X, ...)
+
+
+*/
+
+  video.on('play', function () {
+    //var src = video[0].currentSrc;
+    var time = video[0].currentTime;
+    var loc = video.context.location;
+    _paq.push(['trackEvent', loc.pathname + loc.search, 'Play', 'time', time]);
+  });
+  video.on('pause', function() {
+    var time = video[0].currentTime;
+    var loc = video.context.location;
+    _paq.push(['trackEvent', loc.pathname + loc.search, 'Play', 'time', time]);
+  });
+}
+
 /*
   Sets the correct video from url parameters
 */
 function setVideoFromUrl() {
-  var videoIndex = getParameterByName("videoIndex");
+    var videoIndex = getParameterByName("videoIndex");
   if (videoIndex) {
     $(".video-selector option").eq(videoIndex).attr('selected', true);
   }
@@ -59,7 +85,9 @@ function loadStartTime() {
     var windowLocation = window.location.toString();
     var base_url = windowLocation.substring(0, windowLocation.indexOf("?"));
     // window.history.replaceState({}, document.title, base_url);
-    video.play();
+   // _paq.push(['trackEvent', 'Video', 'Play?']);
+    // console.log("here");
+     video.play();
   });
 }
 
@@ -176,12 +204,21 @@ function findSegmentTime(segment) {
 */
 function scrollToSegment(segment) {
   var viewerContainer = $('.transcription-viewer-container');
+//  console.log("view" + viewerContainer.offset().top);
+// console.log("segment" + segment.offset().top);
+
+  var value = viewerContainer.scrollTop();
+  if (viewerContainer.offset()) {
+      value -= viewerContainer.offset().top;
+  }
+  if (segment.offset()) {
+      value += segment.offset().top;
+  }
+  value -= 100;
   viewerContainer.animate({
-      scrollTop: viewerContainer.scrollTop() - viewerContainer.offset().top + segment.offset().top - 100
+      scrollTop:value
   }, 500);
 }
-
-
 
 function shareVideo(event) {
   var originalText = $(".share-video-button").text();
