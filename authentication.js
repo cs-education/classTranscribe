@@ -8,7 +8,7 @@ passport.deserializeUser(function (user, done) {
     done(null, user);
 });
 
-var CALLBACK_URL = "https://192.17.96.13:7443/login/callback"
+var CALLBACK_URL = "https://192.17.96.13:" + (process.env.CT_PORT || 7443) + "/login/callback"
 var ENTRY_POINT = "https://idp.testshib.org/idp/profile/SAML2/Redirect/SSO";
 var ISSUER = 'ClassTranscribe4927/Shibboleth';
 
@@ -52,6 +52,5 @@ ensureAuthenticated = function(req, res, next) {
     return res.redirect('/login');
   }
 }
-
 
 passport.use(samlStrategy);

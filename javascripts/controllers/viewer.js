@@ -49,7 +49,7 @@ function addPiwikTracking() {
   video.on('pause', function() {
     var time = video[0].currentTime;
     var loc = video.context.location;
-    _paq.push(['trackEvent', loc.pathname + loc.search, 'Play', 'time', time]);
+    _paq.push(['trackEvent', loc.pathname + loc.search, 'Pause', 'time', time]);
   });
 }
 
