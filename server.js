@@ -42,8 +42,11 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 }));
 app.use(express.static('public'));
 app.use(cookieParser());
-app.use(bodyParser());
-app.use(session({ secret: "secret" }));
+app.use(session({
+  secret: "secret",
+  resave: true,
+  saveUninitialized: true 
+}));
 app.use(passport.initialize());
 app.use(passport.session());
 
