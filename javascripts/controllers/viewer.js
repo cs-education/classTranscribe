@@ -40,17 +40,46 @@ function addPiwikTracking() {
 
 */
 
+/*
+    'trackEvent', [location (video name)], [action], [time], [extra parameter]
+*/
+
   video.on('play', function () {
     //var src = video[0].currentSrc;
     var time = video[0].currentTime;
     var loc = video.context.location;
-    _paq.push(['trackEvent', loc.pathname + loc.search, 'Play', 'time', time]);
+    _paq.push(['trackEvent', loc.pathname + loc.search, 'Play', time]);
   });
+
   video.on('pause', function() {
     var time = video[0].currentTime;
     var loc = video.context.location;
-    _paq.push(['trackEvent', loc.pathname + loc.search, 'Pause', 'time', time]);
-  });
+    _paq.push(['trackEvent', loc.pathname + loc.search, 'Pause', time]);    
+    });
+
+    video.on('ratechange', function() {
+        var time = video[0].currentTime;
+        var loc = video.context.location;
+        var rate = video[0].playbackRate;
+        //video[0].volume;
+        //console.log(rate);
+        _paq.push(['trackEvent', loc.pathname + loc.search, 'Rate change', time, rate]);
+    });
+
+/*
+    When dragging the volume around, it records ALL values in between, not just the stopping points.
+    
+    video.on('volumechange', function() {
+        var time = video[0].currentTime;
+        var loc = video.context.location;
+        var volume = video[0].volume;
+        console.log(volume);
+        if (volume) {
+        _paq.push(['trackEvent', loc.pathname + loc.search, 'Volume change', time, volume]);
+        }
+    });
+
+*/
 }
 
 /*

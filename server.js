@@ -13,6 +13,8 @@ router = express.Router();
 
 client = require('./modules/redis');
 mailer = require('./modules/mailer');
+
+piwik_port = process.env.PIWIK_PORT;
 /* end global variables */
 
 
@@ -51,6 +53,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.set('view engine', 'ejs');
+//app.set('piwik port', process.env.PIWIK_PORT);
 
 /* I wasn't sure where to put these variables (that are used in various files */
 mustachePath = 'templates/';
@@ -92,6 +95,7 @@ var port = process.env.CT_PORT || 8000;
 var options = {
   key: fs.readFileSync("./cert/cert/key.pem"),
   cert: fs.readFileSync("./cert/cert/cert.pem")
+ // piwik_port: process.env.PIWIK_PORT
 };
 
 

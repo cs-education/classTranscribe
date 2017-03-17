@@ -30,7 +30,10 @@ renderWithPartial = function(mustacheFile, request, response) {
   var html;
   if (request.isAuthenticated()) {
     html = Mustache.render(mustacheFile, {
-      list: [{ user: request.user["urn:oid:0.9.2342.19200300.100.1.1"] }]
+      list: [
+        { user: request.user["urn:oid:0.9.2342.19200300.100.1.1"],
+    port: process.env.PIWIK_PORT }
+]
     }, {
         partial: authenticatedPartial
       })
@@ -38,7 +41,7 @@ renderWithPartial = function(mustacheFile, request, response) {
   else {
     html = Mustache.render(mustacheFile,
       {
-        list: [{ user: null }]
+        list: [{ user: null , port: process.env.PIWIK_PORT}]
       }, {
         partial: notAuthenticatedPartial
       })
