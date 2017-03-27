@@ -16,14 +16,9 @@ router.get('/viewer/:className',
     });
 
     var view = {
-      className: className,
-      // ***
-      list: [{ user: request.user["urn:oid:0.9.2342.19200300.100.1.1"] }]
+        className: className
     };
-    var html = Mustache.render(viewerMustache, view, {
-      partial: authenticatedPartial
-    });
-    response.end(html);
+    renderWithPartial(viewerMustache, request, response, view);
   });
 
   module.exports = router;
