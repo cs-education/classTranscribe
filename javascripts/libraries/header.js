@@ -12,12 +12,19 @@
    _paq.push(['trackPageView']);
 //   alert( _paq.push(['enableLinkTracking']));
 
-
   (function() {
 	/* Change this to the Piwik server*/
-     var u="//192.17.96.13:7002/";
+    var u;
 
- //   _paq.push(['setTrackerUrl', u+'piwik.php']);
+    if (typeof(piwikServer) == "undefined") {
+        console.log("Warning: piwikServer was not provided");
+        u="//192.17.96.13:7002/";
+    }
+     else {
+         u = "//" +  piwikServer + "/";
+    }
+//     var u="//192.17.96.13:7002/";
+
     _paq.push(['setSiteId', '1']);
 
 
