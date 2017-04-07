@@ -3,6 +3,8 @@
  */
 
 /* global variables */
+
+
 express = require('express');
 Mustache = require('mustache');
 fs = require('fs');
@@ -14,7 +16,6 @@ router = express.Router();
 client = require('./modules/redis');
 mailer = require('./modules/mailer');
 
-piwik_port = process.env.PIWIK_PORT;
 /* end global variables */
 
 
@@ -33,6 +34,13 @@ var dotenv = require('dotenv');
 var https = require('https');
 
 dotenv.load();
+piwik_port = process.env.PIWIK_PORT;
+
+if (process.env.DEV == "DEV") {
+    console.log("~~~~~~~~~~~");
+    console.log("~DEVELOPER~");
+    console.log("~~~~~~~~~~~");
+}
 
 require("./authentication");
 
@@ -84,6 +92,12 @@ app.get('/Metadata',
     res.status(200).send(samlStrategy.generateServiceProviderMetadata(fs.readFileSync("./cert/cert/cert.pem", "utf8")));
   }
 );
+
+var testMustache = fs.readFileSync("./templates/test.mustache").toString();
+app.get('/test', function(req, res) {
+    var html = Mustache.render(testMustache, {piwikServer: "192.17.96.13:" + process.env.PROXY_PORT});
+    res.end(html);
+});
 
 var thirtyMinsInMilliSecs = 30 * 60 * 1000;
 //setInterval(clearInactiveTranscriptions, thirtyMinsInMilliSecs);

@@ -9,6 +9,7 @@ module.exports = function(app) {
 
 //    app.use('/login', require('./routes/login'));
     app.use(require('./routes/base'));
+    app.use(require('./routes/admin'));
     app.use(require('./routes/login'));
     app.use(require('./routes/logout'));
     app.use(require('./routes/first'));
@@ -23,9 +24,13 @@ module.exports = function(app) {
     app.use(require('./routes/captions'));
 }
 
-authenticatedPartial = fs.readFileSync(mustachePath + 'authenticated.mustache').toString();
+//var mustachePath = module.exports.mustachePath;
 
-notAuthenticatedPartial = fs.readFileSync(mustachePath + 'notAuthenticated.html').toString();
+authenticatedPartial = fs.readFileSync(mustachePath + 'authenticated.mustache').toString();
+notAuthenticatedPartial = fs.readFileSync(mustachePath + 'notAuthenticated.mustache').toString();
+adminPartial = fs.readFileSync(mustachePath + 'admin.mustache').toString();
+
+
 var piwikServer = "192.17.96.13:" + process.env.PROXY_PORT;
 
 renderWithPartial = function(mustacheFile, request, response, params) {
@@ -36,15 +41,16 @@ renderWithPartial = function(mustacheFile, request, response, params) {
     options[key] = params[key];
   }
   if (request.isAuthenticated()) {
-    options["list"] = [{user: request.user["urn:oid:0.9.2342.19200300.100.1.1"]}];
+    options["user"] = request.user["urn:oid:0.9.2342.19200300.100.1.1"];
+    
     html = Mustache.render(mustacheFile, options, {
-        partial: authenticatedPartial
+        loginPartial: authenticatedPartial
       })
   }
   else {
-    options["list"] = [{user: null}];
+    options["user"] = null;
     html = Mustache.render(mustacheFile, options,  {
-        partial: notAuthenticatedPartial
+        loginPartial: notAuthenticatedPartial
       })
   }
   response.end(html);

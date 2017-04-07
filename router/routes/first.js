@@ -5,6 +5,9 @@
 /*
     /first
 */
+var router = express.Router();
+var fs = require('fs');
+//var client = require('./modules/redis');
 
 router.post('/first', function (request, response) {
   var stats = JSON.parse(request.body.stats);

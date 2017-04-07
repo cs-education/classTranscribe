@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
     <title>Class Transcribe</title>
 
@@ -12,6 +13,7 @@
       var piwikServer = "{{piwikServer}}";
       className = "{{className}}";
     </script>
+    <script src="/javascripts/libraries/header.js"></script>
 
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -35,7 +37,8 @@
     <!-- End Stylesheets -->
   </head>
   <body>
-              {{> partial}}
+    {{> loginPartial}}
+    {{> adminPartial}}
     <div class="main-container">
 
       <section class="menu">

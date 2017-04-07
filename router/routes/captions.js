@@ -1,7 +1,7 @@
 /*
     /captions
  */
-
+var fs = require('fs');
 
 
 router.get('/captions/:className/:index', function (request, response) {

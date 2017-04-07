@@ -1,4 +1,7 @@
-//var router = express.Router();
+var router = express.Router();
+var fs = require('fs');
+var mime = require('mime');
+var path = require('path');
 
 router.post('/download', function (request, response) {
   var transcriptions = JSON.parse(request.body.transcriptions);
