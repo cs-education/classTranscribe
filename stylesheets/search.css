@@ -50,7 +50,7 @@
 }
 
 .menu-content ul .title{
-  float: left;
+  overflow: hidden;
   width: 60%;
   text-align: left;
   color:#a3b2c0;
