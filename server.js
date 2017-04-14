@@ -93,12 +93,6 @@ app.get('/Metadata',
   }
 );
 
-var testMustache = fs.readFileSync("./templates/test.mustache").toString();
-app.get('/test', function(req, res) {
-    var html = Mustache.render(testMustache, {piwikServer: "192.17.96.13:" + process.env.PROXY_PORT});
-    res.end(html);
-});
-
 var thirtyMinsInMilliSecs = 30 * 60 * 1000;
 //setInterval(clearInactiveTranscriptions, thirtyMinsInMilliSecs);
 
