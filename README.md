@@ -18,7 +18,7 @@ existing lecture recordings and enable enhanced educational features including c
 ## How to run a docker build if you have the source code (DO THIS WHEN YOU CHANGE CODE AND CONFIRM IT WORKS - It effectively tests in our production environment)
 
 1. docker build -t classtranscribe .
-2. sudo docker run -i -t -d -p 443:8000 -p 80:7000 -e "REDIS_PASS=REDACTED" -e "REDIS_HOST=REDACTED" -e "MAILER_ID=REDACTED" -e "MAILER_PASS=REDACTED" pranaygp/classtranscribe /bin/bash -c "npm install; npm start"
+2. sudo docker run -i -t -d -p 443:8000 -p 80:7000 -e "REDIS_PASS=REDACTED" -e "REDIS_HOST=REDACTED" -e "MAILER_ID=REDACTED" -e "MAILER_PASS=REDACTED" classtranscribe /bin/bash -c "npm install; npm start"
 
 ## How to launch a class
 
