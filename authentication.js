@@ -43,6 +43,10 @@ samlStrategy = new saml.Strategy({
 });
 
 ensureAuthenticated = function(req, res, next) {
+  if (process.env.DEV == "DEV") {
+    console.log("Skipping login");
+    return next();
+  }
   if (req.isAuthenticated()) {
     return next();
   }

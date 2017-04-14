@@ -34,7 +34,7 @@
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js & grunt & node proxyServer.js & node redirectServer.js"
+    "start": "grunt & node proxyServer.js & node redirectServer.js & node server.js"
   },
 
   "repository": {
