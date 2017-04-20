@@ -1,3 +1,6 @@
+KNOWN ISSUES
+Logging in as user A, logging out, and without closing the browser, attempting to login as user B causes an error. We think it's because Shibboleth can't gracefully allow two logged in users. This may be fixed through speaking with iTrust.
+
 .env contains the various opened ports
     PIWIK_PORT is where piwik is being hosted (through the Gruntfile)
     PROXY_PORT is the open SSL port to access Piwik

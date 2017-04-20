@@ -50,6 +50,7 @@ renderWithPartial = function(mustacheFile, request, response, params) {
   else {
     options["user"] = null;
     html = Mustache.render(mustacheFile, options,  {
+        list: {},
         loginPartial: notAuthenticatedPartial
       })
   }
