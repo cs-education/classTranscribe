@@ -30,6 +30,7 @@ function begin() {
 
 function addPiwikTracking() {
   var video = $('.main-video');
+  var videoFolder = "classtranscribes3/";
 
 /* == TODO ==
     Does not consider if the page is not in focus
@@ -47,23 +48,34 @@ function addPiwikTracking() {
   video.on('play', function () {
     //var src = video[0].currentSrc;
     var time = video[0].currentTime;
-    var loc = video.context.location;
-    _paq.push(['trackEvent', loc.pathname + loc.search, 'Play', time]);
+    var source = $('.main-video-source')[0].src;
+
+    //Finds substring of video file
+    var index = source.indexOf(videoFolder) + videoFolder.length;
+   
+    //Removes the file extension
+    var endIndex = source.indexOf(".mp4");
+    var source = source.substring(index, endIndex);
+    _paq.push(['trackEvent', source, 'Play', time]);
   });
 
   video.on('pause', function() {
     var time = video[0].currentTime;
-    var loc = video.context.location;
-    _paq.push(['trackEvent', loc.pathname + loc.search, 'Pause', time]);    
+    var source = $('.main-video-source')[0].src;
+    var index = source.indexOf(videoFolder) + videoFolder.length;
+    var endIndex = source.indexOf(".mp4");
+    var source = source.substring(index, endIndex)
+    _paq.push(['trackEvent', source, 'Pause', time]);    
     });
 
     video.on('ratechange', function() {
         var time = video[0].currentTime;
-        var loc = video.context.location;
         var rate = video[0].playbackRate;
-        //video[0].volume;
-        //console.log(rate);
-        _paq.push(['trackEvent', loc.pathname + loc.search, 'Rate change', time, rate]);
+        var source = $('.main-video-source')[0].src;
+        var index = source.indexOf(videoFolder) + videoFolder.length;
+        var endIndex = source.indexOf(".mp4");
+        var source = source.substring(index, endIndex);
+        _paq.push(['trackEvent', source, 'Rate change', time, rate]);
     });
 
 /*
@@ -113,9 +125,7 @@ function loadStartTime() {
     video.currentTime = startTime;
     var windowLocation = window.location.toString();
     var base_url = windowLocation.substring(0, windowLocation.indexOf("?"));
-    // window.history.replaceState({}, document.title, base_url);
-   // _paq.push(['trackEvent', 'Video', 'Play?']);
-    // console.log("here");
+    // window.history.replaceState({}, document.title, base_url); 
      video.play();
   });
 }
