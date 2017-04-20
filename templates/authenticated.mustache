@@ -1,16 +1,13 @@
-<style>
-    .login {
-        position: relative;
-        width: 100%;
-        height: 20px;
-        background: #2f363e;
-    }
-</style>
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="stylesheets/loginbar.css" />
+</head>
 
-<section class="login">
-
-        <a href="/user", style="color:white">{{user}}</a>
-        <a href="/logout", style="color:white">Log out</a>
-        <a href="/admin", style="color:white">Admin</a>
-
-</section>
+<body>
+<div class = "login-bar">
+        <a class = "login-bar-link", href="/user">{{user}}</a>
+        <a class = "login-bar-link", href="/logout">Log out</a>
+        <a class = "login-bar-link", href="/admin">Admin</a>
+</div>
+</body>
+</html>
