@@ -5,6 +5,22 @@
   background: #2f363e;
 }
 
-.login-bar-link {
+.login-bar-link:link {
   color: white;
+  text-decoration: none;
+}
+
+.login-bar-link:visited {
+  color: white;
+  text-decoration: none;
+}
+
+.login-bar-link:hover {
+  color: white;
+  text-decoration: none;
+}
+
+.login-bar-link:active {
+  color: white;
+  text-decoration: none;
 }
