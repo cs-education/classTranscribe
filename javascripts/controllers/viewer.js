@@ -189,11 +189,14 @@ function updateHighlightedCaption(currentSegment) {
   Interval to refresh highlighted caption
 */
 setInterval(function () {
-  var currentTime = $(".main-video").get(0).currentTime;
+  var video = $(".main-video").get(0);
+  if (video) {
+    var currentTime = video.currentTime;
 
-  if (currentTime > (lastTime + segmentLength) || currentTime < lastTime) {
-    var currentSegment = findCurrentSegment(currentTime);
-    updateHighlightedCaption(currentSegment);
+    if (currentTime > (lastTime + segmentLength) || currentTime < lastTime) {
+      var currentSegment = findCurrentSegment(currentTime);
+      updateHighlightedCaption(currentSegment);
+     }
   }
 }, 50);
 

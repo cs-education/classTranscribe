@@ -11,6 +11,8 @@ In order to register with TestShib (and iTrust), you will need...
 
 * A certificate and a key
 ** Metadata associated with that cert/key
+* The certificate of the IdP (idp_cert.pem)
+    (For some reason, I can't find the testshib IdP certificate, nor do I completely remember how I found it. You may possible have to extract it from https://idp.testshib.org/Shibboleth.sso/Metadata)
 
 ==Creating a cert/key==
 openssl genrsa -out key.pem

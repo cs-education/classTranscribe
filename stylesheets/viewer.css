@@ -80,6 +80,7 @@
   width: 70%;
   height: 65%;
   min-width: 600px;
+  padding-bottom: 20px;
 }
 
 video {
@@ -91,11 +92,10 @@ video {
 
 .video_control-container{
   width: 70%;
-  height:4%;
+  height: 4%;
   position: relative;
   margin: auto;
   min-width: 600px;
-  padding-top: 15px;
 }
 
 .video-selector, .playback-selector,.share-video-button{
