@@ -43,6 +43,7 @@ if (process.env.DEV == "DEV") {
 }
 
 require("./authentication");
+require("./public/functions");
 
 var app = express();
 
@@ -61,7 +62,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.set('view engine', 'ejs');
-//app.set('piwik port', process.env.PIWIK_PORT);
 
 /* I wasn't sure where to put these variables (that are used in various files */
 mustachePath = 'templates/';
@@ -99,7 +99,7 @@ app.get('/Metadata',
 */
 
 var thirtyMinsInMilliSecs = 30 * 60 * 1000;
-//setInterval(clearInactiveTranscriptions, thirtyMinsInMilliSecs);
+setInterval(clearInactiveTranscriptions, thirtyMinsInMilliSecs);
 
 require('./router')(app);
 
@@ -108,7 +108,6 @@ var port = process.env.CT_PORT || 8000;
 var options = {
   key: fs.readFileSync("./cert/cert/key.pem"),
   cert: fs.readFileSync("./cert/cert/cert.pem")
- // piwik_port: process.env.PIWIK_PORT
 };
 
 

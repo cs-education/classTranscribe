@@ -54,5 +54,9 @@ Unforuntately, the names of the routes (/routes) and names of some javascripts (
 
 When updating Piwik, make sure that you save "config/config.ini.php" to keep your existing settings. Then, download the new Piwik. Finally, replace the "config/config.ini.php" file with the one you saved.
 
+I put a bunch of functions into public/functions.js basically because I didn't know what they did or when they were called.
+
+templates/home.mustache is the home page for classtranscribe
+
 sql data could be accessed by file javascripts/controllers/data_output.js
 by running it as node script or in a file

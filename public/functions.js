@@ -1,6 +1,6 @@
 
 
-function highDensityQueue(response, className, netId, attemptNum) {
+highDensityQueue = function(response, className, netId, attemptNum) {
     var args = ["ClassTranscribe::Tasks::" + className, "0", "99999", "WITHSCORES", "LIMIT", "0", "1"];
     client.zrangebyscore(args, function (err, result) {
         if (err) {
@@ -34,7 +34,7 @@ function highDensityQueue(response, className, netId, attemptNum) {
     });
 }
 
-function initPrioritizedTask(response, className, netId, attemptNum) {
+initPrioritizedTask = function(response, className, netId, attemptNum) {
     var numTasksToPrioritize = 10;
     // Can't call zcard if doesn't exist. Unable to be directly handled by err in zcard call
     // due to how the redis client works
@@ -57,7 +57,7 @@ function initPrioritizedTask(response, className, netId, attemptNum) {
     });
 }
 
-function queueResponse(response, queueName, netId, className, chosenTask, attemptNum) {
+queueResponse = function(response, queueName, netId, className, chosenTask, attemptNum) {
     console.log(chosenTask);
 
     if (attemptNum === 10) {
@@ -105,7 +105,7 @@ function queueResponse(response, queueName, netId, className, chosenTask, attemp
  */
 
 
-function moveToPrioritizedQueue(response, className, netId, numberTasks, numTasksToPrioritize, attemptNum) {
+moveToPrioritizedQueue = function(response, className, netId, numberTasks, numTasksToPrioritize, attemptNum) {
     if (numberTasks < numTasksToPrioritize) {
         var numDifference = numTasksToPrioritize - numberTasks;
         var args = ["ClassTranscribe::Tasks::" + className, "0", "99999",
@@ -128,7 +128,7 @@ function moveToPrioritizedQueue(response, className, netId, numberTasks, numTask
     }
 }
 
-function getPrioritizedTask(response, className, netId, attemptNum) {
+getPrioritizedTask = function(response, className, netId, attemptNum) {
     var args = ["ClassTranscribe::PrioritizedTasks::" + className, "0", "99999", "LIMIT", "0", "1"];
     client.zrangebyscore(args, function (err, tasks) {
         if (err) {
@@ -140,7 +140,7 @@ function getPrioritizedTask(response, className, netId, attemptNum) {
     });
 }
 
-function clearInactiveTranscriptions() {
+clearInactiveTranscriptions = function() {
     var classesToClear = ["CS241-SP16", "CHEM233-SP16", "CS225-SP16"];
     var curDate = new Date();
 
