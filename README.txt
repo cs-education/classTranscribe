@@ -42,4 +42,5 @@ ISSUER is the site's unique name. Note that it needs to be unique. Errors may oc
 
 When updating Piwik, make sure that you save "config/config.ini.php" to keep your existing settings. Then, download the new Piwik. Finally, replace the "config/config.ini.php" file with the one you saved.
 
-
+sql data could be accessed by file javascripts/controllers/data_output.js
+by running it as node script or in a file
