@@ -64,3 +64,5 @@ isClassNameValid = function(className) {
 
   return false;
 }
+
+invalidClassHTML = "<p>Could not find the requested page.<\p> <a href=\"/\">Click here to return to the home page.</a>";
