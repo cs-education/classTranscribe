@@ -1,13 +1,10 @@
 module.exports = function(app) {
-
 /*
 	Pretty sure that order matters here.
 	There's probably a way to better enforce it, though.
 
 */
 
-
-//    app.use('/login', require('./routes/login'));
     app.use(require('./routes/base'));
     app.use(require('./routes/admin'));
     app.use(require('./routes/login'));
@@ -23,8 +20,6 @@ module.exports = function(app) {
     app.use(require('./routes/viewer'));
     app.use(require('./routes/captions'));
 }
-
-//var mustachePath = module.exports.mustachePath;
 
 authenticatedPartial = fs.readFileSync(mustachePath + 'authenticated.mustache').toString();
 notAuthenticatedPartial = fs.readFileSync(mustachePath + 'notAuthenticated.mustache').toString();
@@ -55,4 +50,17 @@ renderWithPartial = function(mustacheFile, request, response, params) {
       })
   }
   response.end(html);
+}
+
+isClassNameValid = function(className) {
+
+  var classes = [
+    "cs241", "cs225", "cs225-sp16", "cs446-fa16", "adv582", "ece210", "chem233-sp16"
+  ]
+
+  if (classes.indexOf(className) >= 0) {
+    return true;
+  }
+
+  return false;
 }
