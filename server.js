@@ -86,12 +86,17 @@ captionsMapping = {
   "cs446-fa16": require('./public/javascripts/data/captions/cs446-fa16.js'),
 }
 
+/*
+    Uncomment this and visit this route to create and show the Metadata
+    needed for registering with a Shibboleth Identity Provider
+
 app.get('/Metadata',
   function (req, res) {
     res.type('application/xml');
     res.status(200).send(samlStrategy.generateServiceProviderMetadata(fs.readFileSync("./cert/cert/cert.pem", "utf8")));
   }
 );
+*/
 
 var thirtyMinsInMilliSecs = 30 * 60 * 1000;
 //setInterval(clearInactiveTranscriptions, thirtyMinsInMilliSecs);
