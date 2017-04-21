@@ -27,3 +27,4 @@ In javascripts/libraries/header.js, be sure to change the piwik port
 sql data could be accessed by file javascripts/controllers/data_output.js
 by running it as node script or in a file
 
+found unused files has been added to folder deprecated
