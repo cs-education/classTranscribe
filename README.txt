@@ -24,4 +24,6 @@ When updating Piwik, make sure that you save "config/config.ini.php" to keep you
 
 In javascripts/libraries/header.js, be sure to change the piwik port
 
+sql data could be accessed by file javascripts/controllers/data_output.js
+by running it as node script or in a file
 
