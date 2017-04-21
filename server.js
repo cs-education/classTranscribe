@@ -29,7 +29,7 @@ var bodyParser = require('body-parser');
 
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
-var passport = require('passport');
+passport = require('passport');
 var saml = require('passport-saml');
 var dotenv = require('dotenv');
 var https = require('https');
