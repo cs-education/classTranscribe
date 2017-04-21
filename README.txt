@@ -5,10 +5,30 @@ Logging in as user A, logging out, and without closing the browser, attempting t
 Out of the box, authentication will not work.
 Currently (4/21/17), authentication is handled through TestShib, as we do not have a representative for iTrust.
 
-In order to register with TestShib (and iTrust), you will need
+In order to register with TestShib (and iTrust), you will need...
 
 * A certificate and a key
 ** Metadata associated with that cert/key
+
+==Creating a cert/key==
+openssl genrsa -out key.pem
+openssl req -new -key key.pem -out csr.pem
+openssl x509 -req -days 356 -in csr.pem -signkey key.pem -out cert.pem
+rm csr.pem
+
+# This will create a very basic cert/key. A more secure method may be needed later on.
+
+==Metadata==
+There's a commented out section (currently) in server.js.
+Make sure the generateServiceProviderMetadata() is pointing to the correct cert location.
+Run the server and visit that route. The browser should spit out a bunch of text. This is your metadata that you'll submit to the IdP.
+
+Make sure the key and certificate are being correctly referenced (if they are moved).
+
+Most of the authentication parameters **should** be all be contained in authentication.js.
+You will need to change CALLBACK_URL to the location the IdP should return the user to after successful authentication.
+ENTRY_POINT is the IdP url where the user should be redirected to to confirm authentication
+ISSUER is the site's unique name. Note that it needs to be unique. Errors may occur if this is not the case.
 
 =====MISCELLANEOUS=====
 .env contains the various opened ports
@@ -21,7 +41,5 @@ In order to register with TestShib (and iTrust), you will need
 
 
 When updating Piwik, make sure that you save "config/config.ini.php" to keep your existing settings. Then, download the new Piwik. Finally, replace the "config/config.ini.php" file with the one you saved.
-
-In javascripts/libraries/header.js, be sure to change the piwik port
 
 

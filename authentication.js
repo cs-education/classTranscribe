@@ -12,8 +12,9 @@ var CALLBACK_URL = "https://192.17.96.13:" + (process.env.CT_PORT || 7443) + "/l
 var ENTRY_POINT = "https://idp.testshib.org/idp/profile/SAML2/Redirect/SSO";
 var ISSUER = 'ClassTranscribe4927/Shibboleth';
 
+//Currently, I don't think this logout url is being used.
 var LOGOUT_URL = "https://www.testshib.org/Shibboleth.sso/Logout";
-// Might be unnecessary?
+
 
 var KEY = fs.readFileSync('./cert/cert/key.pem');
 var CERT = fs.readFileSync('./cert/cert/cert.pem');
