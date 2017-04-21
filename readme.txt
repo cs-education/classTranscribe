@@ -39,6 +39,11 @@ ISSUER is the site's unique name. Note that it needs to be unique. Errors may oc
     DEV is more of a convenience developer tool
         If DEV=DEV, then authentication login will be skipped.
 
+server.js serves the classtranscribe.com main website
+redirectServer.js: redirects http://<<classtranscribe>> to https://<<classtranscribe>>
+proxyServer: provides https for Piwik
+Gruntfile.js: runs the Piwik server
+    The Piwik server needs to be able to run php
 
 When updating Piwik, make sure that you save "config/config.ini.php" to keep your existing settings. Then, download the new Piwik. Finally, replace the "config/config.ini.php" file with the one you saved.
 
