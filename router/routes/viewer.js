@@ -9,6 +9,11 @@ router.get('/viewer/:className',
   function (request, response) {
     var className = request.params.className.toLowerCase();
 
+    if (!isClassNameValid(className)) {
+      response.end(invalidClassHTML);
+      return;
+    }
+
     response.writeHead(200, {
       'Content-Type': 'text/html',
       "Access-Control-Allow-Origin": "*",

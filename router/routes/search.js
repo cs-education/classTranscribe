@@ -7,7 +7,6 @@ router.get('/:className',
     var className = request.params.className.toLowerCase();
 
     if (!isClassNameValid(className)) {
-      var invalidClassHTML = "<p>Could not find the requested page.<\p> <a href=\"/\">Click here to return to the home page.</a>";
       response.end(invalidClassHTML);
       return;
     }
