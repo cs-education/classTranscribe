@@ -54,7 +54,6 @@ function bindEventListeners() {
                         .keyup(debouncedSendGAEvent);
   $(".search-box").keyup(); // Trigger event to account for auto fill
   $(".video-selector").off().change(goToVideo);
-  addPiwikTracking();
 }
 
 function goToVideo() {

@@ -78,7 +78,9 @@ exampleTerms = {
   "cs446-fa16": "Decision Trees"
 }
 
+
 captionsMapping = {
+
   "cs241": require('./public/javascripts/data/captions/cs241.js'),
   "cs225": require('./public/javascripts/data/captions/cs225.js'),
   "cs225-sp16": require('./public/javascripts/data/captions/cs225-sp16.js'),
