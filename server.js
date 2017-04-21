@@ -29,6 +29,8 @@ var bodyParser = require('body-parser');
 
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
+var passport = require('passport');
+var saml = require('passport-saml');
 var dotenv = require('dotenv');
 var https = require('https');
 
@@ -40,6 +42,7 @@ if (process.env.DEV == "DEV") {
     console.log("~DEVELOPER~");
     console.log("~~~~~~~~~~~");
 }
+
 
 require("./authentication");
 require("./public/functions");
@@ -85,9 +88,11 @@ captionsMapping = {
   "cs446-fa16": require('./public/javascripts/data/captions/cs446-fa16.js'),
 }
 
+
 /*
     Uncomment this and visit this route to create and show the Metadata
     needed for registering with a Shibboleth Identity Provider
+
 
 app.get('/Metadata',
   function (req, res) {
@@ -98,6 +103,7 @@ app.get('/Metadata',
 */
 
 var thirtyMinsInMilliSecs = 30 * 60 * 1000;
+
 setInterval(clearInactiveTranscriptions, thirtyMinsInMilliSecs);
 
 require('./router')(app);
@@ -114,5 +120,6 @@ var httpsServer = https.createServer(options, app);
 httpsServer.listen(port, function() {
 	console.log("Class Transcribe on: " + port);
 });
+
 
 
