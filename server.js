@@ -4,7 +4,6 @@
 
 /* global variables */
 
-
 express = require('express');
 Mustache = require('mustache');
 fs = require('fs');

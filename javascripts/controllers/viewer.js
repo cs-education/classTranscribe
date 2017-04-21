@@ -37,8 +37,6 @@ function addPiwikTracking() {
     Better parameters?
         category, action, [name], [value]
     Other functions we can track? (i.e. video.on(X, ...)
-
-
 */
 
 /*
@@ -46,7 +44,6 @@ function addPiwikTracking() {
 */
 
   video.on('play', function () {
-    //var src = video[0].currentSrc;
     var time = video[0].currentTime;
     var source = $('.main-video-source')[0].src;
 

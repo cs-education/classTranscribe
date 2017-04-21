@@ -54,6 +54,8 @@ Unforuntately, the names of the routes (/routes) and names of some javascripts (
 
 When updating Piwik, make sure that you save "config/config.ini.php" to keep your existing settings. Then, download the new Piwik. Finally, replace the "config/config.ini.php" file with the one you saved.
 
+_paq.push(...) sends something to database for Piwik to track
+
 I put a bunch of functions into public/functions.js basically because I didn't know what they did or when they were called.
 
 templates/home.mustache is the home page for classtranscribe

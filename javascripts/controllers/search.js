@@ -57,11 +57,6 @@ function bindEventListeners() {
   addPiwikTracking();
 }
 
-function addPiwikTracking() {
- // console.log($(".search-box"));
-}
-
-/* Not used? */
 function goToVideo() {
   var videoIndex = parseInt($(".video-selector").val(), 10);
   var slashIndex = window.location.href.lastIndexOf("/")
@@ -223,10 +218,8 @@ function inputKeypress(e) {
 }
 
 function searchClicked() {
-    /* Might actually be unnecessary */
     var searchTerm = $(".search-box").val();
-    //console.log(searchTerm);
-    _paq.push(["trackEvent", "searchLink", searchTerm]);
+     _paq.push(["trackEvent", "searchLink", searchTerm]);
 }
 
 /*
