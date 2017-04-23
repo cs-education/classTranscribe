@@ -15,7 +15,6 @@ var ISSUER = 'ClassTranscribe4927/Shibboleth';
 //Currently, I don't think this logout url is being used.
 var LOGOUT_URL = "https://www.testshib.org/Shibboleth.sso/Logout";
 
-
 var KEY = fs.readFileSync('./cert/cert/key.pem');
 var CERT = fs.readFileSync('./cert/cert/cert.pem');
 
@@ -37,6 +36,7 @@ samlStrategy = new saml.Strategy({
     isPassive: false,
     additionalParams: {}
 }, function (profile, done) {
+    // These need to be saved for the logout function to work.
     usersaml = {};
     usersaml.nameID = profile["issuer"]["_"];
     usersaml.nameIDFormat = profile["issuer"]["$"];
@@ -53,7 +53,6 @@ ensureAuthenticated = function(req, res, next) {
   }
   else {
     samlStrategy['Redirect'] = req['_parsedOriginalUrl']['path'];
-    //console.log(req['_parsedOriginalUrl']['path']);
     return res.redirect('/login');
   }
 }

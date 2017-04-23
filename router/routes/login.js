@@ -1,9 +1,6 @@
-//var router = express.Router();
-
 router.get('/login',
   passport.authenticate('saml', { failureRedirect: '/login/fail' }),
   function (req, res) {
-    // TODO: change login redirect?
     res.redirect('/');
   }
 );
