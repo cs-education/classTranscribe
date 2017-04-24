@@ -15,6 +15,8 @@ As noted in router/index.js, I believe that the order matters. This can probably
 
 I put a bunch of functions into public/functions.js basically because I didn't know what they did or when they were called.
 
+You will need to obtain a CA (Certificate Authority) for https on the main site to function correctly.
+
 =====AUTHENTICATION WITH SHIBBOLETH=====
 Out of the box, authentication will not work.
 Currently (4/21/17), authentication is handled through TestShib, as we do not have a representative for iTrust.
