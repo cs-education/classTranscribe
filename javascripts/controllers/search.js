@@ -6,9 +6,9 @@ function createReverseIndex() {
   videoCaptions.forEach(function (captions, i) {
     var currentTime = 0;
     captions.forEach(function (caption, j) {
-      console.log(caption.text.length)
+     // console.log(caption.text.length)
       if (caption.text.length > 200) {
-        console.log(caption.text)
+       // console.log(caption.text)
         return;
       }
 
@@ -56,12 +56,11 @@ function bindEventListeners() {
   $(".video-selector").off().change(goToVideo);
 }
 
-
 function goToVideo() {
   var videoIndex = parseInt($(".video-selector").val(), 10);
   var slashIndex = window.location.href.lastIndexOf("/")
   var href = window.location.href
-  var urlBase = href.slice(0, slashIndex) + "/viewer" + href.slice(slashIndex)
+  var urlBase = href.slice(0, slashIndex) + "/viewer" + href.slice(slashIndex);
   window.location = urlBase + "?videoIndex=" + videoIndex;
 }
 
@@ -132,9 +131,11 @@ function inputKeypress(e) {
   var results = Object.create(null);
   var query = $(".search-box").val().toLowerCase();
   query = query.trim().replace(/[.,!"?()]/g,"").replace(/-/g, " ").split(/\s+/);
+  
+  _paq.push(["trackEvent", className + " search", query]);
+
 
   var subQueries = getCombinations(query);
-
   subQueries = subQueries.sort(function (a,b) {
     return b.length - a.length;
   });
@@ -195,7 +196,7 @@ function inputKeypress(e) {
                      + match.videoIndex
                      + '&startTime='
                      + match.startTime
-                     + '"><blockquote><p>'
+                     + '" onClick="searchClicked()"><blockquote><p>'
                      + prevSnippet
                      + " "
                      + snippet
@@ -213,6 +214,11 @@ function inputKeypress(e) {
   $('.main-container').css({
         height : $(".search-results-container").height() + 800 + 'px'
   })
+}
+
+function searchClicked() {
+    var searchTerm = $(".search-box").val();
+     _paq.push(["trackEvent", "searchLink", searchTerm]);
 }
 
 /*

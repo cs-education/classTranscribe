@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
     <title>Class Transcribe</title>
 
@@ -9,8 +10,10 @@
     {{/className}}
 
     <script>
+      var piwikServer = "{{piwikServer}}";
       className = "{{className}}";
     </script>
+    <script src="/javascripts/libraries/header.js"></script>
 
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -24,16 +27,21 @@
     <!-- End Javascript -->
 
     <!-- Begin Fonts -->
-    <link href='http://fonts.googleapis.com/css?family=Bilbo+Swash+Caps' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Bilbo+Swash+Caps' rel='stylesheet' type='text/css'>
     <!-- End Fonts -->
 
     <!-- Begin Stylesheets -->
     <link rel="stylesheet" type="text/css" href="/stylesheets/reset.css">
     <link rel="stylesheet" type="text/css" href="/stylesheets/search.css">
+
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+
     <!-- End Stylesheets -->
   </head>
   <body>
+    {{> loginPartial}}
+    {{> adminPartial}}
     <div class="main-container">
 
       <section class="menu">
@@ -42,7 +50,7 @@
         
           <ul id="menu">
             <li class="home"><a onClick = "window.location = '/';">HOME</a></li>
-            <li class="title"><a>Class Transcribe</a></li>
+            <li class="title"><p>Class Transcribe</p></li>
           </ul>
 
         </div>

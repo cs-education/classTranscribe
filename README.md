@@ -15,6 +15,11 @@ existing lecture recordings and enable enhanced educational features including c
 7. Launch the transcription aligner as a background process `nohup sudo -E node second_pass.js >> public/second_pass.log &`. (Control-C to get out of command, transcription aligner will remain running).
 8. To reconnect to the container, run `sudo docker exec -i -t <docker_ps_id> bash`. Use `docker ps` to find `<docker_ps_id>`.
 
+## How to run a docker build if you have the source code (DO THIS WHEN YOU CHANGE CODE AND CONFIRM IT WORKS - It effectively tests in our production environment)
+
+1. docker build -t classtranscribe .
+2. sudo docker run -i -t -d -p 443:8000 -p 80:7000 -e "REDIS_PASS=REDACTED" -e "REDIS_HOST=REDACTED" -e "MAILER_ID=REDACTED" -e "MAILER_PASS=REDACTED" classtranscribe /bin/bash -c "npm install; npm start"
+
 ## How to launch a class
 
 1. Download lecture videos for a course, place in a directory.

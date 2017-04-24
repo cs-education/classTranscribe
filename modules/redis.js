@@ -4,4 +4,16 @@ var redisPass = process.env.REDIS_PASS;
 
 if (!redisPass) throw "Need a password in environmental variables!";
 
-module.exports = redis.createClient(6379, redisHost, {auth_pass: redisPass});
+/*
+    TODO: Check to make sure this is fine
+*/
+var client = redis.createClient(6379, redisHost, { auth_pass: redisPass });
+client.on("monitor", function (time, args, raw_reply) {
+    console.log(time + ": " + args); // 1458910076.446514:['set', 'foo', 'bar']
+});
+
+client.on('error', function (error) {
+    console.log(error);
+});
+
+module.exports = client;

@@ -9,3 +9,6 @@ dict.tmp
 node_modules
 *.m4v
 **/commands.txt
+.env
+/piwik
+/cert
