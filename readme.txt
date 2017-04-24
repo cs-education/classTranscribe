@@ -3,7 +3,7 @@
 * Create a certificate and key. Place those in cert/cert/ (by default)
     You will need to provide this information to the IdP.
 * Download Piwik
-    To set up Piwik, visit the exposed port or url (the port will be defined as PROXY_PORT in .env)
+    To set up Piwik, visit the exposed port or url (the port will be defined as PROXY_PORT in .env; PROXY_PORT has to be https)
     Follow the instructions onscreen.
 
 Piwik and authentication will NOT work prior to this set-up.
