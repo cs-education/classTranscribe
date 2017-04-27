@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+
+    <title>Manage Courses - Instructors</title>
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/manageCourse.css" />
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+    <script src="/javascripts/controllers/manageCourse.js"></script>
+</head>
+
+<body>
+	<div class="header-container">
+	    <header class="manage-course"> Manage Courses </header>
+	    <br> 
+        <div class="line-separator-header"></div>
+        <br>
+        <input class="search" type="text" name="search" placeholder="Search for a course" onkeyup="filter()"">
+        <div class="search-results">
+        </div>
+    </div>
+
+    <div class="enroll-container">
+        <header class="enroll-header"> Enroll Instructors/TAs </header>
+        
+        <div class="line-separator"></div>
+        
+        <div class="enroll-instructor-container"> 
+        	<span> Please put the email addresses of the instructors to enroll </span>
+        	<br>
+        	<textarea class="enroll-person" id="instructor-box" placeholder="Add Instructors"></textarea>
+        	<br>
+        	<button class="enroll-button" id="instructor-button">Add Instructors</button>
+            <br>
+            <span id="i-test"> </span>
+        </div>
+        
+        <header class="enroll-header"> Enroll Students </header>
+        
+        <div class="line-separator"></div>
+        
+        <div class="enroll-student-container"> 
+        	<span> Please put the email addresses of the students to enroll </span>
+        	<br>
+        	<textarea class="enroll-person" id="student-box" placeholder="Add Students"></textarea>
+     		<br>
+        	<button class="enroll-button" id="student-button">Add Students</button> 
+        	<span style="padding: 20px; font-weight: bold;"> or </span> 
+        	<input id="upload-file" type="file" onchange="getFilename(this);"/>
+        	<a id="upload-link" href=""> upload file </a>
+            <span id="filename" style="padding: 20px;"><i> </i></span>
+            <br>
+            <span id="s-test"> </span>
+        </div>
+    </div>
+</body>
+
+
+</html>
