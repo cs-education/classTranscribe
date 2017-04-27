@@ -8,6 +8,7 @@ router.get('/manageCourse', function (request, response) {
     'Content-Type': 'text/html'
   });
 
-  var html = Mustache.render(manageCoursePage);
-  response.end(html);
+  renderWithPartial(loginHomePage, request, response);
 });
+
+module.exports = router;

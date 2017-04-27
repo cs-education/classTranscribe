@@ -17,7 +17,7 @@ router.get('/dashboard', function (request, response) {
     'Content-Type': 'text/html'
   });
 
-  renderWithPartial(loginHomePage, request, response)
+  renderWithPartial(loginHomePage, request, response);
 });
 
 module.exports = router;
