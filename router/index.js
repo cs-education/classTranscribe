@@ -19,7 +19,7 @@ module.exports = function(app) {
     app.use(require('./routes/video'));
     app.use(require('./routes/viewer'));
     app.use(require('./routes/captions'));
-    app.use(require('./routs/manage'))
+    app.use(require('./routes/manage'))
 }
 
 authenticatedPartial = fs.readFileSync(mustachePath + 'authenticated.mustache').toString();
