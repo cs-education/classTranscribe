@@ -1,7 +1,7 @@
 =====BASIC SET-UP =====
 * Create .env file; the contents are described in ENVIRONMENT VARIABLES
 * Create a certificate and key. Place those in cert/cert/ (by default)
-    You will need to provide this information to the IdP.
+    You will need to provide this information to the Identity Provider (IdP; TestShib, iTrust, etc.).
 * Download Piwik
     To set up Piwik, visit the exposed port or url (the port will be defined as PROXY_PORT in .env; PROXY_PORT has to be https)
     Follow the instructions onscreen.
