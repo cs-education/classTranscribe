@@ -8,7 +8,7 @@ router.get('/manageCourse', function (request, response) {
     'Content-Type': 'text/html'
   });
 
-  renderWithPartial(loginHomePage, request, response);
+  renderWithPartial(manageCoursePage, request, response);
 });
 
 module.exports = router;
