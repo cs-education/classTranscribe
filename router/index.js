@@ -4,6 +4,7 @@ module.exports = function(app) {
 	There's probably a way to better enforce it, though.
 
 */
+    var router = express.Router();
 
     app.use(require('./routes/base'));
     app.use(require('./routes/admin'));
