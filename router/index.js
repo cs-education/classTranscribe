@@ -4,6 +4,7 @@ module.exports = function(app) {
 	There's probably a way to better enforce it, though.
 
 */
+    var router = express.Router();
 
     app.use(require('./routes/base'));
     app.use(require('./routes/admin'));
@@ -19,6 +20,7 @@ module.exports = function(app) {
     app.use(require('./routes/video'));
     app.use(require('./routes/viewer'));
     app.use(require('./routes/captions'));
+    app.use(require('./routes/manage'))
 }
 
 authenticatedPartial = fs.readFileSync(mustachePath + 'authenticated.mustache').toString();

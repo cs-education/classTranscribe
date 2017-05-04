@@ -10,4 +10,14 @@ router.get('/', function (request, response) {
   renderWithPartial(homeMustache, request, response);
 });
 
+
+var loginHomePage = fs.readFileSync(mustachePath + 'dashboard.mustache').toString();
+router.get('/dashboard', function (request, response) {
+  response.writeHead(200, {
+    'Content-Type': 'text/html'
+  });
+
+  renderWithPartial(loginHomePage, request, response);
+});
+
 module.exports = router;

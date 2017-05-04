@@ -9,7 +9,9 @@
 
     <link rel="stylesheet" type="text/css" href="stylesheets/resetHome.css" />
     <link rel="stylesheet" type="text/css" href="stylesheets/home.css" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/style-responsive.css" />      
+    <link rel="stylesheet" type="text/css" href="stylesheets/style-responsive.css" />    
+    <link rel="stylesheet" type="text/css" href="stylesheets/login.css" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/signup.css" />  
 
     <script>
          var piwikServer = "{{piwikServer}}";
@@ -30,6 +32,35 @@
   
     <div class="opacity"></div>
       <div class="content">
+
+        <!-- login and signup button -->
+        <div class="login-signup-container">
+          <button class="login-home" onclick="document.getElementById('id01').style.display='block'; $('html').toggleClass('noscroll')">Log In</button>
+          <div id="id01" class="login-modal">
+            <span onclick="document.getElementById('id01').style.display='none'; $('html').toggleClass()" class="close" title="Close  Modal">x</span>
+              <form class="login-modal-content animate" action="/action_page.php">
+                <div class="container">
+                  <input type="text" placeholder="Email" name="uname" required> <br>
+                  <input type="password" placeholder="Password" name="psw" required> <br>
+                  <button type="submit" class="login-submit" onclick="window.location='/dashboard';">Log In</button> <br>
+                  <span class="psw"><a href="/resetPassword">Forgot your password?</a></span>
+                </div>
+              </form>
+          </div>
+          <button class="signup-home" onclick="document.getElementById('id02').style.display='block'; $('html').toggleClass('noscroll')">Sign Up</button>
+          <div id="id02" class="signup-modal">
+              <span onclick="document.getElementById('id02').style.display='none'; $('html').toggleClass()" class="close" title="Close Modal">x</span>
+              <form class="modal-content animate" action="/action_page.php">
+                  <div class="container">
+                      <input type="text" placeholder="Full Name" name="name" required> <br>
+                      <input type="text" placeholder="Email" name="email" required> <br>
+                      <input type="password" placeholder="Password" name="psw" required> <br>
+                      <button type="submit" class="signup-submit" onclick="window.location='/dashboard';">Sign Up</button>
+                  </div>
+              </form>
+          </div>
+        </div>
+
         <div class="text">
         
           <h1>Welcome to<br/>
@@ -116,7 +147,7 @@
         <ul class="grid">
         
           <li>
-            <a href="/cs446-fa16">
+            <a href="/class/cs446-fa16">
                 <div class="text">
                   <p>CS 446</p>
                   <p class="description">Fall 2016</p>
@@ -125,7 +156,7 @@
           </li>
 
           <li>
-            <a href="/cs225-sp16">
+            <a href="/class/cs225-sp16">
                 <div class="text">
                   <p>CS 225</p>
                   <p class="description">Spring 2016</p>   
@@ -136,7 +167,7 @@
           <!-- 2 item courses-->
           
           <li>
-            <a href="/chem233-sp16">
+            <a href="/class/chem233-sp16">
                 <div class="text">
                   <p>CHEM 233</p>
                   <p class="description">Spring 2016</p>               
@@ -147,7 +178,7 @@
           <!-- 3 item courses-->
           
           <li>
-            <a href="/cs241">
+            <a href="/class/cs241">
                 <div class="text">
                   <p>CS 241</p>
                   <p class="description">Spring 2015</p>               
@@ -159,7 +190,7 @@
           <!-- 4 item courses-->
           
           <li>
-            <a href="/cs225">
+            <a href="/class/cs225">
                 <div class="text">
                   <p>CS 225</p>
                   <p class="description">Fall 2015</p>   
@@ -170,7 +201,7 @@
           <!-- 5 item courses-->
           
           <li>
-            <a href="/ece210">
+            <a href="/class/ece210">
                 <div class="text">
                   <p>ECE 210</p> 
                   <p class="description">Spring 2015</p>           
@@ -182,7 +213,7 @@
           <!-- 6 item courses-->
           
           <li>
-            <a href="/adv582">
+            <a href="/class/adv582">
                 <div class="text">
                   <p>ADV 582</p>
                   <p class="description">Fall 2015</p>   
@@ -193,7 +224,7 @@
          <!-- 7 item courses-->
           
           <!-- <li>
-            <a href="#">
+            <a href="/class/">
                 <div class="text">
                   <p>COURSE 7</p> 
                   <p class="description">Your text here...</p>           
@@ -204,7 +235,7 @@
           <!-- 8 item courses-->
           
           <!-- <li>
-            <a href="#">
+            <a href="/class/">
                 <div class="text">
                   <p>COURSE 8</p> 
                   <p class="description">Your text here...</p>           
@@ -215,7 +246,7 @@
           <!-- 9 item courses-->
           
           <!-- <li>
-            <a href="#">
+            <a href="/class/">
                 <div class="text">
                   <p>COURSE 9</p> 
                   <p class="description">Your text here...</p>           
