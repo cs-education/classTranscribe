@@ -39,6 +39,12 @@ rm csr.pem
 # This will create a very basic cert/key. A more secure method may be needed later on.
 # 365 is the number of days that the certificate will last. iTrust recommends 10 to 20 years.
 
+=Useful links=
+https://serverfault.com/questions/9708/what-is-a-pem-file-and-how-does-it-differ-from-other-openssl-generated-key-file
+https://www.novell.com/support/kb/doc.php?id=7013103
+https://www.digitalocean.com/community/tutorials/openssl-essentials-working-with-ssl-certificates-private-keys-and-csrs#view-certificates
+I believe samlstrategy wants a pem file, but I may be mistaken.
+
 To retrieve any of the user attributes, you can access them via request.user[<<paramer>>]. You may need to find out what that parameter is, as I believe they are nearly nonsense strings of numbers.
 
 ==Metadata==
