@@ -608,9 +608,9 @@ escape-string-regexp@^1.0.2, escape-string-regexp@^1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz#1b61c0562190a8dff6ae3bb2cf0200ca130b86d4"
 
-eslint-plugin-header@^1.1.0:
+"eslint-plugin-header@git://github.com/pranaygp/eslint-plugin-header.git#fixers":
   version "1.1.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-header/-/eslint-plugin-header-1.1.0.tgz#06ec2ddb8e1d51b07932a4c0557e3c49a993a1d4"
+  resolved "git://github.com/pranaygp/eslint-plugin-header.git#63ca4602877cac8def533e94d9f3366397d0c0c1"
 
 eslint-scope@^3.7.1:
   version "3.7.1"

@@ -1,6 +1,11 @@
-/*
-  Begin Global Variables
-*/
+/** Copyright 2015 Board of Trustees of University of Illinois
+ * All rights reserved.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+  // Begin Global Variables
 
   // Data structure that holds transcriptions. Looks something like the following
   // [ {start: "0:00", end: "0:10", text:"Conditional variables are cool"}, ... ]

@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "eslint": "^4.5.0",
-    "eslint-plugin-header": "^1.1.0"
+    "eslint-plugin-header": "git://github.com/pranaygp/eslint-plugin-header.git#fixers"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
