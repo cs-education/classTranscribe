@@ -5,8 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 var searchMustache = fs.readFileSync(mustachePath + 'search.mustache').toString();
-router.get('/:className',
-  ensureAuthenticated,
+// router.get('/:className',
+//   ensureAuthenticated,
+router.get('/class/:className',
   function (request, response) {
     var className = request.params.className.toLowerCase();
 

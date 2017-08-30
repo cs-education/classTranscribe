@@ -8,6 +8,7 @@ var redis = require("redis");
 var redisHost = process.env.REDIS_HOST;
 var redisPass = process.env.REDIS_PASS;
 
+if (!redisHost) redisHost = process.env.REDIS_PORT_6379_TCP_ADDR
 if (!redisPass) throw "Need a password in environmental variables!";
 
 /*

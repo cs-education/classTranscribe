@@ -1,7 +1,21 @@
+=====BASIC SET-UP =====
+* Create .env file; the contents are described in ENVIRONMENT VARIABLES
+* Create a certificate and key. Place those in cert/cert/ (by default)
+    You will need to provide this information to the Identity Provider (IdP; TestShib, iTrust, etc.).
+* Download Piwik
+    To set up Piwik, visit the exposed port or url (the port will be defined as PROXY_PORT in .env; PROXY_PORT has to be https)
+    Follow the instructions onscreen.
+
+Piwik and authentication will NOT work prior to this set-up.
+
 =====KNOWN ISSUES=====
 Logging in as user A, logging out, and without closing the browser, attempting to login as user B causes an error. We think it's because Shibboleth can't gracefully allow two logged in users. This may be fixed through speaking with iTrust.
 
 As noted in router/index.js, I believe that the order matters. This can probably be fixed.
+
+I put a bunch of functions into public/functions.js basically because I didn't know what they did or when they were called.
+
+You will need to obtain a CA (Certificate Authority) for https on the main site to function correctly.
 
 =====AUTHENTICATION WITH SHIBBOLETH=====
 Out of the box, authentication will not work.
@@ -24,6 +38,12 @@ rm csr.pem
 
 # This will create a very basic cert/key. A more secure method may be needed later on.
 # 365 is the number of days that the certificate will last. iTrust recommends 10 to 20 years.
+
+=Useful links=
+https://serverfault.com/questions/9708/what-is-a-pem-file-and-how-does-it-differ-from-other-openssl-generated-key-file
+https://www.novell.com/support/kb/doc.php?id=7013103
+https://www.digitalocean.com/community/tutorials/openssl-essentials-working-with-ssl-certificates-private-keys-and-csrs#view-certificates
+I believe samlstrategy wants a pem file, but I may be mistaken.
 
 To retrieve any of the user attributes, you can access them via request.user[<<paramer>>]. You may need to find out what that parameter is, as I believe they are nearly nonsense strings of numbers.
 
@@ -49,7 +69,7 @@ _paq.push(...) sends something to database for Piwik to track
 
 The server will need to be able to run php for the Piwik installation interface to appear.
 
-=====MISCELLANEOUS=====
+=====ENVIRONMENT VARIABLES=====
 .env contains the various opened ports
     PIWIK_PORT is where piwik is being hosted (through the Gruntfile)
     PROXY_PORT is the open SSL port to access Piwik
@@ -60,14 +80,13 @@ The server will need to be able to run php for the Piwik installation interface 
         If it's anything else, authentication should be requested.
 You will probably need to manually create the .env file.
 
+=====NAMING=====
 server.js serves the classtranscribe.com main website
 redirectServer.js: redirects http://<<classtranscribe>> to https://<<classtranscribe>>
 proxyServer: provides https for Piwik
 Gruntfile.js: runs the Piwik server
 
 Unforuntately, the names of the routes (/routes) and names of some javascripts (javascripts/controllers) have similar names. They are in different folders, but just be aware that this the case.
-
-I put a bunch of functions into public/functions.js basically because I didn't know what they did or when they were called.
 
 templates/home.mustache is the home page for classtranscribe
 
