@@ -1,5 +1,9 @@
-/* source: http://stackoverflow.com/questions/11406605/how-to-make-a-link-act-as-a-file-input */
-/* when "upload-link" is clicked, trigger the event for the upload button*/
+/** Copyright 2015 Board of Trustees of University of Illinois
+ * All rights reserved.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 $(function(){
 	$("#upload-link").on('click', function(event){
 		event.preventDefault();
