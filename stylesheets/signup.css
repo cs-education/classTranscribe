@@ -16,9 +16,9 @@ input[type=text], input[type=password] {
     width:100px;
     height:47px;
     margin:50px auto;
-    border:1px solid white;
+    border:1px solid black;
     text-transform:uppercase;
-    color:white;
+    color:black;
     cursor:pointer;
     font-size:15px;
     background:none;
@@ -43,6 +43,7 @@ input[type=text], input[type=password] {
 
 .container {
     text-align:center;
+    padding-top: 250px;
 }
 
 span.psw {

@@ -1,31 +1,13 @@
-router.get('/login',
-  passport.authenticate('saml', { failureRedirect: '/login/fail' }),
-  function (req, res) {
-    res.redirect('/');
-  }
-);
+var router = express.Router();
+var fs = require('fs');
 
-router.post('/login/callback',
-  passport.authenticate('saml', { failureRedirect: '/login/fail' }),
-  function (req, res) {
-    /*
-        User information in: req["user"]
-    
-     */
-    var redirectUrl = samlStrategy['Redirect'];
-    if (redirectUrl != null) {
-      res.redirect(redirectUrl);
-    }
-    else {
-      res.redirect('/');
-    }
-  }
-);
+var loginMustache = fs.readFileSync(mustachePath + 'login.mustache').toString();
 
-router.get('/login/fail',
-  function (req, res) {
-    res.status(401).send('Login failed');
-  }
-);
+router.get('/login', function (request, response) {
+    response.writeHead(200, {
+        'Content-Type': 'text.html'
+    });
+    renderWithPartial(loginMustache, request, response);
+});
 
 module.exports = router;

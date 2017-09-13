@@ -63,10 +63,6 @@ h1 span{
 }
 
 
-
-
-
-
 /* Start page */
 
 .start-page{
@@ -93,16 +89,42 @@ h1 span{
   height:580px;
 }
 
-.start-page .content .text{
-  position:absolute;
-  text-align:center;
-  margin:auto;
-  top:0; 
-  left:0; 
-  bottom:0; 
-  right:0;
-  width:500px;
-  height:320px;
+.start-page .content .login-signup-container {
+  float: right;
+}
+
+.start-page .content .login-signup-container .login-home {
+  width:100px;
+  height:47px;
+  margin:50px auto;
+  border:1px solid white;
+  text-transform:uppercase;
+  color:white;
+  cursor:pointer;
+  font-size:15px;
+  background:none;
+}
+
+.start-page .content .login-signup-container .login-home:hover {
+  color:black;
+  background:white;
+}
+
+.start-page .content .login-signup-container .signup-home {
+  width:100px;
+  height:47px;
+  margin:50px auto;
+  border:1px solid white;
+  text-transform:uppercase;
+  color:white;
+  cursor:pointer;
+  font-size:15px;
+  background:none;
+}
+
+.start-page .content .login-signup-container .signup-home:hover {
+  color:black;
+  background:white;
 }
 
 .start-page .content .text{
@@ -114,7 +136,7 @@ h1 span{
   bottom:0; 
   right:0;
   width:500px;
-  height:320px;
+  height:225px;
 }
 
 .start-page .content .text .read-more{
@@ -456,7 +478,7 @@ h1 span{
 
 
 
-/* courses */
+/* Courses */
 
 
 .courses{
@@ -518,7 +540,7 @@ h1 span{
   border:0;
 }
 
-/* courses grid */
+/* Courses grid */
 
 .grid{
   margin-top:70px;
