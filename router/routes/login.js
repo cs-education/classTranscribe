@@ -7,13 +7,6 @@
 var router = express.Router();
 var fs = require('fs');
 
-router.get('/login',
-  passport.authenticate('saml', { failureRedirect: '/login/fail' }),
-  function (req, res) {
-    res.redirect('/');
-  }
-);
-
 var loginMustache = fs.readFileSync(mustachePath + 'login.mustache').toString();
 
 router.get('/login', function (request, response) {
