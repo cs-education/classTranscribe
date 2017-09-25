@@ -16,10 +16,10 @@ passport.deserializeUser(function (user, done) {
 
 var CALLBACK_URL = "https://192.17.96.13:" + (process.env.CT_PORT || 7443) + "/login/callback"
 var ENTRY_POINT = "https://idp.testshib.org/idp/profile/SAML2/Redirect/SSO";
-var ISSUER = 'ClassTranscribe4927/Shibboleth';
+var ISSUER = 'ClassTranscribe4927/';
 
-//Currently, I don't think this logout url is being used.
-var LOGOUT_URL = "https://www.testshib.org/Shibboleth.sso/Logout";
+// Currently, I don't think this logout url is being used.
+// var LOGOUT_URL = "https://www.testshib.org/.sso/Logout";
 
 var KEY = fs.readFileSync('./cert/cert/key.pem');
 var CERT = fs.readFileSync('./cert/cert/cert.pem');
@@ -29,9 +29,9 @@ samlStrategy = new saml.Strategy({
     callbackUrl: CALLBACK_URL,
     // URL that goes from the Service Provider -> Identity Provider
     entryPoint: ENTRY_POINT,
-    // Usually specified as `/shibboleth` from site root
+    // Usually specified as `/` from site root
     issuer: ISSUER,
-    logoutUrl: LOGOUT_URL,
+    // logoutUrl: LOGOUT_URL,
     identifierFormat: null,
     decryptionPvk: KEY,   // SP private key
     privateCert: KEY, //SP certiticate

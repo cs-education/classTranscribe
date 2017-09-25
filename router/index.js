@@ -14,8 +14,10 @@ module.exports = function(app) {
 
     app.use(require('./routes/base'));
     app.use(require('./routes/admin'));
+    app.use(require('./routes/signup'));
     app.use(require('./routes/login'));
     app.use(require('./routes/logout'));
+    app.use(require('./routes/resetPassword'));
     app.use(require('./routes/first'));
     app.use(require('./routes/progress'));
     app.use(require('./routes/viewProgress'));
