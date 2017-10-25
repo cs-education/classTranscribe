@@ -12,22 +12,14 @@ input[type=text], input[type=password] {
     padding: 12px 20px;
 }
 
-h1 {
-    font-family: 'Source Sans Pro', sans-serif;
-    font-size:30px;
-    padding-bottom:30px;
-    margin:auto;
-    color:black
-}
-
-h2 {
+h1{
     font-family: 'Source Sans Pro', sans-serif;
     font-size:15px;
     margin:auto;
     color:black
 }
 
-.email-submit {
+.login-submit {
     width:183px;
     height:47px;
     margin:50px auto;
@@ -39,20 +31,7 @@ h2 {
     background:#00a5d7;
 }
 
-.reset-container {
+.activate-container {
     text-align:center;
     padding-top: 250px;
-}
-
-span.psw {
-    padding-top: 16px;
-    font-family: Sans-Serif;
-    font-style: normal;
-    font-size: 15px;
-}
-
-span.psw a{
-    text-decoration:none;
-    outline:none;
-    color:blue;
 }

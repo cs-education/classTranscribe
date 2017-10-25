@@ -6,13 +6,43 @@
  */
 var router = express.Router();
 var fs = require('fs');
+var client = require('./../../modules/redis');
 
 var signupMustache = fs.readFileSync(mustachePath + 'signup.mustache').toString();
-router.get('/signup', function (request, response) {
+
+router.get('/signup', function(request, response) {
     response.writeHead(200, {
         'Content-Type': 'text.html'
     });
     renderWithPartial(signupMustache, request, response);
+});
+
+router.post('/signup', function(request, response) {
+    var first_name = request.body.first_name;
+    var last_name = request.body.last_name;
+    var email = request.body.email;
+    var password = request.body.password;
+
+    // Check if email is already in the database
+    client.hgetall(email, function(err, obj) {
+        if (obj) {
+            console.log('Account already exists');
+            response.redirect('./login');
+        } else {
+            // Add new user to database
+            client.hmset(email, [
+                'first_name', first_name,
+                'last_name', last_name,
+                'password', password
+            ], function(err, results) {
+                if (err) console.log(err)
+                console.log(results);
+                response.redirect('./login');
+            });
+        }
+    });
+
+    // Send email to verify .edu account
 });
 
 module.exports = router;

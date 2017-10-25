@@ -11,14 +11,15 @@
 </head>
 
 <body>
-    
-    <div class="container">
-        <input type="text" placeholder="Email" name="uname" required> <br>
-        <input type="password" placeholder="Password" name="psw" required> <br>
-        <button type="submit" class="login-submit" onclick="window.location='/dashboard';">Log In</button> <br>
-        <span class="psw"><a href="/resetPassword">Forgot your password?</a></span>
-    </div>
-          
+    <form method="POST" action="/login">
+        <div class="container">
+            <h1>LOG IN</h1>
+            <input type="text" placeholder="Email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.edu" name="email" required> <br>
+            <input type="password" placeholder="Password" name="password" required> <br>
+            <button type="submit" class="login-submit">Submit</button> <br>
+            <span class="psw"><a href="/resetPassword">Forgot your password?</a></span>
+        </div>
+    </form>  
 </body>
 
 </html>

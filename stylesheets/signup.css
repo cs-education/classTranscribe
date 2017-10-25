@@ -12,6 +12,14 @@ input[type=text], input[type=password] {
     padding: 12px 20px;
 }
 
+h1 {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size:30px;
+    padding-bottom:30px;
+    margin:auto;
+    color:black
+}
+
 .signup-home {
     width:100px;
     height:47px;
@@ -43,7 +51,7 @@ input[type=text], input[type=password] {
 
 .container {
     text-align:center;
-    padding-top: 250px;
+    padding-top: 200px;
 }
 
 span.psw {
