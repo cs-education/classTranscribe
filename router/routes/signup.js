@@ -29,6 +29,8 @@ router.post('/signup', function(request, response) {
             console.log('Account already exists');
             response.redirect('./login');
         } else {
+            // TODO: authenticate password before putting into redis database
+
             // Add new user to database
             client.hmset(email, [
                 'first_name', first_name,
@@ -37,12 +39,11 @@ router.post('/signup', function(request, response) {
             ], function(err, results) {
                 if (err) console.log(err)
                 console.log(results);
+                // TODO: send email to verify .edu account
                 response.redirect('./login');
             });
         }
     });
-
-    // Send email to verify .edu account
 });
 
 module.exports = router;

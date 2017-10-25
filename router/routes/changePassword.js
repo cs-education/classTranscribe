@@ -27,6 +27,8 @@ router.post('/changePassword', function (request, response) {
         console.log('Passwords are not the same');
         response.redirect('/changePassword');
     } else {
+        // TODO: authenticate password before putting into redis database
+
         // Change user password in database
         client.hmset(email, [
             'password', password
