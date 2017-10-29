@@ -17,23 +17,25 @@ router.get('/login', function(request, response) {
     renderWithPartial(loginMustache, request, response);
 });
 
-router.post('/login', function(request, response) {
+router.post('/login/submit', function(request, response) {
     var email = request.body.email;
     var password = request.body.password;
 
     // Check if email is already in the database
-    client.hgetall(email, function(err, obj) {
+    client.hgetall("ClassTranscribe::Users::" + email, function(err, obj) {
         if (!obj) {
-            console.log('Account does not exist');
-            response.redirect('/login');
+            var error = "Account does not exist";
+            console.log(error);
+            response.send(error);
         } else {
             // Verify the inputted password is same equal to the password stored in the database
-            client.hget(email, "password", function(err, obj) {
+            client.hget("ClassTranscribe::Users::" + email, "password", function(err, obj) {
                 if (obj != password) {
-                    console.log('Invalid password');
-                    response.redirect('/login');
+                    var error = "Invalid password";
+                    console.log(error);
+                    response.send(error);
                 } else {
-                    response.redirect('./dashboard');
+                    response.redirect('../dashboard');
                 }
             });
         }   

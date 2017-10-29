@@ -17,22 +17,23 @@ router.get('/signup', function(request, response) {
     renderWithPartial(signupMustache, request, response);
 });
 
-router.post('/signup', function(request, response) {
+router.post('/signup/submit', function(request, response) {
     var first_name = request.body.first_name;
     var last_name = request.body.last_name;
     var email = request.body.email;
     var password = request.body.password;
 
     // Check if email is already in the database
-    client.hgetall(email, function(err, obj) {
+    client.hgetall("ClassTranscribe::Users::" + email, function(err, obj) {
         if (obj) {
-            console.log('Account already exists');
-            response.redirect('./login');
+            var error = "Account already exists";
+            console.log(error);
+            response.send(error);
         } else {
             // TODO: authenticate password before putting into redis database
 
             // Add new user to database
-            client.hmset(email, [
+            client.hmset("ClassTranscribe::Users::" + email, [
                 'first_name', first_name,
                 'last_name', last_name,
                 'password', password
@@ -40,7 +41,7 @@ router.post('/signup', function(request, response) {
                 if (err) console.log(err)
                 console.log(results);
                 // TODO: send email to verify .edu account
-                response.redirect('./login');
+                response.redirect('../login');
             });
         }
     });

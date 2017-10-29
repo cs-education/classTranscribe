@@ -17,16 +17,17 @@ router.get('/resetPassword', function (request, response) {
     renderWithPartial(resetPasswordMustache, request, response);
 });
 
-router.post('/resetPassword', function(request, response) {
+router.post('/resetPassword/submit', function(request, response) {
     var email = request.body.email;
 
     // Check if email is already in the database
-    client.hgetall(email, function(err, obj) {
+    client.hgetall("ClassTranscribe::Users::" + email, function(err, obj) {
         if (!obj) {
-            console.log('Account does not exist');
-            response.redirect('/resetPassword');
+            var error = "Account does not exist";
+            console.log(error);
+            response.send(error);
         } else {
-            response.redirect('./accountRecovery');
+            response.redirect('../accountRecovery');
             // TODO: send email with unique link to reset password
             // html template, changePassword.mustache
         }

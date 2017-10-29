@@ -20,6 +20,14 @@ h1 {
     color:black
 }
 
+h2 {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size:15px;
+    padding-bottom:30px;
+    margin:auto;
+    color:black
+}
+
 .signup-home {
     width:100px;
     height:47px;
@@ -35,7 +43,7 @@ h1 {
 .signup-submit {
     width:183px;
     height:47px;
-    margin:50px auto;
+    margin:50px 0px auto;
     border:1px solid white;
     text-transform:uppercase;
     color:white;
@@ -50,15 +58,16 @@ h1 {
 }
 
 .container {
+    /* top:50%; */
+    padding-top:150px;
     text-align:center;
-    padding-top: 200px;
 }
 
 span.psw {
-    padding-top: 16px;
-    font-family: Sans-Serif;
-    font-style: normal;
-    font-size: 15px;
+    padding-top:16px;
+    font-family:Sans-Serif;
+    font-style:normal;
+    font-size:15px;
 }
 
 .signup-modal {
