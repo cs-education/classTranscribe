@@ -26,14 +26,16 @@ router.post('/login/submit', function(request, response) {
         if (!obj) {
             var error = "Account does not exist";
             console.log(error);
-            response.send(error);
+            // response.send(error);
+            response.end();
         } else {
             // Verify the inputted password is same equal to the password stored in the database
             client.hget("ClassTranscribe::Users::" + email, "password", function(err, obj) {
                 if (obj != password) {
                     var error = "Invalid password";
                     console.log(error);
-                    response.send(error);
+                    // response.send(error);
+                    response.end();
                 } else {
                     response.redirect('../dashboard');
                 }

@@ -28,7 +28,8 @@ router.post('/signup/submit', function(request, response) {
         if (obj) {
             var error = "Account already exists";
             console.log(error);
-            response.send(error);
+            // response.send(error);
+            response.end();
         } else {
             // TODO: authenticate password before putting into redis database
 
