@@ -98,6 +98,10 @@ router.post('/uploadLectureVideos', function(request, response) {
   var upload = multer({ storage : storage}).any();
   //console.log(response.status(200).send(request.file));
   console.log("uploading...");
+  upload(request, response, function(err) {
+    console.log("still uploading...");
+    });
+    console.log("done");
     response.end();
 });
 

@@ -126,6 +126,7 @@ $(function() {
       init: function() {
         this.on('addedfile', function(file) {
             console.log("in addedfile");
+        });
       },
     };
 });
