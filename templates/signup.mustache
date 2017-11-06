@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+
+    <title>Signup</title>
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/signup.css" />
+    <script language="JavaScript" type="text/javascript" src="/javascripts/libraries/jquery-1.11.2.min.js"></script>
+    <script src="/javascripts/controllers/accountRegistration.js"></script>
+</head>
+
+<body>
+    <form id="signup-form" method="POST" action="/signup/submit">
+        <div class="container">
+            <h1>SIGN UP</h1>
+            <h2>Please enter your school's email address. <br>
+            The email should have an .edu domain.</h2>
+            <input type="text" placeholder="First Name" name="first_name" required> <br>
+            <input type="text" placeholder="Last Name" name="last_name" required> <br>
+            <input type="text" placeholder="Email" pattern="^\w+@[a-z]+?\.edu$" name="email" required> <br>
+            <input type="password" placeholder="Password" name="password" required> <br>
+            <button type="submit" class="signup-submit">Submit</button>
+        </div>
+    </form>
+</body>
+
+</html>

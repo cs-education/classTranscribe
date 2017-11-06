@@ -1,4 +1,4 @@
-@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,200,300,700,900&subset=latin,latin-ext);
+@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:400&subset=latin,latin-ext);
 
 label {
     font-family: 'Source Sans Pro', sans-serif;
@@ -12,13 +12,29 @@ input[type=text], input[type=password] {
     padding: 12px 20px;
 }
 
+h1 {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size:30px;
+    padding-bottom:30px;
+    margin:auto;
+    color:black
+}
+
+h2 {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size:15px;
+    padding-bottom:30px;
+    margin:auto;
+    color:black
+}
+
 .signup-home {
     width:100px;
     height:47px;
     margin:50px auto;
-    border:1px solid white;
+    border:1px solid black;
     text-transform:uppercase;
-    color:white;
+    color:black;
     cursor:pointer;
     font-size:15px;
     background:none;
@@ -27,7 +43,7 @@ input[type=text], input[type=password] {
 .signup-submit {
     width:183px;
     height:47px;
-    margin:50px auto;
+    margin:50px 0px auto;
     border:1px solid white;
     text-transform:uppercase;
     color:white;
@@ -42,14 +58,16 @@ input[type=text], input[type=password] {
 }
 
 .container {
+    /* top:50%; */
+    padding-top:150px;
     text-align:center;
 }
 
 span.psw {
-    padding-top: 16px;
-    font-family: Sans-Serif;
-    font-style: normal;
-    font-size: 15px;
+    padding-top:16px;
+    font-family:Sans-Serif;
+    font-style:normal;
+    font-size:15px;
 }
 
 .signup-modal {

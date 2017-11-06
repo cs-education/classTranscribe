@@ -7,18 +7,18 @@ existing lecture recordings and enable enhanced educational features including c
 ## How to run your own instance of ClassTranscribe
 
 1. Install Docker on your machine using one of the following OS specific tutorials: [linux](https://docs.docker.com/linux/step_one/), [mac](https://docs.docker.com/mac/step_one/) or [windows](https://docs.docker.com/windows/step_one/).
-2. Pull down the ClassTranscribe container by running `docker pull obmelvin/class_transcribe:v4`.
-3. If you are contributing to an existing ClassTranscribe instance, ask the admin for the redis and email credentials. Otherwise, you'll need run your own redis instance ([tutorial here](http://redis.io/topics/quickstart)) and set up a gmail account.
-4. Run the ClassTranscribe docker image locally by running `docker run -e "REDIS_PASS=<pass>" -e "REDIS_HOST=<host>" -e "MAILER_ID=<email>" -e "MAILER_PASS=<pass>" -p 80:80 -a stdout -a stdin -i -t obmelvin/class_transcribe:v4 /bin/bash`. 
-5. Once inside the docker shell update the repo `git pull origin master`. Then install node dependencies `npm install`.
-6. Launch the server as a background process within the container `nohup sudo -E node server.js >> public/server.log &`. (Control-C to get out of command, server will remain running).
-7. Launch the transcription aligner as a background process `nohup sudo -E node second_pass.js >> public/second_pass.log &`. (Control-C to get out of command, transcription aligner will remain running).
-8. To reconnect to the container, run `sudo docker exec -i -t <docker_ps_id> bash`. Use `docker ps` to find `<docker_ps_id>`.
+2. Pull down the ClassTranscribe container by running `docker pull pranaygp/classtranscribe`.
+3. If you are contributing to an existing ClassTranscribe instance, ask the admin for the redis and email credentials. 
+Otherwise, setup your own gmail account, and do one of the following for redis:
+    1. **Preferred** Setup a docker instance running redis ([we use this](https://hub.docker.com/_/redis/))
+    2. Run your own redis instance ([tutorial here](http://redis.io/topics/quickstart))
+4. Run the ClassTranscribe docker image locally by running `docker run -i -t -p 443:8000 -p 80:7000 --link REDIS_CONTAINER_NAME:redis -e "REDIS_PASS=<redis password>" -e "MAILER_ID=<email>" -e "MAILER_PASS=<pass>" pranaygp/classtranscribe /bin/bash -c "npm install; npm start"`. If you're not running a docker instance for redis, then remove `--link REDIS_CONTAINER_NAME:redis` and instead, have `-e "REDIS_HOST=<redis url>` to point to your redis db
 
-## How to run a docker build if you have the source code (DO THIS WHEN YOU CHANGE CODE AND CONFIRM IT WORKS - It effectively tests in our production environment)
+## How to run a docker build if you have the source code (DO THIS WHEN YOU CHANGE CODE AND CONFIRM IT WORKS - It effectively tests in a production like environment)
 
-1. docker build -t classtranscribe .
-2. sudo docker run -i -t -d -p 443:8000 -p 80:7000 -e "REDIS_PASS=REDACTED" -e "REDIS_HOST=REDACTED" -e "MAILER_ID=REDACTED" -e "MAILER_PASS=REDACTED" classtranscribe /bin/bash -c "npm install; npm start"
+1. `docker build -t classtranscribe .`
+2. `docker run -i -t -p 443:8000 -p 80:7000 --link REDIS_CONTAINER_NAME:redis -e "REDIS_PASS=<redis password>" -e "MAILER_ID=<email>" -e "MAILER_PASS=<pass>" classtranscribe /bin/bash -c "npm install; npm start"`
+> Please prefer using a docker container running redis rather than hitting a production database when testing
 
 ## How to launch a class
 
