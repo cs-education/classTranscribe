@@ -11,6 +11,7 @@ path = require('path');
 mime = require('mime');
 passport = require('passport');
 router = express.Router();
+multer = require('multer');
 
 client = require('./modules/redis');
 mailer = require('./modules/mailer');

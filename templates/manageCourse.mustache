@@ -11,6 +11,10 @@
     <link rel="stylesheet" type="text/css" href="stylesheets/manageCourse.css" />
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
     <script src="/javascripts/controllers/manageCourse.js"></script>
+    <script type="text/javascript" src="https://rawgit.com/enyo/dropzone/master/dist/dropzone.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://rawgit.com/enyo/dropzone/master/dist/dropzone.css" />
+    <script type="text/javascript" src="https://rawgit.com/rnicholus/frame-grab.js/master/client/frame-grab.js"></script>
+    <script type="text/javascript" src="https://rawgit.com/rnicholus/frame-grab.js/master/client/lib/rsvp.js"></script>
 </head>
 
 <body>
@@ -19,8 +23,6 @@
 	    <br> 
         <div class="line-separator-header"></div>
         <br>
-        <input class="search" type="text" name="search" placeholder="Search for a course" onkeyup="filter()"">
-        <div class="search-results">
         </div>
     </div>
 
@@ -30,8 +32,7 @@
         <div class="line-separator"></div>
         
         <div class="enroll-instructor-container"> 
-        	<span> Please put the email addresses of the instructors to enroll </span>
-        	<br>
+            <br>
         	<textarea class="enroll-person" id="instructor-box" placeholder="Add Instructors"></textarea>
         	<br>
         	<button class="enroll-button" id="instructor-button">Add Instructors</button>
@@ -44,17 +45,39 @@
         <div class="line-separator"></div>
         
         <div class="enroll-student-container"> 
-        	<span> Please put the email addresses of the students to enroll </span>
-        	<br>
+            <br>
         	<textarea class="enroll-person" id="student-box" placeholder="Add Students"></textarea>
      		<br>
-        	<button class="enroll-button" id="student-button">Add Students</button> 
-        	<span style="padding: 20px; font-weight: bold;"> or </span> 
-        	<input id="upload-file" type="file" onchange="getFilename(this);"/>
-        	<a id="upload-link" href=""> upload file </a>
-            <span id="filename" style="padding: 20px;"><i> </i></span>
+            <button class="enroll-button" id="student-button">Add Students</button> 
             <br>
+            <span style="padding: 20px; font-weight: bold;"> or </span> 
+            <br>
+            <form id="upload-students-files"
+                enctype="multipart/form-data"
+                action="/addStudentsFile"
+                method="POST"
+                class="dropzone">
+            </form>
             <span id="s-test"> </span>
+        </div>
+
+        <header class="upload-video-header"> Upload Lecture Video </header>
+        
+        <div class="line-separator"></div>
+
+        <div class="upload-video-container"> 
+            <br>
+            <form id="upload-lecture-videos"
+                enctype="multipart/form-data"
+                action="/uploadLectureVideos"
+                method="POST"
+                class="dropzone">
+            </form>
+            <span id="ul-test"> </span>
+        </div>
+
+        <div class="watch-videos-container"> 
+            <button type="watch-videos" class="watch-videos" onclick="window.location='/watchLectureVideos';"/>Watch Lecture Videos</button>
         </div>
     </div>
 </body>

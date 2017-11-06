@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 for file in *m4v; do mv "$file" `echo $file | tr ' ' '_'`  ; done
 for file in *m4v; do mv "$file" `echo $file | tr -d '('`  ; done
 for file in *m4v; do mv "$file" `echo $file | tr -d ')'`  ; done

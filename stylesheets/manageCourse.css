@@ -31,7 +31,7 @@
 	line-height: 40px;
 }
 
-.enroll-header {
+.enroll-header, .upload-video-header {
 	padding-left: 5px;
 	padding-top: 15px;
 	font-size: 20px;
@@ -42,18 +42,18 @@
     background-color: #135F9C;
 }
 
-.enroll-instructor-container, .enroll-student-container {
+.enroll-instructor-container, .enroll-student-container, .upload-video-container {
 	padding-left: 10px;
 	font-size: 15px;
 }
 
-.enroll-person {
+.enroll-person, .upload {
 	padding: 5px;
 	width: 450px;
 	height: 75px;
 }
 
-.enroll-button {
+.enroll-button, .upload-button {
 	padding: 5px;
 	font-size: 15px;
 	border: none;
@@ -62,6 +62,6 @@
 	color: #e4e7ea;
 }
 
-#upload-file {
+#upload-file, #upload-video {
 	display: none;
 }
