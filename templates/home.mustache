@@ -9,9 +9,7 @@
 
     <link rel="stylesheet" type="text/css" href="stylesheets/resetHome.css" />
     <link rel="stylesheet" type="text/css" href="stylesheets/home.css" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/style-responsive.css" />    
-    <link rel="stylesheet" type="text/css" href="stylesheets/login.css" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/signup.css" />  
+    <link rel="stylesheet" type="text/css" href="stylesheets/style-responsive.css" />
 
     <script>
          var piwikServer = "{{piwikServer}}";
@@ -20,8 +18,8 @@
 </head>
 
 <body>
-{{> loginPartial}}
-{{> adminPartial}}
+<!-- {{> loginPartial}}
+{{> adminPartial}} -->
 
 
 <div class="container">
@@ -35,30 +33,8 @@
 
         <!-- login and signup button -->
         <div class="login-signup-container">
-          <button class="login-home" onclick="document.getElementById('id01').style.display='block'; $('html').toggleClass('noscroll')">Log In</button>
-          <div id="id01" class="login-modal">
-            <span onclick="document.getElementById('id01').style.display='none'; $('html').toggleClass()" class="close" title="Close  Modal">x</span>
-              <form class="login-modal-content animate" action="/action_page.php">
-                <div class="container">
-                  <input type="text" placeholder="Email" name="uname" required> <br>
-                  <input type="password" placeholder="Password" name="psw" required> <br>
-                  <button type="submit" class="login-submit" onclick="window.location='/dashboard';">Log In</button> <br>
-                  <span class="psw"><a href="/resetPassword">Forgot your password?</a></span>
-                </div>
-              </form>
-          </div>
-          <button class="signup-home" onclick="document.getElementById('id02').style.display='block'; $('html').toggleClass('noscroll')">Sign Up</button>
-          <div id="id02" class="signup-modal">
-              <span onclick="document.getElementById('id02').style.display='none'; $('html').toggleClass()" class="close" title="Close Modal">x</span>
-              <form class="modal-content animate" action="/action_page.php">
-                  <div class="container">
-                      <input type="text" placeholder="Full Name" name="name" required> <br>
-                      <input type="text" placeholder="Email" name="email" required> <br>
-                      <input type="password" placeholder="Password" name="psw" required> <br>
-                      <button type="submit" class="signup-submit" onclick="window.location='/dashboard';">Sign Up</button>
-                  </div>
-              </form>
-          </div>
+          <button class="login-home" onclick="window.location='/login'">Log In</button>
+          <button class="signup-home" onclick="window.location='/signup'">Sign Up</button>
         </div>
 
         <div class="text">
@@ -230,7 +206,7 @@
                   <p class="description">Your text here...</p>           
               </div>
             </a>
-          </li>     -->
+          </li> -->
           
           <!-- 8 item courses-->
           
@@ -337,6 +313,3 @@
 </body>
 
 </html>
-
-
-

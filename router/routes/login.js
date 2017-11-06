@@ -1,31 +1,47 @@
-router.get('/login',
-  passport.authenticate('saml', { failureRedirect: '/login/fail' }),
-  function (req, res) {
-    res.redirect('/');
-  }
-);
+/** Copyright 2015 Board of Trustees of University of Illinois
+ * All rights reserved.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+var router = express.Router();
+var fs = require('fs');
+var client = require('./../../modules/redis');
 
-router.post('/login/callback',
-  passport.authenticate('saml', { failureRedirect: '/login/fail' }),
-  function (req, res) {
-    /*
-        User information in: req["user"]
-    
-     */
-    var redirectUrl = samlStrategy['Redirect'];
-    if (redirectUrl != null) {
-      res.redirect(redirectUrl);
-    }
-    else {
-      res.redirect('/');
-    }
-  }
-);
+var loginMustache = fs.readFileSync(mustachePath + 'login.mustache').toString();
 
-router.get('/login/fail',
-  function (req, res) {
-    res.status(401).send('Login failed');
-  }
-);
+router.get('/login', function(request, response) {
+    response.writeHead(200, {
+        'Content-Type': 'text.html'
+    });
+    renderWithPartial(loginMustache, request, response);
+});
+
+router.post('/login/submit', function(request, response) {
+    var email = request.body.email;
+    var password = request.body.password;
+
+    // Check if email is already in the database
+    client.hgetall("ClassTranscribe::Users::" + email, function(err, obj) {
+        if (!obj) {
+            var error = "Account does not exist";
+            console.log(error);
+            // response.send(error);
+            response.end();
+        } else {
+            // Verify the inputted password is same equal to the password stored in the database
+            client.hget("ClassTranscribe::Users::" + email, "password", function(err, obj) {
+                if (obj != password) {
+                    var error = "Invalid password";
+                    console.log(error);
+                    // response.send(error);
+                    response.end();
+                } else {
+                    response.redirect('../dashboard');
+                }
+            });
+        }   
+    });
+});
 
 module.exports = router;

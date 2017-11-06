@@ -4,6 +4,34 @@ body {
     background:#b3e6ff;
 }
 
+.content{
+    position:relative;
+    width:900px;
+    margin:0 auto;
+    height:580px;
+  }
+
+.content .logout-container {
+    float: right;
+}
+  
+.content .logout-container .logout-home {
+    width:100px;
+    height:47px;
+    margin:50px auto;
+    border:1px solid white;
+    text-transform:uppercase;
+    color:white;
+    cursor:pointer;
+    font-size:15px;
+    background:#66ccff;
+}
+  
+.content .logout-container .logout-home:hover {
+    color:black;
+    background:white;
+}
+
 .dashboard-container {
     position:absolute;
     top:50%;
@@ -12,9 +40,9 @@ body {
     margin-left:-155px;
 }
 
-h1{
+h1 {
     font-family: 'Source Sans Pro', sans-serif;
-    font-size:56px;
+    font-size:48px;
     height:74px;
     margin:auto;
     color:white;
@@ -29,7 +57,7 @@ h1{
     margin-top:-24px;
     margin-left:-155px;
 }
-
+  
 .dashboard-container .manage {
     font-family: 'Source Sans Pro', sans-serif;
     font-size:15px;

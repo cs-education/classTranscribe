@@ -1,4 +1,4 @@
-@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,200,300,700,900&subset=latin,latin-ext);
+@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:400&subset=latin,latin-ext);
 
 label {
     font-family: 'Source Sans Pro', sans-serif;
@@ -12,13 +12,21 @@ input[type=text], input[type=password] {
     padding: 12px 20px;
 }
 
+h1 {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size:30px;
+    padding-bottom:30px;
+    margin:auto;
+    color:black
+}
+
 .login-home {
     width:100px;
     height:47px;
     margin:50px auto;
-    border:1px solid white;
+    border:1px solid black;
     text-transform:uppercase;
-    color:white;
+    color:black;
     cursor:pointer;
     font-size:15px;
     background:none;
@@ -43,6 +51,7 @@ input[type=text], input[type=password] {
 
 .container {
     text-align:center;
+    padding-top: 225px;
 }
 
 span.psw {
@@ -71,7 +80,6 @@ span.psw a{
     overflow:hidden;
     background-color:rgb(255,255,255);
     padding-top:60px;
-
 }
 
 .login-modal-content {

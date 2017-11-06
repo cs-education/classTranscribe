@@ -1,3 +1,9 @@
+/** Copyright 2015 Board of Trustees of University of Illinois
+ * All rights reserved.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 module.exports = function(app) {
 /*
 	Pretty sure that order matters here.
@@ -8,8 +14,13 @@ module.exports = function(app) {
 
     app.use(require('./routes/base'));
     app.use(require('./routes/admin'));
+    app.use(require('./routes/signup'));
     app.use(require('./routes/login'));
     app.use(require('./routes/logout'));
+    app.use(require('./routes/resetPassword'));
+    app.use(require('./routes/changePassword'));
+    app.use(require('./routes/accountRecovery'));
+    app.use(require('./routes/activated'));
     app.use(require('./routes/first'));
     app.use(require('./routes/progress'));
     app.use(require('./routes/viewProgress'));
