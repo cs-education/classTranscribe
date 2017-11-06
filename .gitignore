@@ -13,3 +13,4 @@ node_modules
 /piwik
 /cert
 public/server.log
+/videos
