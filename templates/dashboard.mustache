@@ -12,7 +12,9 @@
 	<div class="content">
 		<!-- logout button -->
 		<div class="logout-container">
-			<button class="logout-home" onclick="window.location='/'">Log Out</button>
+            <form action = "/logout" method = "post">
+                <button class="logout-home" onclick="document.forms[0].submit()">Log Out</button>
+            </form>
 		</div>
 	</div>
 	<div class="dashboard-container">

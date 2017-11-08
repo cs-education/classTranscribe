@@ -1,12 +1,16 @@
 
 var router = express.Router();
 var shelper = require("../../utility_scripts/searchContent.js");
+var currentcontent = []
+
+
 //===========================my section=========================================
 
 //=======================Sample data for testing=====================================
 function getClassUid(university, term, number, section) {
     if(!university|| !term|| !number|| !section){
         console.log("potential problem in uid, empty/null value detected");
+        if (!term) term = 'All';
     }
     return university+"-"+term+"-"+number+"-"+section;
 }
@@ -87,6 +91,7 @@ Object.keys(courseList).forEach( function ( t) {
         client.hset("ClassTranscribe::Course::"+classid, "ClassDesc", course[4]);
         client.hset("ClassTranscribe::Course::"+classid, "University", course[5]);
         client.hset("ClassTranscribe::Course::"+classid, "Instructor", course[6]);
+        client.hset("ClassTranscribe::Course::"+classid, "Term", t);
     });
 });
 
@@ -100,7 +105,7 @@ var searchMustache = fs.readFileSync(mustachePath + 'search.mustache').toString(
 //----------------Management Page Section-------------------------------------------
 var allterms = [];
 var managementMustache = fs.readFileSync(mustachePath + 'management.mustache').toString();
-router.get('/manage-classes', function (request, response) {
+router.get('/manage-classes/', function (request, response) {
     response.writeHead(200, {
         'Content-Type': 'text/html'
     });
@@ -116,26 +121,94 @@ router.get('/manage-classes', function (request, response) {
 
         // add create-a-class section if user is authenticated
         // TODO: use a more appropriate authentication method
-        //var form = '';
-        if (request.isUnauthenticated()) {
-          form = "<section> <div class=\"row\"> <h3>Create a new course</h3> </div> <form id=\"creation-form\" method=\"POST\"> <div class=\"row\"> <div class=\"col-md-3\"> <label>Subject</label> <input type=\"text\" class=\"form-control\" id=\"fminput1\" placeholder=\"Example input\" value=\"CS\" name=\"Subject\"> <label>Course Number</label> <input type=\"text\" class=\"form-control\" id=\"fminput2\" placeholder=\"Another input\" name=\"ClassNumber\"> </div> <div class=\"col-md-3\"> <label>Class Name</label> <input type=\"text\" class=\"form-control\" id=\"fminput3\" placeholder=\"Example input\" name=\"ClassName\"> <label>Instructor</label> <input type=\"text\" class=\"form-control\" id=\"fminput4\" placeholder=\"Example input\" name=\"Instructor\"> </div> <div class=\"col-md-2\"> <label>Section Number</label> <input type=\"text\" class=\"form-control\" id=\"fminput5\" placeholder=\"Example input\" name=\"SectionNumber\"> <label>University</label> <input type=\"text\" class=\"form-control\" id=\"fminput6\" placeholder=\"Example input\" name=\"University\"> </div> </div> <div class=\"row\"> <div class=\"col-md-8\"> <label>Course Description</label> <input type=\"text\" class=\"form-control\" id=\"fminput7\" placeholder=\"Example input\" name=\"ClassDescription\"> </div> </div> <div class=\"row\"> <div class=\"col-md-3\"> <button type=\"submit\" class=\"btn btn-primary\" id=\"subbtn\">Create Class</button> </div> </div> </form> </section>";
+        var form = '';
+        if (request.isAuthenticated()) {
+            form = "<section> <div class=\"row\"> " +
+                "<h3>Create a new course</h3> </div> " +
+                "<form id=\"creation-form\" method=\"POST\"> " +
+                "<div class=\"row\"> " +
+                "<div class=\"col-md-3\"> " +
+                "<label>Subject</label> <input type=\"text\" class=\"form-control\" id=\"fminput1\" placeholder=\"Example input\" value=\"CS\" name=\"Subject\"> " +
+                "<label>Course Number</label> <input type=\"text\" class=\"form-control\" id=\"fminput2\" placeholder=\"Another input\" name=\"ClassNumber\"> </div> " +
+                "<div class=\"col-md-3\"> " +
+                "<label>Class Name</label> <input type=\"text\" class=\"form-control\" id=\"fminput3\" placeholder=\"Example input\" name=\"ClassName\"> " +
+                "<label>Instructor</label> <input type=\"text\" class=\"form-control\" id=\"fminput4\" placeholder=\"Example input\" name=\"Instructor\"> </div> " +
+                "<div class=\"col-md-2\"> " +
+                "<label>Section Number</label> <input type=\"text\" class=\"form-control\" id=\"fminput5\" placeholder=\"Example input\" name=\"SectionNumber\"> " +
+                "<label>University</label> <input type=\"text\" class=\"form-control\" id=\"fminput6\" placeholder=\"Example input\" name=\"University\"> </div> </div> " +
+
+                "<div class=\"row\"> <div class=\"col-md-8\"> " +
+                "<label>Course Description</label> <input type=\"text\" class=\"form-control\" id=\"fminput7\" placeholder=\"Example input\" name=\"ClassDescription\"> </div> </div> " +
+                "<div class=\"row\"> <div class=\"col-md-3\"> <button type=\"submit\" class=\"btn btn-primary\" id=\"subbtn\">Create Class</button> </div> </div> </form> </section>";
         }
+        var thtml= "<tr id=\"#header\">\n" +
+            '<th hidden="yes">Term</th>'+
+            "                    <th>University</th>\n" +
+            "                    <th>Subject</th>\n" +
+            "                    <th>Course Number</th>\n" +
+            "                    <th>Section Number</th>\n" +
+            "                    <th>Course Name</th>\n" +
+            "                    <th>Course Instructor</th>\n" +
+            "                    <th>Course Descruption</th>\n" +
+            "                    <th>Action</th>\n" +
+            "                </tr>";
+        client.smembers("ClassTranscribe::CourseList", function (err, reply) {
+            var commands = [];
+            reply.forEach(function (c){
+                // query every class to get info for display
+                commands.push(["hgetall", c]);
+            });
+            client.multi(commands).exec(function (err, replies) {
+                currentcontent=replies;
+                replies.forEach(function(c){
+                    thtml += '<tr>';
+                    thtml += '<td hidden="yes">' + c["Term"] + '</td>';
+                    thtml += '<td>' + c["University"] + '</td>';
+                    thtml += '<td>' + c["Subject"] + '</td>';
+                    thtml += '<td>' + c["ClassNumber"] + '</td>';;
+                    thtml += '<td>' + c["SectionNumber"] + '</td>';
+                    thtml += '<td>' + c["ClassName"] + '</td>';
+                    thtml += '<td>' + c["Instructor"] + '</td>';
+                    thtml += '<td class="tddesc">' + c["ClassDesc"] + '</td>';
+                    thtml += '<td class="col-md-2">' + '<a class="actionbtn">' +
+                        '          <span class="glyphicon glyphicon-plus"></span> Enroll\n' +
+                        '        </a>' +
+                        '<a class="actionbtn">' +
+                        '          <span class="glyphicon glyphicon-minus"></span> Drop\n' +
+                        '        </a>' +
+                        '<br>'+
+                        '<a class="actionbtn">' +
+                        '          <span class="glyphicon glyphicon-pencil"></span> Modify\n' +
+                        '        </a>' +
+                        '<a class="actionbtn rmbtn">' +
+                        '          <span class="glyphicon glyphicon-remove"></span> Remove\n' +
+                        '        </a>' +
+                        '</td>';
+
+                    thtml += '</tr>';
+                });
+                filterdata = generateFilters(replies);
+
+                var view = {
+                    termlist: allterms,
+                    className: "cs225-sp16",
+                    exampleTerm: exampleTerms["cs225-sp16"],
+                    createform:form,
+                    tabledata:thtml,
+                    termfilterdata:filterdata[0],
+                    subjectfilterdata:filterdata[1]
+                };
+                var html = Mustache.render(managementMustache, view);
+                console.log("is authenticated = "+request.isAuthenticated());
 
 
 
+                response.end(html);
 
-        var view = {
-            termlist: allterms,
-            className: "cs225-sp16",
-            exampleTerm: exampleTerms["cs225-sp16"],
-            createform:form
-        };
-        var html = Mustache.render(managementMustache, view);
-        console.log("is authenticated = "+request.isAuthenticated());
+            });
+        });
 
 
-
-        response.end(html);
     });
 });
 
@@ -143,7 +216,7 @@ router.get('/manage-classes', function (request, response) {
 // Add new class
 router.post('/manage-classes/newclass', function (request, response) {
     console.log("new class to be added, start processing...");
-    var classid = getClassUid(university=request.body["University"], term=request.body["Term"], number=request.body["University"], section=request.body["SectionNumber"]);
+    var classid = getClassUid(university=request.body["University"], term=request.body["Term"], number=request.body["ClassNumber"], section=request.body["SectionNumber"]);
     var term = "ClassTranscribe::Terms::"+request.body.Term;
     var course = request.body;
     // add class
@@ -160,20 +233,57 @@ router.post('/manage-classes/newclass', function (request, response) {
     client.hset("ClassTranscribe::Course::"+classid, "ClassDesc", course["ClassDescription"]);
     client.hset("ClassTranscribe::Course::"+classid, "University", course["University"]);
     client.hset("ClassTranscribe::Course::"+classid, "Instructor", course["Instructor"]);
+    client.hset("ClassTranscribe::Course::"+classid, "Term", course["Term"]);
     response.end();
 //    console.log(request.body);
 });
 
 
 // handles search
-router.get('/manage-classes/search/', function (request, response) {
+router.get('/manage-classes/search', function (request, response) {
     console.log("start processing search...");
-    var searchterm = request.query.Search;
+    response.writeHead(200, {
+        'Content-Type': 'text/html'
+    });
+    // get all terms data from the database
+    client.smembers("ClassTranscribe::Terms", function(err, reply) {
+        // reply is null when the key is missing
+        allterms=[];
+        reply.forEach(function (e) {
+            allterms.push(e.split("::")[2]);
+        })
+        var form = '';
+        if (request.isAuthenticated()) {
+            form = "<section> <div class=\"row\"> " +
+                "<h3>Create a new course</h3> </div> " +
+                "<form id=\"creation-form\" method=\"POST\"> " +
+                "<div class=\"row\"> " +
+                "<div class=\"col-md-3\"> " +
+                "<label>Subject</label> <input type=\"text\" class=\"form-control\" id=\"fminput1\" placeholder=\"Example input\" value=\"CS\" name=\"Subject\"> " +
+                "<label>Course Number</label> <input type=\"text\" class=\"form-control\" id=\"fminput2\" placeholder=\"Another input\" name=\"ClassNumber\"> </div> " +
+                "<div class=\"col-md-3\"> " +
+                "<label>Class Name</label> <input type=\"text\" class=\"form-control\" id=\"fminput3\" placeholder=\"Example input\" name=\"ClassName\"> " +
+                "<label>Instructor</label> <input type=\"text\" class=\"form-control\" id=\"fminput4\" placeholder=\"Example input\" name=\"Instructor\"> </div> " +
+                "<div class=\"col-md-2\"> " +
+                "<label>Section Number</label> <input type=\"text\" class=\"form-control\" id=\"fminput5\" placeholder=\"Example input\" name=\"SectionNumber\"> " +
+                "<label>University</label> <input type=\"text\" class=\"form-control\" id=\"fminput6\" placeholder=\"Example input\" name=\"University\"> </div> </div> " +
+
+                "<div class=\"row\"> <div class=\"col-md-8\"> " +
+                "<label>Course Description</label> <input type=\"text\" class=\"form-control\" id=\"fminput7\" placeholder=\"Example input\" name=\"ClassDescription\"> </div> </div> " +
+                "<div class=\"row\"> <div class=\"col-md-3\"> <button type=\"submit\" class=\"btn btn-primary\" id=\"subbtn\">Create Class</button> </div> </div> </form> </section>";
+        }
+
+    //========================start of search==========================================
+
+
+
+    var searchterm = request.query.q;
     console.log("Searching: "+searchterm);
 
-    var search = new shelper.SearchHelper(request.query.Search);
+    var search = new shelper.SearchHelper(searchterm);
     search.search(function (line) {
-        var html= "<tr id=\"#header\">\n" +
+        var hhtml= "<tr id=\"#header\">\n" +
+                                '<th hidden="yes">Term</th>'+
             "                    <th>University</th>\n" +
             "                    <th>Subject</th>\n" +
             "                    <th>Course Number</th>\n" +
@@ -194,8 +304,11 @@ router.get('/manage-classes/search/', function (request, response) {
             var olen =replies.length;
             replies = replies.filter(function(n){ return n != undefined });
             if(replies.length!=olen){console.log("nil in search replies detected")}
+            currentcontent = replies;
+
             replies.forEach(function(e){
-               html+='<tr>\n' +
+               hhtml+='<tr>\n' +
+                   '<td hidden="yes">' + e["Term"] + '</td>'+
                    '<td>' + e["University"] + '</td>'+
                    '<td>' + e["Subject"] + '</td>'+
                    '<td>' + e["ClassNumber"] + '</td>'+
@@ -203,24 +316,47 @@ router.get('/manage-classes/search/', function (request, response) {
                    '<td>' + e["ClassName"] + '</td>' +
                    '<td>' + e["Instructor"] + '</td>'+
                    '<td>' + e["ClassDesc"] + '</td>'+
-                   '<td>' + '<button type="button" class="btn btn-default btn-sm">\n' +
+                   '<td class="col-md-2">' + '<a class="actionbtn">' +
                    '          <span class="glyphicon glyphicon-plus"></span> Enroll\n' +
-                   '        </button>' +
-                   '<button type="button" class="btn btn-default btn-sm">\n' +
+                   '        </a>' +
+                   '<a class="actionbtn">' +
                    '          <span class="glyphicon glyphicon-minus"></span> Drop\n' +
-                   '        </button>' +
-                   '<button type="button" class="btn btn-default btn-sm">\n' +
-                   '          <span class="glyphicon glyphicon-remove"></span> Remove \n' +
-                   '        </button>' + '</td>' +
+                   '        </a>' +
+                   '<br>'+
+                   '<a class="actionbtn">' +
+                   '          <span class="glyphicon glyphicon-pencil"></span> Modify\n' +
+                   '        </a>' +
+                   '<a class="actionbtn rmbtn">' +
+                   '          <span class="glyphicon glyphicon-remove"></span> Remove\n' +
+                   '        </a>' +
+                   '</td>' +
                    '</tr>'
             });
 
             if (replies.length==0){
-                html = 'No result found for "'+searchterm+'"';
+                hhtml = 'No result found for "'+searchterm+'"';
             }
-            response.send(html);
-            response.end();
+            //response.send(html);
+            //response.end();
+            filterdata = generateFilters(replies);
+
+            var view = {
+                termlist: allterms,
+                createform:form,
+                tabledata:hhtml,
+                termfilterdata:filterdata[0],
+                subjectfilterdata:filterdata[1]
+            };
+            var html = Mustache.render(managementMustache, view);
+            console.log("is authenticated = "+request.isAuthenticated());
+
+            response.end(html);
         });
+
+
+
+
+    });
     });
 });
 
@@ -232,7 +368,7 @@ router.post('/manage-classes/deleteclass/', function (request, response) {
     var params = request.body.classinfo;
     console.log(params);
     params = params.split(',,');
-    var delclass = getClassUid(params[0],  request.body.term, params[2], params[3])
+    var delclass = getClassUid(params[1],  params[0], params[3], params[4])
     console.log(delclass);
     var commands=[
         ['del','ClassTranscribe::Course::'+delclass],
@@ -279,6 +415,108 @@ router.get('/manage-classes/getterminfo', function (request, response) {
         });
     });
 });
+
+
+
+
+
+
+router.post('/manage-classes/applyfilter', function (request, response) {
+    console.log("start filtering process...");
+    var termf = request.body.termfilter.split(';;');
+    var subjectf = request.body.subjectfilter.split(';;');
+
+    print(subjectf)
+    print(termf)
+
+
+    rethtml= ''
+    rethtml+="<tr id=\"#header\">\n" +
+        '<th hidden="yes">Term</th>'+
+        "                    <th>University</th>\n" +
+        "                    <th>Subject</th>\n" +
+        "                    <th>Course Number</th>\n" +
+        "                    <th>Section Number</th>\n" +
+        "                    <th>Course Name</th>\n" +
+        "                    <th>Course Instructor</th>\n" +
+        "                    <th>Course Descruption</th>\n" +
+        "                    <th>Action</th>\n" +
+        "                </tr>";
+    currentcontent.forEach(function(e){
+        if( subjectf.indexOf(e['Subject'])>=0 && termf.indexOf(e['Term'])>=0) {
+            rethtml += '<tr>\n' +
+                '<td hidden="yes">' + e["Term"] + '</td>' +
+                '<td>' + e["University"] + '</td>' +
+                '<td>' + e["Subject"] + '</td>' +
+                '<td>' + e["ClassNumber"] + '</td>' +
+                '<td>' + e["SectionNumber"] + '</td>' +
+                '<td>' + e["ClassName"] + '</td>' +
+                '<td>' + e["Instructor"] + '</td>' +
+                '<td>' + e["ClassDesc"] + '</td>' +
+                '<td class="col-md-2">' + '<a class="actionbtn">' +
+                '          <span class="glyphicon glyphicon-plus"></span> Enroll\n' +
+                '        </a>' +
+                '<a class="actionbtn">' +
+                '          <span class="glyphicon glyphicon-minus"></span> Drop\n' +
+                '        </a>' +
+                '<br>' +
+                '<a class="actionbtn">' +
+                '          <span class="glyphicon glyphicon-pencil"></span> Modify\n' +
+                '        </a>' +
+                '<a class="actionbtn rmbtn">' +
+                '          <span class="glyphicon glyphicon-remove"></span> Remove\n' +
+                '        </a>' +
+                '</td>' +
+                '</tr>';
+        }
+    });
+
+    response.send(rethtml);
+});
+
+
+
+
+
+function generateFilters(data){
+    var termlist = [];
+    var subjectlist = [];
+    var termhtml = '';
+    var subjecthtml = '';
+    data.forEach(function(e){
+        if  (subjectlist.indexOf(e['Subject'])<0){
+            subjectlist.push(e['Subject']);
+            subjecthtml  += '<div class="form-check">'+
+                            '    <label class="form-check-label checkboxlabel">'+
+                            '    <input class="form-check-input" type="checkbox" value="'+e['Subject']+'" checked>'+
+                            e['Subject']+
+                            '</label>'+
+                            '</div>'
+        }
+        if  (termlist.indexOf(e['Term'])<0){
+            termlist.push(e['Term']);
+            termhtml  += '<div class="form-check">'+
+                '    <label class="form-check-label checkboxlabel">'+
+                '    <input class="form-check-input" type="checkbox" value="'+e['Term']+'" checked>'+
+                e['Term']+
+                '</label>'+
+                '</div>'
+        }
+
+    });
+
+    return [termhtml,subjecthtml];
+}
+
+
+
+
+
+
+
+
+
+
 
 //----------------Management Section-------------------------------------------
 
