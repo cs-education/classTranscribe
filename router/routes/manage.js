@@ -55,7 +55,6 @@ router.get('/getUserCourses', function (request, response) {
 });
 
 router.post('/addInstructors', function (request, response) {
-
    var data = request.body.instructors;
    var instructors = data.split(/[\s,;:\n]+/);
    var toadd = [];
@@ -83,18 +82,19 @@ router.post('/addStudents', function (request, response) {
 });
 
 //var upload = multer({ storage : storage}).single('studentsFile');
-router.post('/addStudentsFiles', function (request, response) {
-  var upload = multer({ storage : storage}).single('studentsFile');
+router.post('/UploadStudentsFiles', function (request, response) {
+  var upload = multer({ storage : storage}).any();
   upload(request, response, function(err) {
-    console.log(request.file.path);
+    //console.log(request.files[0].path);
     var interface = readline.createInterface({
-      input: fs.createReadStream(request.file.path)
+      input: fs.createReadStream(request.files[0].path)
     });
     interface.on('line', function (line) {
       client.sadd("students", line, function(err) {
         console.log("added student: " + line);
       })
     }); 
+    fs.unlinkSync(request.files[0].path);
     response.end();
   });
 });
@@ -105,9 +105,10 @@ router.post('/uploadLectureVideos', function(request, response) {
   console.log("uploading...");
   upload(request, response, function(err) {
     console.log("still uploading...");
-    });
-    console.log("done");
-    response.end();
+
+  });
+  console.log("done");
+  response.end();
 });
 
 module.exports = router;
