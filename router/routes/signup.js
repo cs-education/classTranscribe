@@ -22,30 +22,39 @@ router.post('/signup/submit', function(request, response) {
     var last_name = request.body.last_name;
     var email = request.body.email;
     var password = request.body.password;
+    var re_password = request.body.re_password;
 
-    // Check if email is already in the database
-    client.hgetall("ClassTranscribe::Users::" + email, function(err, obj) {
-        if (obj) {
-            var error = "Account already exists";
-            console.log(error);
-            // response.send(error);
-            response.end();
-        } else {
-            // TODO: authenticate password before putting into redis database
+    // Check that the two passwords are the same
+    if (password != re_password) {
+        var error = "Passwords are not the same";
+        console.log(error);
+        // response.send(error);
+        response.end();
+    } else {
+        // Check if email is already in the database
+        client.hgetall("ClassTranscribe::Users::" + email, function(err, obj) {
+            if (obj) {
+                var error = "Account already exists";
+                console.log(error);
+                // response.send(error);
+                response.end();
+            } else {
+                // TODO: authenticate password before putting into redis database
 
-            // Add new user to database
-            client.hmset("ClassTranscribe::Users::" + email, [
-                'first_name', first_name,
-                'last_name', last_name,
-                'password', password
-            ], function(err, results) {
-                if (err) console.log(err)
-                console.log(results);
-                // TODO: send email to verify .edu account
-                response.redirect('../login');
-            });
-        }
-    });
+                // Add new user to database
+                client.hmset("ClassTranscribe::Users::" + email, [
+                    'first_name', first_name,
+                    'last_name', last_name,
+                    'password', password
+                ], function(err, results) {
+                    if (err) console.log(err)
+                    console.log(results);
+                    // TODO: send email to verify .edu account
+                    response.redirect('../login');
+                });
+            }
+        });
+    }
 });
 
 module.exports = router;

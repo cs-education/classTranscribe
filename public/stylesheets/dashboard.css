@@ -9,7 +9,28 @@ body {
     width:900px;
     margin:0 auto;
     height:580px;
-  }
+}
+
+.content .home-container {
+    float: left;
+}
+  
+.content .home-container .home {
+    width:100px;
+    height:47px;
+    margin:50px auto;
+    border:1px solid white;
+    text-transform:uppercase;
+    color:white;
+    cursor:pointer;
+    font-size:15px;
+    background:#66ccff;
+}
+  
+.content .home-container .home:hover {
+    color:black;
+    background:white;
+}
 
 .content .logout-container {
     float: right;

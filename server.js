@@ -143,8 +143,8 @@ passport.use(new LocalStrategy(
           var error = "Account does not exist";
           console.log(error);
           // response.send(error);
-          //response.end();
-          return done(null,false,{ message: 'Incorrect username.' })
+          // response.end();
+          return done(null, false, { message: 'Incorrect username.' })
         } else {
           // Verify the inputted password is same equal to the password stored in the database
           client.hget("ClassTranscribe::Users::" + username, "password", function(err, obj) {
@@ -152,16 +152,15 @@ passport.use(new LocalStrategy(
               var error = "Invalid password";
               console.log(error);
               // response.send(error);
-              return done(null,false,{ message: 'Incorrect password.' })
+              return done(null, false, { message: 'Incorrect password.' })
             } else {
-              //response.redirect('../dashboard');
-              var usr = { username: username, email: username, password: password };
-              return done(null,usr);
+              // response.redirect('../dashboard');
+              var user = { username: username, email: username, password: password };
+              return done(null, user);
             }
           });
         }
       });
-
     }
 ));
 

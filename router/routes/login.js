@@ -11,8 +11,6 @@ var client = require('./../../modules/redis');
 var loginMustache = fs.readFileSync(mustachePath + 'login.mustache').toString();
 
 router.get('/login', function(request, response) {
-
-
     if(request.isAuthenticated()){
         response.redirect('../dashboard');
     }
@@ -24,14 +22,14 @@ router.get('/login', function(request, response) {
     }
 });
 
-router.post('/login/submit',passport.authenticate('local',{ successRedirect: '../dashboard', failureRedirect: '/login' }),
+router.post('/login/submit', passport.authenticate('local', { successRedirect: '../dashboard', failureRedirect: '/login' }),
     function(request, response) {
-    var email = request.body.email;
-    var password = request.body.password;
+    // var email = request.body.email;
+    // var password = request.body.password;
     // Handled in LocalStrategy for now
 
     // Check if email is already in the database
-    //client.hgetall("ClassTranscribe::Users::" + email, function(err, obj) {
+    // client.hgetall("ClassTranscribe::Users::" + email, function(err, obj) {
     //    if (!obj) {
     //        var error = "Account does not exist";
     //        console.log(error);
@@ -53,7 +51,7 @@ router.post('/login/submit',passport.authenticate('local',{ successRedirect: '..
     //            }
     //        });
     //    }
-    //});
+    // });
 });
 
 
