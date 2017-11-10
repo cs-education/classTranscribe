@@ -28,7 +28,6 @@ router.post('/signup/submit', function(request, response) {
     if (password != re_password) {
         var error = "Passwords are not the same";
         console.log(error);
-        // response.send(error);
         response.end();
     } else {
         // Check if email is already in the database
@@ -36,10 +35,9 @@ router.post('/signup/submit', function(request, response) {
             if (obj) {
                 var error = "Account already exists";
                 console.log(error);
-                // response.send(error);
                 response.end();
             } else {
-                // TODO: authenticate password before putting into redis database
+                // TODO: encrypt password before putting into redis database
 
                 // Add new user to database
                 client.hmset("ClassTranscribe::Users::" + email, [

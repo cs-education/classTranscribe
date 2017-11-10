@@ -26,10 +26,9 @@ router.post('/changePassword/submit', function (request, response) {
     if (password != re_password) {
         var error = "Passwords are not the same";
         console.log(error);
-        // response.send(error);
         response.end();
     } else {
-        // TODO: authenticate password before putting into redis database
+        // TODO: encrypt password before putting into redis database
 
         // Change user password in database
         client.hmset("ClassTranscribe::Users::" + email, [

@@ -25,7 +25,6 @@ router.post('/resetPassword/submit', function(request, response) {
         if (!obj) {
             var error = "Account does not exist";
             console.log(error);
-            // response.send(error);
             response.end();
         } else {
             response.redirect('../accountRecovery');
