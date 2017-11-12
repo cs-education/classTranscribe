@@ -37,6 +37,7 @@ var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var saml = require('passport-saml');
+var passwordHash = require('./node_modules/password-hash/lib/password-hash');
 var dotenv = require('dotenv');
 var https = require('https');
 
@@ -146,9 +147,11 @@ passport.use(new LocalStrategy(
           // response.end();
           return done(null, false, { message: 'Incorrect username.' })
         } else {
-          // Verify the inputted password is same equal to the password stored in the database
+          // Verify the inputted password is equivalent to the hashed password stored in the database
           client.hget("ClassTranscribe::Users::" + username, "password", function(err, obj) {
-            if (obj != password) {
+            var isCorrectPassword = passwordHash.verify(password, obj)
+            console.log("Do the passwords match? " + isCorrectPassword);
+            if (!isCorrectPassword) {
               var error = "Invalid password";
               console.log(error);
               // response.send(error);

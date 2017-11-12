@@ -7,6 +7,7 @@
 var router = express.Router();
 var fs = require('fs');
 var client = require('./../../modules/redis');
+var passwordHash = require('password-hash');
 
 var signupMustache = fs.readFileSync(mustachePath + 'signup.mustache').toString();
 
@@ -37,13 +38,15 @@ router.post('/signup/submit', function(request, response) {
                 console.log(error);
                 response.end();
             } else {
-                // TODO: encrypt password before putting into redis database
+                // Salt and hash password before putting into redis database
+                var hashedPassword = passwordHash.generate(password);
+                // console.log(hashedPassword);
 
                 // Add new user to database
                 client.hmset("ClassTranscribe::Users::" + email, [
                     'first_name', first_name,
                     'last_name', last_name,
-                    'password', password
+                    'password', hashedPassword, 
                 ], function(err, results) {
                     if (err) console.log(err)
                     console.log(results);
