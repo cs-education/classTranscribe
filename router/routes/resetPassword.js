@@ -29,7 +29,6 @@ router.post('/resetPassword/submit', function(request, response) {
         } else {
             response.redirect('../accountRecovery');
             // TODO: send email with unique link to reset password
-            // html template, changePassword.mustache
         }
     });
 });

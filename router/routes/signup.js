@@ -8,6 +8,7 @@ var router = express.Router();
 var fs = require('fs');
 var client = require('./../../modules/redis');
 var passwordHash = require('password-hash');
+var nodemailer = require('nodemailer');
 
 var signupMustache = fs.readFileSync(mustachePath + 'signup.mustache').toString();
 
@@ -47,6 +48,7 @@ router.post('/signup/submit', function(request, response) {
                     'first_name', first_name,
                     'last_name', last_name,
                     'password', hashedPassword, 
+                    'verified', false
                 ], function(err, results) {
                     if (err) console.log(err)
                     console.log(results);

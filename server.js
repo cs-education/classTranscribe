@@ -58,14 +58,14 @@ var app = express();
 
 app.use(bodyParser.json());         // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
-  extended: true
+  	extended: true
 }));
 app.use(express.static('public'));
 app.use(cookieParser());
 app.use(session({
-  secret: "secret",
-  resave: true,
-  saveUninitialized: true 
+	secret: "secret",
+	resave: true,
+	saveUninitialized: true 
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -120,8 +120,8 @@ require('./router')(app);
 var port = process.env.CT_PORT || 8000;
 
 var options = {
-  key: fs.readFileSync("./cert/cert/key.pem"),
-  cert: fs.readFileSync("./cert/cert/cert.pem")
+	key: fs.readFileSync("./cert/cert/key.pem"),
+	cert: fs.readFileSync("./cert/cert/cert.pem")
 };
 
 
@@ -130,49 +130,60 @@ httpsServer.listen(port, function() {
 	console.log("Class Transcribe on: " + port);
 });
 
-//RedisStore = require('connect-redis')(session)
-//app.use(session({
+// RedisStore = require('connect-redis')(session)
+// app.use(session({
 //  store: new RedisStore(client)
-//}));
-//
+// }));
 
 
 passport.use(new LocalStrategy(
     function(username, password, done) {
-      client.hgetall("ClassTranscribe::Users::" + username, function(err, obj) {
-        if (!obj) {
-          var error = "Account does not exist";
-          console.log(error);
-          // response.send(error);
-          // response.end();
-          return done(null, false, { message: 'Incorrect username.' })
-        } else {
-          // Verify the inputted password is equivalent to the hashed password stored in the database
-          client.hget("ClassTranscribe::Users::" + username, "password", function(err, obj) {
-            var isCorrectPassword = passwordHash.verify(password, obj)
-            console.log("Do the passwords match? " + isCorrectPassword);
-            if (!isCorrectPassword) {
-              var error = "Invalid password";
-              console.log(error);
-              // response.send(error);
-              return done(null, false, { message: 'Incorrect password.' })
-            } else {
-              // response.redirect('../dashboard');
-              var user = { username: username, email: username, password: password };
-              return done(null, user);
-            }
-          });
-        }
-      });
+		client.hgetall("ClassTranscribe::Users::" + username, function(err, obj) {
+			if (!obj) {
+				var error = "Account does not exist";
+				console.log(error);
+				// response.send(error);
+				// response.end();
+				return done(null, false, { message: 'Incorrect username.' })
+			} else {
+				// Check if the user is verified their email address
+				client.hget("ClassTranscribe::Users::" + username, "verified", function(err, obj) {
+					console.log("Is the email verified? " + obj);
+					if (obj == "false") {
+						var error = "Email not verified";
+						console.log(error);
+						// response.send(error);
+						return done(null, false, { message: 'Email not verified.' })
+					} else {
+						// Verify the inputted password is equivalent to the hashed password stored in the database
+						client.hget("ClassTranscribe::Users::" + username, "password", function(err, obj) {
+							var isCorrectPassword = passwordHash.verify(password, obj)
+							console.log("Do the passwords match? " + isCorrectPassword);
+							if (!isCorrectPassword) {
+								var error = "Invalid password";
+								console.log(error);
+								// response.send(error);
+								return done(null, false, { message: 'Incorrect password.' })
+							} else {
+								// response.redirect('../dashboard');
+								var user = { username: username, email: username, password: password };
+								return done(null, user);
+							}
+						});
+					}
+				});
+			}
+		});
     }
 ));
 
 passport.serializeUser(function(user, done) {
-  done(null, user.email);
+  	done(null, user.email);
 });
+
 passport.deserializeUser(function(id, done) {
-// TODO:something something, I believe this actually doesn't work
-  User.findById(id, function(err, user) {
-    done(err, user);
-  });
+	// TODO: something something, I believe this actually doesn't work
+	User.findById(id, function(err, user) {
+		done(err, user);
+	});
 });
