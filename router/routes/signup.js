@@ -63,14 +63,14 @@ router.post('/signup/submit', function(request, response) {
                     if (err) console.log(err)
                     console.log(results);
                     
-                    
-                    // TODO: send email to verify .edu account
+                    // Send email to verify .edu account
                     var mailOptions = {
                         from: "ClassTranscribe <classtranscribenoreply@gmail.com>", // ClassTranscribe no-reply email
                         to: email, // receiver who signed up for ClassTranscribe
                         subject: 'Welcome to ClassTranscribe', // subject line of the email
                         text: 'Please verify your email by clicking this link.', // TODO: will include verification link
                     };
+
                     transporter.sendMail(mailOptions, (error, response) => {
                         if (err) console.log(err)
                         console.log("Send mail status: " + response);

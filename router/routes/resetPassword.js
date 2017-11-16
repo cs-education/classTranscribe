@@ -40,12 +40,14 @@ router.post('/resetPassword/submit', function(request, response) {
         } else {
             response.redirect('../accountRecovery');
             
+            // Send email to reset password
             var mailOptions = {
                 from: "ClassTranscribe <classtranscribenoreply@gmail.com>", // ClassTranscribe no-reply email
                 to: email, // receiver who signed up for ClassTranscribe
                 subject: 'ClassTranscribe Password Reset', // subject line of the email
-                text: 'Please click here to reset your password.', // TODO: will include verification link
+                text: 'Please click here to reset your password.', // TODO: will include changePassword link
             };
+
             transporter.sendMail(mailOptions, (error, response) => {
                 if (err) console.log(err)
                 console.log("Send mail status: " + response);
