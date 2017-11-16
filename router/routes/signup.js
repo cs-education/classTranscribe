@@ -8,7 +8,17 @@ var router = express.Router();
 var fs = require('fs');
 var client = require('./../../modules/redis');
 var passwordHash = require('password-hash');
+
 var nodemailer = require('nodemailer');
+
+// Create reusable transporter object using the default SMTP transport
+var transporter = nodemailer.createTransport({
+    service: "Gmail",
+    auth: {
+        user: "classtranscribenoreply@gmail.com",
+        pass: "classtranscribe12345"
+    }
+});
 
 var signupMustache = fs.readFileSync(mustachePath + 'signup.mustache').toString();
 
@@ -52,7 +62,20 @@ router.post('/signup/submit', function(request, response) {
                 ], function(err, results) {
                     if (err) console.log(err)
                     console.log(results);
+                    
+                    
                     // TODO: send email to verify .edu account
+                    var mailOptions = {
+                        from: "ClassTranscribe <classtranscribenoreply@gmail.com>", // ClassTranscribe no-reply email
+                        to: email, // receiver who signed up for ClassTranscribe
+                        subject: 'Welcome to ClassTranscribe', // subject line of the email
+                        text: 'Please verify your email by clicking this link.', // TODO: will include verification link
+                    };
+                    transporter.sendMail(mailOptions, (error, response) => {
+                        if (err) console.log(err)
+                        console.log("Send mail status: " + response);
+                    });
+
                     response.redirect('../login');
                 });
             }
