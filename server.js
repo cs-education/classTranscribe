@@ -65,7 +65,8 @@ app.use(cookieParser());
 app.use(session({
 	secret: "secret",
 	resave: true,
-	saveUninitialized: true 
+	saveUninitialized: true,
+		cookie: { maxAge: 4320000000 }
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -143,7 +144,6 @@ passport.use(new LocalStrategy(
 				var error = "Account does not exist";
 				console.log(error);
 				// response.send(error);
-				// response.end();
 				return done(null, false, { message: 'Incorrect username.' })
 			} else {
 				// Check if the user is verified their email address

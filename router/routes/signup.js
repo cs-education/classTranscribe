@@ -36,18 +36,21 @@ router.post('/signup/submit', function(request, response) {
     var password = request.body.password;
     var re_password = request.body.re_password;
 
+    // console.log(password)
+    // console.log(re_password)
+
     // Check that the two passwords are the same
     if (password != re_password) {
         var error = "Passwords are not the same";
         console.log(error);
-        response.end();
+        response.send(error);
     } else {
         // Check if email is already in the database
         client.hgetall("ClassTranscribe::Users::" + email, function(err, obj) {
             if (obj) {
                 var error = "Account already exists";
                 console.log(error);
-                response.end();
+                response.send(error);
             } else {
                 // Salt and hash password before putting into redis database
                 var hashedPassword = passwordHash.generate(password);

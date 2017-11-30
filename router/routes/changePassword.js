@@ -27,7 +27,7 @@ router.post('/changePassword/submit', function (request, response) {
     if (password != re_password) {
         var error = "Passwords are not the same";
         console.log(error);
-        response.end();
+        response.send(error);
     } else {
         // Salt and hash password before putting into redis database
         var hashedPassword = passwordHash.generate(password);
