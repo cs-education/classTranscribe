@@ -23,10 +23,14 @@ var transporter = nodemailer.createTransport({
 var signupMustache = fs.readFileSync(mustachePath + 'signup.mustache').toString();
 
 router.get('/signup', function(request, response) {
-    response.writeHead(200, {
-        'Content-Type': 'text.html'
-    });
-    renderWithPartial(signupMustache, request, response);
+    if (request.isAuthenticated()) {
+        response.redirect('../dashboard');
+    } else {
+        response.writeHead(200, {
+            'Content-Type': 'text.html'
+        });
+        renderWithPartial(signupMustache, request, response);
+    }
 });
 
 router.post('/signup/submit', function(request, response) {
@@ -43,14 +47,14 @@ router.post('/signup/submit', function(request, response) {
     if (password != re_password) {
         var error = "Passwords are not the same";
         console.log(error);
-        response.send(error);
+        response.send({ message: error, html: '' });
     } else {
         // Check if email is already in the database
         client.hgetall("ClassTranscribe::Users::" + email, function(err, obj) {
             if (obj) {
                 var error = "Account already exists";
                 console.log(error);
-                response.send(error);
+                response.send({ message: error, html: '' });
             } else {
                 // Salt and hash password before putting into redis database
                 var hashedPassword = passwordHash.generate(password);
@@ -79,7 +83,7 @@ router.post('/signup/submit', function(request, response) {
                         console.log("Send mail status: " + response);
                     });
 
-                    response.redirect('../login');
+                    response.send({ message: 'success', html: '../login' })
                 });
             }
         });

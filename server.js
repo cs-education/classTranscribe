@@ -66,7 +66,7 @@ app.use(session({
 	secret: "secret",
 	resave: true,
 	saveUninitialized: true,
-		cookie: { maxAge: 4320000000 }
+		cookie: { maxAge: 43200000 }
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -143,8 +143,7 @@ passport.use(new LocalStrategy(
 			if (!obj) {
 				var error = "Account does not exist";
 				console.log(error);
-				// response.send(error);
-				return done(null, false, { message: 'Incorrect username.' })
+				return done(null, false, { message: error })
 			} else {
 				// Check if the user is verified their email address
 				client.hget("ClassTranscribe::Users::" + username, "verified", function(err, obj) {
@@ -152,8 +151,7 @@ passport.use(new LocalStrategy(
 					if (obj == "false") {
 						var error = "Email not verified";
 						console.log(error);
-						// response.send(error);
-						return done(null, false, { message: 'Email not verified.' })
+						return done(null, false, { message: error })
 					} else {
 						// Verify the inputted password is equivalent to the hashed password stored in the database
 						client.hget("ClassTranscribe::Users::" + username, "password", function(err, obj) {
@@ -162,11 +160,9 @@ passport.use(new LocalStrategy(
 							if (!isCorrectPassword) {
 								var error = "Invalid password";
 								console.log(error);
-								// response.send(error);
-								return done(null, false, { message: 'Incorrect password.' })
+								return done(null, false, { message: error })
 							} else {
-								// response.redirect('../dashboard');
-								var user = { username: username, email: username, password: password };
+								var user = { username: username };
 								return done(null, user);
 							}
 						});

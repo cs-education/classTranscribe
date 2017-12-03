@@ -27,7 +27,7 @@ router.post('/changePassword/submit', function (request, response) {
     if (password != re_password) {
         var error = "Passwords are not the same";
         console.log(error);
-        response.send(error);
+        response.send({ message: error, html: '' });
     } else {
         // Salt and hash password before putting into redis database
         var hashedPassword = passwordHash.generate(password);
@@ -39,7 +39,7 @@ router.post('/changePassword/submit', function (request, response) {
         ], function(err, results) {
             if (err) console.log(err)
             console.log(results);
-            response.redirect('../login');
+            response.send({ message: 'success', html: '../login' })
         });
     }
 });

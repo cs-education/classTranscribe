@@ -7,14 +7,14 @@
 var router = express.Router();
 var fs = require('fs');
 var client = require('./../../modules/redis');
+var passport = require('passport')
 
 var loginMustache = fs.readFileSync(mustachePath + 'login.mustache').toString();
 
 router.get('/login', function(request, response) {
-    if(request.isAuthenticated()){
+    if (request.isAuthenticated()) {
         response.redirect('../dashboard');
-    }
-    else {
+    } else {
         response.writeHead(200, {
             'Content-Type': 'text.html'
         });
@@ -24,13 +24,6 @@ router.get('/login', function(request, response) {
 
 router.post('/login/submit', passport.authenticate('local', { successRedirect: '../dashboard', failureRedirect: '/login' }),
     function(request, response) {
-    // TODO: handled in LocalStrategy for now
-});
-
-// TODO: for demo only
-router.post('/logout', function(req, res) {
-    req.logout();
-    res.redirect('/');
 });
 
 module.exports = router;

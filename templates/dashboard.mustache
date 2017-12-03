@@ -13,12 +13,10 @@
 		<div class="home-container">
             <button class="home" onclick="window.location='/';">Home</button>
 		</div>
-		<!-- logout button -->
-		<div class="logout-container">
-            <form action = "/logout" method = "post">
-                <button class="logout-home" onclick="document.forms[0].submit()">Log Out</button>
-            </form>
-		</div>
+		<div class="container">
+			<button class="user">{{user}}</button>
+			<button class="logout-home" onclick="window.location='/logout'">Log Out</button>
+		</div>	
 	</div>
 	<div class="dashboard-container">
 		<h1>DASHBOARD</h1>
