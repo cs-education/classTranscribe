@@ -31,7 +31,10 @@ router.get('/dashboard', function (request, response) {
         // });
         // console.log(name)
 
-        var html = Mustache.render(dashboardMustache, { user: request.user.username });
+        var email = request.user.username
+        var user = email.substr(0, email.indexOf('@'))
+        var html = Mustache.render(dashboardMustache, { user: user });
+        
         response.end(html);
     } else {
         response.redirect('../');
