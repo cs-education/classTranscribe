@@ -54,7 +54,7 @@ router.post('/signup/submit', function(request, response) {
             if (obj) {
                 var error = "Account already exists";
                 console.log(error);
-                response.send({ message: error, html: '' });
+                response.send({message: error, html: ''});
             } else {
                 // Salt and hash password before putting into redis database
                 var hashedPassword = passwordHash.generate(password);
@@ -64,12 +64,12 @@ router.post('/signup/submit', function(request, response) {
                 client.hmset("ClassTranscribe::Users::" + email, [
                     'first_name', first_name,
                     'last_name', last_name,
-                    'password', hashedPassword, 
+                    'password', hashedPassword,
                     'verified', false
-                ], function(err, results) {
+                ], function (err, results) {
                     if (err) console.log(err)
                     console.log(results);
-                    
+
                     // Send email to verify .edu account
                     var mailOptions = {
                         from: "ClassTranscribe <classtranscribenoreply@gmail.com>", // ClassTranscribe no-reply email
@@ -78,12 +78,14 @@ router.post('/signup/submit', function(request, response) {
                         text: 'Please verify your email by clicking this link.', // TODO: will include verification link
                     };
 
-                    transporter.sendMail(mailOptions, (error, response) => {
+                    transporter.sendMail(mailOptions,(error, response)=> {
                         if (err) console.log(err)
                         console.log("Send mail status: " + response);
                     });
-
-<<<<<<< HEAD
+                });
+            }
+        })
+    }
     // Check if email is already in the database
     client.hgetall("ClassTranscribe::Users::" + email, function(err, obj) {
         if (obj) {
