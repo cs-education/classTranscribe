@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 var saml = require('passport-saml');
+var passwordHash = require('./node_modules/password-hash/lib/password-hash');
 // Commented out since we are not using saml at the moment
 // passport.serializeUser(function (user, done) {
 //     done(null, user);
@@ -74,18 +75,31 @@ passport.use(new LocalStrategy(
             if (!usr) {
                 var error = "Account does not exist";
                 console.log(error);
-                return done(null,false,{ message: 'Incorrect username.' })
+                return done(null, false, { message: error })
             } else {
-                // Verify the inputted password is same equal to the password stored in the database
-                if (usr['password'] != password) {
-                    var error = "Invalid password";
-                    console.log(error);
-                    return done(null,false,{ message: 'Incorrect password.' })
-                } else {
-                    //response.redirect('../dashboard');
-                    var suser = { firstname: usr['first_name'], lastname: usr['last_name'], email: username, verified:usr['verified'], university:usr['university'] };
-                    return done(null,suser);
-                }
+                // Check if the user is verified their email address
+				client.hget("ClassTranscribe::Users::" + username, "verified", function(err, obj) {
+					console.log("Is the email verified? " + obj);
+					if (obj == "false") {
+						var error = "Email not verified";
+						console.log(error);
+						return done(null, false, { message: error })
+					} else {
+						// Verify the inputted password is equivalent to the hashed password stored in the database
+						client.hget("ClassTranscribe::Users::" + username, "password", function(err, obj) {
+							var isCorrectPassword = passwordHash.verify(password, obj)
+							console.log("Do the passwords match? " + isCorrectPassword);
+							if (!isCorrectPassword) {
+								var error = "Invalid password";
+								console.log(error);
+								return done(null, false, { message: error })
+							} else {
+								var suser = { firstname: usr['first_name'], lastname: usr['last_name'], email: username, verified: usr['verified'], university: usr['university'] };
+								return done(null, suser);
+							}
+						});
+					}
+				});
             }
         });
     }

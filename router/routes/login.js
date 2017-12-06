@@ -11,11 +11,6 @@ var passport = require('passport')
 
 var loginMustache = fs.readFileSync(mustachePath + 'login.mustache').toString();
 
-
-
-
-
-
 router.get('/login', function(request, response) {
     if (request.isAuthenticated()) {
         response.redirect('../dashboard');

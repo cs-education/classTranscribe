@@ -54,7 +54,7 @@ router.post('/signup/submit', function(request, response) {
             if (obj) {
                 var error = "Account already exists";
                 console.log(error);
-                response.send({message: error, html: ''});
+                response.send({ message: error, html: '' });
             } else {
                 // Salt and hash password before putting into redis database
                 var hashedPassword = passwordHash.generate(password);
@@ -63,10 +63,13 @@ router.post('/signup/submit', function(request, response) {
                 // Add new user to database
                 client.hmset("ClassTranscribe::Users::" + email, [
                     'first_name', first_name,
-                    'username', email,
                     'last_name', last_name,
                     'password', hashedPassword,
-                    'verified', false
+                    'university', getUniversity(email),
+                    'verified', false,
+                    'Courses as Instructor','',
+                    'Courses as TA','',
+                    'Courses as Student',''
                 ], function (err, results) {
                     if (err) console.log(err)
                     console.log(results);
@@ -83,38 +86,12 @@ router.post('/signup/submit', function(request, response) {
                         if (err) console.log(err)
                         console.log("Send mail status: " + response);
                     });
+
+                    response.send({ message: 'success', html: '../login' })
                 });
             }
         })
     }
-    // Check if email is already in the database
-    client.hgetall("ClassTranscribe::Users::" + email, function(err, obj) {
-        if (obj) {
-            var error = "Account already exists";
-            console.log(error);
-            // response.send(error);
-            response.end();
-        } else {
-            // TODO: authenticate password before putting into redis database
-
-            // Add new user to database
-            client.hmset("ClassTranscribe::Users::" + email, [
-                'first_name', first_name,
-                'last_name', last_name,
-                'password', password,
-                'university', getUniversity(email),
-                'verified', false,
-                'Courses as Instructor','',
-                'Courses as TA','',
-                'Courses as Student',''
-            ], function(err, results) {
-                if (err) console.log(err)
-                console.log(results);
-                // TODO: send email to verify .edu account
-                response.redirect('../login');
-            });
-        }
-    });
 });
 
 function getUniversity(email){
