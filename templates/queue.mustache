@@ -5,7 +5,7 @@
       $(document).ready(function () {
         var className = "{{className}}";
         var netID = window.prompt("What's your NetID?", "");
-        console.log(netID)
+        console.log(netID);
         $.ajax({
           type: "GET",
           url: "/queue/" + className + "/" + netID,

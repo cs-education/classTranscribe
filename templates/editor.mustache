@@ -16,18 +16,15 @@
     <script src="/javascripts/libraries/wavesurfer/src/drawer.canvas.js"></script>
 
     <script>
-      var piwikServer = "{{piwikServer}}";
       window.className = "{{className}}";
       var taskName = "{{taskName}}";
       var videoTitle = taskName.split("_").join(" ");
       var videoIndex = taskName.split("_")[3];
       var videoPart = taskName.split("_")[4];
-      var s3Url = "https://s3-us-west-2.amazonaws.com/classtranscribes3/{{className}}/Lecture_" + videoIndex + "/" + taskName;
-
+      var video_path = "/videos/Lecture_" + videoIndex + "/" + taskName;
       var VIDEOS = [
-        [videoTitle, s3Url + ".mp4", s3Url + ".mp3"],
+        [videoTitle, video_path + ".mp4", video_path + ".mp3"],
       ];
-
       $(document).ready(function () {
         VIDEOS.forEach(function (video, i) {
           var title = video[0];
@@ -36,7 +33,6 @@
           $(".video-selector").append(template);
         });
       });
-
       /*
         Loads the selected video
       */
@@ -55,14 +51,13 @@
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
       })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
       ga('create', 'UA-29520426-2', 'auto');
       ga('send', 'pageview');
     </script>
     <!-- End Javascript -->
 
     <!-- Begin Fonts -->
-    <link href='https://fonts.googleapis.com/css?family=Bilbo+Swash+Caps' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Bilbo+Swash+Caps' rel='stylesheet' type='text/css'>
     <!-- End Fonts -->
 
     <!-- Begin Stylesheets -->
@@ -83,7 +78,7 @@
       </div>
       <div class="video-container">
         <video class="main-video" width="600" controls>
-          <source class="main-video-source" src="https://angrave.github.io/sysassets/mp4/0010-HelloWorld-v2.mp4" type="video/mp4">
+          <source class="main-video-source" src="http://angrave.github.io/sysassets/mp4/0010-HelloWorld-v2.mp4" type="video/mp4">
         </video>
       </div>
       <div class="video_control-container">

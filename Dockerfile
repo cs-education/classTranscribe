@@ -35,6 +35,7 @@ RUN apt-get install -y sox
 RUN apt-get install -y libsox-fmt-all
 RUN apt-get install -y libasound2-plugins 
 RUN apt-get install -y php7.0-cli
+RUN apt-get install -y ffmpeg
 
 # RUN npm install -g yarn
 
