@@ -5,14 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 var saml = require('passport-saml');
-
-passport.serializeUser(function (user, done) {
-    done(null, user);
-});
-
-passport.deserializeUser(function (user, done) {
-    done(null, user);
-});
+// Commented out since we are not using saml at the moment
+// passport.serializeUser(function (user, done) {
+//     done(null, user);
+// });
+//
+// passport.deserializeUser(function (user, done) {
+//     done(null, user);
+// });
 
 var CALLBACK_URL = "https://192.17.96.13:" + (process.env.CT_PORT || 7443) + "/login/callback"
 var ENTRY_POINT = "https://idp.testshib.org/idp/profile/SAML2/Redirect/SSO";
@@ -64,3 +64,61 @@ ensureAuthenticated = function(req, res, next) {
 }
 
 passport.use(samlStrategy);
+
+
+
+// ========== current local strategy ==========
+passport.use(new LocalStrategy(
+    function(username, password, done) {
+        client.hgetall("ClassTranscribe::Users::" + username, function(err, usr) {
+            if (!usr) {
+                var error = "Account does not exist";
+                console.log(error);
+                return done(null,false,{ message: 'Incorrect username.' })
+            } else {
+                // Verify the inputted password is same equal to the password stored in the database
+                if (usr['password'] != password) {
+                    var error = "Invalid password";
+                    console.log(error);
+                    return done(null,false,{ message: 'Incorrect password.' })
+                } else {
+                    //response.redirect('../dashboard');
+                    var suser = { firstname: usr['first_name'], lastname: usr['last_name'], email: username, verified:usr['verified'], university:usr['university'] };
+                    return done(null,suser);
+                }
+            }
+        });
+    }
+));
+
+passport.serializeUser(function(user, done) {
+  done(null, user.email);
+});
+passport.deserializeUser(function(id, done) {
+  findUser(id,function (err,res) {
+      if(err){
+          return done(err)
+      }
+      if(res){
+          return done(null,res)
+      }
+      else{
+          return done(null,false,'no user found')
+      }
+  })
+});
+
+function findUser(id,cb){
+    client.hgetall("ClassTranscribe::Users::" + id, function(err, usr) {
+        if(err){
+            return cb(err,null)
+        }
+        if (!usr) {
+            cb(false,null)
+        }
+        else {
+            var user = { firstname: usr['first_name'], lastname: usr['last_name'], email: id, verified:usr['verified'], university:usr['university'] };
+            cb(false,user)
+        }
+    });
+}

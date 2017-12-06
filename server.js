@@ -64,7 +64,8 @@ app.use(cookieParser());
 app.use(session({
   secret: "secret",
   resave: true,
-  saveUninitialized: true 
+  saveUninitialized: true,
+    cookie: { maxAge: 36000000 }// 10 hrs before it expires
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -127,50 +128,4 @@ var options = {
 var httpsServer = https.createServer(options, app);
 httpsServer.listen(port, function() {
 	console.log("Class Transcribe on: " + port);
-});
-
-//RedisStore = require('connect-redis')(session)
-//app.use(session({
-//  store: new RedisStore(client)
-//}));
-//
-
-
-passport.use(new LocalStrategy(
-    function(username, password, done) {
-      client.hgetall("ClassTranscribe::Users::" + username, function(err, obj) {
-        if (!obj) {
-          var error = "Account does not exist";
-          console.log(error);
-          // response.send(error);
-          //response.end();
-          return done(null,false,{ message: 'Incorrect username.' })
-        } else {
-          // Verify the inputted password is same equal to the password stored in the database
-          client.hget("ClassTranscribe::Users::" + username, "password", function(err, obj) {
-            if (obj != password) {
-              var error = "Invalid password";
-              console.log(error);
-              // response.send(error);
-              return done(null,false,{ message: 'Incorrect password.' })
-            } else {
-              //response.redirect('../dashboard');
-              var usr = { username: username, email: username, password: password };
-              return done(null,usr);
-            }
-          });
-        }
-      });
-
-    }
-));
-
-passport.serializeUser(function(user, done) {
-  done(null, user.email);
-});
-passport.deserializeUser(function(id, done) {
-// TODO:something something, I believe this actually doesn't work
-  User.findById(id, function(err, user) {
-    done(err, user);
-  });
 });

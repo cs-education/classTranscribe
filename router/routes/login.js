@@ -10,6 +10,11 @@ var client = require('./../../modules/redis');
 
 var loginMustache = fs.readFileSync(mustachePath + 'login.mustache').toString();
 
+
+
+
+
+
 router.get('/login', function(request, response) {
 
 

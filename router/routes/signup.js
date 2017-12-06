@@ -37,7 +37,12 @@ router.post('/signup/submit', function(request, response) {
             client.hmset("ClassTranscribe::Users::" + email, [
                 'first_name', first_name,
                 'last_name', last_name,
-                'password', password
+                'password', password,
+                'university', getUniversity(email),
+                'verified', false,
+                'Courses as Instructor','',
+                'Courses as TA','',
+                'Courses as Student',''
             ], function(err, results) {
                 if (err) console.log(err)
                 console.log(results);
@@ -47,5 +52,16 @@ router.post('/signup/submit', function(request, response) {
         }
     });
 });
+
+function getUniversity(email){
+    var domain = email.split('@')[1]
+    var data = JSON.parse(fs.readFileSync('./utils/world_universities_and_domains.json'))
+    for (var i = 0; i < data.length; i++){
+        if (data[i].domains[0] == domain){
+            return data[i].name
+        }
+    }
+}
+
 
 module.exports = router;

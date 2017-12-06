@@ -18,13 +18,14 @@ class SearchHelper{
     search(cb){
         // debug info, feel free to delete this
         var parentDir = path.resolve(process.cwd());
-        console.log("searching term: "+parentDir);
+        console.log("search working dir: "+parentDir);
         console.log("searching term: "+this.term);
 
         this.child = cp.spawn('python',["search.py",this.term],{cwd:"./utility_scripts"});
         var helper = this;
-        if(typeof cb == "function"){
-            console.log("cb IS a function");
+        // debug only
+        if(!typeof cb == "function"){
+            console.log("cb is NOT a function!?");
         }
         this.child.stdout.on('data',function(data){
             helper.output+=data;
