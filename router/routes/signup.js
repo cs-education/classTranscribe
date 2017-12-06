@@ -63,6 +63,7 @@ router.post('/signup/submit', function(request, response) {
                 // Add new user to database
                 client.hmset("ClassTranscribe::Users::" + email, [
                     'first_name', first_name,
+                    'username', email,
                     'last_name', last_name,
                     'password', hashedPassword,
                     'verified', false
