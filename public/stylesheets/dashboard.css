@@ -9,13 +9,13 @@ body {
     width:900px;
     margin:0 auto;
     height:580px;
-  }
+}
 
-.content .logout-container {
-    float: right;
+.content .home-container {
+    float: left;
 }
   
-.content .logout-container .logout-home {
+.content .home-container .home {
     width:100px;
     height:47px;
     margin:50px auto;
@@ -27,7 +27,45 @@ body {
     background:#66ccff;
 }
   
-.content .logout-container .logout-home:hover {
+.content .home-container .home:hover {
+    color:black;
+    background:white;
+}
+
+.content .container {
+    float: right;
+}
+
+.content .container .user {
+    width:125px;
+    height:47px;
+    margin:50px auto;
+    border:1px solid white;
+    text-transform:uppercase;
+    color:white;
+    cursor:pointer;
+    font-size:15px;
+    background:#66ccff;
+}
+  
+.content .container .user:hover {
+    color:black;
+    background:white;
+}
+  
+.content .container .logout-home {
+    width:100px;
+    height:47px;
+    margin:50px auto;
+    border:1px solid white;
+    text-transform:uppercase;
+    color:white;
+    cursor:pointer;
+    font-size:15px;
+    background:#66ccff;
+}
+  
+.content .container .logout-home:hover {
     color:black;
     background:white;
 }

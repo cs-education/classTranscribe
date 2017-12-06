@@ -5,17 +5,19 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
     <title>Dashboard</title>
-    <link rel="stylesheet" type="text/css" href="/stylesheets/dashboard.css" />
+	<link rel="stylesheet" type="text/css" href="/stylesheets/dashboard.css" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 
 <body>
 	<div class="content">
-		<!-- logout button -->
-		<div class="logout-container">
-            <form action = "/logout" method = "post">
-                <button class="logout-home" onclick="document.forms[0].submit()">Log Out</button>
-            </form>
+		<div class="home-container">
+            <button class="home" onclick="window.location='/';">Home</button>
 		</div>
+		<div class="container">
+			<button class="user"><i class="fa fa-user-circle-o" aria-hidden="true"></i> {{user}}</button>
+			<button class="logout-home" onclick="window.location='/logout'">Log Out</button>
+		</div>	
 	</div>
 	<div class="dashboard-container">
 		<h1>DASHBOARD</h1>
