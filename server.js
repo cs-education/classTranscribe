@@ -37,6 +37,7 @@ var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var saml = require('passport-saml');
+var passwordHash = require('./node_modules/password-hash/lib/password-hash');
 var dotenv = require('dotenv');
 var https = require('https');
 
@@ -57,15 +58,15 @@ var app = express();
 
 app.use(bodyParser.json());         // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
-  extended: true
+  	extended: true
 }));
 app.use(express.static('public'));
 app.use(cookieParser());
 app.use(session({
-  secret: "secret",
-  resave: true,
-  saveUninitialized: true,
-    cookie: { maxAge: 36000000 }// 10 hrs before it expires
+	secret: "secret",
+	resave: true,
+	saveUninitialized: true,
+		cookie: { maxAge: 43200000 }
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -120,8 +121,8 @@ require('./router')(app);
 var port = process.env.CT_PORT || 8000;
 
 var options = {
-  key: fs.readFileSync("./cert/cert/key.pem"),
-  cert: fs.readFileSync("./cert/cert/cert.pem")
+	key: fs.readFileSync("./cert/cert/key.pem"),
+	cert: fs.readFileSync("./cert/cert/cert.pem")
 };
 
 

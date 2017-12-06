@@ -28,7 +28,7 @@ router.get('/queue/:className/:netId', function (request, response) {
     if (err) {
       throw err;
     }
-
+    console.log('result: ', result);
     if (!result.length) {
       return response.end("No more tasks at the moment. More tasks are being uploaded as you read this. Please check back later.");
     }
