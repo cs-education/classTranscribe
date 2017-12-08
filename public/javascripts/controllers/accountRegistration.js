@@ -18,6 +18,26 @@ $(document).ready(function () {
     });
 });
 
+$(document).ready(function () {
+    $('#settings-form').submit(function(event) {
+        event.preventDefault();
+        $.ajax({
+            url: "/settings/submit",
+            type: "POST",
+            data: $('#settings-form').serialize(),
+            error: function() {
+            },
+            success: function(response) {
+                if (response.message == 'success') {
+                    window.location.href = response.html;
+                } else {
+                    alert(response.message);
+                }
+            }
+        });
+    });
+});
+
 // $(document).ready(function () {
 //     $('#login-form').submit(function(event) {
 //         event.preventDefault();

@@ -23,14 +23,15 @@ h1 {
 h2 {
     font-family: 'Source Sans Pro', sans-serif;
     font-size:15px;
+    padding-bottom:30px;
     margin:auto;
     color:black
 }
 
-.password-submit {
+.settings-submit {
     width:183px;
     height:47px;
-    margin:50px auto;
+    margin:50px 0px auto;
     border:1px solid white;
     text-transform:uppercase;
     color:white;
@@ -39,7 +40,15 @@ h2 {
     background:#00a5d7;
 }
 
-.change-container {
+.container {
+    /* top:50%; */
+    padding-top:150px;
     text-align:center;
-    padding-top: 225px;
+}
+
+span.psw {
+    padding-top:16px;
+    font-family:Sans-Serif;
+    font-style:normal;
+    font-size:15px;
 }

@@ -1,4 +1,4 @@
-@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,200,300,700,900&subset=latin,latin-ext);
+@import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,200,300,700,900&subset=latin,latin-ext);
 
 body {
     background:#b3e6ff;
@@ -16,6 +16,8 @@ body {
 }
   
 .content .home-container .home {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size:15px;
     width:100px;
     height:47px;
     margin:50px auto;
@@ -37,7 +39,9 @@ body {
 }
 
 .content .container .user {
-    width:125px;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size:15px;
+    width:115px;
     height:47px;
     margin:50px auto;
     border:1px solid white;
@@ -54,6 +58,8 @@ body {
 }
   
 .content .container .logout-home {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size:15px;
     width:100px;
     height:47px;
     margin:50px auto;
@@ -80,7 +86,7 @@ body {
 
 h1 {
     font-family: 'Source Sans Pro', sans-serif;
-    font-size:48px;
+    font-size:56px;
     height:74px;
     margin:auto;
     color:white;
