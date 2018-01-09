@@ -67,20 +67,37 @@ router.post('/signup/submit', function(request, response) {
                     'password', hashedPassword,
                     'university', getUniversity(email),
                     'verified', false,
-                    'Courses as Instructor','',
-                    'Courses as TA','',
-                    'Courses as Student',''
+                    'verify_id', '',
+                    'instructor','',
+                    'TA','',
+                    'student',''
+                    // 'Courses as Instructor','',
+                    // 'Courses as TA','',
+                    // 'Courses as Student',''
                 ], function (err, results) {
                     if (err) console.log(err)
                     console.log(results);
+
+                    var host = request.get('host');
+                    var rand = Math.floor((Math.random() * 100) + 54);
+                    var link = "https://" + host + "/verify?email=" + email + "&id=" + rand;
 
                     // Send email to verify .edu account
                     var mailOptions = {
                         from: "ClassTranscribe <classtranscribenoreply@gmail.com>", // ClassTranscribe no-reply email
                         to: email, // receiver who signed up for ClassTranscribe
                         subject: 'Welcome to ClassTranscribe', // subject line of the email
-                        text: 'Please verify your email by clicking this link.', // TODO: will include verification link
+                        html: 'Hi ' + first_name + ' ' + last_name + ', <br><br> Thanks for registering at ClassTranscribe. Please verify your email by clicking this <a href=' + link + '>link</a>. <br><br> Thanks! <br> ClassTranscribe Team',
                     };
+
+                    // console.log(mailOptions);
+
+                    client.hmset("ClassTranscribe::Users::" + email, [
+                        'verify_id', rand
+                    ], function(err, results) {
+                        if (err) console.log(err)
+                        console.log(results);
+                    });
 
                     transporter.sendMail(mailOptions,(error, response)=> {
                         if (err) console.log(err)
@@ -92,6 +109,45 @@ router.post('/signup/submit', function(request, response) {
             }
         })
     }
+});
+
+var verifyMustache = fs.readFileSync(mustachePath + 'verify.mustache').toString();
+
+router.get('/verify', function (request, response) {
+    email = request.query.email
+
+    client.hgetall("ClassTranscribe::Users::" + email, function(err, usr) {
+        if (!usr) {
+            var error = "Account does not exist.";
+            console.log(error);
+            response.end();
+        } else {
+            // Check if the user is verified their email address
+            client.hget("ClassTranscribe::Users::" + email, "verify_id", function(err, obj) {
+                if (obj != request.query.id) {
+                    var error = "Email is not verified.";
+                    console.log(error);
+                    response.end();
+                } else {
+                    // Change email as verified
+                    client.hmset("ClassTranscribe::Users::" + email, [
+                        'verified', true,
+                        'verify_id', ''
+                    ], function(err, results) {
+                        if (err) console.log(err)
+                        console.log(results);
+                    });
+                    console.log("Email is verified.")
+
+                    response.writeHead(200, {
+                        'Content-Type': 'text.html'
+                    });
+                
+                    renderWithPartial(verifyMustache, request, response);
+                }   
+            });
+        }
+    });
 });
 
 function getUniversity(email){

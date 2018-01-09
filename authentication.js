@@ -80,7 +80,7 @@ passport.use(new LocalStrategy(
                 // Check if the user is verified their email address
 				client.hget("ClassTranscribe::Users::" + username, "verified", function(err, obj) {
 					console.log("Is the email verified? " + obj);
-					if (obj == "false") {
+					if (obj != "true") {
 						var error = "Email not verified";
 						console.log(error);
 						return done(null, false, { message: error })
