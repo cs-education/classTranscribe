@@ -75,15 +75,15 @@ passport.use(new LocalStrategy(
             if (!usr) {
                 var error = "Account does not exist";
                 console.log(error);
-                return done(null, false, { message: error })
+                return done(null, false, { message: error });
             } else {
                 // Check if the user is verified their email address
 				client.hget("ClassTranscribe::Users::" + username, "verified", function(err, obj) {
 					console.log("Is the email verified? " + obj);
 					if (obj != "true") {
 						var error = "Email not verified";
-						console.log(error);
-						return done(null, false, { message: error })
+                        console.log(error);
+						return done(null, false, { message: error });
 					} else {
 						// Verify the inputted password is equivalent to the hashed password stored in the database
 						client.hget("ClassTranscribe::Users::" + username, "password", function(err, obj) {
@@ -91,8 +91,8 @@ passport.use(new LocalStrategy(
 							console.log("Do the passwords match? " + isCorrectPassword);
 							if (!isCorrectPassword) {
 								var error = "Invalid password";
-								console.log(error);
-								return done(null, false, { message: error })
+                                console.log(error);
+								return done(null, false, { message: error });
 							} else {
 								var suser = { firstname: usr['first_name'], lastname: usr['last_name'], email: username, verified: usr['verified'], university: usr['university'] };
 								return done(null, suser);

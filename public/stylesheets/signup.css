@@ -63,11 +63,23 @@ h2 {
     text-align:center;
 }
 
-span.psw {
+.login-container {
+    padding-top: 25px;
+    text-align:center;
+}
+
+span.psw,
+span.login {
+    font-family: 'Source Sans Pro', sans-serif;
     padding-top:16px;
-    font-family:Sans-Serif;
     font-style:normal;
     font-size:15px;
+}
+
+span.login a{
+    text-decoration:none;
+    outline:none;
+    color:blue;
 }
 
 .signup-modal {

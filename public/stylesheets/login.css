@@ -54,14 +54,21 @@ h1 {
     padding-top: 225px;
 }
 
-span.psw {
+.signup-container {
+    padding-top: 15px;
+    text-align:center;
+}
+
+span.psw,
+span.signup {
+    font-family: 'Source Sans Pro', sans-serif;
     padding-top: 16px;
-    font-family: Sans-Serif;
     font-style: normal;
     font-size: 15px;
 }
 
-span.psw a{
+span.psw a,
+span.signup a{
     text-decoration:none;
     outline:none;
     color:blue;

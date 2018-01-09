@@ -77,12 +77,9 @@ router.post('/signup/submit', function(request, response) {
                     'university', getUniversity(email),
                     'verified', false,
                     'verify_id', '',
-                    'instructor','',
-                    'TA','',
-                    'student',''
-                    // 'Courses as Instructor','',
-                    // 'Courses as TA','',
-                    // 'Courses as Student',''
+                    'courses_as_instructor','',
+                    'courses_as_TA','',
+                    'courses_as_student',''
                 ], function (err, results) {
                     if (err) console.log(err)
                     console.log(results);

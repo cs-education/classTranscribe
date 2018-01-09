@@ -37,6 +37,7 @@ var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var saml = require('passport-saml');
+var flash = require('connect-flash');
 var passwordHash = require('./node_modules/password-hash/lib/password-hash');
 var dotenv = require('dotenv');
 var https = require('https');
@@ -68,6 +69,7 @@ app.use(session({
 	saveUninitialized: true,
 		cookie: { maxAge: 43200000 }
 }));
+app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 

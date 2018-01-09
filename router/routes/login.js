@@ -8,6 +8,7 @@ var router = express.Router();
 var fs = require('fs');
 var client = require('./../../modules/redis');
 var passport = require('passport')
+var flash = require('connect-flash');
 
 var loginMustache = fs.readFileSync(mustachePath + 'login.mustache').toString();
 
@@ -22,8 +23,16 @@ router.get('/login', function(request, response) {
     }
 });
 
-router.post('/login/submit', passport.authenticate('local', { successRedirect: '../dashboard', failureRedirect: '/login' }),
-    function(request, response) {
+router.post('/login/submit', function(request, response, next) {
+    passport.authenticate('local', function(err, user, info) {
+        if (!user) {
+            response.send({ message: info.message, html: '../login'});
+        } else {
+            request.logIn(user, function(err) {
+                response.send({ message: 'success', html: '../dashboard' });
+            });
+        }
+    })(request, response, next);
 });
 
 module.exports = router;

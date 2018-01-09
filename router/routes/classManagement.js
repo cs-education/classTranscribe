@@ -136,6 +136,10 @@ var allterms = [];
 var managementMustache = fs.readFileSync(mustachePath + 'management.mustache').toString();
 // Rendering ain page
 router.get('/manage-classes/', function (request, response) {
+    if (!request.isAuthenticated()) {
+        response.redirect('../');
+    }
+    
     response.writeHead(200, {
         'Content-Type': 'text/html'
     });
@@ -523,11 +527,11 @@ function generateFilters(data){
 
 function userPriviledges(userid){
     ret = [[],[],[]]
-    client.hget("ClassTranscribe::Users::"+userid,'Courses as Student', function(err, reply) {
+    client.hget("ClassTranscribe::Users::"+userid,'courses_as_student', function(err, reply) {
 
-        client.hget("ClassTranscribe::Users::"+userid,'Courses as TA', function(err, reply) {
+        client.hget("ClassTranscribe::Users::"+userid,'courses_as_TA', function(err, reply) {
 
-            client.hget("ClassTranscribe::Users::"+userid,'Courses as Instructor', function(err, reply) {
+            client.hget("ClassTranscribe::Users::"+userid,'courses_as_instructor', function(err, reply) {
 
             });
         });

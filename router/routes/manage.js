@@ -49,11 +49,15 @@ var storage = multer.diskStorage({
 
 var manageCoursePage = fs.readFileSync(mustachePath + 'manageCourse.mustache').toString();
 router.get('/manageCourse', function (request, response) {
-  response.writeHead(200, {
-    'Content-Type': 'text/html'
-  });
+  if (request.isAuthenticated()) {
+    response.writeHead(200, {
+      'Content-Type': 'text/html'
+    });
 
-  renderWithPartial(manageCoursePage, request, response);
+    renderWithPartial(manageCoursePage, request, response);
+  } else {
+    response.redirect('../');
+  }
 });
 
 
