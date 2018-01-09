@@ -46,6 +46,22 @@ h2 {
     text-align:center;
 }
 
+.change-pass {
+    width:183px;
+    height:47px;
+    margin:25px 0px auto;
+    border:1px solid white;
+    text-transform:uppercase;
+    color:white;
+    cursor:pointer;
+    font-size:15px;
+    background:#00a5d7;
+}
+
+.pass-container {
+    text-align:center;
+}
+
 span.psw {
     padding-top:16px;
     font-family:Sans-Serif;

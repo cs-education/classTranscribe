@@ -13,37 +13,49 @@ var changePasswordMustache = fs.readFileSync(mustachePath + 'changePassword.must
 var email;
 
 router.get('/changePassword', function (request, response) {
-    email = request.query.email
+    if (request.isAuthenticated()) {
+        email = request.user.email;
 
-    client.hgetall("ClassTranscribe::Users::" + email, function(err, usr) {
-        if (!usr) {
-            var error = "Account does not exist.";
-            console.log(error);
-            response.end();
-            // TODO: ADD 404 PAGE
-        } else {
-            // Check if the user reset password link id matches the email
-            client.hget("ClassTranscribe::Users::" + email, "change_password_id", function(err, obj) {
-                if (obj != request.query.id) {
-                    var error = "Incorrect reset password link.";
-                    console.log(error);
-                    response.end();
-                    // TODO: ADD 404 PAGE
-                } else {
-                    client.hmset("ClassTranscribe::Users::" + email, [
-                        'change_password_id', ''
-                    ], function(err, results) {
-                        if (err) console.log(err)
-                        console.log(results);
-                    });
-                    response.writeHead(200, {
-                        'Content-Type': 'text.html'
-                    });
-                    renderWithPartial(changePasswordMustache, request, response);
-                }   
-            });
-        }
-    });
+        response.writeHead(200, {
+            'Content-Type': 'text.html'
+        });
+    
+        renderWithPartial(changePasswordMustache, request, response);
+    } else {
+        email = request.query.email;
+
+        client.hgetall("ClassTranscribe::Users::" + email, function(err, usr) {
+            if (!usr) {
+                var error = "Account does not exist.";
+                console.log(error);
+                response.end();
+                // TODO: ADD 404 PAGE
+            } else {
+                // Check if the user reset password link id matches the email
+                client.hget("ClassTranscribe::Users::" + email, "change_password_id", function(err, obj) {
+                    if (obj != request.query.id) {
+                        var error = "Incorrect reset password link.";
+                        console.log(error);
+                        response.end();
+                        // TODO: ADD 404 PAGE
+                    } else {
+                        client.hmset("ClassTranscribe::Users::" + email, [
+                            'change_password_id', ''
+                        ], function(err, results) {
+                            if (err) console.log(err)
+                            console.log(results);
+                        });
+
+                        response.writeHead(200, {
+                            'Content-Type': 'text.html'
+                        });
+                    
+                        renderWithPartial(changePasswordMustache, request, response);
+                    }   
+                });
+            }
+        });
+    }
 });
 
 router.post('/changePassword/submit', function (request, response) {
@@ -68,7 +80,11 @@ router.post('/changePassword/submit', function (request, response) {
         ], function(err, results) {
             if (err) console.log(err)
             console.log(results);
-            response.send({ message: 'success', html: '../login' })
+            if (request.isAuthenticated()) {
+                response.send({ message: 'success', html: '../settings' })
+            } else {
+                response.send({ message: 'success', html: '../login' })
+            }
         });
     }
 });

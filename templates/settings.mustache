@@ -16,13 +16,14 @@
     <form id="settings-form" method="POST" action="/settings/submit">
         <div class="container">
             <h1>SETTINGS</h1>
-            <input type="text" placeholder="First Name" name="first_name" required> <br>
-            <input type="text" placeholder="Last Name" name="last_name" required> <br>
-            <input type="password" placeholder="Password" name="password" required> <br>
-            <input type="password" placeholder="Retype Password" name="re_password" required> <br>
-            <button type="submit" class="settings-submit">Submit</button>
+            <input type="text" placeholder="First Name" value={{first_name}} name="first_name" required> <br>
+            <input type="text" placeholder="Last Name" value={{last_name}} name="last_name" required> <br>
+            <button type="submit" class="settings-submit">Save Profile</button>
         </div>
     </form>
+    <div class="pass-container">
+        <button class="change-pass" onclick="window.location='/changePassword';">Change Password</button>
+    </div>
 </body>
 
 </html>

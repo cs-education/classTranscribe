@@ -16,23 +16,8 @@ router.get('/dashboard', function (request, response) {
             'Content-Type': 'text/html'
         });
 
-        // var name = '';
-        // client.hget("ClassTranscribe::Users::" + request.user.username, "first_name", function(err, obj) {
-        //     if (obj) {
-        //         console.log(obj)
-        //         name += obj
-        //     }
-        // });
-        // client.hget("ClassTranscribe::Users::" + request.user.username, "last_name", function(err, obj) {
-        //     if (obj) {
-        //         console.log(obj)
-        //         name += obj
-        //     }
-        // });
-        // console.log(name)
-
-        var email = request.user.email
-        var user = email.substr(0, email.indexOf('@'))
+        var email = request.user.email;
+        var user = email.substr(0, email.indexOf('@'));
         var html = Mustache.render(dashboardMustache, { user: user });
         
         response.end(html);
