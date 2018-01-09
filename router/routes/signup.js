@@ -8,6 +8,7 @@ var router = express.Router();
 var fs = require('fs');
 var client = require('./../../modules/redis');
 var passwordHash = require('password-hash');
+var crypto = require('crypto');
 
 var nodemailer = require('nodemailer');
 
@@ -79,30 +80,34 @@ router.post('/signup/submit', function(request, response) {
                     if (err) console.log(err)
                     console.log(results);
 
-                    var host = request.get('host');
-                    var rand = Math.floor((Math.random() * 100) + 54);
-                    var link = "https://" + host + "/verify?email=" + email + "&id=" + rand;
+                    crypto.randomBytes(48, function(err, buffer) {
+                        var token = buffer.toString('hex');
+                        // console.log(token);
 
-                    // Send email to verify .edu account
-                    var mailOptions = {
-                        from: "ClassTranscribe <classtranscribenoreply@gmail.com>", // ClassTranscribe no-reply email
-                        to: email, // receiver who signed up for ClassTranscribe
-                        subject: 'Welcome to ClassTranscribe', // subject line of the email
-                        html: 'Hi ' + first_name + ' ' + last_name + ', <br><br> Thanks for registering at ClassTranscribe. Please verify your email by clicking this <a href=' + link + '>link</a>. <br><br> Thanks! <br> ClassTranscribe Team',
-                    };
+                        var host = request.get('host');
+                        var link = "https://" + host + "/verify?email=" + email + "&id=" + token;
 
-                    // console.log(mailOptions);
+                        // Send email to verify .edu account
+                        var mailOptions = {
+                            from: "ClassTranscribe <classtranscribenoreply@gmail.com>", // ClassTranscribe no-reply email
+                            to: email, // receiver who signed up for ClassTranscribe
+                            subject: 'Welcome to ClassTranscribe', // subject line of the email
+                            html: 'Hi ' + first_name + ' ' + last_name + ', <br><br> Thanks for registering at ClassTranscribe. Please verify your email by clicking this <a href=' + link + '>link</a>. <br><br> Thanks! <br> ClassTranscribe Team',
+                        };
 
-                    client.hmset("ClassTranscribe::Users::" + email, [
-                        'verify_id', rand
-                    ], function(err, results) {
-                        if (err) console.log(err)
-                        console.log(results);
-                    });
+                        // console.log(mailOptions);
 
-                    transporter.sendMail(mailOptions,(error, response)=> {
-                        if (err) console.log(err)
-                        console.log("Send mail status: " + response);
+                        client.hmset("ClassTranscribe::Users::" + email, [
+                            'verify_id', token
+                        ], function(err, results) {
+                            if (err) console.log(err)
+                            console.log(results);
+                        });
+
+                        transporter.sendMail(mailOptions,(error, response)=> {
+                            if (err) console.log(err)
+                            console.log("Send mail status: " + response);
+                        });
                     });
 
                     response.send({ message: 'success', html: '../login' })

@@ -7,6 +7,7 @@
 var router = express.Router();
 var fs = require('fs');
 var client = require('./../../modules/redis');
+var crypto = require('crypto');
 
 var nodemailer = require('nodemailer');
 
@@ -40,28 +41,32 @@ router.post('/resetPassword/submit', function(request, response) {
         } else {
             response.send({ message: 'success', html: '../accountRecovery' })
 
-            var host = request.get('host');
-            var rand = Math.floor((Math.random() * 100) + 54);
-            var link = "https://" + host + "/changePassword?email=" + email + "&id=" + rand;
-            
-            // Send email to reset password
-            var mailOptions = {
-                from: "ClassTranscribe <classtranscribenoreply@gmail.com>", // ClassTranscribe no-reply email
-                to: email, // receiver who signed up for ClassTranscribe
-                subject: 'ClassTranscribe Password Reset', // subject line of the email
-                html: 'Hi, <br><br> We have just received a password reset request for ' + email + '. Please click this <a href=' + link + '>link</a> to reset your password. <br><br> Thanks! <br> ClassTranscribe Team'
-            };
+            crypto.randomBytes(48, function(err, buffer) {
+                var token = buffer.toString('hex');
+                // console.log(token);
 
-            client.hmset("ClassTranscribe::Users::" + email, [
-                'change_password_id', rand
-            ], function(err, results) {
-                if (err) console.log(err)
-                console.log(results);
-            });
+                var host = request.get('host');
+                var link = "https://" + host + "/changePassword?email=" + email + "&id=" + token;
 
-            transporter.sendMail(mailOptions, (error, response) => {
-                if (err) console.log(err)
-                // console.log("Send mail status: " + response);
+                // Send email to reset password
+                var mailOptions = {
+                    from: "ClassTranscribe <classtranscribenoreply@gmail.com>", // ClassTranscribe no-reply email
+                    to: email, // receiver who signed up for ClassTranscribe
+                    subject: 'ClassTranscribe Password Reset', // subject line of the email
+                    html: 'Hi, <br><br> We have just received a password reset request for ' + email + '. Please click this <a href=' + link + '>link</a> to reset your password. <br><br> Thanks! <br> ClassTranscribe Team'
+                };
+
+                client.hmset("ClassTranscribe::Users::" + email, [
+                    'change_password_id', token
+                ], function(err, results) {
+                    if (err) console.log(err)
+                    console.log(results);
+                });
+
+                transporter.sendMail(mailOptions, (error, response) => {
+                    if (err) console.log(err)
+                    // console.log("Send mail status: " + response);
+                });
             });
 
             response.end();
