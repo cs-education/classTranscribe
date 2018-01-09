@@ -65,6 +65,7 @@ router.post('/signup/submit', function(request, response) {
                     'first_name', first_name,
                     'last_name', last_name,
                     'password', hashedPassword,
+                    'change_password_id', '',
                     'university', getUniversity(email),
                     'verified', false,
                     'verify_id', '',
@@ -121,13 +122,15 @@ router.get('/verify', function (request, response) {
             var error = "Account does not exist.";
             console.log(error);
             response.end();
+            // TODO: ADD 404 PAGE
         } else {
-            // Check if the user is verified their email address
+            // Check if the user verify link id matches the email
             client.hget("ClassTranscribe::Users::" + email, "verify_id", function(err, obj) {
                 if (obj != request.query.id) {
                     var error = "Email is not verified.";
                     console.log(error);
                     response.end();
+                    // TODO: ADD 404 PAGE
                 } else {
                     // Change email as verified
                     client.hmset("ClassTranscribe::Users::" + email, [

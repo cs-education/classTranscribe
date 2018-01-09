@@ -39,14 +39,25 @@ router.post('/resetPassword/submit', function(request, response) {
             response.send({ message: error, html: '' });
         } else {
             response.send({ message: 'success', html: '../accountRecovery' })
+
+            var host = request.get('host');
+            var rand = Math.floor((Math.random() * 100) + 54);
+            var link = "https://" + host + "/changePassword?email=" + email + "&id=" + rand;
             
             // Send email to reset password
             var mailOptions = {
                 from: "ClassTranscribe <classtranscribenoreply@gmail.com>", // ClassTranscribe no-reply email
                 to: email, // receiver who signed up for ClassTranscribe
                 subject: 'ClassTranscribe Password Reset', // subject line of the email
-                text: 'Please click here to reset your password.', // TODO: will include changePassword link
+                html: 'Hi, <br><br> We have just received a password reset request for ' + email + '. Please click this <a href=' + link + '>link</a> to reset your password. <br><br> Thanks! <br> ClassTranscribe Team'
             };
+
+            client.hmset("ClassTranscribe::Users::" + email, [
+                'change_password_id', rand
+            ], function(err, results) {
+                if (err) console.log(err)
+                console.log(results);
+            });
 
             transporter.sendMail(mailOptions, (error, response) => {
                 if (err) console.log(err)

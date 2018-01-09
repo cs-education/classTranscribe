@@ -10,18 +10,47 @@ var client = require('./../../modules/redis');
 var passwordHash = require('password-hash');
 
 var changePasswordMustache = fs.readFileSync(mustachePath + 'changePassword.mustache').toString();
+var email;
 
 router.get('/changePassword', function (request, response) {
-    response.writeHead(200, {
-        'Content-Type': 'text.html'
+    email = request.query.email
+
+    client.hgetall("ClassTranscribe::Users::" + email, function(err, usr) {
+        if (!usr) {
+            var error = "Account does not exist.";
+            console.log(error);
+            response.end();
+            // TODO: ADD 404 PAGE
+        } else {
+            // Check if the user reset password link id matches the email
+            client.hget("ClassTranscribe::Users::" + email, "change_password_id", function(err, obj) {
+                if (obj != request.query.id) {
+                    var error = "Incorrect reset password link.";
+                    console.log(error);
+                    response.end();
+                    // TODO: ADD 404 PAGE
+                } else {
+                    client.hmset("ClassTranscribe::Users::" + email, [
+                        'change_password_id', ''
+                    ], function(err, results) {
+                        if (err) console.log(err)
+                        console.log(results);
+                    });
+                    response.writeHead(200, {
+                        'Content-Type': 'text.html'
+                    });
+                    renderWithPartial(changePasswordMustache, request, response);
+                }   
+            });
+        }
     });
-    renderWithPartial(changePasswordMustache, request, response);
 });
 
 router.post('/changePassword/submit', function (request, response) {
-    var email = request.body.email;
     var password = request.body.password;
     var re_password = request.body.re_password;
+
+    console.log(email)
 
     // Check that the two passwords are the same
     if (password != re_password) {
