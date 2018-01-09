@@ -36,8 +36,8 @@ router.get('/signup', function(request, response) {
             'Content-Type': 'text.html'
         });
         renderWithPartial(signupMustache, request, response);
-        console.log(mailID);
-        console.log(mailPass);
+        // console.log(mailID);
+        // console.log(mailPass);
     }
 });
 
