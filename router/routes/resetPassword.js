@@ -10,13 +10,18 @@ var client = require('./../../modules/redis');
 var crypto = require('crypto');
 
 var nodemailer = require('nodemailer');
+var mailID = process.env.EMAIL_ID;
+var mailPass = process.env.EMAIL_PASS;
+
+if (!mailID) throw "Need a gmail address in environmental variables!";
+if (!mailPass) throw "Need a password in environmental variables!";
 
 // Create reusable transporter object using the default SMTP transport
 var transporter = nodemailer.createTransport({
-    service: "Gmail",
+    service: 'Gmail',
     auth: {
-        user: "classtranscribenoreply@gmail.com",
-        pass: "classtranscribe12345"
+      user: mailID,
+      pass: mailPass
     }
 });
 
@@ -50,7 +55,7 @@ router.post('/resetPassword/submit', function(request, response) {
 
                 // Send email to reset password
                 var mailOptions = {
-                    from: "ClassTranscribe <classtranscribenoreply@gmail.com>", // ClassTranscribe no-reply email
+                    from: 'ClassTranscribe Team <' + mailID + '>', // ClassTranscribe no-reply email
                     to: email, // receiver who signed up for ClassTranscribe
                     subject: 'ClassTranscribe Password Reset', // subject line of the email
                     html: 'Hi, <br><br> We have just received a password reset request for ' + email + '. Please click this <a href=' + link + '>link</a> to reset your password. <br><br> Thanks! <br> ClassTranscribe Team'

@@ -11,13 +11,18 @@ var passwordHash = require('password-hash');
 var crypto = require('crypto');
 
 var nodemailer = require('nodemailer');
+var mailID = process.env.EMAIL_ID;
+var mailPass = process.env.EMAIL_PASS;
+
+if (!mailID) throw "Need a gmail address in environmental variables!";
+if (!mailPass) throw "Need a password in environmental variables!";
 
 // Create reusable transporter object using the default SMTP transport
 var transporter = nodemailer.createTransport({
-    service: "Gmail",
+    service: 'Gmail',
     auth: {
-        user: "classtranscribenoreply@gmail.com",
-        pass: "classtranscribe12345"
+      user: mailID,
+      pass: mailPass
     }
 });
 
@@ -31,6 +36,8 @@ router.get('/signup', function(request, response) {
             'Content-Type': 'text.html'
         });
         renderWithPartial(signupMustache, request, response);
+        console.log(mailID);
+        console.log(mailPass);
     }
 });
 
@@ -89,7 +96,7 @@ router.post('/signup/submit', function(request, response) {
 
                         // Send email to verify .edu account
                         var mailOptions = {
-                            from: "ClassTranscribe <classtranscribenoreply@gmail.com>", // ClassTranscribe no-reply email
+                            from: 'ClassTranscribe Team <' + mailID + '>', // ClassTranscribe no-reply email
                             to: email, // receiver who signed up for ClassTranscribe
                             subject: 'Welcome to ClassTranscribe', // subject line of the email
                             html: 'Hi ' + first_name + ' ' + last_name + ', <br><br> Thanks for registering at ClassTranscribe. Please verify your email by clicking this <a href=' + link + '>link</a>. <br><br> Thanks! <br> ClassTranscribe Team',
