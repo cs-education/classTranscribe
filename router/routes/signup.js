@@ -30,7 +30,7 @@ var transporter = nodemailer.createTransport({
 // Get the mustache page that will be rendered for the signup route
 var signupMustache = fs.readFileSync(mustachePath + 'signup.mustache').toString();
 
-// Render the signup mustache page
+// Render the signup mustache page; if account is authenticated, just bring user to dashboard
 router.get('/signup', function(request, response) {
     if (request.isAuthenticated()) {
         response.redirect('../dashboard');
