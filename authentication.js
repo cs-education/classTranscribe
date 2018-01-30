@@ -6,14 +6,6 @@
  */
 var saml = require('passport-saml');
 var passwordHash = require('./node_modules/password-hash/lib/password-hash');
-// Commented out since we are not using saml at the moment
-// passport.serializeUser(function (user, done) {
-//     done(null, user);
-// });
-//
-// passport.deserializeUser(function (user, done) {
-//     done(null, user);
-// });
 
 var CALLBACK_URL = "https://192.17.96.13:" + (process.env.CT_PORT || 7443) + "/login/callback"
 var ENTRY_POINT = "https://idp.testshib.org/idp/profile/SAML2/Redirect/SSO";
@@ -71,7 +63,9 @@ passport.use(samlStrategy);
 // ========== current local strategy ==========
 passport.use(new LocalStrategy(
     function(username, password, done) {
+        // Find the user information in the database with the logged in values
         client.hgetall("ClassTranscribe::Users::" + username, function(err, usr) {
+            // Display error if the account does not exist
             if (!usr) {
                 var error = "Account does not exist";
                 console.log(error);
@@ -79,7 +73,8 @@ passport.use(new LocalStrategy(
             } else {
                 // Check if the user is verified their email address
 				client.hget("ClassTranscribe::Users::" + username, "verified", function(err, obj) {
-					console.log("Is the email verified? " + obj);
+                    console.log("Is the email verified? " + obj);
+                    // Display error if email has not been verified
 					if (obj != "true") {
 						var error = "Email not verified";
                         console.log(error);
@@ -88,12 +83,14 @@ passport.use(new LocalStrategy(
 						// Verify the inputted password is equivalent to the hashed password stored in the database
 						client.hget("ClassTranscribe::Users::" + username, "password", function(err, obj) {
 							var isCorrectPassword = passwordHash.verify(password, obj)
-							console.log("Do the passwords match? " + isCorrectPassword);
+                            console.log("Do the passwords match? " + isCorrectPassword);
+                            // Display error if password does not match the one stored in the database
 							if (!isCorrectPassword) {
 								var error = "Invalid password";
                                 console.log(error);
 								return done(null, false, { message: error });
 							} else {
+                                // Return the user if the login value matches the database
 								var suser = { firstname: usr['first_name'], lastname: usr['last_name'], email: username, verified: usr['verified'], university: usr['university'] };
 								return done(null, suser);
 							}
