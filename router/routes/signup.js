@@ -137,6 +137,7 @@ router.get('/verify', function (request, response) {
         } else {
             // Check if the user verify link ID matches the email
             client.hget("ClassTranscribe::Users::" + email, "verify_id", function(err, obj) {
+                // Display error if the generated unique link does not match the user
                 if (obj != request.query.id) {
                     var error = "Email is not verified.";
                     console.log(error);
