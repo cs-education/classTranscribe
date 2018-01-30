@@ -9,9 +9,11 @@ var fs = require('fs');
 var client = require('./../../modules/redis');
 var passwordHash = require('password-hash');
 
+// Get the mustache page that will be rendered for the changePassword route
 var changePasswordMustache = fs.readFileSync(mustachePath + 'changePassword.mustache').toString();
 var email;
 
+// Render the changePassword mustache page; if account is authenticated just password in settings page
 router.get('/changePassword', function (request, response) {
     if (request.isAuthenticated()) {
         email = request.user.email;
@@ -19,20 +21,23 @@ router.get('/changePassword', function (request, response) {
         response.writeHead(200, {
             'Content-Type': 'text.html'
         });
-    
         renderWithPartial(changePasswordMustache, request, response);
     } else {
         email = request.query.email;
 
+        // Check if email is already in the database
         client.hgetall("ClassTranscribe::Users::" + email, function(err, usr) {
+            // Display error if the account does not exist
             if (!usr) {
                 var error = "Account does not exist.";
                 console.log(error);
                 response.end();
                 // TODO: ADD 404 PAGE
             } else {
-                // Check if the user reset password link id matches the email
+                // Check if the user reset password link ID matches the email
                 client.hget("ClassTranscribe::Users::" + email, "change_password_id", function(err, obj) {
+                    // Display error if the generated unique link does not match the user
+                    // Change the info in the database if the unique link matches
                     if (obj != request.query.id) {
                         var error = "Incorrect reset password link.";
                         console.log(error);
@@ -46,10 +51,10 @@ router.get('/changePassword', function (request, response) {
                             console.log(results);
                         });
 
+                        // Render the changePassword mustache page
                         response.writeHead(200, {
                             'Content-Type': 'text.html'
                         });
-                    
                         renderWithPartial(changePasswordMustache, request, response);
                     }   
                 });
@@ -58,6 +63,7 @@ router.get('/changePassword', function (request, response) {
     }
 });
 
+// Change user information in database after the form is submitted
 router.post('/changePassword/submit', function (request, response) {
     var password = request.body.password;
     var re_password = request.body.re_password;
@@ -72,7 +78,6 @@ router.post('/changePassword/submit', function (request, response) {
     } else {
         // Salt and hash password before putting into redis database
         var hashedPassword = passwordHash.generate(password);
-        // console.log(hashedPassword);
 
         // Change user password in database
         client.hmset("ClassTranscribe::Users::" + email, [
