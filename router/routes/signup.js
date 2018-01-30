@@ -10,6 +10,7 @@ var client = require('./../../modules/redis');
 var passwordHash = require('password-hash');
 var crypto = require('crypto');
 
+// Variables that will be passed into the command line when running containers
 var nodemailer = require('nodemailer');
 var mailID = process.env.EMAIL_ID;
 var mailPass = process.env.EMAIL_PASS;
@@ -26,8 +27,10 @@ var transporter = nodemailer.createTransport({
     }
 });
 
+// Get the mustache page that will be rendered for the signup route
 var signupMustache = fs.readFileSync(mustachePath + 'signup.mustache').toString();
 
+// Render the signup mustache page
 router.get('/signup', function(request, response) {
     if (request.isAuthenticated()) {
         response.redirect('../dashboard');
@@ -36,20 +39,16 @@ router.get('/signup', function(request, response) {
             'Content-Type': 'text.html'
         });
         renderWithPartial(signupMustache, request, response);
-        // console.log(mailID);
-        // console.log(mailPass);
     }
 });
 
+// Add new user information to database after the form is submitted
 router.post('/signup/submit', function(request, response) {
     var first_name = request.body.first_name;
     var last_name = request.body.last_name;
     var email = request.body.email;
     var password = request.body.password;
     var re_password = request.body.re_password;
-
-    // console.log(password)
-    // console.log(re_password)
 
     // Check that the two passwords are the same
     if (password != re_password) {
@@ -66,7 +65,6 @@ router.post('/signup/submit', function(request, response) {
             } else {
                 // Salt and hash password before putting into redis database
                 var hashedPassword = passwordHash.generate(password);
-                // console.log(hashedPassword);
 
                 // Add new user to database
                 client.hmset("ClassTranscribe::Users::" + email, [
@@ -84,10 +82,9 @@ router.post('/signup/submit', function(request, response) {
                     if (err) console.log(err)
                     console.log(results);
 
+                    // Generate a unique link specific to the user
                     crypto.randomBytes(48, function(err, buffer) {
                         var token = buffer.toString('hex');
-                        // console.log(token);
-
                         var host = request.get('host');
                         var link = "https://" + host + "/verify?email=" + email + "&id=" + token;
 
@@ -99,8 +96,7 @@ router.post('/signup/submit', function(request, response) {
                             html: 'Hi ' + first_name + ' ' + last_name + ', <br><br> Thanks for registering at ClassTranscribe. Please verify your email by clicking this <a href=' + link + '>link</a>. <br><br> Thanks! <br> ClassTranscribe Team',
                         };
 
-                        // console.log(mailOptions);
-
+                        // Add the token ID to database to check it is linked with the user
                         client.hmset("ClassTranscribe::Users::" + email, [
                             'verify_id', token
                         ], function(err, results) {
@@ -108,12 +104,14 @@ router.post('/signup/submit', function(request, response) {
                             console.log(results);
                         });
 
+                        // Send the custom email to the user
                         transporter.sendMail(mailOptions,(error, response)=> {
                             if (err) console.log(err)
                             console.log("Send mail status: " + response);
                         });
                     });
 
+                    // Redirect the login page after successfully creating new user
                     response.send({ message: 'success', html: '../login' })
                 });
             }
@@ -121,19 +119,23 @@ router.post('/signup/submit', function(request, response) {
     }
 });
 
+// Get the mustache page that will be rendered for the verify route
 var verifyMustache = fs.readFileSync(mustachePath + 'verify.mustache').toString();
 
 router.get('/verify', function (request, response) {
+    // Get the current user's data to access information in database
     email = request.query.email
 
+    // Search in the database for instances of the key
     client.hgetall("ClassTranscribe::Users::" + email, function(err, usr) {
+        // Display error when account does not exist in the database
         if (!usr) {
             var error = "Account does not exist.";
             console.log(error);
             response.end();
             // TODO: ADD 404 PAGE
         } else {
-            // Check if the user verify link id matches the email
+            // Check if the user verify link ID matches the email
             client.hget("ClassTranscribe::Users::" + email, "verify_id", function(err, obj) {
                 if (obj != request.query.id) {
                     var error = "Email is not verified.";
@@ -151,10 +153,10 @@ router.get('/verify', function (request, response) {
                     });
                     console.log("Email is verified.")
 
+                    // Render the verify mustache page
                     response.writeHead(200, {
                         'Content-Type': 'text.html'
                     });
-                
                     renderWithPartial(verifyMustache, request, response);
                 }   
             });
@@ -171,6 +173,5 @@ function getUniversity(email){
         }
     }
 }
-
 
 module.exports = router;
