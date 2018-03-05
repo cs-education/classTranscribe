@@ -164,15 +164,17 @@ router.get('/verify', function (request, response) {
         }
     });
 });
-
+// Look up and return the university name from the email domain name
+// Data file comes from https://github.com/Hipo/university-domains-list
 function getUniversity(email){
-    var domain = email.split('@')[1]
-    var data = JSON.parse(fs.readFileSync('./utils/world_universities_and_domains.json'))
+    var domain = email.split('@')[1];
+    var data = JSON.parse(fs.readFileSync('./utils/world_universities_and_domains.json'));
     for (var i = 0; i < data.length; i++){
         if (data[i].domains[0] == domain){
-            return data[i].name
+            return data[i].name;
         }
     }
+    return "Unknown University";
 }
 
 module.exports = router;
