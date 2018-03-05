@@ -43,6 +43,7 @@
                 <input type='input' id='search-input' name="q">
                 <input type='submit' id='search-button' value='Search' class="btn">
             </form>
+            {{{createClassButton}}}
         </div>
     </div>
 
@@ -106,19 +107,19 @@
                 <form id ='modform' class="" method="POST">
                     <div class="row">
                         <div class="col-lg-3">
-                            <label>University</label> <input type="text" class="form-control" id="mfmin1"  name="University" disabled>
+                            <label>University</label> <input type="text" class="form-control" id="mfmin1"  name="University" readonly>
 
-                            <label>Subject</label> <input type="text" class="form-control" id="mfmin3" name="Subject">
+                            <label>Subject</label> <input type="text" class="form-control" id="mfmin3" name="Subject" readonly>
 
-                            <label>Course Number</label> <input type="text" class="form-control" id="mfmin4" name="Course Number">
+                            <label>Course Number</label> <input type="text" class="form-control" id="mfmin4" name="Course Number" readonly>
                         </div>
 
                         <div class="col-lg-3">
-                            <label>Instructor</label> <input type="text" class="form-control" id="mfmin2" name="Instructor" disabled>
+                            <label>Instructor</label> <input type="text" class="form-control" id="mfmin2" name="Instructor" readonly>
 
-                            <label>Class Name</label> <input type="text" class="form-control" id="mfmin5" name="Class Name">
+                            <label>Class Name</label> <input type="text" class="form-control" id="mfmin5" name="Class Name" >
 
-                            <label>Section Number</label> <input type="text" class="form-control" id="mfmin6" name="Section Number">
+                            <label>Section Number</label> <input type="text" class="form-control" id="mfmin6" name="Section Number" readonly>
 
                         </div>
                         <div class="col-lg-6"><label>Course Description</label> <textarea type="text" class="form-control" id="mfmin7" name="Course Description" style="resize: vertical;"></textarea>
@@ -127,7 +128,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button id="mfmapply" type="button" class="btn btn-default" data-dismiss="modal">Apply</button>
+                <button id="mfmapply" type="button" class="btn btn-default" form="#modform">Apply</button>
                 <button id='mfmcancel' type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
@@ -141,20 +142,6 @@
 
 
 
-
-<!--Ze end, nothing to see here-->
-<section class="contact" id="contact">
-    <h1>Contact</h1>
-    <hr/>
-    <div class="content">
-        <div class="contact-text">
-            Please DON'T use
-            the following e-mail address<br/><br/>
-
-            e-mail: <strong>classTranscribe@gmail.com</strong>
-        </div>
-    </div>
-</section>
 
 <section class="footer">
     <div class="margin">
@@ -175,8 +162,6 @@
 
 
 <script>
-    $( document ).ready(function() {
-    });
     // populate school term options
     var schoolTermsList="{{termlist}}".split(",");
     var termSelection = document.getElementById("school-term");
@@ -186,101 +171,9 @@
         option.value = element;
         termSelection.add(option);
     });
-    // get information for the default selection
-    //getTermInfo();
-
-    // generate html for the selected term
-    function getTermInfo(){
-        var term = document.getElementById("school-term");
-
-        var selectedTerm = $("#school-term").val();
-        //To be removed
-        selectedTerm="All"
-        console.log(selectedTerm);
-        $.ajax({
-            url : "/manage-classes/getterminfo",
-            type: "GET",
-            data: {"term":selectedTerm},
-            success: function (data) {
-                console.log(data);
-                var html = '';
-                html+='<tr id="#header">'+
-                        '<th hidden="yes">Term</th>'+
-                        '<th>University</th>'+
-                        '<th>Subject</th>'+
-                        '<th>Course Number</th>'+
-                        '<th>Section Number</th>'+
-                        '<th>Course Name</th>'+
-                        '<th>Course Instructor</th>'+
-                        '<th>Course Descruption</th>'+
-                        '<th>Action</th>'+
-                        '</tr>';
-                data.forEach(function (c) {
-                    html += '<tr>';
-                    html += '<td hidden="yes">' + c["Term"] + '</td>';
-                    html += '<td>' + c["University"] + '</td>';
-                    html += '<td>' + c["Subject"] + '</td>';
-                    html += '<td>' + c["ClassNumber"] + '</td>';;
-                    html += '<td>' + c["SectionNumber"] + '</td>';
-                    html += '<td>' + c["ClassName"] + '</td>';
-                    html += '<td>' + c["Instructor"] + '</td>';
-                    html += '<td class="tddesc">' + c["ClassDesc"] + '</td>';
-                    html += '<td class="col-md-2">' + '<a class="actionbtn">' +
-                            '          <span class="glyphicon glyphicon-plus"></span> Enroll\n' +
-                            '        </a>' +
-                            '<a class="actionbtn">' +
-                            '          <span class="glyphicon glyphicon-minus"></span> Drop\n' +
-                            '        </a>' +
-                            '<br>'+
-                            '<a class="actionbtn modbtn">' +
-                            '          <span class="glyphicon glyphicon-pencil"></span> Modify\n' +
-                            '        </a>' +
-                            '<a class="actionbtn rmbtn">' +
-                            '          <span class="glyphicon glyphicon-remove"></span> Remove\n' +
-                            '        </a>' +
-                            '</td>';
-                    html += '</tr>';
-                    //append created html to the table body:
-                    //$('#course-list').append(html);
-                });
-                $("#course-list").html(html);
-            },
-            error: function (jXHR, textStatus, errorThrown) {
-                //alert(errorThrown);
-            }
-        });
-    }
-
-    // refresh course list on change
-    $( "#school-term" ).change(function() {
-        getTermInfo();
-    });
-
-//    $("#search-form").submit(function(e) {
-//        e.preventDefault();
-//        var term = document.getElementById("school-term");
-//
-//        if($("#school-term").val()!='') {
-//            //alert($("#creation-form").serialize());
-//            $.ajax({
-//                url: "/manage-classes/search",
-//                type: "GET",
-//                //data: {"data":$("#creation-form").serializeArray(),"term":$("#school-term").val()},
-//                data: "Search=" + $("#search-input").val(),
-//                success: function (data) {
-//                    console.log(data)
-//                    //$("#course-list").html(data);
-//                    $(document).html(data);
-//                },
-//                error: function (jXHR, textStatus, errorThrown) {
-//                    alert(errorThrown);
-//                }
-//            });
-//        }
-//    });
 
     // create new course
-    $("#creation-form").submit(function(e) {
+    $(document).on('submit', '#creation-form', (function(e) {
         e.preventDefault();
         var term = document.getElementById("school-term");
         var newCourse = [];
@@ -289,72 +182,38 @@
         });
 
         if($("#school-term").val()!='') {
-            //alert($("#creation-form").serialize());
             $.ajax({
                 url : "/manage-classes/newclass/",
                 type: "POST",
-                //data: {"data":$("#creation-form").serializeArray(),"term":$("#school-term").val()},
                 data: $("#creation-form").serialize()+"&Term="+$( "#school-term" ).val(),
                 success: function (data) {
-                    console.log(data);
+                    $('#createPanel').modal('hide');;
+                    location.reload();
                 },
                 error: function (jXHR, textStatus, errorThrown) {
                     alert(errorThrown);
                 }
             });
-            console.log(newCourse);
-            // change list display
-            $("#course-list").append('<tr>' +
-                    '<td>' + newCourse[5] + '</td>'+
-                    '<td>' + newCourse[0] + '</td>'+
-                    '<td>' + newCourse[1] + '</td>'+
-                    '<td>' + newCourse[4] + '</td>'+
-                    '<td>' + newCourse[2] + '</td>' +
-                    '<td>' + newCourse[3] + '</td>'+
-                    '<td style=\"max-width:5rem;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;  \">' + newCourse[6] + '</td>'+
-//                    '<td>' + newCourse["University"] + '</td>'+
-//                    '<td>' + newCourse["Subject"] + '</td>'+
-//                    '<td>' + newCourse["ClassNumber"] + '</td>'+
-//                    '<td>' + newCourse["SectionNumber"] + '</td>'+
-//                    '<td>' + newCourse["ClassName"] + '</td>' +
-//                    '<td>' + newCourse["Instructor"] + '</td>'+
-//                    '<td>' + newCourse["ClassDesc"] + '</td>'+
-                    '<td class="col-md-2">' + '<a class="actionbtn">' +
-                    '          <span class="glyphicon glyphicon-plus"></span> Enroll\n' +
-                    '        </a>' +
-                    '<a class="actionbtn">' +
-                    '          <span class="glyphicon glyphicon-minus"></span> Drop\n' +
-                    '        </a>' +
-                    '<br>' +
-                    '<a class="actionbtn">' +
-                    '          <span class="glyphicon glyphicon-pencil"></span> Modify\n' +
-                    '        </a>' +
-                    '<a class="actionbtn rmbtn">' +
-                    '          <span class="glyphicon glyphicon-remove"></span> Remove\n' +
-                    '        </a>' +
-                    '</td>' +
-                    '</tr>');
         }
-    });
+    }));
 
     // delete button
     $(document).on('click',".actionbtn.rmbtn",function (e) {
         e.preventDefault();
-        console.log("remove button clicked");
         var retd = {};
         for (var d in $(this).parent().parent()[0]){
             retd[d] = d;
         }
         var row = $(this).closest("tr");
-        console.log()
         $.ajax({
             url : "/manage-classes/deleteclass/",
-            type: "POST",
+            type: "DELETE",
             data:'term='+$("#school-term").val()+'&classinfo='+$(this).closest("tr").find('td').map(function() {
                 return $(this).text();
             }).get().join(',,'),
             success: function (data) {
                 row.html("");
+                location.reload();
             },
             error: function (jXHR, textStatus, errorThrown) {
                 alert(errorThrown);
@@ -363,13 +222,12 @@
     });
 
     // needed for modify
-    termselected = ''
-    uniselected = ''
+    termselected = '';
+    uniselected = '';
 
     // modify button
     $(document).on('click',".actionbtn.modbtn",function (e) {
         e.preventDefault();
-        console.log("modity button clicked");
         var retd = {};
         for (var d in $(this).parent().parent()[0]){
             retd[d] = d;
@@ -377,35 +235,34 @@
         var row = $(this).closest("tr");
         var info = $(this).closest("tr").find('td').map(function() {
             return $(this).text()});
-        console.log(info);
-        termselected = info[0]
-        uniselected = info[1]
+        termselected = info[0];
+        uniselected = info[1];
         populateForm(info);
     });
     function populateForm(info) {
-        $('#mfmin1').val(info[1])
-        $('#mfmin2').val(info[6])
-        $('#mfmin3').val(info[2])
-        $('#mfmin4').val(info[3])
-        $('#mfmin5').val(info[5])
-        $('#mfmin6').val(info[4])
-        $('#mfmin7').val(info[7])
+        $('#mfmin1').val(info[1]);
+        $('#mfmin2').val(info[6]);
+        $('#mfmin3').val(info[2]);
+        $('#mfmin4').val(info[3]);
+        $('#mfmin5').val(info[5]);
+        $('#mfmin6').val(info[4]);
+        $('#mfmin7').val(info[7]);
     }
 
 
     $(document).on('click',"#mfmapply",function (e) {
         e.preventDefault();
-        console.log('apply mod');
         var row = $(this).closest("tr");
         var info = $(this).closest("tr").find('td').map(function() {
             return $(this).text()});
-        //console.log(info);
-        console.log($('#modform').serialize())
+        console.log("modapp");
         $.ajax({
             url : "/manage-classes/modifyclass/",
             type: "POST",
             data:$('#modform').serialize()+'&uni=' +uniselected+'&term='+termselected,
             success: function (data) {
+                console.log(data)
+                $('#modpanel').modal('hide');
                 location.reload();
             },
             error: function (jXHR, textStatus, errorThrown) {
@@ -415,7 +272,6 @@
     });
 
     $(document).on('click',".form-check-input",function (e) {
-        console.log("filter button clicked");
         var fterm=$("#termFilterData input:checked").map(function(i,e){return e.value;}).get().join(';;');
         var fsubject=$("#subjectFilterData input:checked").map(function(i,e){return e.value;}).get().join(';;');
         $.ajax({
@@ -431,6 +287,51 @@
         });
     });
 
+    $(document).on('click',".actionbtn.erbtn",function (e) {
+        e.preventDefault();
+        var retd = {};
+        for (var d in $(this).parent().parent()[0]){
+            retd[d] = d;
+        }
+        var row = $(this).closest("tr");
+        $.ajax({
+            url : "/manage-classes/enroll/",
+            type: "POST",
+            data:'term='+$("#school-term").val()+'&classinfo='+$(this).closest("tr").find('td').map(function() {
+                return $(this).text();
+            }).get().join(',,'),
+            success: function (data) {
+                location.reload();
+            },
+            error: function (jXHR, textStatus, errorThrown) {
+                alert(errorThrown);
+            }
+        });
+    });
+    $(document).on('click',".actionbtn.dpbtn",function (e) {
+        e.preventDefault();
+        var retd = {};
+        for (var d in $(this).parent().parent()[0]){
+            retd[d] = d;
+        }
+        var row = $(this).closest("tr");
+        $.ajax({
+            url : "/manage-classes/drop/",
+            type: "POST",
+            data:'term='+$("#school-term").val()+'&classinfo='+$(this).closest("tr").find('td').map(function() {
+                return $(this).text();
+            }).get().join(',,'),
+            success: function (data) {
+                location.reload();
+            },
+            error: function (jXHR, textStatus, errorThrown) {
+                alert(errorThrown);
+            }
+        });
+    });
+
+
+
 </script>
 
 </body>
@@ -439,3 +340,4 @@
 
 
 
+/

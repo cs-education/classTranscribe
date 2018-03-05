@@ -10,32 +10,41 @@
 //  |--ClassTranscribe::Terms::YY|--ClassTranscribe::Course::C3
 // -|
 //  |--ClassTranscribe::SubjectList--|--ClassTranscribe::Subject::XX --ClassTranscribe::Course::Classid_1
-//  |                                |--ClassTranscribe::Subject::YY|--ClassTranscribe::Course::C2
-//  |                                                               |--ClassTranscribe::Course::C3
+//  |                                |--ClassTranscribe::Subject::YY::|--ClassTranscribe::Course::C2
+//  |                                                                 |--ClassTranscribe::Course::C3
 //  |--ClassTranscribe::Course::C1--"ClassNumber","SectionNumber","ClassName","ClassDesc","University","Instructor","Term"|||(End of current attributes)|||students, instructors<== planned/WIP attributes
-//  |--ClassTranscribe::Course::...
+//  |--ClassTranscribe::Course::...::Students
+//  |                                |--Instructors
 //  |
 //  ========== User section ==========
 //  |
 //  |--ClassTranscribe::Users::userid_1--'first_name', 'last_name', 'password',|||(End of current attributes)|||, classes with instructor access, classes with student access
-//  |--ClassTranscribe::Users::...     --...
+//                             userid_1::Courses_as_Instructor
+//                             userid_1::Courses_as_TA
+//                             userid_1::Courses_as_Student//  |--ClassTranscribe::Users::...
+//  |--ClassTranscribe::Users::...
 //  |
 //  |
 //  ========== Misc section ==========
 //  |
 //  |
 
-
+// TODO: create class consistency, create class permission, uid changes, more permission check, empty fields check for create class
 // note: for classid see getClassUid(...)
 //       for userid it's just email at the moment
 
 
+// Potential problem with ajax spam
+// Also currently no instructor verification
 
+async = require('async');
 var router = express.Router();
 // Search helper
-var shelper = require("../../utility_scripts/searchContent.js");
+var srchHelper = require("../../utility_scripts/searchContent.js");
 // Saving current content before applying filters
 var currentcontent = []
+
+acl = require('acl');
 
 
 //=======================Sample data for testing=====================================
@@ -47,17 +56,6 @@ function getClassUid(university, term, number, section) {
     }
     return university+"-"+term+"-"+number+"-"+section;
 }
-// Old data, ignore this
-//var schoolTermsList = ["Spring 2016", "Fall 2016","Spring 2017", "Fall 2017", "Spring 2018", "All"];
-//var schoolTermsList = ["Spring 2016", "Fall 2016", "Fall 2015","All"];
-// 0-subject, 1-class number, 2-Section-number, 3-class name, 4-class description, 5-University, 6-instructor name
-// var courseList = {"Spring 2016":[["Computer Science", "CS123","AGX","Intro to CS", "no desc yet", "UIUC","Instructor A. P."],
-//     ["Computer Science", "CS223","GAX","More intro to CS", "desc", "UIUC","Instructor B. P."],
-//     ["History", "HIST123","AGX","Intro to Ancient Civ", "desc", "UIUC","Instructor H. P."]],
-//     "Fall 2016":[["Mathematics", "MATH343","XGX","Linear Algebra", "desc", "UIUC","Instructor B. E."],
-//         ["Computer Science", "CS423","GHX","Even More intro to CS", "desc", "UIUC","Instructor W. J."],
-//         ["Sociology", "SOCI323","AGX","Society and XXX", "desc", "UIUC","Instructor Q"]],
-//     "Spring 2017":[], "Fall 2017":[], "Spring 2018":[],"All":[]};
 var courseList = {
     "Spring 2016":[
         ["Chemistry", "Chem 233", "AL2", "Elementary Organic Chem Lab I", "Basic laboratory techniques in organic" +
@@ -94,14 +92,28 @@ var courseList = {
 };
 
 
+var passwordHash = require('password-hash');
+// test user profile
+client.hmset("ClassTranscribe::Users::" + 'testing@testdomabbccc.edu', [
+    'first_name', 'First',
+    'last_name', 'Sur',
+    'password', passwordHash.generate("passtest"),
+    'change_password_id', '',
+    'university', "test uni",
+    'verified', true,
+    'verify_id', '',
+    'courses_as_instructor','',
+    'courses_as_TA','',
+    'courses_as_student',''
+]);
 
-// just a wrapper
+// Just a wrapper
 function print(msg){
     console.log(msg)
 }
 
 // Loading sample data into database
-Object.keys(courseList).forEach( function ( t) {
+Object.keys(courseList).forEach( function (t) {
     client.sadd("ClassTranscribe::Terms", "ClassTranscribe::Terms::"+t);
     print(t)
     courseList[t].forEach(function (course) {
@@ -126,130 +138,105 @@ Object.keys(courseList).forEach( function ( t) {
     });
 });
 
+// Using the same Redis
+sacl = new acl(new acl.redisBackend(client,"ClassTranscribe::acl::"));
+// Example usage (default)
+//acl.allow('UserRole', 'ResourceName', 'Action');
+//acl.addUserRoles('UserName', 'UserRole');
+// Example (per user)
+sacl.addUserRoles('testing@testdomabbccc.edu', 'testing@testdomabbccc.edu');
+sacl.allow('testing@testdomabbccc.edu', 'ClassTranscribe::Course::UIUC-Fall 2016-CS 446-D3', 'Modify');
+sacl.allow('testing@testdomabbccc.edu', "ClassTranscribe::Course::UIUC-Spring 2016-Chem 233-AL2", 'Drop');
+sacl.allow('testing@testdomabbccc.edu', "ClassTranscribe::Course::UIUC-Spring 2016-CS 225-AL1", 'Remove');
 
-console.log("Sample Data Loaded");
-//var searchMustache = fs.readFileSync(mustachePath + 'search.mustache').toString();
+console.log("Sample data for class listings loaded...");
 //======================End of sample data==========================================================
 
 
 var allterms = [];
 var managementMustache = fs.readFileSync(mustachePath + 'management.mustache').toString();
-// Rendering ain page
+// Main page
 router.get('/manage-classes/', function (request, response) {
-    if (!request.isAuthenticated()) {
-        response.redirect('../');
-    }
-    
     response.writeHead(200, {
         'Content-Type': 'text/html'
     });
 
-    var pa = passport.authenticate('local')
-    print(pa)
+    var pa = passport.authenticate('local');
+    var userid = getUserId(request);
 
     // get all terms data from the database
     client.smembers("ClassTranscribe::Terms", function(err, reply) {
-        // reply is null when the key is missing
+        // reply is null if the key is missing
         allterms=[];
         reply.forEach(function (e) {
             allterms.push(e.split("::")[2]);
-        })
-        console.log("terms initted");
-        console.log(allterms);
+        });
 
         // add create-a-class section if user is authenticated
         // TODO: use a more appropriate authentication method
         var form = '';
-        if (request.isAuthenticated()) {
-            form = "<section> <div class=\"row\"> " +
-                "<h3>Create a new course</h3> </div> " +
-                "<form id=\"creation-form\" method=\"POST\"> " +
-                "<div class=\"row\"> " +
-                "<div class=\"col-md-3\"> " +
-                "<label>Subject</label> <input type=\"text\" class=\"form-control\" id=\"fminput1\" placeholder=\"Example input\" value=\"CS\" name=\"Subject\"> " +
-                "<label>Course Number</label> <input type=\"text\" class=\"form-control\" id=\"fminput2\" placeholder=\"Another input\" name=\"ClassNumber\"> </div> " +
-                "<div class=\"col-md-3\"> " +
-                "<label>Class Name</label> <input type=\"text\" class=\"form-control\" id=\"fminput3\" placeholder=\"Example input\" name=\"ClassName\"> " +
-                "<label>Instructor</label> <input type=\"text\" class=\"form-control\" id=\"fminput4\" placeholder=\"Example input\" name=\"Instructor\"> </div> " +
-                "<div class=\"col-md-2\"> " +
-                "<label>Section Number</label> <input type=\"text\" class=\"form-control\" id=\"fminput5\" placeholder=\"Example input\" name=\"SectionNumber\"> " +
-                "<label>University</label> <input type=\"text\" class=\"form-control\" id=\"fminput6\" placeholder=\"Example input\" name=\"University\"> </div> </div> " +
-
-                "<div class=\"row\"> <div class=\"col-md-8\"> " +
-                "<label>Course Description</label> <input type=\"text\" class=\"form-control\" id=\"fminput7\" placeholder=\"Example input\" name=\"ClassDescription\"> </div> </div> " +
-                "<div class=\"row\"> <div class=\"col-md-3\"> <button type=\"submit\" class=\"btn btn-primary\" id=\"subbtn\">Create Class</button> </div> </div> </form> </section>";
-        }
-        var thtml= "<tr id=\"#header\">\n" +
-            '<th hidden="yes">Term</th>'+
-            "                    <th>University</th>\n" +
-            "                    <th>Subject</th>\n" +
-            "                    <th>Course Number</th>\n" +
-            "                    <th>Section Number</th>\n" +
-            "                    <th>Course Name</th>\n" +
-            "                    <th>Course Instructor</th>\n" +
-            "                    <th>Course Descruption</th>\n" +
-            "                    <th>Action</th>\n" +
-            "                </tr>";
-        client.smembers("ClassTranscribe::CourseList", function (err, reply) {
-            var commands = [];
-            reply.forEach(function (c){
-                // query every class to get info for display
-                commands.push(["hgetall", c]);
-            });
-            client.multi(commands).exec(function (err, replies) {
-                currentcontent=replies;
-                replies.forEach(function(c){
-                    thtml += '<tr>';
-                    thtml += '<td hidden="yes">' + c["Term"] + '</td>';
-                    thtml += '<td>' + c["University"] + '</td>';
-                    thtml += '<td>' + c["Subject"] + '</td>';
-                    thtml += '<td>' + c["ClassNumber"] + '</td>';;
-                    thtml += '<td>' + c["SectionNumber"] + '</td>';
-                    thtml += '<td>' + c["ClassName"] + '</td>';
-                    thtml += '<td>' + c["Instructor"] + '</td>';
-                    thtml += '<td class="tddesc">' + c["ClassDesc"] + '</td>';
-                    thtml += '<td class="col-md-2">' + '<a class="actionbtn">' +
-                        '          <span class="glyphicon glyphicon-plus"></span> Enroll\n' +
-                        '        </a>' +
-                        '<a class="actionbtn">' +
-                        '          <span class="glyphicon glyphicon-minus"></span> Drop\n' +
-                        '        </a>' +
-                        '<br>'+
-                        '<a class="actionbtn modbtn" data-toggle="modal" data-target="#modpanel">' +
-                        '          <span class="glyphicon glyphicon-pencil"></span> Modify\n' +
-                        '        </a>' +
-                        '<a class="actionbtn rmbtn">' +
-                        '          <span class="glyphicon glyphicon-remove"></span> Remove\n' +
-                        '        </a>' +
-                        '</td>';
-
-                    thtml += '</tr>';
+        var createClassBtn = '';
+        client.hgetall("ClassTranscribe::Users::"+getUserId(request), function (err, usrinfo) {
+            if (request.isAuthenticated()) {
+                form = getCreateClassForm(usrinfo);
+                createClassBtn =
+                    '<button class="btn" data-toggle="modal" data-target="#createPanel">' +
+                    '          Create a New Class</button>';
+            }
+            // table header
+            var thtml = "<tr id=\"#header\">\n" +
+                '<th hidden="yes">Term</th>' +
+                "                    <th>University</th>\n" +
+                "                    <th>Subject</th>\n" +
+                "                    <th>Course Number</th>\n" +
+                "                    <th>Section Number</th>\n" +
+                "                    <th>Course Name</th>\n" +
+                "                    <th>Course Instructor</th>\n" +
+                "                    <th>Course Descruption</th>\n" +
+                "                    <th>Action</th>\n" +
+                "                </tr>";
+            client.smembers("ClassTranscribe::CourseList", function (err, reply) {
+                var commands = [];
+                reply.forEach(function (c) {
+                    // query every class to get info for display
+                    commands.push(["hgetall", c]);
                 });
-                filterdata = generateFilters(replies);
-
-                var view = {
-                    termlist: allterms,
-                    //className: "cs225-sp16",
-                    //exampleTerm: exampleTerms["cs225-sp16"],
-                    createform:form,
-                    tabledata:thtml,
-                    termfilterdata:filterdata[0],
-                    subjectfilterdata:filterdata[1]
-                };
-                var html = Mustache.render(managementMustache, view);
-                response.end(html);
+                client.multi(commands).exec(function (err, replies) {
+                    currentcontent = replies;
+                    generateListings(replies, userid, function (res) {
+                        thtml += res;
+                        filterdata = generateFilters(replies);
+                        var view = {
+                            termlist: allterms,
+                            createform: form,
+                            tabledata: thtml,
+                            termfilterdata: filterdata[0],
+                            subjectfilterdata: filterdata[1],
+                            createClassButton: createClassBtn
+                        };
+                        var html = Mustache.render(managementMustache, view);
+                        response.end(html);
+                    });
+                });
             });
         });
     });
 });
 
-// TODO: Security check, and university info should come from session not submitted
+// TODO: Security check, and university info should come from session not submitted, conflict check
 // Create new class
 router.post('/manage-classes/newclass', function (request, response) {
-    console.log("new class to be added, start processing...");
+    //console.log("new class to be added, start processing...");
     var classid = getClassUid(university=request.body["University"], term=request.body["Term"], number=request.body["ClassNumber"], section=request.body["SectionNumber"]);
     var term = "ClassTranscribe::Terms::"+request.body.Term;
     var course = request.body;
+    var userid = getUserId(request);
+    if (userid==''){
+        print("invalid userid");
+        response.end();
+        return;
+    }
+    // TODO: Perhaps a permission check
     // add class
     client.sadd("ClassTranscribe::CourseList", "ClassTranscribe::Course::"+classid); // add class to class list
     client.sadd(term, "ClassTranscribe::Course::"+classid); // add class to term list
@@ -265,111 +252,83 @@ router.post('/manage-classes/newclass', function (request, response) {
     client.hset("ClassTranscribe::Course::"+classid, "University", course["University"]);
     client.hset("ClassTranscribe::Course::"+classid, "Instructor", course["Instructor"]);
     client.hset("ClassTranscribe::Course::"+classid, "Term", course["Term"]);
+
+    // add permissions
+    sacl.allow(getUserId(request), "ClassTranscribe::Course::"+classid, "Modify");
+    sacl.allow(getUserId(request), "ClassTranscribe::Course::"+classid, "Remove");
+    sacl.allow(getUserId(request), "ClassTranscribe::Course::"+classid, "Drop");
+    client.sadd("ClassTranscribe::Course::"+classid+"::Instructors", "ClassTranscribe::Users::"+getUserId(request));
+    client.sadd("ClassTranscribe::Users::"+getUserId(request)+"::Courses_as_Instructor", "ClassTranscribe::Course::"+classid);
+
+    // For enroll maybe
+    // client.hset("ClassTranscribe::Course::"+getUserId(request), "courses_as_student", course["Term"]);
+
     response.end();
 });
 
 
 // Handles search and renders the whole page
 router.get('/manage-classes/search', function (request, response) {
-    console.log("start processing search...");
+    //console.log("start processing search...");
     response.writeHead(200, {
         'Content-Type': 'text/html'
     });
-    // get all terms data from the database
+    // same as the main page
     client.smembers("ClassTranscribe::Terms", function(err, reply) {
-        // reply is null when the key is missing
         allterms=[];
         reply.forEach(function (e) {
             allterms.push(e.split("::")[2]);
-        })
-        var form = '';
-        if (request.isAuthenticated()) {
-            form = "<section> <div class=\"row\"> " +
-                "<h3>Create a new course</h3> </div> " +
-                "<form id=\"creation-form\" method=\"POST\"> " +
-                "<div class=\"row\"> " +
-                "<div class=\"col-md-3\"> " +
-                "<label>Subject</label> <input type=\"text\" class=\"form-control\" id=\"fminput1\" placeholder=\"Example input\" value=\"CS\" name=\"Subject\"> " +
-                "<label>Course Number</label> <input type=\"text\" class=\"form-control\" id=\"fminput2\" placeholder=\"Another input\" name=\"ClassNumber\"> </div> " +
-                "<div class=\"col-md-3\"> " +
-                "<label>Class Name</label> <input type=\"text\" class=\"form-control\" id=\"fminput3\" placeholder=\"Example input\" name=\"ClassName\"> " +
-                "<label>Instructor</label> <input type=\"text\" class=\"form-control\" id=\"fminput4\" placeholder=\"Example input\" name=\"Instructor\"> </div> " +
-                "<div class=\"col-md-2\"> " +
-                "<label>Section Number</label> <input type=\"text\" class=\"form-control\" id=\"fminput5\" placeholder=\"Example input\" name=\"SectionNumber\"> " +
-                "<label>University</label> <input type=\"text\" class=\"form-control\" id=\"fminput6\" placeholder=\"Example input\" name=\"University\"> </div> </div> " +
-
-                "<div class=\"row\"> <div class=\"col-md-8\"> " +
-                "<label>Course Description</label> <input type=\"text\" class=\"form-control\" id=\"fminput7\" placeholder=\"Example input\" name=\"ClassDescription\"> </div> </div> " +
-                "<div class=\"row\"> <div class=\"col-md-3\"> <button type=\"submit\" class=\"btn btn-primary\" id=\"subbtn\">Create Class</button> </div> </div> </form> </section>";
-        }
-        //========================starting search==========================================
-        var searchterm = request.query.q;
-        console.log("Searching: "+searchterm);
-
-        var search = new shelper.SearchHelper(searchterm);
-        search.search(function (line) {
-            var hhtml= "<tr id=\"#header\">\n" +
-                                    '<th hidden="yes">Term</th>'+
-                "                    <th>University</th>\n" +
-                "                    <th>Subject</th>\n" +
-                "                    <th>Course Number</th>\n" +
-                "                    <th>Section Number</th>\n" +
-                "                    <th>Course Name</th>\n" +
-                "                    <th>Course Instructor</th>\n" +
-                "                    <th>Course Descruption</th>\n" +
-                "                    <th>Action</th>\n" +
-                "                </tr>";
-            var commands=line.trim().split(/\r\n|\n/);
-            commands.forEach(function (c,i,arr) {
-                arr[i]=['hgetall',"ClassTranscribe::Course::"+c.slice(0, -3)];
-            });
-            client.multi(commands).exec(function (err, replies) {
-                if (err) throw(err)
-                var olen =replies.length;
-                replies = replies.filter(function(n){ return n != undefined });
-                if(replies.length!=olen){console.log("nil in search replies detected")}
-                currentcontent = replies;
-                replies.forEach(function(e){
-                   hhtml+='<tr>\n' +
-                       '<td hidden="yes">' + e["Term"] + '</td>'+
-                       '<td>' + e["University"] + '</td>'+
-                       '<td>' + e["Subject"] + '</td>'+
-                       '<td>' + e["ClassNumber"] + '</td>'+
-                       '<td>' + e["SectionNumber"] + '</td>'+
-                       '<td>' + e["ClassName"] + '</td>' +
-                       '<td>' + e["Instructor"] + '</td>'+
-                       '<td>' + e["ClassDesc"] + '</td>'+
-                       '<td class="col-md-2">' + '<a class="actionbtn">' +
-                       '          <span class="glyphicon glyphicon-plus"></span> Enroll\n' +
-                       '        </a>' +
-                       '<a class="actionbtn">' +
-                       '          <span class="glyphicon glyphicon-minus"></span> Drop\n' +
-                       '        </a>' +
-                       '<br>'+
-                       '<a class="actionbtn">' +
-                       '          <span class="glyphicon glyphicon-pencil"></span> Modify\n' +
-                       '        </a>' +
-                       '<a class="actionbtn rmbtn">' +
-                       '          <span class="glyphicon glyphicon-remove"></span> Remove\n' +
-                       '        </a>' +
-                       '</td>' +
-                       '</tr>'
+        });
+        client.hgetall("ClassTranscribe::Users::"+getUserId(request), function (err, usrinfo) {
+            var form = '';
+            if (request.isAuthenticated()) {
+                form = getCreateClassForm(usrinfo);
+            }
+            //========================starting search==========================================
+            var searchterm = request.query.q;
+            console.log("Searching: "+searchterm);
+            var search = new srchHelper.SearchHelper(searchterm);
+            search.search(function (line) {
+                var hhtml= "<tr id=\"#header\">\n" +
+                    '<th hidden="yes">Term</th>'+
+                    "                    <th>University</th>\n" +
+                    "                    <th>Subject</th>\n" +
+                    "                    <th>Course Number</th>\n" +
+                    "                    <th>Section Number</th>\n" +
+                    "                    <th>Course Name</th>\n" +
+                    "                    <th>Course Instructor</th>\n" +
+                    "                    <th>Course Descruption</th>\n" +
+                    "                    <th>Action</th>\n" +
+                    "                </tr>";
+                var commands=line.trim().split(/\r\n|\n/);
+                commands.forEach(function (c,i,arr) {
+                    arr[i]=['hgetall',"ClassTranscribe::Course::"+c.slice(0, -3)];
                 });
-
-                if (replies.length==0){
-                    hhtml = 'No result found for "'+searchterm+'"';
-                }
-                filterdata = generateFilters(replies);
-
-                var view = {
-                    termlist: allterms,
-                    createform:form,
-                    tabledata:hhtml,
-                    termfilterdata:filterdata[0],
-                    subjectfilterdata:filterdata[1]
-                };
-                var html = Mustache.render(managementMustache, view);
-                response.end(html);
+                client.multi(commands).exec(function (err, replies) {
+                    if (err) throw(err)
+                    var olen =replies.length;
+                    replies = replies.filter(function(n){ return n != undefined });
+                    if(replies.length!=olen){console.log("nil in search replies detected")}
+                    currentcontent = replies;
+                    generateListings(replies,getUserId(request),function (lres) {
+                        if (replies.length==0){
+                            hhtml = 'No result found for "'+searchterm+'"';
+                        }
+                        else{
+                            hhtml+=lres;
+                        }
+                        filterdata = generateFilters(replies);
+                        var view = {
+                            termlist: allterms,
+                            createform:form,
+                            tabledata:hhtml,
+                            termfilterdata:filterdata[0],
+                            subjectfilterdata:filterdata[1]
+                        };
+                        var html = Mustache.render(managementMustache, view);
+                        response.end(html);
+                    });
+                });
             });
         });
     });
@@ -377,46 +336,71 @@ router.get('/manage-classes/search', function (request, response) {
 
 
 
-// handles class deletion, TODO: Trashbin feature, also need to decide what to do with the transcription file
-router.post('/manage-classes/deleteclass/', function (request, response) {
-    console.log("start processing deletion...");
+// handles class deletion,
+// TODO: Trashbin feature, also need to decide what to do with the transcription file
+router.delete('/manage-classes/deleteclass/', function (request, response) {
     var params = request.body.classinfo;
     params = params.split(',,');
     var delclass = getClassUid(params[1],  params[0], params[3], params[4])
-    // Remove any reference to the class
-    var commands=[
-        ['del','ClassTranscribe::Course::'+delclass],
-        ['srem','ClassTranscribe::Terms::'+request.body.term,'ClassTranscribe::Course::'+delclass],
-        ['srem','ClassTranscribe::Subject::'+params[1],'ClassTranscribe::Course::'+delclass],
-        ['srem','ClassTranscribe::CourseList','ClassTranscribe::Course::'+delclass]
-    ];
-    client.multi(commands).exec(function (err, replies) {
-        if(err){console.log("error in deleting class" + delclass);}
-        else{console.log(delclass+" deleted");}
-        response.end();
+    var usrid = getUserId(request);
+    sacl.isAllowed("ClassTranscribe::Users::"+usrid, "ClassTranscribe::Course::"+delclass, "Delete", function (err, res) {
+        // Remove any reference to the class
+        var commands = [
+            ['del', 'ClassTranscribe::Course::' + delclass],
+            ['srem', 'ClassTranscribe::Terms::' + request.body.term, 'ClassTranscribe::Course::' + delclass],
+            ['srem', 'ClassTranscribe::Subject::' + params[1], 'ClassTranscribe::Course::' + delclass],
+            ['srem', 'ClassTranscribe::CourseList', 'ClassTranscribe::Course::' + delclass]
+        ];
+        client.multi(commands).exec(function (err, replies) {
+            if (err) {
+                console.log("error in deleting class" + delclass);
+            }
+            else {
+                console.log(delclass + " deleted");
+                currentcontent.splice(currentcontent.indexOf(delclass), 1)
+            }
+
+            sacl.removeAllow(getUserId(request), 'ClassTranscribe::Course::' + delclass, "Drop");
+            sacl.removeAllow(getUserId(request), 'ClassTranscribe::Course::' + delclass, "Remove");
+            sacl.removeAllow(getUserId(request), 'ClassTranscribe::Course::' + delclass, "Modify");
+            // TODO: remove other all relavant info in the database
+            client.smembers("ClassTranscribe::Course::" + delclass + "::Students", function (err, rep) {
+                rep.forEach(function (c) {
+                    client.srem(c + "::Courses_as_Student", "ClassTranscribe::Course::" + delclass)
+                });
+                client.del("ClassTranscribe::Course::" + delclass + "::Students");
+                client.smembers("ClassTranscribe::Course::" + delclass + "::Instructors", function (err, rep) {
+                    rep.forEach(function (c) {
+                        client.srem(c + "::Courses_as_Instructor", "ClassTranscribe::Course::" + delclass)
+                    });
+                    client.del("ClassTranscribe::Course::" + delclass + "::Instructors");
+                    client.smembers("ClassTranscribe::Course::" + delclass + "::TAs", function (err, rep) {
+                        rep.forEach(function (c) {
+                            client.srem(c + "::Courses_as_TA", "ClassTranscribe::Course::" + delclass)
+                        });
+                        client.del("ClassTranscribe::Course::" + delclass + "::TAs");
+                        response.end();
+                    });
+                });
+            });
+        });
     });
 });
 
 
 // return courses and their information offered in a term
 router.get('/manage-classes/getterminfo', function (request, response) {
-    console.log("term change noted");
-    console.log(request.query["term"]);
-    if(request.query["term"]=="All"){
+    if(request.query["term"]=="All")
         var term = "ClassTranscribe::CourseList";
-    }
-    else {
+    else
         var term = "ClassTranscribe::Terms::" + request.query["term"];
-    }
     client.smembers(term, function (err, reply) {
         var commands = [];
         reply.forEach(function (c){
             // query every class to get info for display
             commands.push(["hgetall", c]);
         });
-        console.log("getterminfo command:"+commands);
         client.multi(commands).exec(function (err, replies) {
-            console.log("getterminfo final replies:"+replies);
             response.send(replies);
         });
     });
@@ -425,35 +409,37 @@ router.get('/manage-classes/getterminfo', function (request, response) {
 
 // modify class
 router.post('/manage-classes/modifyclass',function (request, response) {
-    // TODO priviledge checkvar params = request.body.classinfo;
-    // TODO class number and maybe others shouldn't be modifiable since they are part of the index/uid
+    var usrid = getUserId(request);
     var params = request.body;
-    var mclass = getClassUid(params['uni'],  params['term'], params['Course Number'], params['Section Number'])
-    var commands=[
-        ['hset','ClassTranscribe::Course::'+mclass, 'ClassName', params['Class Name']],
-        ['hset','ClassTranscribe::Course::'+mclass, 'ClassDesc', params['Course Description']],
-        ['hset','ClassTranscribe::Course::'+mclass, 'ClassNumber', params['Course Number']],
-        ['hset','ClassTranscribe::Course::'+mclass, 'SectionNumber', params['Section Number']],
-        ['hset','ClassTranscribe::Course::'+mclass, 'Subject', params['Subject']]
-    ];
-    client.multi(commands).exec(function (err, replies) {
-        if(err){console.log("error in modifying class" + mclass);}
-        else{console.log(mclass+" modified");}
-        response.end();
+    var mclass = getClassUid(params['uni'],  params['term'], params['Course Number'], params['Section Number']);
+    sacl.isAllowed(usrid, "ClassTranscribe::Course::"+mclass, "Modify", function (err, res) {
+        if(err) {print(err)}
+        if (res){
+            var commands=[
+                ['hset','ClassTranscribe::Course::'+mclass, 'ClassName', params['Class Name']],
+                ['hset','ClassTranscribe::Course::'+mclass, 'ClassDesc', params['Course Description']],
+                //['hset','ClassTranscribe::Course::'+mclass, 'ClassNumber', params['Course Number']],
+                //['hset','ClassTranscribe::Course::'+mclass, 'SectionNumber', params['Section Number']],
+                //['hset','ClassTranscribe::Course::'+mclass, 'Subject', params['Subject']]
+            ];
+            client.multi(commands).exec(function (err, replies) {
+                if(err){console.log("error in modifying class" + mclass);}
+                else{console.log(mclass+" modified");}
+                response.end();
+            });
+        }
+        else{
+            response.end();
+        }
     });
 });
 
 // modify the view table based on the filter
 router.post('/manage-classes/applyfilter', function (request, response) {
-    console.log("start filtering process...");
     var termf = request.body.termfilter.split(';;');
     var subjectf = request.body.subjectfilter.split(';;');
 
-    print(subjectf)
-    print(termf)
-
-    rethtml= ''
-    rethtml+="<tr id=\"#header\">\n" +
+    rethtml="<tr id=\"#header\">\n" +
         '<th hidden="yes">Term</th>'+
         "                    <th>University</th>\n" +
         "                    <th>Subject</th>\n" +
@@ -464,35 +450,16 @@ router.post('/manage-classes/applyfilter', function (request, response) {
         "                    <th>Course Descruption</th>\n" +
         "                    <th>Action</th>\n" +
         "                </tr>";
+    var result = []
     currentcontent.forEach(function(e){
         if( subjectf.indexOf(e['Subject'])>=0 && termf.indexOf(e['Term'])>=0) {
-            rethtml += '<tr>\n' +
-                '<td hidden="yes">' + e["Term"] + '</td>' +
-                '<td>' + e["University"] + '</td>' +
-                '<td>' + e["Subject"] + '</td>' +
-                '<td>' + e["ClassNumber"] + '</td>' +
-                '<td>' + e["SectionNumber"] + '</td>' +
-                '<td>' + e["ClassName"] + '</td>' +
-                '<td>' + e["Instructor"] + '</td>' +
-                '<td>' + e["ClassDesc"] + '</td>' +
-                '<td class="col-md-2">' + '<a class="actionbtn">' +
-                '          <span class="glyphicon glyphicon-plus"></span> Enroll\n' +
-                '        </a>' +
-                '<a class="actionbtn">' +
-                '          <span class="glyphicon glyphicon-minus"></span> Drop\n' +
-                '        </a>' +
-                '<br>' +
-                '<a class="actionbtn">' +
-                '          <span class="glyphicon glyphicon-pencil"></span> Modify\n' +
-                '        </a>' +
-                '<a class="actionbtn rmbtn">' +
-                '          <span class="glyphicon glyphicon-remove"></span> Remove\n' +
-                '        </a>' +
-                '</td>' +
-                '</tr>';
+            result.push(e)
         }
     });
-    response.send(rethtml);
+    generateListings(result,getUserId(request), function (res) {
+        rethtml+=res;
+        response.send(rethtml);
+    });
 });
 
 // generate filters from a list of classes, currently only for terms and subjects
@@ -506,11 +473,11 @@ function generateFilters(data){
         if  (subjectlist.indexOf(e['Subject'])<0){
             subjectlist.push(e['Subject']);
             subjecthtml  += '<div class="form-check">'+
-                            '    <label class="form-check-label checkboxlabel">'+
-                            '    <input class="form-check-input" type="checkbox" value="'+e['Subject']+'" checked>'+
-                            e['Subject']+
-                            '</label>'+
-                            '</div>'
+                '    <label class="form-check-label checkboxlabel">'+
+                '    <input class="form-check-input" type="checkbox" value="'+e['Subject']+'" checked>'+
+                e['Subject']+
+                '</label>'+
+                '</div>'
         }
         if  (termlist.indexOf(e['Term'])<0){
             termlist.push(e['Term']);
@@ -525,18 +492,141 @@ function generateFilters(data){
     return [termhtml,subjecthtml];
 }
 
-function userPriviledges(userid){
-    ret = [[],[],[]]
-    client.hget("ClassTranscribe::Users::"+userid,'courses_as_student', function(err, reply) {
-
-        client.hget("ClassTranscribe::Users::"+userid,'courses_as_TA', function(err, reply) {
-
-            client.hget("ClassTranscribe::Users::"+userid,'courses_as_instructor', function(err, reply) {
-
-            });
+// generate coourse listing data
+// data - input course info
+// user - user id
+// cb   - callback function
+function  generateListings(data, user, cb) {
+    var html = '';
+    async.eachSeries(data, function (c, fcb) {
+            html += '<tr>';
+            html += '<td hidden="yes">' + c["Term"] + '</td>';
+            html += '<td>' + c["University"] + '</td>';
+            html += '<td>' + c["Subject"] + '</td>';
+            html += '<td>' + c["ClassNumber"] + '</td>';
+            html += '<td>' + c["SectionNumber"] + '</td>';
+            html += '<td>' + c["ClassName"] + '</td>';
+            html += '<td>' + c["Instructor"] + '</td>';
+            html += '<td class="tddesc">' + c["ClassDesc"] + '</td>';
+            html += '<td class="col-md-2">';
+            var debug = false;
+            if (debug || (user != '' && user != undefined)) {
+                var classid = "ClassTranscribe::Course::" + getClassUid(c["University"], c["Term"], c['ClassNumber'], c['SectionNumber']);
+                sacl.isAllowed(user, classid, 'Drop', function (err, res) {
+                    if (!res) {
+                        html +=
+                            '<a class="actionbtn erbtn">' +
+                            '          <span class="glyphicon glyphicon-plus"></span> Enroll\n' +
+                            '        </a>';
+                    }
+                    else {
+                        html +=
+                            '<a class="actionbtn dpbtn">' +
+                            '          <span class="glyphicon glyphicon-minus"></span> Drop\n' +
+                            '        </a>';
+                    }
+                    html += '</br>';
+                    sacl.isAllowed(user, classid, 'Modify', function (err, res) {
+                        if (res) {
+                            html +=
+                                '<a class="actionbtn modbtn" data-toggle="modal" data-target="#modpanel">' +
+                                '          <span class="glyphicon glyphicon-pencil"></span> Modify\n' +
+                                '        </a>';
+                        }
+                        sacl.isAllowed(user, classid, 'Remove', function (err, res) {
+                            if (res) {
+                                html +=
+                                    '<a class="actionbtn rmbtn">' +
+                                    '          <span class="glyphicon glyphicon-remove"></span> Remove\n' +
+                                    '        </a>' +
+                                    '</td>';
+                            }
+                            html += '</tr>';
+                            fcb(null);
+                        });
+                    });
+                });
+            }
+            else{fcb(null)}
+        },
+        function (err, res) {
+            cb(html);
         });
-    });
+}
+// get user id from email
+// return -  currently just returns the email (i.e. abc@def.edu) or '' in case of error
+function getUserId(req) {
+    var id = "";
+    try{
+        id = req.session.passport.user;
+    }
+    catch(e) {
+        id="";
+        print("invalid user id detected")
+    }
+    return id;
 }
 
+//
+router.post('/manage-classes/enroll/', function (request, response) {
+    var params = request.body.classinfo;
+    params = params.split(',,');
+    var userid = getUserId(request);
+    var classid = getClassUid(params[1],  params[0], params[3], params[4]);
+
+    client.sadd("ClassTranscribe::Users::"+userid+"::Courses_as_Student", "ClassTranscribe::Course::"+classid);
+    client.sadd("ClassTranscribe::Course::"+classid+"::Students", "ClassTranscribe::Users::"+userid);
+    sacl.allow(userid, "ClassTranscribe::Course::"+classid, 'Drop');
+
+    response.end();
+});
+
+
+//
+router.post('/manage-classes/drop/', function (request, response) {
+    var params = request.body.classinfo;
+    params = params.split(',,');
+    var userid = getUserId(request);
+    var classid = getClassUid(params[1],  params[0], params[3], params[4]);
+
+    client.srem("ClassTranscribe::Users::"+userid+"::Courses_as_Student", "ClassTranscribe::Course::"+classid);
+    sacl.removeAllow(userid, "ClassTranscribe::Course::"+classid, 'Drop');
+
+    response.end()
+});
+
+
+
+function getCreateClassForm(rep){
+    return '<div id="createPanel" class="modal fade" role="dialog"> ' +
+        '<div class="modal-dialog"> ' +
+            '<div class="modal-content"> ' +
+                '<div class="modal-header">' +
+                    " <div class=\"row\"> " +
+                        "<h3>Create a new course</h3> </div> " +
+                    '</div>'+
+                '<div class="modal-body">'+
+                    "<form id=\"creation-form\" method=\"POST\"> " +
+                        "<div class=\"row\"> " +
+                            "<div class=\"col-md-4\"> " +
+                                "<label>Subject</label> <input type=\"text\" class=\"form-control\" id=\"fminput1\" placeholder=\"\" name=\"Subject\"> " +
+                                "<label>Course Number</label> <input type=\"text\" class=\"form-control\" id=\"fminput2\" placeholder=\"\" name=\"ClassNumber\"> </div> " +
+                            "<div class=\"col-md-4\"> " +
+                                "<label>Class Name</label> <input type=\"text\" class=\"form-control\" id=\"fminput3\" placeholder=\"\" name=\"ClassName\"> " +
+                                "<label>Instructor</label> <input type=\"text\" class=\"form-control\" id=\"fminput4\" value=\""+rep.first_name+' '+rep.last_name+"\" name=\"Instructor\" readonly> </div> " +
+                            "<div class=\"col-md-4\"> " +
+                                "<label>Section Number</label> <input type=\"text\" class=\"form-control\" id=\"fminput5\" placeholder=\"\" name=\"SectionNumber\"> " +
+                                "<label>University</label> <input type=\"text\" class=\"form-control\" id=\"fminput6\" value=\""+rep.university+"\" name=\"University\" readonly> </div> </div> " +
+                        "<div class=\"row\"> <div class=\"col-md-12\"> " +
+                            "<label>Course Description</label> <input type=\"text\" class=\"form-control\" id=\"fminput7\" placeholder=\"\" name=\"ClassDescription\"> </div> </div> " +
+                    '<div class="modal-footer">'+
+                        '<input id="cfmCreate" type="submit" class="btn btn-default" value="Create"></input>'+
+                        '<button id="cfmCancel" type="button" class="btn btn-default" data-dismiss="modal">Close</button>'+
+                    '</div>'+
+                    '</form>'+
+                '</div>'+
+            '</div>'+
+        '</div>';
+}
 
 module.exports = router;
