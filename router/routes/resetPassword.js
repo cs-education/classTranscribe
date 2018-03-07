@@ -21,8 +21,8 @@ if (!mailPass) throw "Need a password in environmental variables!";
 var transporter = nodemailer.createTransport({
     service: 'Gmail',
     auth: {
-      user: mailID,
-      pass: mailPass
+        user: mailID,
+        pass: mailPass
     }
 });
 
@@ -38,12 +38,12 @@ router.get('/resetPassword', function (request, response) {
 });
 
 // Reset password and change in database after form is submitted
-router.post('/resetPassword/submit', function(request, response) {
+router.post('/resetPassword/submit', function (request, response) {
     // Get the current user's data to access information in database
     var email = request.body.email;
 
     // Check if email is already in the database
-    client.hgetall("ClassTranscribe::Users::" + email, function(err, obj) {
+    client.hgetall("ClassTranscribe::Users::" + email, function (err, obj) {
         // Display error when account does not exist in the database
         if (!obj) {
             var error = "Account does not exist";
@@ -54,7 +54,7 @@ router.post('/resetPassword/submit', function(request, response) {
             response.send({ message: 'success', html: '../accountRecovery' })
 
             // Generate a unique link specific to the user
-            crypto.randomBytes(48, function(err, buffer) {
+            crypto.randomBytes(48, function (err, buffer) {
                 var token = buffer.toString('hex');
                 var host = request.get('host');
                 var link = "https://" + host + "/changePassword?email=" + email + "&id=" + token;
@@ -70,7 +70,7 @@ router.post('/resetPassword/submit', function(request, response) {
                 // Add the token ID to database to check it is linked with the user
                 client.hmset("ClassTranscribe::Users::" + email, [
                     'change_password_id', token
-                ], function(err, results) {
+                ], function (err, results) {
                     if (err) console.log(err)
                     console.log(results);
                 });

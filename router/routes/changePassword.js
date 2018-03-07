@@ -8,6 +8,7 @@ var router = express.Router();
 var fs = require('fs');
 var client = require('./../../modules/redis');
 var passwordHash = require('password-hash');
+var passwordValidator = require('password-validator');
 
 // Get the mustache page that will be rendered for the changePassword route
 var changePasswordMustache = fs.readFileSync(mustachePath + 'changePassword.mustache').toString();
@@ -26,7 +27,7 @@ router.get('/changePassword', function (request, response) {
         email = request.query.email;
 
         // Check if email is already in the database
-        client.hgetall("ClassTranscribe::Users::" + email, function(err, usr) {
+        client.hgetall("ClassTranscribe::Users::" + email, function (err, usr) {
             // Display error if the account does not exist
             if (!usr) {
                 var error = "Account does not exist.";
@@ -35,7 +36,7 @@ router.get('/changePassword', function (request, response) {
                 // TODO: ADD 404 PAGE
             } else {
                 // Check if the user reset password link ID matches the email
-                client.hget("ClassTranscribe::Users::" + email, "change_password_id", function(err, obj) {
+                client.hget("ClassTranscribe::Users::" + email, "change_password_id", function (err, obj) {
                     // Display error if the generated unique link does not match the user
                     // Change the info in the database if the unique link matches
                     if (obj != request.query.id) {
@@ -46,7 +47,7 @@ router.get('/changePassword', function (request, response) {
                     } else {
                         client.hmset("ClassTranscribe::Users::" + email, [
                             'change_password_id', ''
-                        ], function(err, results) {
+                        ], function (err, results) {
                             if (err) console.log(err)
                             console.log(results);
                         });
@@ -56,7 +57,7 @@ router.get('/changePassword', function (request, response) {
                             'Content-Type': 'text.html'
                         });
                         renderWithPartial(changePasswordMustache, request, response);
-                    }   
+                    }
                 });
             }
         });
@@ -68,6 +69,16 @@ router.post('/changePassword/submit', function (request, response) {
     var password = request.body.password;
     var re_password = request.body.re_password;
 
+    // Pattern schema for valid password
+    var schema = new passwordValidator();
+    schema
+        .is().min(8)                                    // Minimum length 8 
+        .is().max(100)                                  // Maximum length 100 
+        .has().uppercase()                              // Must have uppercase letters 
+        .has().lowercase()                              // Must have lowercase letters 
+        .has().digits()                                 // Must have digits 
+        .has().not().spaces()                           // Should not have spaces
+
     console.log(email)
 
     // Check that the two passwords are the same
@@ -76,21 +87,29 @@ router.post('/changePassword/submit', function (request, response) {
         console.log(error);
         response.send({ message: error, html: '' });
     } else {
-        // Salt and hash password before putting into redis database
-        var hashedPassword = passwordHash.generate(password);
+        // Check if password follows pattern schema
+        var valid_pattern = schema.validate(password)
+        if (valid_pattern != true) {
+            var error = "Password must have at least 8 character, an uppercase letter, a lowercase leter, a digit, and no spaces.";
+            console.log(error);
+            response.send({ message: error, html: '' });
+        } else {
+            // Salt and hash password before putting into redis database
+            var hashedPassword = passwordHash.generate(password);
 
-        // Change user password in database
-        client.hmset("ClassTranscribe::Users::" + email, [
-            'password', hashedPassword
-        ], function(err, results) {
-            if (err) console.log(err)
-            console.log(results);
-            if (request.isAuthenticated()) {
-                response.send({ message: 'success', html: '../settings' })
-            } else {
-                response.send({ message: 'success', html: '../login' })
-            }
-        });
+            // Change user password in database
+            client.hmset("ClassTranscribe::Users::" + email, [
+                'password', hashedPassword
+            ], function (err, results) {
+                if (err) console.log(err)
+                console.log(results);
+                if (request.isAuthenticated()) {
+                    response.send({ message: 'success', html: '../settings' })
+                } else {
+                    response.send({ message: 'success', html: '../login' })
+                }
+            });
+        }
     }
 });
 
