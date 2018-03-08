@@ -7,6 +7,7 @@
 var router = express.Router();
 var fs = require('fs');
 var client = require('./../../modules/redis');
+var verifier = require('email-verify');
 var passwordHash = require('password-hash');
 var passwordValidator = require('password-validator');
 var crypto = require('crypto');
@@ -61,81 +62,95 @@ router.post('/signup/submit', function (request, response) {
         .has().digits()                                 // Must have digits 
         .has().not().spaces()                           // Should not have spaces
 
-    // Check that the two passwords are the same
-    if (password != re_password) {
-        var error = "Passwords are not the same";
-        console.log(error);
-        response.send({ message: error, html: '' });
-    } else {
-        // Check if email is already in the database
-        client.hgetall("ClassTranscribe::Users::" + email, function (err, obj) {
-            if (obj) {
-                var error = "Account already exists";
+    // Check if email address exists
+    verifier.verify(email, function(err, info) {
+        if ( err ) console.log(err);
+        else {
+            console.log("Info: " + info.info)
+            var isInvalid = info.info.includes("invalid");
+            if (isInvalid == true) {
+                var error = "Email does not exist";
                 console.log(error);
                 response.send({ message: error, html: '' });
             } else {
-                // Check if password follows pattern schema
-                var valid_pattern = schema.validate(password)
-                if (valid_pattern != true) {
-                    var error = "Password must have at least 8 character, an uppercase letter, a lowercase leter, a digit, and no spaces.";
+                // Check that the two passwords are the same
+                if (password != re_password) {
+                    var error = "Passwords are not the same";
                     console.log(error);
                     response.send({ message: error, html: '' });
                 } else {
-                    // Salt and hash password before putting into redis database
-                    var hashedPassword = passwordHash.generate(password);
+                    // Check if email is already in the database
+                    client.hgetall("ClassTranscribe::Users::" + email, function (err, obj) {
+                        if (obj) {
+                            var error = "Account already exists";
+                            console.log(error);
+                            response.send({ message: error, html: '' });
+                        } else {
+                            // Check if password follows pattern schema
+                            var valid_pattern = schema.validate(password)
+                            if (valid_pattern != true) {
+                                var error = "Password must have at least 8 character, an uppercase letter, a lowercase leter, a digit, and no spaces.";
+                                console.log(error);
+                                response.send({ message: error, html: '' });
+                            } else {
+                                // Salt and hash password before putting into redis database
+                                var hashedPassword = passwordHash.generate(password);
 
-                    // Add new user to database
-                    client.hmset("ClassTranscribe::Users::" + email, [
-                        'first_name', first_name,
-                        'last_name', last_name,
-                        'password', hashedPassword,
-                        'change_password_id', '',
-                        'university', getUniversity(email),
-                        'verified', false,
-                        'verify_id', '',
-                        'courses_as_instructor', '',
-                        'courses_as_TA', '',
-                        'courses_as_student', ''
-                    ], function (err, results) {
-                        if (err) console.log(err)
-                        console.log(results);
+                                // Add new user to database
+                                client.hmset("ClassTranscribe::Users::" + email, [
+                                    'first_name', first_name,
+                                    'last_name', last_name,
+                                    'password', hashedPassword,
+                                    'change_password_id', '',
+                                    'university', getUniversity(email),
+                                    'verified', false,
+                                    'verify_id', '',
+                                    'courses_as_instructor', '',
+                                    'courses_as_TA', '',
+                                    'courses_as_student', ''
+                                ], function (err, results) {
+                                    if (err) console.log(err)
+                                    console.log(results);
 
-                        // Generate a unique link specific to the user
-                        crypto.randomBytes(48, function (err, buffer) {
-                            var token = buffer.toString('hex');
-                            var host = request.get('host');
-                            var link = "https://" + host + "/verify?email=" + email + "&id=" + token;
+                                    // Generate a unique link specific to the user
+                                    crypto.randomBytes(48, function (err, buffer) {
+                                        var token = buffer.toString('hex');
+                                        var host = request.get('host');
+                                        var link = "https://" + host + "/verify?email=" + email + "&id=" + token;
 
-                            // Send email to verify .edu account
-                            var mailOptions = {
-                                from: 'ClassTranscribe Team <' + mailID + '>', // ClassTranscribe no-reply email
-                                to: email, // receiver who signed up for ClassTranscribe
-                                subject: 'Welcome to ClassTranscribe', // subject line of the email
-                                html: 'Hi ' + first_name + ' ' + last_name + ', <br><br> Thanks for registering at ClassTranscribe. Please verify your email by clicking this <a href=' + link + '>link</a>. <br><br> Thanks! <br> ClassTranscribe Team',
-                            };
+                                        // Send email to verify .edu account
+                                        var mailOptions = {
+                                            from: 'ClassTranscribe Team <' + mailID + '>', // ClassTranscribe no-reply email
+                                            to: email, // receiver who signed up for ClassTranscribe
+                                            subject: 'Welcome to ClassTranscribe', // subject line of the email
+                                            html: 'Hi ' + first_name + ' ' + last_name + ', <br><br> Thanks for registering at ClassTranscribe. Please verify your email by clicking this <a href=' + link + '>link</a>. <br><br> Thanks! <br> ClassTranscribe Team',
+                                        };
 
-                            // Add the token ID to database to check it is linked with the user
-                            client.hmset("ClassTranscribe::Users::" + email, [
-                                'verify_id', token
-                            ], function (err, results) {
-                                if (err) console.log(err)
-                                console.log(results);
-                            });
+                                        // Add the token ID to database to check it is linked with the user
+                                        client.hmset("ClassTranscribe::Users::" + email, [
+                                            'verify_id', token
+                                        ], function (err, results) {
+                                            if (err) console.log(err)
+                                            console.log(results);
+                                        });
 
-                            // Send the custom email to the user
-                            transporter.sendMail(mailOptions, (error, response) => {
-                                if (err) console.log(err)
-                                console.log("Send mail status: " + response);
-                            });
-                        });
+                                        // Send the custom email to the user
+                                        transporter.sendMail(mailOptions, (error, response) => {
+                                            if (err) console.log(err)
+                                            console.log("Send mail status: " + response);
+                                        });
+                                    });
 
-                        // Redirect the login page after successfully creating new user
-                        response.send({ message: 'success', html: '../login' })
-                    });
+                                    // Redirect the login page after successfully creating new user
+                                    response.send({ message: 'success', html: '../login' })
+                                });
+                            }
+                        }
+                    })
                 }
             }
-        })
-    }
+        }
+    });
 });
 
 // Get the mustache page that will be rendered for the verify route
