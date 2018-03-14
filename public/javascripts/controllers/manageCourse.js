@@ -9,7 +9,26 @@ $(function(){
 		event.preventDefault();
 		$("#upload-file:hidden").trigger('click');
         $("#upload-file").data('clicked', true);
-	})
+    })
+    
+    initializeDropzone()
+
+    courseId = 'CS225'
+    $.ajax({
+        type: "GET", 
+        url: `students/${courseId}`, 
+        dataType: 'json',
+        success: data => {
+            let students = document.createElement('ul')
+			console.log(data.students)
+            data.students.forEach(student => {
+                let studentEntry = document.createElement('li')
+                studentEntry.innerText = student
+                students.appendChild(studentEntry)
+            })
+            $('#s-test').append(students)
+        }
+    })
 });
 
 /* after the file has been uploaded, display it so the user knows which file was chosen*/
@@ -68,40 +87,45 @@ $('#uploadStudentsFileForm').submit(function(event) {
 });    
 
 $(function() {
-    $("#student-button").on('click', function(event) {
+    $("#student-button").on('click', event => {
         var students = $("#student-box").val();
-        $("#s-test").html(students);
-        if($("#upload-file").data('clicked')) {
-            var file = document.getElementById("upload-file").files[0];
-            var filename = file.name;
-            var formData = new FormData();
-            formData.append(filename, file);
-            $.ajax({
-                type: "POST",
-                url: "/addStudentsFile",
-                data: {
-                    //"filename": filename,
-                    "formData": formData
-                },
-                processData: false,
-                contentType: false,
-                success: function(data) {
-                    alert(data);
-                }
-            })
-        }
-        else {
-            $.ajax({
-                type: "POST", 
-                url: "/addStudents", 
-                data: {
-                    "students": students
-                },
-                success: function(data) {
-                    alert(data);
-                }
-            })
-        }
+        // $("#s-test").html(students);
+        // if($("#upload-file").data('clicked')) {
+        //     var file = document.getElementById("upload-file").files[0];
+        //     var filename = file.name;
+        //     var formData = new FormData();
+        //     formData.append(filename, file);
+        //     $.ajax({
+        //         type: "POST",
+        //         url: "/addStudentsFile",
+        //         data: {
+        //             //"filename": filename,
+        //             "formData": formData
+        //         },
+        //         processData: false,
+        //         contentType: false,
+        //         success: function(data) {
+        //             alert(data);
+        //         }
+        //     })
+        // } else {
+        $.ajax({
+            type: "PUT", 
+            url: "/students/CS225", 
+            data: {
+                "students": students
+            },
+            success: data => {
+                alert(`Following students have been added: ${data.addedStudents}`)
+                let students = $('#s-test').children()
+                data.addedStudents.forEach(student => {
+                    let studentEntry = document.createElement('li')
+                    studentEntry.innerText = student
+                    students.append(studentEntry)
+                })
+            }
+        })
+        // }
     })
 });
 
@@ -117,37 +141,35 @@ function filter() {
     });
 } 
 
-
-/** dropzone video upload **/
-//Dropzone.autoDiscover = false;
-$(function() {
+function initializeDropzone(){
+    /** dropzone video upload **/
+    //Dropzone.autoDiscover = false;
     Dropzone.options.uploadLectureVideos = {
-      //paramName: 'test_file',
-      maxFilesize: 1000, // MB
-      //maxFiles: 1,
-      dictDefaultMessage: 'Drag a file here to upload, or click to select one',
-      acceptedFiles: ".mp4, .avi, .flv, .wmv, .mov, .wav, .ogv, .mpg, .m4v",
-      init: function() {
-        this.on('addedfile', function(file) {
-            console.log("in addedfile");
-        });
-      },
+        //paramName: 'test_file',
+        maxFilesize: 1000, // MB
+        //maxFiles: 1,
+        dictDefaultMessage: 'Drag a file here to upload, or click to select one',
+        acceptedFiles: ".mp4, .avi, .flv, .wmv, .mov, .wav, .ogv, .mpg, .m4v",
+        init: function () {
+            console.log('init');
+            this.on('addedfile', function (file) {
+                console.log("in addedfile");
+            });
+        },
     };
-});
 
-$(function() {
+    /* dropzone file upload */
     Dropzone.options.uploadStudentsFiles = {
-      //paramName: 'test_file',
-      maxFilesize: 100, // MB
-      //maxFiles: 1,
-      dictDefaultMessage: 'Drag a file here to upload, or click to select one',
-      acceptedFiles: ".txt, .csv, .xl*",
-      init: function() {
-        self = this;
-        this.on('addedfile', function(file) {
-            console.log("in addedfile");
-        });
-      },
+        //paramName: 'test_file',
+        maxFilesize: 100, // MB
+        //maxFiles: 1,
+        dictDefaultMessage: 'Drag a file here to upload, or click to select one',
+        acceptedFiles: ".txt, .csv, .xl*",
+        init: function () {
+            self = this;
+            this.on('addedfile', function (file) {
+                console.log("in addedfile");
+            });
+        },
     };
-});
-
+}

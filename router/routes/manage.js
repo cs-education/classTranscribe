@@ -35,6 +35,9 @@ var transporter = nodemailer.createTransport({
   }
 });
 
+const { promisify, isNullOrUndefined } = require('util');
+const saddAsync = promisify(client.sadd).bind(client);
+
 /**var storage = multer.diskStorage({
   dest: './videos',
   rename: function(fieldname, filename) {
@@ -108,21 +111,17 @@ router.post('/addInstructors', function (request, response) {
 
 
 /* add the students to the database */
-router.post('/addStudents', function (request, response) {
-  var data = request.body.students;
-  console.log(data)
-  var students = data.split(/[\s,;:\n]+/);
+router.put('/students/:courseId', function (request, response) {
+  let data = request.body.students;
+  let students = data.split(/[\s,;:\n]+/);
+  let courseId = request.params.courseId
   // TODO: Confirm data input types
-  client.sdiff(students, "students", (err, res) => {
-    diffLen = res.length;
-    console.log('diffLen', res)
-    if (diffLen) {
-      client.sadd("students", res, function (err, res) {
-        if (err || !res) {
-          response.send('No students added!')
+  results = students.map(email => {
+    return saddAsync(`ClassTranscribe::Course::${courseId}::Students`, email)
+      .then(res => {
+        if (!res) {
+          return null
         } else {
-          console.log("added students");
-          console.log(res, err);
           // Send email to reset password
           var mailOptions = {
             from: 'ClassTranscribe Team <' + mailID + '>', // ClassTranscribe no-reply email
@@ -131,17 +130,40 @@ router.post('/addStudents', function (request, response) {
             html: 'Test'
           };
 
-          transporter.sendMail(mailOptions, (error, status) => {
-            if (err) console.log(err)
-            console.log("Send mail status: " + status);
-            response.send(res);
+          transporter.sendMail(mailOptions, (err, status) => {
+            if (err) {
+              console.log(err)
+            } else {
+              console.log("Send mail status: " + status);
+            }
           });
+
+          return email
         }
+      }, err => {
+        return null
       });
-    }
+  });
+  
+  Promise.all(results).then(values => {
+    response.json({
+      addedStudents: values.filter(val => !isNullOrUndefined(val))
+    })
   })
 });
 
+router.get('/students/:courseId', (req, res) => {
+  query = `ClassTranscribe::Course::${req.params.courseId}::Students`
+  console.log(query)
+  client.smembers(query, (err, reply) => {
+    if (err) {
+      res.status(404)
+    } else {
+      console.log(req.params, reply)
+      res.json({students: reply})
+    }
+  })
+})
 
 /* upload the file of students, then add students to database */
 //var upload = multer({ storage : storage}).single('studentsFile');
