@@ -111,10 +111,11 @@ $(function() {
         // } else {
         $.ajax({
             type: "PUT", 
-            url: "/students/CS225", 
+            url: `/students/${courseId}`, 
             data: {
                 "students": students
             },
+            dataType: 'json',
             success: data => {
                 alert(`Following students have been added: ${data.addedStudents}`)
                 let students = $('#s-test').children()

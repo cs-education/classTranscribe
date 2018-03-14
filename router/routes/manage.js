@@ -19,15 +19,18 @@ var storage = multer.diskStorage({
   }
 });
 
-var nodemailer = require('nodemailer');
-var mailID = process.env.EMAIL_ID;
-var mailPass = process.env.EMAIL_PASS;
+const nodemailer = require('nodemailer');
 
+const mailID = process.env.EMAIL_ID;
 if (!mailID) throw "Need a gmail address in environmental variables!";
+const mailSender = 'ClassTranscribe Team <' + mailID + '>'
+
+const mailPass = process.env.EMAIL_PASS;
 if (!mailPass) throw "Need a password in environmental variables!";
 
+
 // Create reusable transporter object using the default SMTP transport
-var transporter = nodemailer.createTransport({
+const transporter = nodemailer.createTransport({
   service: 'Gmail',
   auth: {
     user: mailID,
@@ -109,49 +112,7 @@ router.post('/addInstructors', function (request, response) {
   response.send(instructors);
 });
 
-
-/* add the students to the database */
-router.put('/students/:courseId', function (request, response) {
-  let data = request.body.students;
-  let students = data.split(/[\s,;:\n]+/);
-  let courseId = request.params.courseId
-  // TODO: Confirm data input types
-  results = students.map(email => {
-    return saddAsync(`ClassTranscribe::Course::${courseId}::Students`, email)
-      .then(res => {
-        if (!res) {
-          return null
-        } else {
-          // Send email to reset password
-          var mailOptions = {
-            from: 'ClassTranscribe Team <' + mailID + '>', // ClassTranscribe no-reply email
-            to: 'zh6@illinois.edu', // receiver who signed up for ClassTranscribe
-            subject: 'You\'re just added to a class!', // subject line of the email
-            html: 'Test'
-          };
-
-          transporter.sendMail(mailOptions, (err, status) => {
-            if (err) {
-              console.log(err)
-            } else {
-              console.log("Send mail status: " + status);
-            }
-          });
-
-          return email
-        }
-      }, err => {
-        return null
-      });
-  });
-  
-  Promise.all(results).then(values => {
-    response.json({
-      addedStudents: values.filter(val => !isNullOrUndefined(val))
-    })
-  })
-});
-
+/* Get all students in the current course */
 router.get('/students/:courseId', (req, res) => {
   query = `ClassTranscribe::Course::${req.params.courseId}::Students`
   console.log(query)
@@ -160,10 +121,47 @@ router.get('/students/:courseId', (req, res) => {
       res.status(404)
     } else {
       console.log(req.params, reply)
-      res.json({students: reply})
+      res.json({ students: reply })
     }
   })
 })
+
+/* add the students to the database */
+router.put('/students/:courseId', function (request, response) {
+  let newSubscriptions = request.body.students;
+  let studentEmails = newSubscriptions.split(/[\s,;:\n]+/);
+  let courseId = request.params.courseId
+  let query = `ClassTranscribe::Course::${courseId}::Students`
+
+  let results = studentEmails.map(studentEmail => {
+    return saddAsync(query, studentEmail)
+      .then(value => {
+        if (value) {  // value != 0, the account already existed
+          transporter.sendMail({
+            from: mailSender, // ClassTranscribe no-reply email
+            to: studentEmail, // receiver who signed up for ClassTranscribe
+            subject: 'You\'re just added to a class!', // subject line of the email
+            html: `Hi there,\n\nYou're just added to ${courseId}! You can now get access to all recorded lectures.`
+          }, (err, status) => {
+            if (err) {
+              console.log(`Send to ${studentEmail} failed: ${err}`)
+            }
+          });
+
+          return studentEmail
+        } else {
+          return null
+        }
+      }).catch(reason => {
+        console.log(`Add ${studentEmail} failed because ${reason}`)
+        return null
+      });
+  });
+
+  Promise.all(results).then(insertionResults => response.json({
+    addedStudents: insertionResults.filter(res => !isNullOrUndefined(res))
+  }))
+});
 
 /* upload the file of students, then add students to database */
 //var upload = multer({ storage : storage}).single('studentsFile');
