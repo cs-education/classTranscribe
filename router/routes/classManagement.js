@@ -29,7 +29,7 @@
 //  |
 //  |
 
-// TODO: create class consistency, create class permission, uid changes, more permission check, empty fields check for create class
+// TODO: create class consistency, create class permission, uid changes, more permission check
 // note: for classid see getClassUid(...)
 //       for userid it's just email at the moment
 
@@ -44,8 +44,6 @@ var srchHelper = require("../../utility_scripts/searchContent.js");
 // Saving current content before applying filters
 var currentcontent = []
 
-acl = require('acl');
-
 
 //=======================Sample data for testing=====================================
 // create Uid for the class
@@ -54,7 +52,7 @@ function getClassUid(university, term, number, section) {
         console.log("potential problem in uid, empty/null value detected");
         if (!term) term = 'All';
     }
-    return university+"-"+term+"-"+number+"-"+section;
+    return university+"__"+term+"__"+number+"__"+section;
 }
 var courseList = {
     "Spring 2016":[
@@ -138,16 +136,14 @@ Object.keys(courseList).forEach( function (t) {
     });
 });
 
-// Using the same Redis
-sacl = new acl(new acl.redisBackend(client,"ClassTranscribe::acl::"));
 // Example usage (default)
 //acl.allow('UserRole', 'ResourceName', 'Action');
 //acl.addUserRoles('UserName', 'UserRole');
 // Example (per user)
-sacl.addUserRoles('testing@testdomabbccc.edu', 'testing@testdomabbccc.edu');
-sacl.allow('testing@testdomabbccc.edu', 'ClassTranscribe::Course::UIUC-Fall 2016-CS 446-D3', 'Modify');
-sacl.allow('testing@testdomabbccc.edu', "ClassTranscribe::Course::UIUC-Spring 2016-Chem 233-AL2", 'Drop');
-sacl.allow('testing@testdomabbccc.edu', "ClassTranscribe::Course::UIUC-Spring 2016-CS 225-AL1", 'Remove');
+acl.addUserRoles('testing@testdomabbccc.edu', 'testing@testdomabbccc.edu');
+acl.allow('testing@testdomabbccc.edu', 'ClassTranscribe::Course::UIUC-Fall 2016-CS 446-D3', 'Modify');
+acl.allow('testing@testdomabbccc.edu', "ClassTranscribe::Course::UIUC-Spring 2016-Chem 233-AL2", 'Drop');
+acl.allow('testing@testdomabbccc.edu', "ClassTranscribe::Course::UIUC-Spring 2016-CS 225-AL1", 'Remove');
 
 console.log("Sample data for class listings loaded...");
 //======================End of sample data==========================================================
@@ -172,13 +168,13 @@ router.get('/manage-classes/', function (request, response) {
             allterms.push(e.split("::")[2]);
         });
 
-        // add create-a-class section if user is authenticated
-        // TODO: use a more appropriate authentication method
         var form = '';
         var createClassBtn = '';
         client.hgetall("ClassTranscribe::Users::"+getUserId(request), function (err, usrinfo) {
             if (request.isAuthenticated()) {
                 form = getCreateClassForm(usrinfo);
+                // add create-a-class section if user is authenticated
+                // TODO: maybe use a more appropriate authentication method
                 createClassBtn =
                     '<button class="btn" data-toggle="modal" data-target="#createPanel">' +
                     '          Create a New Class</button>';
@@ -223,7 +219,7 @@ router.get('/manage-classes/', function (request, response) {
     });
 });
 
-// TODO: Security check, and university info should come from session not submitted, conflict check
+// TODO: Security check, and perhaps a permission check
 // Create new class
 router.post('/manage-classes/newclass', function (request, response) {
     //console.log("new class to be added, start processing...");
@@ -236,34 +232,43 @@ router.post('/manage-classes/newclass', function (request, response) {
         response.end();
         return;
     }
-    // TODO: Perhaps a permission check
-    // add class
-    client.sadd("ClassTranscribe::CourseList", "ClassTranscribe::Course::"+classid); // add class to class list
-    client.sadd(term, "ClassTranscribe::Course::"+classid); // add class to term list
-    client.sadd("ClassTranscribe::SubjectList", "ClassTranscribe::Subject::"+course["Subject"]); // add class subject to subject list
-    client.sadd("ClassTranscribe::Subject::"+course["Subject"], "ClassTranscribe::Course::"+classid); // add class to the subject
 
-    // Add Course Info
-    client.hset("ClassTranscribe::Course::"+classid, "Subject", course["Subject"]);
-    client.hset("ClassTranscribe::Course::"+classid, "ClassNumber", course["ClassNumber"]);
-    client.hset("ClassTranscribe::Course::"+classid, "SectionNumber", course["SectionNumber"]);
-    client.hset("ClassTranscribe::Course::"+classid, "ClassName", course["ClassName"]);
-    client.hset("ClassTranscribe::Course::"+classid, "ClassDesc", course["ClassDescription"]);
-    client.hset("ClassTranscribe::Course::"+classid, "University", course["University"]);
-    client.hset("ClassTranscribe::Course::"+classid, "Instructor", course["Instructor"]);
-    client.hset("ClassTranscribe::Course::"+classid, "Term", course["Term"]);
+    client.keys("ClassTranscribe::Course::"+classid, function(err, rep){
+        if (rep.length>0){
+            response.write("Same or similar class already exists, try changing your course number or section number");
+            response.end();
+        }
+        else{
+            // add class
+            client.sadd("ClassTranscribe::CourseList", "ClassTranscribe::Course::"+classid); // add class to class list
+            client.sadd(term, "ClassTranscribe::Course::"+classid); // add class to term list
+            client.sadd("ClassTranscribe::SubjectList", "ClassTranscribe::Subject::"+course["Subject"]); // add class subject to subject list
+            client.sadd("ClassTranscribe::Subject::"+course["Subject"], "ClassTranscribe::Course::"+classid); // add class to the subject
 
-    // add permissions
-    sacl.allow(getUserId(request), "ClassTranscribe::Course::"+classid, "Modify");
-    sacl.allow(getUserId(request), "ClassTranscribe::Course::"+classid, "Remove");
-    sacl.allow(getUserId(request), "ClassTranscribe::Course::"+classid, "Drop");
-    client.sadd("ClassTranscribe::Course::"+classid+"::Instructors", "ClassTranscribe::Users::"+getUserId(request));
-    client.sadd("ClassTranscribe::Users::"+getUserId(request)+"::Courses_as_Instructor", "ClassTranscribe::Course::"+classid);
+            // Add Course Info
+            client.hset("ClassTranscribe::Course::"+classid, "Subject", course["Subject"]);
+            client.hset("ClassTranscribe::Course::"+classid, "ClassNumber", course["ClassNumber"]);
+            client.hset("ClassTranscribe::Course::"+classid, "SectionNumber", course["SectionNumber"]);
+            client.hset("ClassTranscribe::Course::"+classid, "ClassName", course["ClassName"]);
+            client.hset("ClassTranscribe::Course::"+classid, "ClassDesc", course["ClassDescription"]);
+            client.hset("ClassTranscribe::Course::"+classid, "University", course["University"]);
+            client.hset("ClassTranscribe::Course::"+classid, "Instructor", course["Instructor"]);
+            client.hset("ClassTranscribe::Course::"+classid, "Term", course["Term"]);
 
-    // For enroll maybe
-    // client.hset("ClassTranscribe::Course::"+getUserId(request), "courses_as_student", course["Term"]);
+            // add permissions
+            acl.allow(getUserId(request), "ClassTranscribe::Course::"+classid, "Modify");
+            acl.allow(getUserId(request), "ClassTranscribe::Course::"+classid, "Remove");
+            acl.allow(getUserId(request), "ClassTranscribe::Course::"+classid, "Drop");
+            client.sadd("ClassTranscribe::Course::"+classid+"::Instructors", "ClassTranscribe::Users::"+getUserId(request));
+            client.sadd("ClassTranscribe::Users::"+getUserId(request)+"::Courses_as_Instructor", "ClassTranscribe::Course::"+classid);
 
-    response.end();
+            // For enroll maybe
+            // client.hset("ClassTranscribe::Course::"+getUserId(request), "courses_as_student", course["Term"]);
+
+            response.end();
+        }
+    });
+
 });
 
 
@@ -343,7 +348,7 @@ router.delete('/manage-classes/deleteclass/', function (request, response) {
     params = params.split(',,');
     var delclass = getClassUid(params[1],  params[0], params[3], params[4])
     var usrid = getUserId(request);
-    sacl.isAllowed("ClassTranscribe::Users::"+usrid, "ClassTranscribe::Course::"+delclass, "Delete", function (err, res) {
+    acl.isAllowed("ClassTranscribe::Users::"+usrid, "ClassTranscribe::Course::"+delclass, "Delete", function (err, res) {
         // Remove any reference to the class
         var commands = [
             ['del', 'ClassTranscribe::Course::' + delclass],
@@ -360,9 +365,9 @@ router.delete('/manage-classes/deleteclass/', function (request, response) {
                 currentcontent.splice(currentcontent.indexOf(delclass), 1)
             }
 
-            sacl.removeAllow(getUserId(request), 'ClassTranscribe::Course::' + delclass, "Drop");
-            sacl.removeAllow(getUserId(request), 'ClassTranscribe::Course::' + delclass, "Remove");
-            sacl.removeAllow(getUserId(request), 'ClassTranscribe::Course::' + delclass, "Modify");
+            acl.removeAllow(getUserId(request), 'ClassTranscribe::Course::' + delclass, "Drop");
+            acl.removeAllow(getUserId(request), 'ClassTranscribe::Course::' + delclass, "Remove");
+            acl.removeAllow(getUserId(request), 'ClassTranscribe::Course::' + delclass, "Modify");
             // TODO: remove other all relavant info in the database
             client.smembers("ClassTranscribe::Course::" + delclass + "::Students", function (err, rep) {
                 rep.forEach(function (c) {
@@ -412,7 +417,7 @@ router.post('/manage-classes/modifyclass',function (request, response) {
     var usrid = getUserId(request);
     var params = request.body;
     var mclass = getClassUid(params['uni'],  params['term'], params['Course Number'], params['Section Number']);
-    sacl.isAllowed(usrid, "ClassTranscribe::Course::"+mclass, "Modify", function (err, res) {
+    acl.isAllowed(usrid, "ClassTranscribe::Course::"+mclass, "Modify", function (err, res) {
         if(err) {print(err)}
         if (res){
             var commands=[
@@ -512,7 +517,7 @@ function  generateListings(data, user, cb) {
             var debug = false;
             if (debug || (user != '' && user != undefined)) {
                 var classid = "ClassTranscribe::Course::" + getClassUid(c["University"], c["Term"], c['ClassNumber'], c['SectionNumber']);
-                sacl.isAllowed(user, classid, 'Drop', function (err, res) {
+                acl.isAllowed(user, classid, 'Drop', function (err, res) {
                     if (!res) {
                         html +=
                             '<a class="actionbtn erbtn">' +
@@ -526,14 +531,14 @@ function  generateListings(data, user, cb) {
                             '        </a>';
                     }
                     html += '</br>';
-                    sacl.isAllowed(user, classid, 'Modify', function (err, res) {
+                    acl.isAllowed(user, classid, 'Modify', function (err, res) {
                         if (res) {
                             html +=
                                 '<a class="actionbtn modbtn" data-toggle="modal" data-target="#modpanel">' +
                                 '          <span class="glyphicon glyphicon-pencil"></span> Modify\n' +
                                 '        </a>';
                         }
-                        sacl.isAllowed(user, classid, 'Remove', function (err, res) {
+                        acl.isAllowed(user, classid, 'Remove', function (err, res) {
                             if (res) {
                                 html +=
                                     '<a class="actionbtn rmbtn">' +
@@ -576,7 +581,7 @@ router.post('/manage-classes/enroll/', function (request, response) {
 
     client.sadd("ClassTranscribe::Users::"+userid+"::Courses_as_Student", "ClassTranscribe::Course::"+classid);
     client.sadd("ClassTranscribe::Course::"+classid+"::Students", "ClassTranscribe::Users::"+userid);
-    sacl.allow(userid, "ClassTranscribe::Course::"+classid, 'Drop');
+    acl.allow(userid, "ClassTranscribe::Course::"+classid, 'Drop');
 
     response.end();
 });
@@ -590,7 +595,7 @@ router.post('/manage-classes/drop/', function (request, response) {
     var classid = getClassUid(params[1],  params[0], params[3], params[4]);
 
     client.srem("ClassTranscribe::Users::"+userid+"::Courses_as_Student", "ClassTranscribe::Course::"+classid);
-    sacl.removeAllow(userid, "ClassTranscribe::Course::"+classid, 'Drop');
+    acl.removeAllow(userid, "ClassTranscribe::Course::"+classid, 'Drop');
 
     response.end()
 });
@@ -626,7 +631,34 @@ function getCreateClassForm(rep){
                     '</form>'+
                 '</div>'+
             '</div>'+
-        '</div>';
+        '</div>'+
+        '<script>// create new course\n' +
+        '    $(document).on(\'submit\', \'#creation-form\', (function(e) {\n' +
+        '        e.preventDefault();\n' +
+        '        var term = document.getElementById("school-term");\n' +
+        '        var newCourse = [];' +
+        '        var emptyfields = false;' +
+        '        $(\'#creation-form\').serializeArray().forEach(function (elem) {\n' +
+        '            if(elem["value"].trim()==""){emptyfields = true; return false;}' +
+        '            newCourse.push(elem["value"].trim());\n' +
+        '        });' +
+        '        if(emptyfields) {alert("all fields must be non-empty");}\n' +
+        '        else if($("#school-term").val()!=\'\') {\n' +
+        '            $.ajax({\n' +
+        '                url : "/manage-classes/newclass/",\n' +
+        '                type: "POST",\n' +
+        '                data: $("#creation-form").serialize()+"&Term="+$( "#school-term" ).val(),\n' +
+        '                success: function (msg) {\n' +
+        '                    if(msg.length>0){alert(msg);}'+
+        '                    else{$(\'#createPanel\').modal(\'hide\');;\n' +
+        '                    location.reload();}\n' +
+        '                },\n' +
+        '                error: function (jXHR, textStatus, errorThrown) {\n' +
+        '                    alert(errorThrown);\n' +
+        '                }\n' +
+        '            });\n' +
+        '        }else{}\n' +
+        '    }));</script>';
 }
 
 module.exports = router;

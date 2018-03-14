@@ -172,30 +172,7 @@
         termSelection.add(option);
     });
 
-    // create new course
-    $(document).on('submit', '#creation-form', (function(e) {
-        e.preventDefault();
-        var term = document.getElementById("school-term");
-        var newCourse = [];
-        $('#creation-form').serializeArray().forEach(function (elem) {
-            newCourse.push(elem["value"]);
-        });
 
-        if($("#school-term").val()!='') {
-            $.ajax({
-                url : "/manage-classes/newclass/",
-                type: "POST",
-                data: $("#creation-form").serialize()+"&Term="+$( "#school-term" ).val(),
-                success: function (data) {
-                    $('#createPanel').modal('hide');;
-                    location.reload();
-                },
-                error: function (jXHR, textStatus, errorThrown) {
-                    alert(errorThrown);
-                }
-            });
-        }
-    }));
 
     // delete button
     $(document).on('click',".actionbtn.rmbtn",function (e) {
@@ -255,7 +232,6 @@
         var row = $(this).closest("tr");
         var info = $(this).closest("tr").find('td').map(function() {
             return $(this).text()});
-        console.log("modapp");
         $.ajax({
             url : "/manage-classes/modifyclass/",
             type: "POST",

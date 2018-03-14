@@ -95,7 +95,8 @@ router.post('/signup/submit', function (request, response) {
                             } else {
                                 // Salt and hash password before putting into redis database
                                 var hashedPassword = passwordHash.generate(password);
-
+                                // Create acl role for the user
+                                acl.addUserRoles(email, email);
                                 // Add new user to database
                                 client.hmset("ClassTranscribe::Users::" + email, [
                                     'first_name', first_name,
