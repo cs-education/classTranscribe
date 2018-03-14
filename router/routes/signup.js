@@ -166,8 +166,7 @@ router.get('/verify', function (request, response) {
         if (!usr) {
             var error = "Account does not exist.";
             console.log(error);
-            response.end();
-            // TODO: ADD 404 PAGE
+            response.redirect('../404'); // 404 page
         } else {
             // Check if the user verify link ID matches the email
             client.hget("ClassTranscribe::Users::" + email, "verify_id", function (err, obj) {
@@ -175,8 +174,7 @@ router.get('/verify', function (request, response) {
                 if (obj != request.query.id) {
                     var error = "Email is not verified.";
                     console.log(error);
-                    response.end();
-                    // TODO: ADD 404 PAGE
+                    response.redirect('../404'); // 404 page
                 } else {
                     // Change email as verified
                     client.hmset("ClassTranscribe::Users::" + email, [
