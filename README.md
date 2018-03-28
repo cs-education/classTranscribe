@@ -7,7 +7,7 @@ existing lecture recordings and enable enhanced educational features including c
 ## How to run your own instance of ClassTranscribe
 
 1. Install Docker on your machine using one of the following OS specific tutorials: [linux](https://docs.docker.com/linux/step_one/), [mac](https://docs.docker.com/mac/step_one/) or [windows](https://docs.docker.com/windows/step_one/).
-2. Pull down the ClassTranscribe container by running `docker pull pranaygp/classtranscribe`.
+2. Pull down the ClassTranscribe container by running `docker pull cs-education/classtranscribe`.
 3. If you are contributing to an existing ClassTranscribe instance, ask the admin for the redis and email credentials. 
 Otherwise, setup your own gmail account, and do one of the following for redis:
     1. **Preferred** Setup a docker instance running redis ([we use this](https://hub.docker.com/_/redis/))
