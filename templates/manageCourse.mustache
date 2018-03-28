@@ -45,11 +45,16 @@
         <div class="line-separator"></div>
         
         <div class="enroll-student-container"> 
-            <br>
-        	<textarea class="enroll-person" id="student-box" placeholder="Add Students"></textarea>
-     		<br>
-            <button class="enroll-button" id="student-button">Add Students</button> 
-            <br>
+            <div class="container" style="margin-top: 40px;display: flex;">
+                <div class="container" style="flex: 1;">
+                    <textarea class="enroll-person" id="student-box" placeholder="Add Students" style="display: block;"></textarea>
+                        <button class="enroll-button" id="student-button" style="margin-top: 20px;">Add Students</button> 
+                </div>
+                <div id="enrollment-list-container" style="flex: 1;">
+                    <ul id="enrollment-list" style="margin: 0; line-height: 1.4em; list-style: none; padding-left: 1em;">
+                    </ul>
+                </div>
+            </div>
             <span style="padding: 20px; font-weight: bold;"> or </span> 
             <br>
             <form id="upload-students-files"

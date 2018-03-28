@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+let courseId = 'CS225'
 $(function(){
 	$("#upload-link").on('click', function(event){
 		event.preventDefault();
@@ -13,20 +14,18 @@ $(function(){
     
     initializeDropzone()
 
-    courseId = 'CS225'
     $.ajax({
         type: "GET", 
         url: `students/${courseId}`, 
         dataType: 'json',
         success: data => {
-            let students = document.createElement('ul')
 			console.log(data.students)
-            data.students.forEach(student => {
-                let studentEntry = document.createElement('li')
-                studentEntry.innerText = student
-                students.appendChild(studentEntry)
+            let students = data.students.map(student => {
+                let studentEntry = document.createElement('li');
+                studentEntry.innerText = student;
+                return studentEntry;
             })
-            $('#s-test').append(students)
+            $('#enrollment-list').append(students)
         }
     })
 });
@@ -88,7 +87,7 @@ $('#uploadStudentsFileForm').submit(function(event) {
 
 $(function() {
     $("#student-button").on('click', event => {
-        var students = $("#student-box").val();
+        let students = $("#student-box").val();
         // $("#s-test").html(students);
         // if($("#upload-file").data('clicked')) {
         //     var file = document.getElementById("upload-file").files[0];
@@ -118,12 +117,13 @@ $(function() {
             dataType: 'json',
             success: data => {
                 alert(`Following students have been added: ${data.addedStudents}`)
-                let students = $('#s-test').children()
+                let students = $('#enrollment-list')
                 data.addedStudents.forEach(student => {
                     let studentEntry = document.createElement('li')
                     studentEntry.innerText = student
                     students.append(studentEntry)
                 })
+                $("#student-box").val('')
             }
         })
         // }
