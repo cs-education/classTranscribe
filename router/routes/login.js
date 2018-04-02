@@ -10,8 +10,10 @@ var client = require('./../../modules/redis');
 var passport = require('passport')
 var flash = require('connect-flash');
 
+// Get the mustache page that will be rendered for the login route
 var loginMustache = fs.readFileSync(mustachePath + 'login.mustache').toString();
 
+// Render the login mustache page; if account is authenticated, just bring user to dashboard
 router.get('/login', function(request, response) {
     if (request.isAuthenticated()) {
         response.redirect('../dashboard');
@@ -23,8 +25,10 @@ router.get('/login', function(request, response) {
     }
 });
 
+// Use Passport to authentication the login information
 router.post('/login/submit', function(request, response, next) {
     passport.authenticate('local', function(err, user, info) {
+        // Display error if failed to login; otherwise, redirect to dashboard
         if (!user) {
             response.send({ message: info.message, html: '../login'});
         } else {
