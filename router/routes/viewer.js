@@ -10,11 +10,13 @@ router.get('/viewer/:className',
   ensureAuthenticated,
   function (request, response) {
     var className = request.params.className.toLowerCase();
-
-    if (!isClassNameValid(className)) {
-      response.end(invalidClassHTML);
-      return;
-    }
+    client.smembers("ClassTranscribe::CourseList", function(err, results) {
+      if (!isClassNameValid(className) || err) {
+        console.log("not valid course: ", className);
+        response.end(invalidClassHTML);
+        return;
+      }
+    });
 
     response.writeHead(200, {
       'Content-Type': 'text/html',

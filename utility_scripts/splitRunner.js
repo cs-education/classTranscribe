@@ -11,6 +11,8 @@ var spawn = require('child_process').spawn;
 
 var video_path = process.argv[2];
 
+var className = process.argv[3].toUpperCase();
+
 var videos = fs.readdirSync(video_path).filter(function (video) {
   return video.indexOf("mp4") > -1;
 });
@@ -22,20 +24,20 @@ videos = videos.map(function (video) {
 console.log("path: " + video_path);
 console.log("videos: " + videos);
 
-
 videos.forEach(function (video) {
-  console.log("full lecture videos")
+  console.log("full lecture videos");
   var videoIndex = parseInt(video.split("_")[1], 10);
   videoIndex = videoIndex > 9 ? videoIndex : "0" + videoIndex;
 
-  var lectureDir = video_path + "/Lecture_" + videoIndex;
+  //var lectureDir = video_path + "/Lecture" + videoIndex
+  var lectureDir = video_path + "/LECTURE_" + videoIndex;
   fs.mkdirSync(lectureDir);
   fs.renameSync(video_path + "/" + video + ".wav", lectureDir + "/Full_Lecture_Video_" + videoIndex + ".wav");
   fs.renameSync(video_path + "/" + video + ".mp4", lectureDir + "/Full_Lecture_Video_" + videoIndex + ".mp4");
 });
 
 var folders = fs.readdirSync(video_path).filter(function (folder) {
-  return folder.indexOf("Lecture") > -1 && fs.statSync(video_path+'/'+folder).isDirectory();
+  return folder.indexOf("LECTURE") > -1 && fs.statSync(video_path+'/'+folder).isDirectory();
 });
 
 console.log("folders: ", folders);

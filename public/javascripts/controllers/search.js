@@ -7,6 +7,7 @@
 $(".search-box").focus();
 
 var reverseIndex = Object.create(null);
+var videoCaptions;
 
 function createReverseIndex() {
   videoCaptions.forEach(function (captions, i) {
@@ -45,9 +46,22 @@ function createReverseIndex() {
 }
 
 $(document).ready(function () {
-  createReverseIndex();
-  bindEventListeners();
-  $(".search-box").keyup();
+  $.ajax({
+    type: "GET",
+    url: "/getCaptions",
+    data: {
+      className: className,
+    },
+    success: function (data) {
+      videoCaptions = data;
+      if (typeof module !== 'undefined') {
+        module.exports = videoCaptions;
+      }
+      createReverseIndex();
+      bindEventListeners();
+      $(".search-box").keyup();
+    }
+  });
 });
 
 /*
@@ -63,11 +77,14 @@ function bindEventListeners() {
 }
 
 function goToVideo() {
+  // the first thing in the select is indexed 0, but not a video //
   var videoIndex = parseInt($(".video-selector").val(), 10);
   var slashIndex = window.location.href.lastIndexOf("/")
   var href = window.location.href
   var urlBase = href.slice(0, slashIndex) + "/viewer" + href.slice(slashIndex);
-  window.location = urlBase + "?videoIndex=" + videoIndex;
+  var newURL = urlBase + "?videoIndex=" + videoIndex;
+  newURL = newURL.replace("class/", "");
+  window.location = newURL;
 }
 
 /*

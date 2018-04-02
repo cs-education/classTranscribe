@@ -11,14 +11,37 @@
   var lastTime = -1;
   // Length of current segment
   var segmentLength = 0;
+
+  var VIDEOS;
 /*
   End Global Variables
 */
 
 $(document).ready(function () {
-  setVideoFromUrl();
-  begin();
+  $.ajax({
+    type: "GET",
+    url: "/getVideos",
+    data: {
+      className: className,
+    },
+    success: function (data) {
+      VIDEOS = data;
+      setVideoFromUrl();
+      begin();
+    }
+  });
 });
+
+/*
+  Loads the selected video
+*/
+function loadVideo(videoIndex) {
+  console.log(videoIndex);
+  console.log(VIDEOS[videoIndex]);
+  var videoSrc = VIDEOS[videoIndex][1];
+  $(".main-video-source").attr("src", videoSrc);
+  $(".main-video").get(0).load();
+}
 
 /*
   Started once the DOM finishes loading
@@ -101,7 +124,7 @@ function addPiwikTracking() {
   Sets the correct video from url parameters
 */
 function setVideoFromUrl() {
-    var videoIndex = getParameterByName("videoIndex");
+  var videoIndex = getParameterByName("videoIndex");
   if (videoIndex) {
     $(".video-selector option").eq(videoIndex).attr('selected', true);
   }
@@ -157,9 +180,14 @@ function loadCaptions(i) {
   $(".transcription-viewer-container").empty();
   $.ajax({
     type: "GET",
-    url: "/captions/" + className + "/" + i,
+    //url: "/captions/" + className + "/" + i,
+    url: "/getCaptions",
+    data: {
+      className: className,
+    },
     success: function (data) {
-      var captions = data.captions;
+      //var captions = data.captions;
+      var captions = data[i];
       captions.forEach(function (caption) {
         var captionTime = (caption.width / 64).toFixed(2);
         var template = '<div class="caption" data-time="' + captionTime + '">' + caption.text.toLowerCase() + '</div>';

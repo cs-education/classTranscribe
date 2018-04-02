@@ -9,8 +9,9 @@
 
     <!-- Begin Javsacript -->
     <script src="/javascripts/libraries/jquery-1.11.2.min.js"></script>
+
     {{#className}}
-      <script src="/javascripts/data/videos/{{className}}.js"></script>
+      <!-- <script src="/javascripts/data/videos/{{className}}.js"></script> -->
     {{/className}}
 
     <script>
@@ -18,6 +19,7 @@
       piwikServer = "{{piwikServer}}";
     </script>
 
+    <script src="/javascripts/data/videos/videos.js"></script>
     <script src="/javascripts/controllers/viewer.js"></script>
 
     <script>

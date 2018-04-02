@@ -30,7 +30,6 @@ module.exports = function(app) {
     app.use(require('./routes/queue'));
     app.use(require('./routes/second'));
     app.use(require('./routes/search'));
-    app.use(require('./routes/video'));
     app.use(require('./routes/viewer'));
     app.use(require('./routes/captions'));
     app.use(require('./routes/manage'));

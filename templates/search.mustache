@@ -5,14 +5,18 @@
 
     <!-- Begin Javsacript -->
     <script src="/javascripts/libraries/jquery-1.11.2.min.js"></script>
+    <script src="/javascripts/data/captions/captions.js"></script>
+    <script src="/javascripts/controllers/search.js"></script>
     {{#className}}
-      <script src="/javascripts/data/videos/{{className}}.js"></script>
+      <!-- <script src="/javascripts/data/videos/{{className}}.js"></script> -->
     {{/className}}
 
     <script>
       var piwikServer = "{{piwikServer}}";
       className = "{{className}}";
     </script>
+
+    <script src="/javascripts/data/videos/videos.js"></script>
     <script src="/javascripts/libraries/header.js"></script>
 
     <script>
@@ -70,6 +74,5 @@
       </div>
   </body>
 
-  <script src="/javascripts/controllers/search.js"></script>
-  <script src="/javascripts/data/captions/{{className}}.js"></script>
+  <!-- <script src="/javascripts/data/captions/{{className}}.js"></script> -->
  </html>

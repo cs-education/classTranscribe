@@ -90,7 +90,6 @@ exampleTerms = {
 
 
 captionsMapping = {
-
   "cs241": require('./public/javascripts/data/captions/cs241.js'),
   "cs225": require('./public/javascripts/data/captions/cs225.js'),
   "cs225-sp16": require('./public/javascripts/data/captions/cs225-sp16.js'),
@@ -99,7 +98,6 @@ captionsMapping = {
   "ece210": require('./public/javascripts/data/captions/ece210.js'),
   "cs446-fa16": require('./public/javascripts/data/captions/cs446-fa16.js'),
 }
-
 
 /*
     Uncomment this and visit this route to create and show the Metadata
