@@ -8,7 +8,6 @@ var router = express.Router();
 var fs = require('fs');
 var client = require('./../../modules/redis');
 var crypto = require('crypto');
-var verifier = require('email-verify');
 
 // Variables that will be passed into the command line when running containers
 var nodemailer = require('nodemailer');
@@ -43,61 +42,47 @@ router.post('/resetPassword/submit', function (request, response) {
     // Get the current user's data to access information in database
     var email = request.body.email;
 
-    // Check if email address exists
-    verifier.verify(email, function(err, info) {
-        if ( err ) console.log(err);
-        else {
-            console.log("Info: " + info.info)
-            var isInvalid = info.info.includes("invalid");
-            if (isInvalid == true) {
-                var error = "Email does not exist";
-                console.log(error);
-                response.send({ message: error, html: '' });
-            } else {
-                // Check if email is already in the database
-                client.hgetall("ClassTranscribe::Users::" + email, function (err, obj) {
-                    // Display error when account does not exist in the database
-                    if (!obj) {
-                        var error = "Account does not exist";
-                        console.log(error);
-                        response.send({ message: error, html: '' });
-                    } else {
-                        // Redirect user to new mustache web with a note to check their email
-                        response.send({ message: 'success', html: '../accountRecovery' })
+    // Check if email is already in the database
+    client.hgetall("ClassTranscribe::Users::" + email, function (err, obj) {
+        // Display error when account does not exist in the database
+        if (!obj) {
+            var error = "Account does not exist";
+            console.log(error);
+            response.send({ message: error, html: '' });
+        } else {
+            // Redirect user to new mustache web with a note to check their email
+            response.send({ message: 'success', html: '../accountRecovery' })
 
-                        // Generate a unique link specific to the user
-                        crypto.randomBytes(48, function (err, buffer) {
-                            var token = buffer.toString('hex');
-                            var host = request.get('host');
-                            var link = "https://" + host + "/changePassword?email=" + email + "&id=" + token;
+            // Generate a unique link specific to the user
+            crypto.randomBytes(48, function (err, buffer) {
+                var token = buffer.toString('hex');
+                var host = request.get('host');
+                var link = "https://" + host + "/changePassword?email=" + email + "&id=" + token;
 
-                            // Send email to reset password
-                            var mailOptions = {
-                                from: 'ClassTranscribe Team <' + mailID + '>', // ClassTranscribe no-reply email
-                                to: email, // receiver who signed up for ClassTranscribe
-                                subject: 'ClassTranscribe Password Reset', // subject line of the email
-                                html: 'Hi, <br><br> We have just received a password reset request for ' + email + '. Please click this <a href=' + link + '>link</a> to reset your password. <br><br> Thanks! <br> ClassTranscribe Team'
-                            };
+                // Send email to reset password
+                var mailOptions = {
+                    from: 'ClassTranscribe Team <' + mailID + '>', // ClassTranscribe no-reply email
+                    to: email, // receiver who signed up for ClassTranscribe
+                    subject: 'ClassTranscribe Password Reset', // subject line of the email
+                    html: 'Hi, <br><br> We have just received a password reset request for ' + email + '. Please click this <a href=' + link + '>link</a> to reset your password. <br><br> Thanks! <br> ClassTranscribe Team'
+                };
 
-                            // Add the token ID to database to check it is linked with the user
-                            client.hmset("ClassTranscribe::Users::" + email, [
-                                'change_password_id', token
-                            ], function (err, results) {
-                                if (err) console.log(err)
-                                console.log(results);
-                            });
-
-                            // Send the custom email to the user
-                            transporter.sendMail(mailOptions, (error, response) => {
-                                if (err) console.log(err)
-                                console.log("Send mail status: " + response);
-                            });
-                        });
-
-                        response.end();
-                    }
+                // Add the token ID to database to check it is linked with the user
+                client.hmset("ClassTranscribe::Users::" + email, [
+                    'change_password_id', token
+                ], function (err, results) {
+                    if (err) console.log(err)
+                    console.log(results);
                 });
-            }
+
+                // Send the custom email to the user
+                transporter.sendMail(mailOptions, (error, response) => {
+                    if (err) console.log(err)
+                    console.log("Send mail status: " + response);
+                });
+            });
+
+            response.end();
         }
     });
 });

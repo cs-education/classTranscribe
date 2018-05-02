@@ -15,7 +15,6 @@
     "email-check": "^1.1.0",
     "email-existence": "^0.1.6",
     "email-validator": "^1.1.1",
-    "email-verify": "^0.2.1",
     "express": "^4.14.0",
     "express-session": "1.10.2",
     "glob": "^5.0.5",
