@@ -46,6 +46,7 @@ router.get('/signup', function (request, response) {
 
 // Add new user information to database after the form is submitted
 router.post('/signup/submit', function (request, response) {
+
     var first_name = request.body.first_name;
     var last_name = request.body.last_name;
     var email = request.body.email;

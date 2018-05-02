@@ -31,4 +31,8 @@ tasks.forEach(function (task) {
   client.zadd("ClassTranscribe::Tasks::" + className, 1, task);
 });
 
+setTimeout((function() {  
+    return process.exit(1);
+}), 5000);
+
 
