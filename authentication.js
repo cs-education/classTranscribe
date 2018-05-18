@@ -64,13 +64,14 @@ passport.use(samlStrategy);
 passport.use(new LocalStrategy(
     function(username, password, done) {
         // Find the user information in the database with the logged in values
-        client.hgetall("ClassTranscribe::Users::" + username, function(err, usr) {
+        client.get("ClassTranscribe::UserLookupTable::" + username, function(err, usr) {
             // Display error if the account does not exist
             if (!usr) {
                 var error = "Account does not exist";
                 console.log(error);
                 return done(null, false, { message: error });
             } else {
+                var username = usr;
                 // Check if the user is verified their email address
 				client.hget("ClassTranscribe::Users::" + username, "verified", function(err, obj) {
                     console.log("Is the email verified? " + obj);

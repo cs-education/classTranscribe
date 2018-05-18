@@ -81,7 +81,7 @@ router.post('/signup/submit', function (request, response) {
                     response.send({ message: error, html: '' });
                 } else {
                     // Check if email is already in the database
-                    client.hgetall("ClassTranscribe::Users::" + email, function (err, obj) {
+                    client.get("ClassTranscribe::UserLookupTable::" + email, function (err, obj) {
                         if (obj) {
                             var error = "Account already exists";
                             console.log(error);
@@ -96,10 +96,13 @@ router.post('/signup/submit', function (request, response) {
                             } else {
                                 // Salt and hash password before putting into redis database
                                 var hashedPassword = passwordHash.generate(password);
-                                // Create acl role for the user
-                                acl.addUserRoles(email, email);
+                                // Create acl role for the user, and email to user ID lookup table
+                                var userid = uuidv4();
+                                acl.addUserRoles(userid, userid);
+                                // Potentially better performance using hashes instead
+                                client.set("ClassTranscribe::UserLookupTable::"+email,userid);
                                 // Add new user to database
-                                client.hmset("ClassTranscribe::Users::" + email, [
+                                client.hmset("ClassTranscribe::Users::" + userid, [
                                     'first_name', first_name,
                                     'last_name', last_name,
                                     'password', hashedPassword,
@@ -129,7 +132,7 @@ router.post('/signup/submit', function (request, response) {
                                         };
 
                                         // Add the token ID to database to check it is linked with the user
-                                        client.hmset("ClassTranscribe::Users::" + email, [
+                                        client.hmset("ClassTranscribe::Users::" + userid, [
                                             'verify_id', token
                                         ], function (err, results) {
                                             if (err) console.log(err)
@@ -163,7 +166,7 @@ router.get('/verify', function (request, response) {
     email = request.query.email
 
     // Search in the database for instances of the key
-    client.hgetall("ClassTranscribe::Users::" + email, function (err, usr) {
+    client.get("ClassTranscribe::UserLookupTable::" + email, function (err, usr) {
         // Display error when account does not exist in the database
         if (!usr) {
             var error = "Account does not exist.";
@@ -172,7 +175,7 @@ router.get('/verify', function (request, response) {
             // TODO: ADD 404 PAGE
         } else {
             // Check if the user verify link ID matches the email
-            client.hget("ClassTranscribe::Users::" + email, "verify_id", function (err, obj) {
+            client.hget("ClassTranscribe::Users::" + usr, "verify_id", function (err, obj) {
                 // Display error if the generated unique link does not match the user
                 if (obj != request.query.id) {
                     var error = "Email is not verified.";
@@ -181,7 +184,7 @@ router.get('/verify', function (request, response) {
                     // TODO: ADD 404 PAGE
                 } else {
                     // Change email as verified
-                    client.hmset("ClassTranscribe::Users::" + email, [
+                    client.hmset("ClassTranscribe::Users::" + usr, [
                         'verified', true,
                         'verify_id', ''
                     ], function (err, results) {

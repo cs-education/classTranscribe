@@ -39,7 +39,7 @@
             <!--<select id="school-term" value="All">/-->
             </select>
 
-            <form action="/manage-classes/search" id="search-form" method="GET" class="pull-right">
+            <form action="/courses/search" id="search-form" method="GET" class="pull-right">
                 <input type='input' id='search-input' name="q">
                 <input type='submit' id='search-button' value='Search' class="btn">
             </form>
@@ -163,18 +163,18 @@
 
 <script>
     // populate school term options
-    var schoolTermsList="{{termlist}}".split(",");
-    var termSelection = document.getElementById("school-term");
-    schoolTermsList.forEach(function(element) {
-        var option = document.createElement("option");
-        option.text = element;
-        option.value = element;
-        termSelection.add(option);
-    });
+    <!--var schoolTermsList="{{termlist}}".split(",");-->
+    <!--var termSelection = document.getElementById("school-term");-->
+    <!--schoolTermsList.forEach(function(element) {-->
+        <!--var option = document.createElement("option");-->
+        <!--option.text = element;-->
+        <!--option.value = element;-->
+        <!--termSelection.add(option);-->
+    <!--});-->
 
 
 
-    // delete button
+    // Delete button, outdated and should be removed from this page
     $(document).on('click',".actionbtn.rmbtn",function (e) {
         e.preventDefault();
         var retd = {};
@@ -183,7 +183,7 @@
         }
         var row = $(this).closest("tr");
         $.ajax({
-            url : "/manage-classes/deleteclass/",
+            url : "/courses/deleteclass/",
             type: "DELETE",
             data:'term='+$("#school-term").val()+'&classinfo='+$(this).closest("tr").find('td').map(function() {
                 return $(this).text();
@@ -202,7 +202,7 @@
     termselected = '';
     uniselected = '';
 
-    // modify button
+    // Modify button, outdated and should be removed from this page
     $(document).on('click',".actionbtn.modbtn",function (e) {
         e.preventDefault();
         var retd = {};
@@ -233,7 +233,7 @@
         var info = $(this).closest("tr").find('td').map(function() {
             return $(this).text()});
         $.ajax({
-            url : "/manage-classes/modifyclass/",
+            url : "/courses/modifyclass/",
             type: "POST",
             data:$('#modform').serialize()+'&uni=' +uniselected+'&term='+termselected,
             success: function (data) {
@@ -251,7 +251,7 @@
         var fterm=$("#termFilterData input:checked").map(function(i,e){return e.value;}).get().join(';;');
         var fsubject=$("#subjectFilterData input:checked").map(function(i,e){return e.value;}).get().join(';;');
         $.ajax({
-            url : "/manage-classes/applyfilter",
+            url : "/courses/applyfilter",
             type: "POST",
             data:'termfilter='+fterm+'&subjectfilter='+fsubject,
             success: function (data) {
@@ -262,7 +262,7 @@
             }
         });
     });
-
+    // Enroll
     $(document).on('click',".actionbtn.erbtn",function (e) {
         e.preventDefault();
         var retd = {};
@@ -271,9 +271,9 @@
         }
         var row = $(this).closest("tr");
         $.ajax({
-            url : "/manage-classes/enroll/",
+            url : "/courses/enroll/",
             type: "POST",
-            data:'term='+$("#school-term").val()+'&classinfo='+$(this).closest("tr").find('td').map(function() {
+            data:'cid='+$(this).closest("tr").attr('id')+'&classinfo='+$(this).closest("tr").find('td').map(function() {
                 return $(this).text();
             }).get().join(',,'),
             success: function (data) {
@@ -284,6 +284,7 @@
             }
         });
     });
+    // Drop
     $(document).on('click',".actionbtn.dpbtn",function (e) {
         e.preventDefault();
         var retd = {};
@@ -292,9 +293,9 @@
         }
         var row = $(this).closest("tr");
         $.ajax({
-            url : "/manage-classes/drop/",
+            url : "/courses/drop/",
             type: "POST",
-            data:'term='+$("#school-term").val()+'&classinfo='+$(this).closest("tr").find('td').map(function() {
+            data:'cid='+$(this).closest("tr").attr('id')+'&classinfo='+$(this).closest("tr").find('td').map(function() {
                 return $(this).text();
             }).get().join(',,'),
             success: function (data) {
@@ -315,5 +316,3 @@
 </html>
 
 
-
-/
