@@ -1,6 +1,6 @@
 0. Install docker
-1. Clone the repository,
-    git clone https://github.com/chirantan31/classTranscribe.git
+1. Clone the repository,        
+    git clone https://github.com/cs-education/classTranscribe.git
    Checkout the fa18 branch
     git checkout fa18   
 2. Navigate to the github repository.
