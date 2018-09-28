@@ -1,0 +1,36 @@
+0. Install docker
+1. Clone the repository,
+    git clone https://github.com/chirantan31/classTranscribe.git
+   Checkout the fa18 branch
+    git checkout fa18   
+2. Navigate to the github repository.
+3. Download the zip "cert" from, https://uillinoisedu-my.sharepoint.com/:u:/g/personal/mahipal2_illinois_edu/EcNfPMRp3clFtJf2sNWkhgEBvF8ZZDH4O0T34f7ixIuY-A?e=MMUT5H
+    It contains certificates for https.(You'll need to login with your @illinois.edu Id's)
+   Unzip it into the github repository    
+3. Run the command "docker build -t cs-education/classtranscribe ."
+    What this does is, tries to develop the image from the .DockerFile present in the root directory of the repository
+4. If everything went right, you should see a message at the end "Successfully built xxxxxxx"
+5. The docker image can be viewed by the command "docker images", which gives a list of all the images present
+6. Pull a redis image from docker - "docker pull redis"
+7. docker run -d -p 6379:6379 redis redis-server
+    This should start the docker container, you could see the running containers with the command - "docker ps"
+    Copy the containerId for redis, you'll need that for the next step.
+8. Run the following command to start the cs-education/classtranscribe container
+docker run -i -t -p 443:8000 -p 80:7000 --link <Redis_ContainerId>:redis -e "MAILER_ID=classtranscribe@gmail.com" -e "MAILER_PASS=NRRQeuQtuFa2X1p61rchNuTe7yqTTNh0" -e "REDIS_PASS=5z&Joj#FdNmI3lZc" -e "EMAIL_ID=classtranscribenoreply@gmail.com" -e "EMAIL_PASS=db2c10cf68b6456086d2d54175ba4cb5" cs-education/classtranscribe /bin/bash
+Please read about the above arguments of docker (namely -i, -t, -p, -e, -v etc.)
+    The above command should start the bash within the container
+9. A few packages are missing at this point within the container, run the following commands,
+    npm install passport-hash
+    npm audit fix
+10. Start the node server,
+    npm start
+11. And now, hopefully (if my instructions are right) your node server should start.
+12. You can access it via your browser on the address "https:///127.0.0.1"
+
+
+A few useful articles 
+https://docs.docker.com/engine/reference/commandline/attach/#examples
+https://docs.docker.com/engine/reference/commandline/commit/
+
+Remember,
+On exiting a container your changes ARE NOT persisted. So step 9 onwards nothing gets persisted until you commit.

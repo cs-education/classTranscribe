@@ -35,7 +35,7 @@ RUN apt-get install -y sox
 RUN apt-get install -y libsox-fmt-all
 RUN apt-get install -y libasound2-plugins 
 RUN apt-get install -y php7.0-cli
-RUN apt-get install -y ffmpeg
+# RUN apt-get install -y ffmpeg
 
 # RUN npm install -g yarn
 
@@ -59,11 +59,18 @@ VOLUME ["/data"]
 
 ADD . /data
 RUN cd /data && npm install
+RUN npm cache clean -f
+RUN npm install -g n
+RUN n stable
+RUN npm install express http-proxy dotenv mustache passport passport-local multer redis nodemailer acl uuid cookie-parser express-session passport-saml connect-flash email-verify password-validator
+
+RUN mkdir cert
 # COPY . classTranscribe
 WORKDIR data
 # RUN git fetch
 # RUN git checkout RouteCleanUp
 # RUN git pull origin RouteCleanUp
+
 
 EXPOSE 8000
 CMD node server.js
