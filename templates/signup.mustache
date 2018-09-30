@@ -3,7 +3,7 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Signup</title>
 
@@ -17,13 +17,17 @@
         <div class="container">
             <h1>SIGN UP</h1>
             <h2>Please enter your school's email address. <br>
-            The email should have an .edu domain. <br> 
+            The email should have an .edu domain. <br>
             Password must have at least 8 character, an uppercase letter, a lowercase leter, a digit, and no spaces.</h2>
             <input type="text" placeholder="First Name" name="first_name" required> <br>
             <input type="text" placeholder="Last Name" name="last_name" required> <br>
             <input type="text" placeholder="Email" pattern="^\w+@[a-z]+?\.edu$" name="email" required> <br>
             <input type="password" placeholder="Password" name="password" required> <br>
             <input type="password" placeholder="Retype Password" name="re_password" required> <br>
+            <select selected="--Select--Your--Role--" name="identity" required>
+              <option value="instructor"> Instructor </option>
+              <option value="student"> Student </option>
+            </select> <br>
             <button type="submit" class="signup-submit">Submit</button>
         </div>
     </form>

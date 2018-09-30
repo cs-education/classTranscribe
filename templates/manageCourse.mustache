@@ -4,7 +4,7 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Manage Courses - Instructors</title>
 
@@ -19,8 +19,8 @@
 
 <body>
 	<div class="header-container">
-	    <header class="manage-course"> Manage Courses </header>
-	    <br> 
+	    <header class="manage-course"> Manage {{name}} </header>
+	    <br>
         <div class="line-separator-header"></div>
         <br>
         </div>
@@ -28,10 +28,10 @@
 
     <div class="enroll-container">
         <header class="enroll-header"> Enroll Instructors/TAs </header>
-        
+
         <div class="line-separator"></div>
-        
-        <div class="enroll-instructor-container"> 
+
+        <div class="enroll-instructor-container">
             <br>
         	<textarea class="enroll-person" id="instructor-box" placeholder="Add Instructors"></textarea>
         	<br>
@@ -39,18 +39,18 @@
             <br>
             <span id="i-test"> </span>
         </div>
-        
+
         <header class="enroll-header"> Enroll Students </header>
-        
+
         <div class="line-separator"></div>
-        
-        <div class="enroll-student-container"> 
+
+        <div class="enroll-student-container">
             <br>
         	<textarea class="enroll-person" id="student-box" placeholder="Add Students"></textarea>
      		<br>
-            <button class="enroll-button" id="student-button">Add Students</button> 
+            <button class="enroll-button" id="student-button">Add Students</button>
             <br>
-            <span style="padding: 20px; font-weight: bold;"> or </span> 
+            <span style="padding: 20px; font-weight: bold;"> or </span>
             <br>
             <form id="upload-students-files"
                 name="studentsFiles"
@@ -63,10 +63,10 @@
         </div>
 
         <header class="upload-video-header"> Upload Lecture Video </header>
-        
+
         <div class="line-separator"></div>
 
-        <div class="upload-video-container"> 
+        <div class="upload-video-container">
             <br>
             <form id="upload-lecture-videos"
                 name="lectureVideos"
@@ -78,8 +78,8 @@
             <span id="ul-test"> </span>
         </div>
 
-        <div class="watch-videos-container"> 
-            <button type="watch-videos" class="watch-videos" onclick="window.location='/watchLectureVideos';"/>Watch Lecture Videos</button>
+        <div class="watch-videos-container">
+            <button type="watch-videos" class="watch-videos" onclick="window.location='/{{name}}/watchLectureVideos';"/>Watch Lecture Videos</button>
         </div>
     </div>
 </body>

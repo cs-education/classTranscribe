@@ -52,15 +52,16 @@ router.post('/signup/submit', function (request, response) {
     var email = request.body.email;
     var password = request.body.password;
     var re_password = request.body.re_password;
+    var identity = request.body.identity; //instructor, TA or student
 
     // Pattern schema for valid password
     var schema = new passwordValidator();
     schema
-        .is().min(8)                                    // Minimum length 8 
-        .is().max(100)                                  // Maximum length 100 
-        .has().uppercase()                              // Must have uppercase letters 
-        .has().lowercase()                              // Must have lowercase letters 
-        .has().digits()                                 // Must have digits 
+        .is().min(8)                                    // Minimum length 8
+        .is().max(100)                                  // Maximum length 100
+        .has().uppercase()                              // Must have uppercase letters
+        .has().lowercase()                              // Must have lowercase letters
+        .has().digits()                                 // Must have digits
         .has().not().spaces()                           // Should not have spaces
 
     // Check if email address exists
