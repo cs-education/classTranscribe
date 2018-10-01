@@ -302,6 +302,7 @@ router.get('/courses/search', function (request, response) {
             var searchterm = request.query.q;
             // console.log("Searching: "+searchterm);
             var search = new srchHelper.SearchHelper(searchterm);
+            print("searching: " + line);
             search.search(function (line) {
                 var rethtml= "<tr id=\"#header\">\n" +
                     '<th hidden="yes">Term</th>'+
@@ -521,6 +522,7 @@ function generateFilters(data){
 // user - user id
 // cb   - callback function
 function  generateListings(data, user, cb) {
+    print("Generating Lists");
     // async.eachSeries(data, function (c, fcb) {
     //         html += '<tr>';
     //         html += '<td hidden="yes">' + c["Term"] + '</td>';
@@ -620,18 +622,7 @@ function  generateListings(data, user, cb) {
                                 '        </a>';
                         }
                         html += '</br>';
-
-                        acl.isAllowed(user, classid, 'Remove', function (err, res) {
-                            if (res) {
-                                // html +=
-                                //     '<a class="actionbtn rmbtn">' +
-                                //     '          <span class="glyphicon glyphicon-remove"></span> Remove\n' +
-                                //     '        </a>' +
-                                //     '</td>';
-                            }
-                            // html += '</tr>';
-                            fcb(null,html);
-                        });
+                        fcb(null, html);
                     });
                 }
 
