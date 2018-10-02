@@ -262,6 +262,24 @@
             }
         });
     });
+    // Manage
+    $(document).on('click',".actionbtn.mnbtn",function (e) {
+        e.preventDefault();
+        var retd = {};
+        for (var d in $(this).parent().parent()[0]){
+            retd[d] = d;
+        }
+        var row = $(this).closest("tr");
+        var attributes = $(this).closest("tr").find('td').map(function() {
+            return $(this).text();
+        })
+        className = attributes.get(3)
+        className = className.replace(/\s/g, '')
+        console.log($.get(className))
+        // $.post('/'+className)
+        window.location = '/' + className
+
+    });
     // Enroll
     $(document).on('click',".actionbtn.erbtn",function (e) {
         e.preventDefault();

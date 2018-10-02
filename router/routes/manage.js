@@ -114,7 +114,7 @@ router.post('/UploadStudentsFiles', function (request, response) {
       client.sadd("students", line, function(err) {
         console.log("added student: " + line);
       })
-    }); 
+    });
     /* delete the file after adding to database */
     fs.unlinkSync(request.files[0].path);
     response.end();
@@ -125,7 +125,7 @@ router.post('/UploadStudentsFiles', function (request, response) {
 /* upload the lecture video and segment it into 4-6 minute chunks */
 router.post('/uploadLectureVideos', function(request, response) {
   //var className = request.body.className.toUpperCase();
-  //console.log("filename: ", request.file.filename);
+  console.log("filename: ", request);
   var className = "CLASSNAME";
   var upload = multer({ storage : storage}).any();
   var path_videos = path.join(__dirname, "../../videos");
@@ -135,7 +135,9 @@ router.post('/uploadLectureVideos', function(request, response) {
   var path_taskInitializer = path.join(__dirname, "../../utility_scripts/taskInitializer.js");
   var path_splitted = path.join(__dirname, "../../videos/splitted");
 
+
   upload(request, response, function(err) {
+    console.log(request)
     var filename = request.files[0].filename;
     var directory = request.files[0].destination;
     var filepath = request.files[0].path;
@@ -235,7 +237,7 @@ router.post('/uploadLectureVideos', function(request, response) {
                 }
                 console.log("About to execute taskInitializer: ", file);
                 // node utility_scripts/taskInitializer.js <path_to_directory_with_videos> <class_name>
-                // adds the videos to the queue to be transcribed 
+                // adds the videos to the queue to be transcribed
                 exec("node " + path_taskInitializer + " " + path_videos + " " + className, function(err, stdout, stderr) {
                   console.log("Inside taskInitializer: ", file);
                   console.log("%s stdout: ", file, stdout);
@@ -264,4 +266,3 @@ router.post('/uploadLectureVideos', function(request, response) {
 
 
 module.exports = router;
-

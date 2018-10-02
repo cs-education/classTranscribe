@@ -589,6 +589,7 @@ function  generateListings(data, user, cb) {
         if (debug || (user != '' && user != undefined)) {
             var classid = "ClassTranscribe::Course::" + e['id'];
             acl.isAllowed(user, classid, 'Modify', function (err, res) {
+                res = true
                 if (res) {
                     // Modify and remove functionalityies will be moved from this page
                     // html +=
@@ -604,6 +605,10 @@ function  generateListings(data, user, cb) {
                         //         '</td>';
                         // }
                         // html += '</tr>';
+                        html +=
+                            '<a class="actionbtn mnbtn">' +
+                            '          <span class="glyphicon glyphicon-plus"></span> Manage\n' +
+                            '        </a>';
                         fcb(null,html);
                     });
                 }
@@ -631,6 +636,18 @@ function  generateListings(data, user, cb) {
         else{fcb(null,html)}
     },function (err, res) {cb(res);});
 }
+
+var manageCourseMustache = fs.readFileSync(mustachePath + 'manageCourse.mustache').toString();
+router.get('/:className', function (request, response) {
+    var className = request.params.className;
+    var view = {
+      className:className
+    }
+    var html = Mustache.render(manageCourseMustache, view);
+    response.end(html);
+});
+
+
 // Get user id from email
 // return -  currently just returns the email (i.e. abc@def.edu) or '' in case of error
 function getUserId(req) {
