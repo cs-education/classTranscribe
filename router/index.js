@@ -53,7 +53,7 @@ renderWithPartial = function(mustacheFile, request, response, params) {
   }
   if (request.isAuthenticated()) {
     options["user"] = request.user["urn:oid:0.9.2342.19200300.100.1.1"];
-    
+
     html = Mustache.render(mustacheFile, options, {
         loginPartial: authenticatedPartial
       })

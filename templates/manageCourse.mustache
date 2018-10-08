@@ -8,10 +8,11 @@
 
     <title>Manage Courses - Instructors</title>
 
-    <link rel="stylesheet" type="text/css" href="stylesheets/manageCourse.css" />
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
-    <!-- <script src="/javascripts/controllers/manageCourse.js"></script> -->
     <script type="text/javascript" src="https://rawgit.com/enyo/dropzone/master/dist/dropzone.js"></script>
+    <script type="text/javascript" src="/routers/routes/manage.js"></script>
+    <script type="text/javascript" src="/javascripts/controllers/manageCourse.js"></script>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/manageCourse.css" />
     <link rel="stylesheet" type="text/css" href="https://rawgit.com/enyo/dropzone/master/dist/dropzone.css" />
     <!--<script type="text/javascript" src="https://rawgit.com/rnicholus/frame-grab.js/master/client/frame-grab.js"></script>
     <script type="text/javascript" src="https://rawgit.com/rnicholus/frame-grab.js/master/client/lib/rsvp.js"></script>!-->
@@ -67,19 +68,24 @@
         <div class="line-separator"></div>
 
         <div class="upload-video-container">
-            <br>
-            <form id="upload-lecture-videos"
+            <!--<br>-->
+            <!-- <form id="upload-lecture-videos"
                 name="lectureVideos"
                 enctype="multipart/form-data"
                 action="/uploadLectureVideos"
                 method="POST"
-                class="dropzone">
+              class="dropzone">
+            </form> -->
+
+            <form method="post" enctype="multipart/form-data" action="/manage/{{className}}">
+              <input type="file" name="filename">
+              <input type="submit" value="Upload" onclick="log()">
             </form>
-            <span id="ul-test"> </span>
+            <!-- <span id="ul-test"> </span> -->
         </div>
 
         <div class="watch-videos-container">
-            <button type="watch-videos" class="watch-videos" onclick="window.location='/{{className}}/watchLectureVideos';"/>Watch Lecture Videos</button>
+            <button type="watch-videos" class="watch-videos" onclick="window.location='/{{className}}';"/>Watch Lecture Videos</button>
         </div>
     </div>
 </body>

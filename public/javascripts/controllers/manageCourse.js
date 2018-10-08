@@ -12,9 +12,14 @@ $(function(){
 	})
 });
 
+function log() {
+	 console.log(document.getElementById("input-file"));
+	 console.log(document.getElementById("input-submit"));
+}
+
 /* after the file has been uploaded, display it so the user knows which file was chosen*/
 function getFilename(file_upload) {
-    var file = file_upload.files[0];  
+    var file = file_upload.files[0];
     var filename = file.name;
     $("#filename i").html(filename);
 }
@@ -29,7 +34,7 @@ $(function(){
 
 /* after the file has been uploaded, display it so the user knows which file was chosen*/
 function getVideoname(video_upload) {
-    var video = video_upload.files[0];  
+    var video = video_upload.files[0];
     var videoname = video.name;
     $("#videoname i").html(videoname);
 }
@@ -40,10 +45,10 @@ $(function() {
         var instructors = $("#instructor-box").val();
         $("#i-test").html(instructors);
         $.ajax({
-            type: "POST", 
-            url: "/addInstructors", 
+            type: "POST",
+            url: "/addInstructors",
             data: {
-                "instructors": instructors 
+                "instructors": instructors
             },
             success: function(data) {
                 alert(data);
@@ -65,7 +70,7 @@ $('#uploadStudentsFileForm').submit(function(event) {
     });
     //disable the page refresh
     //return false;
-});    
+});
 
 $(function() {
     $("#student-button").on('click', function(event) {
@@ -92,8 +97,8 @@ $(function() {
         }
         else {
             $.ajax({
-                type: "POST", 
-                url: "/addStudents", 
+                type: "POST",
+                url: "/addStudents",
                 data: {
                     "students": students
                 },
@@ -115,7 +120,7 @@ function filter() {
             alert(data);
         }
     });
-} 
+}
 
 
 /** dropzone video upload **/
@@ -129,7 +134,8 @@ $(function() {
       acceptedFiles: ".mp4, .avi, .flv, .wmv, .mov, .wav, .ogv, .mpg, .m4v",
       init: function() {
         this.on('addedfile', function(file) {
-            console.log("in addedfile");
+						console.log(file);
+						filename = file.name;
         });
       },
     };
@@ -150,4 +156,3 @@ $(function() {
       },
     };
 });
-

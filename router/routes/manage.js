@@ -46,18 +46,74 @@ var storage = multer.diskStorage({
   }
 });**/
 
-
 var manageCoursePage = fs.readFileSync(mustachePath + 'manageCourse.mustache').toString();
-router.get('/manageCourse', function (request, response) {
+router.get('/manage/:className', function (request, response) {
   if (request.isAuthenticated()) {
     response.writeHead(200, {
       'Content-Type': 'text/html'
     });
 
-    renderWithPartial(manageCoursePage, request, response);
+    renderWithPartial(manageCoursePage, request, response, request.params);
   } else {
     response.redirect('../');
   }
+});
+
+var upload = multer({ dest: 'videos/' })
+
+/* similar to /uploadLectureVideos,  used for single upload*/
+router.post('/manage/:className', upload.single('filename'), function(request, response) {
+  var className = request._parsedOriginalUrl.pathname.split("/")[2];
+  var upload = multer({ storage : storage}).any();
+  var path_videos = path.join(__dirname, "../../videos");
+  var path_class = path.join(__dirname, "../../videos/"+className);
+
+  var path_splitRunner = path.join(__dirname, "../../utility_scripts/splitRunner.js");
+  var path_taskInitializer = path.join(__dirname, "../../utility_scripts/taskInitializer.js");
+  var path_splitted = path.join(__dirname, "../../videos/splitted");
+
+  upload(request, response, function(err) {
+    var filename = request.file.filename;
+    var directory = request.file.destination;
+    var filepath = request.file.path;
+
+    var original_path_file = path.join(path_videos, filename);
+    var path_file = path.join(path_class, filename);
+    /* add .txt file for test purpose*/
+    var file_no_ext = (filename.split(/(?:.mp4|.avi|.flv|.wmv|.mov|.wav|.ogv|.mpg|.m4v|.txt)/))[0];
+    var path_file_no_ext = path.join(path_class, file_no_ext);
+
+    fs.renameSync(original_path_file, path_file);
+
+    /* next two execs are for converting the video to the proper format */
+    exec("ffmpeg -i " + path_file + " -codec:v libx264 -strict -2 -profile:v high -preset slow -b:v 500k -maxrate 500k -bufsize 1000k -threads 0 " + path_file_no_ext + ".mp4", function(err, stdout, stderr) {
+      if (err !== null) {
+        console.log("%s exec ffmpeg mp4 error: ", filename, err);
+      }
+      exec("ffmpeg -i " + path_file + " -f wav -ar 22050 " + path_file_no_ext + ".wav", function(err, stdout, stderr) {
+        if (err !== null) {
+          console.log("%s exec ffmpeg wav error: ", filename, err);
+        }
+        /* node utility_scripts/splitRunner.js <path_to_directory_with_videos> <class_name> */
+        /* splits the videos */
+        exec("node " + path_splitRunner + " " + path_class + " " + className, function(err, stdout, stderr) {
+          if (err !== null) {
+            console.log("%s exec splitRunner error: ", filename, err);
+          }
+          /* node utility_scripts/taskInitializer.js <path_to_directory_with_videos> <class_name> */
+          /* adds the videos to the queue to be transcribed */
+          exec("node " + path_taskInitializer + " " + path_class + " " + className, function(err, stdout, stderr) {
+            if (err !== null) {
+              console.log("%s exec taskInitializer error: ", filename, err);
+            }
+            fs.renameSync(path_file, path.join(path_splitted, filename));
+          });
+        });
+      });
+    });
+  });
+
+  response.end();
 });
 
 
@@ -125,7 +181,6 @@ router.post('/UploadStudentsFiles', function (request, response) {
 /* upload the lecture video and segment it into 4-6 minute chunks */
 router.post('/uploadLectureVideos', function(request, response) {
   //var className = request.body.className.toUpperCase();
-  console.log("filename: ", request);
   var className = "CLASSNAME";
   var upload = multer({ storage : storage}).any();
   var path_videos = path.join(__dirname, "../../videos");
@@ -135,9 +190,7 @@ router.post('/uploadLectureVideos', function(request, response) {
   var path_taskInitializer = path.join(__dirname, "../../utility_scripts/taskInitializer.js");
   var path_splitted = path.join(__dirname, "../../videos/splitted");
 
-
   upload(request, response, function(err) {
-    console.log(request)
     var filename = request.files[0].filename;
     var directory = request.files[0].destination;
     var filepath = request.files[0].path;

@@ -302,7 +302,6 @@ router.get('/courses/search', function (request, response) {
             var searchterm = request.query.q;
             // console.log("Searching: "+searchterm);
             var search = new srchHelper.SearchHelper(searchterm);
-            print("searching: " + line);
             search.search(function (line) {
                 var rethtml= "<tr id=\"#header\">\n" +
                     '<th hidden="yes">Term</th>'+
@@ -522,7 +521,6 @@ function generateFilters(data){
 // user - user id
 // cb   - callback function
 function  generateListings(data, user, cb) {
-    print("Generating Lists");
     // async.eachSeries(data, function (c, fcb) {
     //         html += '<tr>';
     //         html += '<td hidden="yes">' + c["Term"] + '</td>';
@@ -589,7 +587,7 @@ function  generateListings(data, user, cb) {
         if (debug || (user != '' && user != undefined)) {
             var classid = "ClassTranscribe::Course::" + e['id'];
             acl.isAllowed(user, classid, 'Modify', function (err, res) {
-                res = true
+                res = true // DEBUG: for develop meaning
                 if (res) {
                     // Modify and remove functionalityies will be moved from this page
                     // html +=
