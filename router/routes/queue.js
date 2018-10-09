@@ -23,8 +23,9 @@ router.get('/queue/:className/:netId', function (request, response) {
   var className = request.params.className.toUpperCase();
   var netId = request.params.netId.toLowerCase();
 
-  var args = ["ClassTranscribe::Tasks::" + className, "0", "99999", "LIMIT", "0", "1"];
-  client.zrangebyscore(args, function (err, result) {
+  // var args = ["ClassTranscribe::Tasks::" + className, "0", "99999", "LIMIT", "0", "1"];
+  client_api.getTasks(className, function(err, result) {
+  // client.zrangebyscore(args, function (err, result) {
     if (err) {
       throw err;
     }
@@ -36,8 +37,9 @@ router.get('/queue/:className/:netId', function (request, response) {
     var taskName = result[0];
     // var fileName = chosenTask + "-" + netId + ".txt";
 
-    args = ["ClassTranscribe::Tasks::" + className, "1", result[0]];
-    client.zincrby(args);
+    // args = ["ClassTranscribe::Tasks::" + className, "1", result[0]];
+    // client.zincrby(args);
+    client_api.getsortedTask(className, taskName);
 
     response.end(taskName);
   });

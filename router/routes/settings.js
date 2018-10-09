@@ -6,7 +6,10 @@
  */
 var router = express.Router();
 var fs = require('fs');
-var client = require('./../../modules/redis');
+// var client = require('./../../modules/redis');
+
+var api = require('./api');
+var client_api = new api();
 
 var settingsMustache = fs.readFileSync(mustachePath + 'settings.mustache').toString();
 
@@ -16,14 +19,16 @@ router.get('/settings', function(request, response) {
             'Content-Type': 'text.html'
         });
 
-        client.hget("ClassTranscribe::Users::" + request.user.email, "first_name", function(err, obj) {
+        client_api.getFirstName(request.user.email, function(err, obj) {
+        // client.hget("ClassTranscribe::Users::" + request.user.email, "first_name", function(err, obj) {
             if (obj) {
                 var first_name = obj;
-                client.hget("ClassTranscribe::Users::" + request.user.email, "last_name", function(err, obj) {
+                client_api.getLastName(request.user.email, function(err, obj) {
+                // client.hget("ClassTranscribe::Users::" + request.user.email, "last_name", function(err, obj) {
                     if (obj) {
                         var last_name = obj;
                         // console.log(first_name + ' ' + last_name)
-                        
+
                         var html = Mustache.render(settingsMustache, { first_name: first_name, last_name: last_name });
                         response.end(html);
                     }
@@ -41,10 +46,11 @@ router.post('/settings/submit', function(request, response) {
     var email = request.user.email;
 
     // Edit user information in database
-    client.hmset("ClassTranscribe::Users::" + email, [
-        'first_name', first_name,
-        'last_name', last_name,
-    ], function (err, results) {
+    client_api.setName(email, [first_name, last_name], function(err, results) {
+    // client.hmset("ClassTranscribe::Users::" + email, [
+    //     'first_name', first_name,
+    //     'last_name', last_name,
+    // ], function (err, results) {
         if (err) console.log(err)
         console.log(results);
         response.send({ message: 'success', html: '../dashboard' })

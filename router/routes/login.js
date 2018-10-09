@@ -6,9 +6,9 @@
  */
 var router = express.Router();
 var fs = require('fs');
-var client = require('./../../modules/redis');
+//var client = require('./../../modules/redis');
 var passport = require('passport')
-var flash = require('connect-flash');
+//var flash = require('connect-flash');
 
 // Get the mustache page that will be rendered for the login route
 var loginMustache = fs.readFileSync(mustachePath + 'login.mustache').toString();

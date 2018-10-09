@@ -6,7 +6,7 @@
  */
 var router = express.Router();
 var fs = require('fs');
-var client = require('./../../modules/redis');
+// var client = require('./../../modules/redis');
 var verifier = require('email-verify');
 var passwordHash = require('password-hash');
 var passwordValidator = require('password-validator');
@@ -28,6 +28,9 @@ var transporter = nodemailer.createTransport({
         pass: mailPass
     }
 });
+
+var api = require('./api');
+var client_api = new api();
 
 // Get the mustache page that will be rendered for the signup route
 var signupMustache = fs.readFileSync(mustachePath + 'signup.mustache').toString();
@@ -82,7 +85,8 @@ router.post('/signup/submit', function (request, response) {
                     response.send({ message: error, html: '' });
                 } else {
                     // Check if email is already in the database
-                    client.get("ClassTranscribe::UserLookupTable::" + email, function (err, obj) {
+                    client_api.lookUpTable(email, function (err, obj) {
+                    // client.get("ClassTranscribe::UserLookupTable::" + email, function (err, obj) {
                         if (obj) {
                             var error = "Account already exists";
                             console.log(error);
@@ -100,21 +104,30 @@ router.post('/signup/submit', function (request, response) {
                                 // Create acl role for the user, and email to user ID lookup table
                                 var userid = uuidv4();
                                 acl.addUserRoles(userid, userid);
-                                // Potentially better performance using hashes instead
-                                client.set("ClassTranscribe::UserLookupTable::"+email,userid);
-                                // Add new user to database
-                                client.hmset("ClassTranscribe::Users::" + userid, [
-                                    'first_name', first_name,
-                                    'last_name', last_name,
-                                    'password', hashedPassword,
-                                    'change_password_id', '',
-                                    'university', getUniversity(email),
-                                    'verified', false,
-                                    'verify_id', '',
-                                    'courses_as_instructor', '',
-                                    'courses_as_TA', '',
-                                    'courses_as_student', ''
-                                ], function (err, results) {
+                                /*
+                                userInfo = [ email, userid, first_name, last_name, password, change_password_id,
+                                university, verified, verify_id, courses_as_instructor, courses_as_TA, courses_as_student]
+                                */
+                                var userInfo = [email, userid, first_name,
+                                  last_name, hashedPassword, '',
+                                  getUniversity(email), false, '', '', ''
+                                ];
+                                client_api.signUp(userInfo, function (errr, results) {
+                                // // Potentially better performance using hashes instead
+                                // client.set("ClassTranscribe::UserLookupTable::"+email,userid);
+                                // // Add new user to database
+                                // client.hmset("ClassTranscribe::Users::" + userid, [
+                                //     'first_name', first_name,
+                                //     'last_name', last_name,
+                                //     'password', hashedPassword,
+                                //     'change_password_id', '',
+                                //     'university', getUniversity(email),
+                                //     'verified', false,
+                                //     'verify_id', '',
+                                //     'courses_as_instructor', '',
+                                //     'courses_as_TA', '',
+                                //     'courses_as_student', ''
+                                // ], function (err, results) {
                                     if (err) console.log(err)
                                     console.log(results);
 
@@ -133,9 +146,10 @@ router.post('/signup/submit', function (request, response) {
                                         };
 
                                         // Add the token ID to database to check it is linked with the user
-                                        client.hmset("ClassTranscribe::Users::" + userid, [
-                                            'verify_id', token
-                                        ], function (err, results) {
+                                        client_api.setVerifyID(userid, token, function(err, results) {
+                                        // client.hmset("ClassTranscribe::Users::" + userid, [
+                                        //     'verify_id', token
+                                        // ], function (err, results) {
                                             if (err) console.log(err)
                                             console.log(results);
                                         });
@@ -166,8 +180,9 @@ router.get('/verify', function (request, response) {
     // Get the current user's data to access information in database
     email = request.query.email
 
+    client_api.lookUpTable(email, function(err, usr) {
     // Search in the database for instances of the key
-    client.get("ClassTranscribe::UserLookupTable::" + email, function (err, usr) {
+    // client.get("ClassTranscribe::UserLookupTable::" + email, function (err, usr) {
         // Display error when account does not exist in the database
         if (!usr) {
             var error = "Account does not exist.";
@@ -176,7 +191,8 @@ router.get('/verify', function (request, response) {
             // TODO: ADD 404 PAGE
         } else {
             // Check if the user verify link ID matches the email
-            client.hget("ClassTranscribe::Users::" + usr, "verify_id", function (err, obj) {
+            // client.hget("ClassTranscribe::Users::" + usr, "verify_id", function (err, obj) {
+            client_api.checkVerifyID(usr, function(err, obj) {
                 // Display error if the generated unique link does not match the user
                 if (obj != request.query.id) {
                     var error = "Email is not verified.";
@@ -185,10 +201,11 @@ router.get('/verify', function (request, response) {
                     // TODO: ADD 404 PAGE
                 } else {
                     // Change email as verified
-                    client.hmset("ClassTranscribe::Users::" + usr, [
-                        'verified', true,
-                        'verify_id', ''
-                    ], function (err, results) {
+                    client_api.verifyUser(usr, function(err, results) {
+                    // client.hmset("ClassTranscribe::Users::" + usr, [
+                    //     'verified', true,
+                    //     'verify_id', ''
+                    // ], function (err, results) {
                         if (err) console.log(err)
                         console.log(results);
                     });

@@ -5,7 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 var searchMustache = fs.readFileSync(mustachePath + 'search.mustache').toString();
-var client = require('./../../modules/redis');
+// var client = require('./../../modules/redis');
+
+var api = require('./api');
+var client_api = new api();
 
 // router.get('/:className',
 //   ensureAuthenticated,
@@ -13,7 +16,8 @@ router.get('/class/:className',
   function (request, response) {
     var className = request.params.className.toLowerCase();
     console.log(className);
-    client.smembers("ClassTranscribe::CourseList", function(err, results) {
+    client_api.getCourses(function(err, results) {
+    // client.smembers("ClassTranscribe::CourseList", function(err, results) {
       var invalid = true;
       if (results.indexOf("ClassTranscribe::Course::" + className.toUpperCase()) >= 0) {
         invalid = false;
@@ -83,7 +87,8 @@ router.get('/getCaptions', function(request, response) {
         fs.readdirSync(path_videos + "/" + dir).forEach(function(file) {
           if(! /^\..*/.test(file) && !/.mp3/.test(file) && !/.wav/.test(file)) {
             promises.push(new Promise(function(resolve, reject) {
-              client.smembers("ClassTranscribe::Transcriptions::" + className + "::" + file.replace(".mp4", ""), function(err, results) {
+              client_api.getCaptions(className, function(err, results) {
+              // client.smembers("ClassTranscribe::Transcriptions::" + className + "::" + file.replace(".mp4", ""), function(err, results) {
                 if(err) {
                   reject(err);
                 }

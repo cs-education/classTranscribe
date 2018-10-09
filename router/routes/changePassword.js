@@ -6,13 +6,16 @@
  */
 var router = express.Router();
 var fs = require('fs');
-var client = require('./../../modules/redis');
+// var client = require('./../../modules/redis');
 var passwordHash = require('password-hash');
 var passwordValidator = require('password-validator');
 
 // Get the mustache page that will be rendered for the changePassword route
 var changePasswordMustache = fs.readFileSync(mustachePath + 'changePassword.mustache').toString();
 var email;
+
+var api = require('./api');
+var client_api = new api();
 
 // Render the changePassword mustache page; if account is authenticated just password in settings page
 router.get('/changePassword', function (request, response) {
@@ -27,7 +30,8 @@ router.get('/changePassword', function (request, response) {
         email = request.query.email;
 
         // Check if email is already in the database
-        client.hgetall("ClassTranscribe::Users::" + email, function (err, usr) {
+        client_api.getUserByEmail(email, function(err, usr) {
+        // client.hgetall("ClassTranscribe::Users::" + email, function (err, usr) {
             // Display error if the account does not exist
             if (!usr) {
                 var error = "Account does not exist.";
@@ -36,7 +40,8 @@ router.get('/changePassword', function (request, response) {
                 // TODO: ADD 404 PAGE
             } else {
                 // Check if the user reset password link ID matches the email
-                client.hget("ClassTranscribe::Users::" + email, "change_password_id", function (err, obj) {
+                client_api.validUserID(email, function(err, obj) {
+                // client.hget("ClassTranscribe::Users::" + email, "change_password_id", function (err, obj) {
                     // Display error if the generated unique link does not match the user
                     // Change the info in the database if the unique link matches
                     if (obj != request.query.id) {
@@ -45,9 +50,10 @@ router.get('/changePassword', function (request, response) {
                         response.end();
                         // TODO: ADD 404 PAGE
                     } else {
-                        client.hmset("ClassTranscribe::Users::" + email, [
-                            'change_password_id', ''
-                        ], function (err, results) {
+                      client_api.setPasswordID(email, "", function(err, results) {
+                        // client.hmset("ClassTranscribe::Users::" + email, [
+                        //     'change_password_id', ''
+                        // ], function (err, results) {
                             if (err) console.log(err)
                             console.log(results);
                         });
@@ -72,11 +78,11 @@ router.post('/changePassword/submit', function (request, response) {
     // Pattern schema for valid password
     var schema = new passwordValidator();
     schema
-        .is().min(8)                                    // Minimum length 8 
-        .is().max(100)                                  // Maximum length 100 
-        .has().uppercase()                              // Must have uppercase letters 
-        .has().lowercase()                              // Must have lowercase letters 
-        .has().digits()                                 // Must have digits 
+        .is().min(8)                                    // Minimum length 8
+        .is().max(100)                                  // Maximum length 100
+        .has().uppercase()                              // Must have uppercase letters
+        .has().lowercase()                              // Must have lowercase letters
+        .has().digits()                                 // Must have digits
         .has().not().spaces()                           // Should not have spaces
 
     console.log(email)
@@ -98,11 +104,12 @@ router.post('/changePassword/submit', function (request, response) {
             var hashedPassword = passwordHash.generate(password);
 
             // Change user password in database
-            client.hmset("ClassTranscribe::Users::" + email, [
-                'password', hashedPassword
-            ], function (err, results) {
+            client_api.setPassword(email, hashedPassword, function(err,result) {
+            // client.hmset("ClassTranscribe::Users::" + email, [
+            //     'password', hashedPassword
+            // ], function (err, results) {
                 if (err) console.log(err)
-                console.log(results);
+                console.log(result);
                 if (request.isAuthenticated()) {
                     response.send({ message: 'success', html: '../settings' })
                 } else {

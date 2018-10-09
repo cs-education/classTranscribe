@@ -6,7 +6,7 @@
  */
 var router = express.Router();
 var fs = require('fs');
-var client = require('./../../modules/redis');
+// var client = require('./../../modules/redis');
 
 var activatedMustache = fs.readFileSync(mustachePath + 'activated.mustache').toString();
 

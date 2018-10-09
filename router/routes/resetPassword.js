@@ -6,9 +6,11 @@
  */
 var router = express.Router();
 var fs = require('fs');
-var client = require('./../../modules/redis');
+// var client = require('./../../modules/redis');
 var crypto = require('crypto');
 var verifier = require('email-verify');
+var api = require('./api');
+var client_api = new api();
 
 // Variables that will be passed into the command line when running containers
 var nodemailer = require('nodemailer');
@@ -55,7 +57,8 @@ router.post('/resetPassword/submit', function (request, response) {
                 response.send({ message: error, html: '' });
             } else {
                 // Check if email is already in the database
-                client.hgetall("ClassTranscribe::Users::" + email, function (err, obj) {
+                client_api.getUserByEmail(email, function(err, obj) {
+                // client.hgetall("ClassTranscribe::Users::" + email, function (err, obj) {
                     // Display error when account does not exist in the database
                     if (!obj) {
                         var error = "Account does not exist";
@@ -80,9 +83,10 @@ router.post('/resetPassword/submit', function (request, response) {
                             };
 
                             // Add the token ID to database to check it is linked with the user
-                            client.hmset("ClassTranscribe::Users::" + email, [
-                                'change_password_id', token
-                            ], function (err, results) {
+                            client_api.setPasswordID(email, token, function(err, results) {
+                            // client.hmset("ClassTranscribe::Users::" + email, [
+                            //     'change_password_id', token
+                            // ], function (err, results) {
                                 if (err) console.log(err)
                                 console.log(results);
                             });

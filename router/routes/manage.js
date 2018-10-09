@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 var fs = require('fs');
-var client = require('./../../modules/redis');
+// var client = require('./../../modules/redis');
 var readline = require('readline');
 var sys = require('sys');
 var exec = require('child_process').exec;
@@ -18,6 +18,9 @@ var storage = multer.diskStorage({
     callback(null, file.originalname);
   }
 });
+
+var api = require('./api');
+var client_api = new api();
 /**var storage = multer.diskStorage({
   dest: './videos',
   rename: function(fieldname, filename) {
@@ -59,7 +62,7 @@ router.get('/manage/:className', function (request, response) {
   }
 });
 
-var upload = multer({ dest: 'videos/' })
+var upload = multer({ dest: 'manage/' })
 
 /* similar to /uploadLectureVideos,  used for single upload*/
 router.post('/manage/:className', upload.single('filename'), function(request, response) {
@@ -118,7 +121,8 @@ router.post('/manage/:className', upload.single('filename'), function(request, r
 
 
 router.get('/getUserCourses', function (request, response) {
-   client.smembers("ClassTranscribe::CourseList", function(err, results) {
+  client_api.getCourses(function(err,results) {
+   // client.smembers("ClassTranscribe::CourseList", function(err, results) {
    	 if(err) console.log(err);
    	 console.log(results);
      response.send(results);
@@ -138,7 +142,8 @@ router.post('/addInstructors', function (request, response) {
    }
    console.log(instructors);
    console.log(toadd);
-   client.sadd("instructors", toadd, function(err, res) {
+   client_api.addInstructors(toadd, function(err, res) {
+   // client.sadd("instructors", toadd, function(err, res) {
       if(err) console.log(err);
    		console.log("added instructors");
    });
@@ -150,7 +155,8 @@ router.post('/addInstructors', function (request, response) {
 router.post('/addStudents', function (request, response) {
    var data = request.body.students;
    var students = data.split(/[\s,;:\n]+/);
-   client.sadd("students", students, function(err, res) {
+   client_api.addStudents(students, function(err, res) {
+   // client.sadd("students", students, function(err, res) {
    		console.log("added students");
    });
    response.send(students);
@@ -167,7 +173,8 @@ router.post('/UploadStudentsFiles', function (request, response) {
       input: fs.createReadStream(request.files[0].path)
     });
     interface.on('line', function (line) {
-      client.sadd("students", line, function(err) {
+      client_api.addStudents(line, function(err) {
+      // client.sadd("students", line, function(err) {
         console.log("added student: " + line);
       })
     });

@@ -15,6 +15,9 @@ var mkdirp = require('mkdirp');
 var validator = require('../../modules/validator.js');
 //var client = require('./modules/redis');
 
+var api = require('./api');
+var client_api = new api();
+
 var firstPassMustache = fs.readFileSync(mustachePath + 'index.mustache').toString();
 router.get('/first/:className/:id', function (request, response) {
   var className = request.params.className.toUpperCase();
@@ -45,7 +48,8 @@ router.post('/first', function (request, response) {
       console.log(err);
     }
     transcriptionPath = "captions/first/" + className + "/" + captionFileName;
-    client.sadd("ClassTranscribe::Transcriptions::" + transcriptionPath, transcriptions);
+    client_api.addTranscriptionPath(transcriptionPath, transcriptions);
+    // client.sadd("ClassTranscribe::Transcriptions::" + transcriptionPath, transcriptions);
     fs.writeFileSync(transcriptionPath, transcriptions, { mode: 0777 });
   });
 
@@ -54,7 +58,8 @@ router.post('/first', function (request, response) {
       console.log(err);
     }
     statsPath = "stats/first/" + className + "/" + statsFileName;
-    client.sadd("ClassTranscribe::Stats::" + statsPath, request.body.stats);
+    client_api.addStatsPath(statsPath, request.body.stats);
+    // client.sadd("ClassTranscribe::Stats::" + statsPath, request.body.stats);
     fs.writeFileSync(statsPath, request.body.stats, { mode: 0777 });
 
 
@@ -62,28 +67,33 @@ router.post('/first', function (request, response) {
 
     if (isTranscriptionValid) {
       console.log("Transcription is good!");
-      client.zincrby("ClassTranscribe::Submitted::" + className, 1, taskName);
-      client.zscore("ClassTranscribe::Submitted::" + className, taskName, function (err, score) {
+      client_api.validateTranscription(className, taskName, function(err, score) {
+      // client.zincrby("ClassTranscribe::Submitted::" + className, 1, taskName);
+      // client.zscore("ClassTranscribe::Submitted::" + className, taskName, function (err, score) {
         score = parseInt(score, 10);
         if (err) {
           return err;
         }
 
         if (score === 10) {
-          client.zrem("ClassTranscribe::Submitted::" + className, taskName);
-          client.zrem("ClassTranscribe::PrioritizedTasks::" + className, taskName);
+          client_api.prioritize(className, taskName)
+          // client.zrem("ClassTranscribe::Submitted::" + className, taskName);
+          // client.zrem("ClassTranscribe::PrioritizedTasks::" + className, taskName);
         }
 
-        client.sadd("ClassTranscribe::First::" + className, captionFileName);
+        client_api.addFirst(className, captionFileName);
+        // client.sadd("ClassTranscribe::First::" + className, captionFileName);
         var netIDTaskTuple = stats.name + ":" + taskName;
         console.log('tuple delete: ' + netIDTaskTuple);
-        client.hdel("ClassTranscribe::ActiveTranscribers::" + className, netIDTaskTuple);
+        client_api.removeTranscriber(className, netIDTaskTuple);
+        // client.hdel("ClassTranscribe::ActiveTranscribers::" + className, netIDTaskTuple);
         //sendProgressEmail(className, stats.name);
         return;
       });
     } else {
       console.log("Transcription is bad!");
-      client.lpush("ClassTranscribe::Failed::" + className, captionFileName);
+      client_api.failTranscription(className, captionFileName);
+      // client.lpush("ClassTranscribe::Failed::" + className, captionFileName);
       return;
     }
     response.send("success!");

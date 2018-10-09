@@ -40,7 +40,10 @@ async = require('async');
 var router = express.Router();
 // Search helper
 var srchHelper = require("../../utility_scripts/searchContent.js");
+// var client = require('./../../modules/redis');
 
+var api = require('./api');
+var client_api = new api();
 //=======================Sample data for testing=====================================
 // create Uid for the class
 function genNewClassUid(){
@@ -90,58 +93,70 @@ function print(msg){
 
 // Loading sample data into database
 Object.keys(courseList).forEach( function (t) {
-    client.sadd("ClassTranscribe::Terms", "ClassTranscribe::Terms::"+t);
-    courseList[t].forEach(function (course) {
-        // Add course
-        var classid=course[7];
-
-        // General information update
-        client.sadd("ClassTranscribe::CourseList", "ClassTranscribe::Course::"+classid); // add class to class list
-        client.sadd("ClassTranscribe::Terms::"+t, "ClassTranscribe::Course::"+classid); // add class to term list
-        client.sadd("ClassTranscribe::SubjectList", "ClassTranscribe::Subject::"+course[0]); // add class subject to subject list
-        client.sadd("ClassTranscribe::Subject::"+course[0], "ClassTranscribe::Course::"+classid); // add class to the subject
-
-        // Add course info
-        client.hset("ClassTranscribe::Course::"+classid, "Subject", course[0]);
-        client.hset("ClassTranscribe::Course::"+classid, "ClassNumber", course[1]);
-        client.hset("ClassTranscribe::Course::"+classid, "SectionNumber", course[2]);
-        client.hset("ClassTranscribe::Course::"+classid, "ClassName", course[3]);
-        client.hset("ClassTranscribe::Course::"+classid, "ClassDesc", course[4]);
-        client.hset("ClassTranscribe::Course::"+classid, "University", course[5]);
-        client.hset("ClassTranscribe::Course::"+classid, "Instructor", course[6]);
-        client.hset("ClassTranscribe::Course::"+classid, "Term", t);
-    });
+  client_api.addCoursesByTerm(courseList[t], t);
+    // client.sadd("ClassTranscribe::Terms", "ClassTranscribe::Terms::"+t);
+    // courseList[t].forEach(function (course) {
+    //     // Add course
+    //     var classid=course[7];
+    //
+    //     // General information update
+    //     client.sadd("ClassTranscribe::CourseList", "ClassTranscribe::Course::"+classid); // add class to class list
+    //     client.sadd("ClassTranscribe::Terms::"+t, "ClassTranscribe::Course::"+classid); // add class to term list
+    //     client.sadd("ClassTranscribe::SubjectList", "ClassTranscribe::Subject::"+course[0]); // add class subject to subject list
+    //     client.sadd("ClassTranscribe::Subject::"+course[0], "ClassTranscribe::Course::"+classid); // add class to the subject
+    //
+    //     // Add course info
+    //     client.hset("ClassTranscribe::Course::"+classid, "Subject", course[0]);
+    //     client.hset("ClassTranscribe::Course::"+classid, "ClassNumber", course[1]);
+    //     client.hset("ClassTranscribe::Course::"+classid, "SectionNumber", course[2]);
+    //     client.hset("ClassTranscribe::Course::"+classid, "ClassName", course[3]);
+    //     client.hset("ClassTranscribe::Course::"+classid, "ClassDesc", course[4]);
+    //     client.hset("ClassTranscribe::Course::"+classid, "University", course[5]);
+    //     client.hset("ClassTranscribe::Course::"+classid, "Instructor", course[6]);
+    //     client.hset("ClassTranscribe::Course::"+classid, "Term", t);
+    // });
 });
 let testcourse = courseList["Spring 2016"][0];
 let testclassid='bb4e5382-42ed-40e7-ad8d-0086838f3e0c';
-client.sadd("ClassTranscribe::CourseList", "ClassTranscribe::Course::"+testclassid);
-client.sadd("ClassTranscribe::Terms::"+'All', "ClassTranscribe::Course::"+testclassid);
-client.sadd("ClassTranscribe::SubjectList", "ClassTranscribe::Subject::"+"Computer Science");
-client.sadd("ClassTranscribe::Subject::"+"Computer Science", "ClassTranscribe::Course::"+testclassid);
-client.hset("ClassTranscribe::Course::"+testclassid, "Subject", "Computer Science");
-client.hset("ClassTranscribe::Course::"+testclassid, "ClassNumber", "CS 123");
-client.hset("ClassTranscribe::Course::"+testclassid, "SectionNumber", "BL2");
-client.hset("ClassTranscribe::Course::"+testclassid, "ClassName", "Data Structure");
-client.hset("ClassTranscribe::Course::"+testclassid, "ClassDesc", "No description");
-client.hset("ClassTranscribe::Course::"+testclassid, "University", "N/A");
-client.hset("ClassTranscribe::Course::"+testclassid, "Instructor", "N/A");
-client.hset("ClassTranscribe::Course::"+testclassid, "Term", "All");
+/* couse = [subject, classNumber, sectionNumber, className, classDesc, university, instructor, classID] */
+let dummyData = ["Computer Science", "CS 123", "BL2", "Data Structure", "No description", "N/A", "N/A", testclassid];
+// client_api.addCourse(dummyData, "All");
+// client.sadd("ClassTranscribe::CourseList", "ClassTranscribe::Course::"+testclassid);
+// client.sadd("ClassTranscribe::Terms::"+'All', "ClassTranscribe::Course::"+testclassid);
+// client.sadd("ClassTranscribe::SubjectList", "ClassTranscribe::Subject::"+"Computer Science");
+// client.sadd("ClassTranscribe::Subject::"+"Computer Science", "ClassTranscribe::Course::"+testclassid);
+// client.hset("ClassTranscribe::Course::"+testclassid, "Subject", "Computer Science");
+// client.hset("ClassTranscribe::Course::"+testclassid, "ClassNumber", "CS 123");
+// client.hset("ClassTranscribe::Course::"+testclassid, "SectionNumber", "BL2");
+// client.hset("ClassTranscribe::Course::"+testclassid, "ClassName", "Data Structure");
+// client.hset("ClassTranscribe::Course::"+testclassid, "ClassDesc", "No description");
+// client.hset("ClassTranscribe::Course::"+testclassid, "University", "N/A");
+// client.hset("ClassTranscribe::Course::"+testclassid, "Instructor", "N/A");
+// client.hset("ClassTranscribe::Course::"+testclassid, "Term", "All");
 
 var passwordHash = require('password-hash');
 // test user profile
-client.hmset("ClassTranscribe::Users::" + 'testing@testdomabbccc.edu', [
-    'first_name', 'First',
-    'last_name', 'Sur',
-    'password', passwordHash.generate("passtest"),
-    'change_password_id', '',
-    'university', "test uni",
-    'verified', true,
-    'verify_id', '',
-    'courses_as_instructor','',
-    'courses_as_TA','',
-    'courses_as_student',''
-]);
-client.set("ClassTranscribe::UserLookupTable::testing@testdomabbccc.edu","testing@testdomabbccc.edu");
+/*
+userInfo = [ email, userid, first_name, last_name, password, change_password_id,
+university, verified, verify_id, courses_as_instructor, courses_as_TA, courses_as_student]
+*/
+var testInfo = ['testing@testdomabbccc.edu', 'testing@testdomabbccc.edu',
+'First', 'Sur', passwordHash.generate("passtest"), '', 'test uni', true, '', '', '', ''];
+client_api.signUp(testInfo);
+//
+// client.hmset("ClassTranscribe::Users::" + 'testing@testdomabbccc.edu', [
+//     'first_name', 'First',
+//     'last_name', 'Sur',
+//     'password', passwordHash.generate("passtest"),
+//     'change_password_id', '',
+//     'university', "test uni",
+//     'verified', true,
+//     'verify_id', '',
+//     'courses_as_instructor','',
+//     'courses_as_TA','',
+//     'courses_as_student',''
+// ]);
+// client.set("ClassTranscribe::UserLookupTable::testing@testdomabbccc.edu","testing@testdomabbccc.edu");
 // ACL example usage (default)
 //acl.allow('UserRole', 'ResourceName', 'Action');
 //acl.addUserRoles('UserName', 'UserRole');
@@ -164,7 +179,8 @@ router.get('/courses/', function (request, response) {
     });
     var userid = getUserId(request);
     // Get all terms data from the database
-    client.smembers("ClassTranscribe::Terms", function(err, reply) {
+    client_api.getTerms(function(err, reply) {
+    // client.smembers("ClassTranscribe::Terms", function(err, reply) {
         // reply is null if the key is missing
         allterms= reply.map( term => {
             return term.split("::")[2];
@@ -172,7 +188,8 @@ router.get('/courses/', function (request, response) {
 
         var form = '';
         var createClassBtn = '';
-        client.hgetall("ClassTranscribe::Users::"+getUserId(request), function (err, usrinfo) {
+        client_api.getUserByID(getUserId(request), function(err, userinfo) {
+        // client.hgetall("ClassTranscribe::Users::"+getUserId(request), function (err, usrinfo) {
             // Add create-a-class section if user is authenticated
             if (request.isAuthenticated()) {
                 form = getCreateClassForm(usrinfo);
@@ -192,7 +209,8 @@ router.get('/courses/', function (request, response) {
                 "                    <th>Course Descruption</th>\n" +
                 "                    <th>Action</th>\n" +
                 "                </tr>";
-            client.smembers("ClassTranscribe::CourseList", function (err, reply) {
+            client_api.getCourses( function(err, reply) {
+            // client.smembers("ClassTranscribe::CourseList", function (err, reply) {
                 var commands = [];
                 reply.forEach(function (c) {
                     // Query classes to get info for display
@@ -238,41 +256,50 @@ router.post('/courses/newclass', function (request, response) {
         return;
     }
 
-    client.keys("ClassTranscribe::Course::"+classid, function(err, rep){
+    client_api.getKeysByClass(classid, function(err, rep) {
+    // client.keys("ClassTranscribe::Course::"+classid, function(err, rep){
         if (rep.length>0){
             // Check if uuid already in use
             console.log("Failed creating class: uuid already in use, try again.");
             response.end();
         }
         else{
-            // Add class to class list
-            client.sadd("ClassTranscribe::CourseList", "ClassTranscribe::Course::"+classid);
-            // Add class to term list
-            client.sadd(term, "ClassTranscribe::Course::"+classid);
-            if(term!='All')
-                client.sadd("ClassTranscribe::Terms::All", "ClassTranscribe::Course::"+classid);
-            // Add class subject to list of subjects
-            client.sadd("ClassTranscribe::SubjectList", "ClassTranscribe::Subject::"+course["Subject"]);
-            // Add class to the subject list
-            client.sadd("ClassTranscribe::Subject::"+course["Subject"], "ClassTranscribe::Course::"+classid);
+          /* couse = [subject, classNumber, sectionNumber, className, classDesc,
+          university, instructor, classID] */
+          courseInfo = [course['Subject'], course['ClassNumber'], course['SectionNumber'],
+          course['ClassName'], course['ClassDescription'], course['University'], course['Instructor'], classid]
+          client_api.addCourse(courseInfo, course['Term']);
 
-            // Add course info
-            client.hset("ClassTranscribe::Course::"+classid, "Subject", course["Subject"]);
-            client.hset("ClassTranscribe::Course::"+classid, "ClassNumber", course["ClassNumber"]);
-            client.hset("ClassTranscribe::Course::"+classid, "SectionNumber", course["SectionNumber"]);
-            client.hset("ClassTranscribe::Course::"+classid, "ClassName", course["ClassName"]);
-            client.hset("ClassTranscribe::Course::"+classid, "ClassDesc", course["ClassDescription"]);
-            client.hset("ClassTranscribe::Course::"+classid, "University", course["University"]);
-            client.hset("ClassTranscribe::Course::"+classid, "Instructor", course["Instructor"]);
-            client.hset("ClassTranscribe::Course::"+classid, "Term", course["Term"]);
+            // // Add class to class list
+            // client.sadd("ClassTranscribe::CourseList", "ClassTranscribe::Course::"+classid);
+            // // Add class to term list
+            // client.sadd(term, "ClassTranscribe::Course::"+classid);
+            // /* DEBUG: DONT KNOW THE PURPOSE OF FOLLOWING CODE, IGNORED */
+            // if(term!='All')
+            //     client.sadd("ClassTranscribe::Terms::All", "ClassTranscribe::Course::"+classid);
+            // // Add class subject to list of subjects
+            // client.sadd("ClassTranscribe::SubjectList", "ClassTranscribe::Subject::"+course["Subject"]);
+            // // Add class to the subject list
+            // client.sadd("ClassTranscribe::Subject::"+course["Subject"], "ClassTranscribe::Course::"+classid);
+            //
+            // // Add course info
+            // client.hset("ClassTranscribe::Course::"+classid, "Subject", course["Subject"]);
+            // client.hset("ClassTranscribe::Course::"+classid, "ClassNumber", course["ClassNumber"]);
+            // client.hset("ClassTranscribe::Course::"+classid, "SectionNumber", course["SectionNumber"]);
+            // client.hset("ClassTranscribe::Course::"+classid, "ClassName", course["ClassName"]);
+            // client.hset("ClassTranscribe::Course::"+classid, "ClassDesc", course["ClassDescription"]);
+            // client.hset("ClassTranscribe::Course::"+classid, "University", course["University"]);
+            // client.hset("ClassTranscribe::Course::"+classid, "Instructor", course["Instructor"]);
+            // client.hset("ClassTranscribe::Course::"+classid, "Term", course["Term"]);
 
             var userid = getUserId(request)
             // Add permissions
             acl.allow(userid, "ClassTranscribe::Course::"+classid, "Modify");
             acl.allow(userid, "ClassTranscribe::Course::"+classid, "Remove");
             //acl.allow(userid, "ClassTranscribe::Course::"+classid, "Drop");
-            client.sadd("ClassTranscribe::Course::"+classid+"::Instructors", "ClassTranscribe::Users::"+userid);
-            client.sadd("ClassTranscribe::Users::"+userid+"::Courses_as_Instructor", "ClassTranscribe::Course::"+classid);
+            client_api.enrollInstuctor(classid, userid);
+            // client.sadd("ClassTranscribe::Course::"+classid+"::Instructors", "ClassTranscribe::Users::"+userid);
+            // client.sadd("ClassTranscribe::Users::"+userid+"::Courses_as_Instructor", "ClassTranscribe::Course::"+classid);
 
             response.end();
         }
@@ -288,12 +315,14 @@ router.get('/courses/search', function (request, response) {
         'Content-Type': 'text/html'
     });
     // Same as the main page
-    client.smembers("ClassTranscribe::Terms", function(err, reply) {
+    client_api.getTerms(function(err, reply) {
+    // client.smembers("ClassTranscribe::Terms", function(err, reply) {
         allterms=[];
         reply.forEach(function (e) {
             allterms.push(e.split("::")[2]);
         });
-        client.hgetall("ClassTranscribe::Users::"+getUserId(request), function (err, usrinfo) {
+        client_api.getUserByID(getUserId(request), function(err, userinfo) {
+        // client.hgetall("ClassTranscribe::Users::"+getUserId(request), function (err, usrinfo) {
             var form = '';
             if (request.isAuthenticated()) {
                 form = getCreateClassForm(usrinfo);
@@ -321,7 +350,8 @@ router.get('/courses/search', function (request, response) {
                 commands = res.map( e=> {
                     return ['hgetall', "ClassTranscribe::Course::" + e];
                 });
-                client.multi(commands).exec(function (err, replies) {
+                client_api.multi(commands).exec(function(err, replies) {
+                // client.multi(commands).exec(function (err, replies) {
                     if (err) throw(err)
                     var origlen =replies.length;
                     replies = replies.filter(function(n){ return n != undefined });
@@ -635,15 +665,15 @@ function  generateListings(data, user, cb) {
     },function (err, res) {cb(res);});
 }
 
-var manageCourseMustache = fs.readFileSync(mustachePath + 'manageCourse.mustache').toString();
-router.get('/:className', function (request, response) {
-    var className = request.params.className;
-    var view = {
-      className:className
-    }
-    var html = Mustache.render(manageCourseMustache, view);
-    response.end(html);
-});
+// var manageCorseMustache = fs.readFileSync(mustachePath + 'manageCourse.mustache').toString();
+// router.get('/:className', function (request, response) {
+//     var className = request.params.className;
+//     var view = {
+//       className:className
+//     }
+//     var html = Mustache.render(manageCourseMustache, view);
+//     response.end(html);
+// });
 
 
 // Get user id from email
@@ -666,8 +696,7 @@ router.post('/courses/enroll/', function (request, response) {
     params = params.split(',,');
     var userid = getUserId(request);
     var classid = request.body.cid;
-    client.sadd("ClassTranscribe::Users::"+userid+"::Courses_as_Student", "ClassTranscribe::Course::"+classid);
-    client.sadd("ClassTranscribe::Course::"+classid+"::Students", "ClassTranscribe::Users::"+userid);
+    enrollStudent(userid, classid);
     acl.allow(userid, "ClassTranscribe::Course::"+classid, 'Drop');
 
     response.end();
@@ -681,7 +710,7 @@ router.post('/courses/drop/', function (request, response) {
     var userid = getUserId(request);
     var classid = request.body.cid;
 
-    client.srem("ClassTranscribe::Users::"+userid+"::Courses_as_Student", "ClassTranscribe::Course::"+classid);
+    removeStudent(userid, classid);
     acl.removeAllow(userid, "ClassTranscribe::Course::"+classid, 'Drop');
 
     response.end()

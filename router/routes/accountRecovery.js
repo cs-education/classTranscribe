@@ -6,7 +6,7 @@
  */
 var router = express.Router();
 var fs = require('fs');
-var client = require('./../../modules/redis');
+// var client = require('./../../modules/redis');
 
 // Get the mustache page that will be rendered for the accountRecovery route
 var accountRecoveryMustache = fs.readFileSync(mustachePath + 'accountRecovery.mustache').toString();

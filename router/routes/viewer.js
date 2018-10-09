@@ -4,13 +4,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+var api = require("./api");
+var client_api = new api();
 
 var viewerMustache = fs.readFileSync(mustachePath + 'viewer.mustache').toString();
 router.get('/viewer/:className',
   ensureAuthenticated,
   function (request, response) {
     var className = request.params.className.toLowerCase();
-    client.smembers("ClassTranscribe::CourseList", function(err, results) {
+    client_api.fetchCourse(function(err, results) {
+    // client.smembers("ClassTranscribe::CourseList", function(err, results) {
       if (!isClassNameValid(className) || err) {
         console.log("not valid course: ", className);
         response.end(invalidClassHTML);

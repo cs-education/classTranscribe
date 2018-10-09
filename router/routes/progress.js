@@ -6,6 +6,8 @@
  */
 
 //var router = express.Router();
+var api = require('./api')
+var client_api = new api();
 
 var progressMustache = fs.readFileSync(mustachePath + 'progress.mustache').toString();
 router.get('/progress/:className', function (request, response) {
@@ -28,12 +30,14 @@ router.post('/progress/:className/:netId', function (request, response) {
 });
 
 function sendProgressEmail(className, netId, callback) {
-  client.smembers("ClassTranscribe::First::" + className, function (err, firstMembers) {
+  client_api.getFirst(className, function(err, firstMembers) {
+  // client.smembers("ClassTranscribe::First::" + className, function (err, firstMembers) {
     if (err) {
       console.log(err);
     }
 
-    client.smembers("ClassTranscribe::Finished::" + className, function (err, finishedMembers) {
+    client_api.getFinished(className, function(err, finishedMembers) {
+    // client.smembers("ClassTranscribe::Finished::" + className, function (err, finishedMembers) {
       if (err) {
         console.log(err);
       }
