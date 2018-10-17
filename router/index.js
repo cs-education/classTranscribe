@@ -15,7 +15,7 @@ module.exports = function(app) {
     // app.use(require('./routes/api'));
     app.use(require('./routes/base'));
     app.use(require('./routes/admin'));
-    app.use(require('./routes/utils'));
+    // app.use(require('./routes/utils'));
     app.use(require('./routes/signup'));
     app.use(require('./routes/login'));
     app.use(require('./routes/logout'));

@@ -42,8 +42,9 @@ var router = express.Router();
 var srchHelper = require("../../utility_scripts/searchContent.js");
 // var client = require('./../../modules/redis');
 
-var api = require('./api');
-var client_api = new api();
+var client_api = require('./api');
+// var api = require('./api');
+// var client_api = new api();
 //=======================Sample data for testing=====================================
 // create Uid for the class
 function genNewClassUid(){

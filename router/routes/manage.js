@@ -19,8 +19,9 @@ var storage = multer.diskStorage({
   }
 });
 
-var api = require('./api');
-var client_api = new api();
+var client_api = require('./api');
+// var api = require('./api');
+// var client_api = new api();
 /**var storage = multer.diskStorage({
   dest: './videos',
   rename: function(fieldname, filename) {

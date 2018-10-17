@@ -6,8 +6,9 @@
  */
 
 //var router = express.Router();
-var api = require('./api')
-var client_api = new api();
+var client_api = require('./api');
+// var api = require('./api');
+// var client_api = new api();
 
 var progressMustache = fs.readFileSync(mustachePath + 'progress.mustache').toString();
 router.get('/progress/:className', function (request, response) {

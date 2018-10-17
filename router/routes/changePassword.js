@@ -14,8 +14,9 @@ var passwordValidator = require('password-validator');
 var changePasswordMustache = fs.readFileSync(mustachePath + 'changePassword.mustache').toString();
 var email;
 
-var api = require('./api');
-var client_api = new api();
+var client_api = require('./api');
+// var api = require('./api');
+// var client_api = new api();
 
 // Render the changePassword mustache page; if account is authenticated just password in settings page
 router.get('/changePassword', function (request, response) {

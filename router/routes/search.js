@@ -7,8 +7,9 @@
 var searchMustache = fs.readFileSync(mustachePath + 'search.mustache').toString();
 // var client = require('./../../modules/redis');
 
-var api = require('./api');
-var client_api = new api();
+var client_api = require('./api');
+// var api = require('./api');
+// var client_api = new api();
 
 // router.get('/:className',
 //   ensureAuthenticated,

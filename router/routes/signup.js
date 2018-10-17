@@ -29,8 +29,9 @@ var transporter = nodemailer.createTransport({
     }
 });
 
-var api = require('./api');
-var client_api = new api();
+var client_api = require('./api');
+// var api = require('./api');
+// var client_api = new api();
 
 // Get the mustache page that will be rendered for the signup route
 var signupMustache = fs.readFileSync(mustachePath + 'signup.mustache').toString();
@@ -84,6 +85,7 @@ router.post('/signup/submit', function (request, response) {
                     console.log(error);
                     response.send({ message: error, html: '' });
                 } else {
+                  console.log('lookUpTable')
                     // Check if email is already in the database
                     client_api.lookUpTable(email, function (err, obj) {
                     // client.get("ClassTranscribe::UserLookupTable::" + email, function (err, obj) {
@@ -92,6 +94,7 @@ router.post('/signup/submit', function (request, response) {
                             console.log(error);
                             response.send({ message: error, html: '' });
                         } else {
+                          console.log('email not found in db');
                             // Check if password follows pattern schema
                             var valid_pattern = schema.validate(password)
                             if (valid_pattern != true) {
@@ -100,18 +103,21 @@ router.post('/signup/submit', function (request, response) {
                                 response.send({ message: error, html: '' });
                             } else {
                                 // Salt and hash password before putting into redis database
+                                console.log(1);
                                 var hashedPassword = passwordHash.generate(password);
                                 // Create acl role for the user, and email to user ID lookup table
                                 var userid = uuidv4();
                                 acl.addUserRoles(userid, userid);
+                                console.log(2);
                                 /*
                                 userInfo = [ email, userid, first_name, last_name, password, change_password_id,
                                 university, verified, verify_id, courses_as_instructor, courses_as_TA, courses_as_student]
                                 */
                                 var userInfo = [email, userid, first_name,
                                   last_name, hashedPassword, '',
-                                  getUniversity(email), false, '', '', ''
+                                  getUniversity(email), false, '', '', '', ''
                                 ];
+                                console.log(3);
                                 client_api.signUp(userInfo, function (errr, results) {
                                 // // Potentially better performance using hashes instead
                                 // client.set("ClassTranscribe::UserLookupTable::"+email,userid);
@@ -128,6 +134,7 @@ router.post('/signup/submit', function (request, response) {
                                 //     'courses_as_TA', '',
                                 //     'courses_as_student', ''
                                 // ], function (err, results) {
+                                console.log(4);
                                     if (err) console.log(err)
                                     console.log(results);
 
@@ -185,7 +192,7 @@ router.get('/verify', function (request, response) {
     // client.get("ClassTranscribe::UserLookupTable::" + email, function (err, usr) {
         // Display error when account does not exist in the database
         if (!usr) {
-            var error = "Account does not exist.";
+            var error = "Account does not exist.1";
             console.log(error);
             response.end();
             // TODO: ADD 404 PAGE

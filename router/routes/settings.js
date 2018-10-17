@@ -8,8 +8,9 @@ var router = express.Router();
 var fs = require('fs');
 // var client = require('./../../modules/redis');
 
-var api = require('./api');
-var client_api = new api();
+var client_api = require('./api');
+// var api = require('./api');
+// var client_api = new api();
 
 var settingsMustache = fs.readFileSync(mustachePath + 'settings.mustache').toString();
 

@@ -9,8 +9,9 @@ var fs = require('fs');
 // var client = require('./../../modules/redis');
 var crypto = require('crypto');
 var verifier = require('email-verify');
-var api = require('./api');
-var client_api = new api();
+var client_api = require('./api');
+// var api = require('./api');
+// var client_api = new api();
 
 // Variables that will be passed into the command line when running containers
 var nodemailer = require('nodemailer');

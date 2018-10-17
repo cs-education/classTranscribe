@@ -9,8 +9,9 @@ var fs = require('fs');
 var mkdirp = require('mkdirp');
 var validator = require('../../modules/validator.js');
 
-var api = require('./api');
-var client_api = new api();
+var client_api = require('./api');
+// var api = require('./api');
+// var client_api = new api();
 
 var secondPassMustache = fs.readFileSync(mustachePath + 'editor.mustache').toString();
 router.get('/second/:className/:id', function (request, response) {

@@ -15,8 +15,9 @@ var mkdirp = require('mkdirp');
 var validator = require('../../modules/validator.js');
 //var client = require('./modules/redis');
 
-var api = require('./api');
-var client_api = new api();
+var client_api = require('./api');
+// var api = require('./api');
+// var client_api = new api();
 
 var firstPassMustache = fs.readFileSync(mustachePath + 'index.mustache').toString();
 router.get('/first/:className/:id', function (request, response) {
