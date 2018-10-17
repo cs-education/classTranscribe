@@ -21,9 +21,9 @@ multer = require('multer');
 
 client = require('./modules/redis');
 mailer = require('./modules/mailer');
-
-macl = require('acl');
-acl = new macl(new macl.redisBackend(client,"ClassTranscribe::acl::"));
+/* moved into permission.js */
+// macl = require('acl');
+// acl = new macl(new macl.redisBackend(client,"ClassTranscribe::acl::"));
 uuidv4 = require('uuid/v4');
 /* end global variables */
 

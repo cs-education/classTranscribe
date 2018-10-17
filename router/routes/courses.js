@@ -42,7 +42,8 @@ var router = express.Router();
 var srchHelper = require("../../utility_scripts/searchContent.js");
 // var client = require('./../../modules/redis');
 
-var client_api = require('./api');
+var client_api = require('./db');
+var permission = require('./permission');
 // var api = require('./api');
 // var client_api = new api();
 //=======================Sample data for testing=====================================
@@ -162,7 +163,8 @@ client_api.signUp(testInfo);
 //acl.allow('UserRole', 'ResourceName', 'Action');
 //acl.addUserRoles('UserName', 'UserRole');
 // Example (per user)
-acl.addUserRoles('testing@testdomabbccc.edu', 'testing@testdomabbccc.edu');
+permission.addUser('testing@testdomabbccc.edu');
+// acl.addUserRoles('testing@testdomabbccc.edu', 'testing@testdomabbccc.edu');
 // acl.allow('testing@testdomabbccc.edu', 'ClassTranscribe::Course::UIUC-Fall 2016-CS 446-D3', 'Modify');
 // acl.allow('testing@testdomabbccc.edu', "ClassTranscribe::Course::UIUC-Spring 2016-Chem 233-AL2", 'Drop');
 // acl.allow('testing@testdomabbccc.edu', "ClassTranscribe::Course::UIUC-Spring 2016-CS 225-AL1", 'Remove');
@@ -295,8 +297,10 @@ router.post('/courses/newclass', function (request, response) {
 
             var userid = getUserId(request)
             // Add permissions
-            acl.allow(userid, "ClassTranscribe::Course::"+classid, "Modify");
-            acl.allow(userid, "ClassTranscribe::Course::"+classid, "Remove");
+            permission.addCoursePermission(userid, classid, 'Modify');
+            permission.addCoursePermission(userid, classid, 'Remove');
+            // acl.allow(userid, "ClassTranscribe::Course::"+classid, "Modify");
+            // acl.allow(userid, "ClassTranscribe::Course::"+classid, "Remove");
             //acl.allow(userid, "ClassTranscribe::Course::"+classid, "Drop");
             client_api.enrollInstuctor(classid, userid);
             // client.sadd("ClassTranscribe::Course::"+classid+"::Instructors", "ClassTranscribe::Users::"+userid);
@@ -617,7 +621,8 @@ function  generateListings(data, user, cb) {
         var debug = false;
         if (debug || (user != '' && user != undefined)) {
             var classid = "ClassTranscribe::Course::" + e['id'];
-            acl.isAllowed(user, classid, 'Modify', function (err, res) {
+            permission.checkCoursePermission(user, classid, 'Modify', function (err, res) {
+            // acl.isAllowed(user, classid, 'Modify', function (err, res) {
                 res = true // DEBUG: for develop meaning
                 if (res) {
                     // Modify and remove functionalityies will be moved from this page
@@ -625,7 +630,8 @@ function  generateListings(data, user, cb) {
                     //     '<a class="actionbtn modbtn" data-toggle="modal" data-target="#modpanel">' +
                     //     '          <span class="glyphicon glyphicon-pencil"></span> Modify\n' +
                     //     '        </a>';
-                    acl.isAllowed(user, classid, 'Remove', function (err, res) {
+                    permission.checkCoursePermission(user, classid, 'Remove', function (err, res) {
+                    // acl.isAllowed(user, classid, 'Remove', function (err, res) {
                         // if (res) {
                         //     html +=
                         //         '<a class="actionbtn rmbtn">' +
@@ -642,7 +648,8 @@ function  generateListings(data, user, cb) {
                     });
                 }
                 else{
-                    acl.isAllowed(user, classid, 'Drop', function (err, res) {
+                  permission.checkCoursePermission(user, classid, 'Drop', function (err, res) {
+                    // acl.isAllowed(user, classid, 'Drop', function (err, res) {
                         if (!res) {
                             html +=
                                 '<a class="actionbtn erbtn">' +
@@ -698,7 +705,8 @@ router.post('/courses/enroll/', function (request, response) {
     var userid = getUserId(request);
     var classid = request.body.cid;
     enrollStudent(userid, classid);
-    acl.allow(userid, "ClassTranscribe::Course::"+classid, 'Drop');
+    permission.addCoursePermission(userid, classid, 'Drop');
+    // acl.allow(userid, "ClassTranscribe::Course::"+classid, 'Drop');
 
     response.end();
 });
@@ -711,8 +719,9 @@ router.post('/courses/drop/', function (request, response) {
     var userid = getUserId(request);
     var classid = request.body.cid;
 
-    removeStudent(userid, classid);
-    acl.removeAllow(userid, "ClassTranscribe::Course::"+classid, 'Drop');
+    client_api.removeStudent(userid, classid);
+    permission.removeCoursePermission(userid, classid, 'Drop');
+    // acl.removeAllow(userid, "ClassTranscribe::Course::"+classid, 'Drop');
 
     response.end()
 });

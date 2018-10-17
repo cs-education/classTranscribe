@@ -7,7 +7,7 @@
 var searchMustache = fs.readFileSync(mustachePath + 'search.mustache').toString();
 // var client = require('./../../modules/redis');
 
-var client_api = require('./api');
+var client_api = require('./db');
 // var api = require('./api');
 // var client_api = new api();
 

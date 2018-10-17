@@ -9,7 +9,7 @@ var fs = require('fs');
 // var client = require('./../../modules/redis');
 var crypto = require('crypto');
 var verifier = require('email-verify');
-var client_api = require('./api');
+var client_api = require('./db');
 // var api = require('./api');
 // var client_api = new api();
 

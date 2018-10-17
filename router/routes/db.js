@@ -83,13 +83,11 @@ var client = require('./../../modules/redis');
   university, verified, verify_id, courses_as_instructor, courses_as_TA, courses_as_student]
   */
   function signUp(userInfo, callback) {
-    console.log(5)
     var userID = userInfo[1];
 
     // Potentially better performance using hashes instead
     client.set("ClassTranscribe::UserLookupTable::" + userInfo[0], userID);
     // Add new user to database
-    console.log(6)
     client.hmset("ClassTranscribe::Users::" + userID, [
         'first_name', userInfo[2],
         'last_name', userInfo[3],
@@ -101,7 +99,6 @@ var client = require('./../../modules/redis');
         'courses_as_instructor', userInfo[9],
         'courses_as_TA', userInfo[10],
         'courses_as_student', userInfo[11]]);
-    console.log(7)
     if(callback) {
       callback();
     }
@@ -198,6 +195,10 @@ var client = require('./../../modules/redis');
     client.smembers("ClassTranscribe::First::" + className, callback());
   }
 
+  function getMemberArgs(args, callback) {
+    client.sismember(args, callback());
+  }
+
   function getFinished(className, callback) {
     client.smembers("ClassTranscribe::Finished::" + className, callback());
   }
@@ -259,6 +260,7 @@ module.exports = {
   verifyUser: verifyUser,
   getFirstName: getFirstName,
   getLastName: getLastName,
+  getMemberArgs: getMemberArgs,
   setName: setName,
   addCaption: addCaption,
   addStatsPath: addStatsPath,

@@ -14,7 +14,7 @@ var passwordValidator = require('password-validator');
 var changePasswordMustache = fs.readFileSync(mustachePath + 'changePassword.mustache').toString();
 var email;
 
-var client_api = require('./api');
+var client_api = require('./db');
 // var api = require('./api');
 // var client_api = new api();
 

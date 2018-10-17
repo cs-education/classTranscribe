@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+var client_api = require('./db');
 
 var progressDashboardMustache = fs.readFileSync(mustachePath + 'progressDashboard.mustache').toString();
 router.get('/viewProgress/:className/:uuid', function (request, response) {
@@ -11,15 +12,17 @@ router.get('/viewProgress/:className/:uuid', function (request, response) {
   var uuid = request.params.uuid;
 
   var isMemberArgs = ['ClassTranscribe::AllowedUploaders', uuid]
-  client.sismember(isMemberArgs, function (err, result) {
+  client_api.getMemberArgs(isMemberArgs, function(err, result) {
+  // client.sismember(isMemberArgs, function (err, result) {
     if (result) {
       progressDict = {}
-      client.smembers("ClassTranscribe::First::" + className, function (err, firstMembers) {
+      client_api.getFirst(className, function(err, firstMembers) {
+      // client.smembers("ClassTranscribe::First::" + className, function (err, firstMembers) {
         if (err) {
           console.log(err);
         }
-
-        client.smembers("ClassTranscribe::Finished::" + className, function (err, finishedMembers) {
+        client_api.getFinished(className, function(err,finishedMembers) {
+        // client.smembers("ClassTranscribe::Finished::" + className, function (err, finishedMembers) {
           if (err) {
             console.log(err);
           }

@@ -1,5 +1,4 @@
 var fs = require('fs');
-var client = require('./../../modules/redis');
 
 var watchLectureVideosPage = fs.readFileSync(mustachePath + 'watchLectureVideos.mustache').toString();
 router.get('/watchLectureVideos', function (request, response) {

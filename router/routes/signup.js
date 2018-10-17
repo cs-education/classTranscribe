@@ -29,7 +29,8 @@ var transporter = nodemailer.createTransport({
     }
 });
 
-var client_api = require('./api');
+var client_api = require('./db');
+var permission = require('./permission');
 // var api = require('./api');
 // var client_api = new api();
 
@@ -103,12 +104,12 @@ router.post('/signup/submit', function (request, response) {
                                 response.send({ message: error, html: '' });
                             } else {
                                 // Salt and hash password before putting into redis database
-                                console.log(1);
                                 var hashedPassword = passwordHash.generate(password);
                                 // Create acl role for the user, and email to user ID lookup table
                                 var userid = uuidv4();
-                                acl.addUserRoles(userid, userid);
-                                console.log(2);
+                                permission.addUser(userid);
+                                //acl.addUserRoles(userid, userid);
+
                                 /*
                                 userInfo = [ email, userid, first_name, last_name, password, change_password_id,
                                 university, verified, verify_id, courses_as_instructor, courses_as_TA, courses_as_student]
@@ -117,7 +118,7 @@ router.post('/signup/submit', function (request, response) {
                                   last_name, hashedPassword, '',
                                   getUniversity(email), false, '', '', '', ''
                                 ];
-                                console.log(3);
+
                                 client_api.signUp(userInfo, function (errr, results) {
                                 // // Potentially better performance using hashes instead
                                 // client.set("ClassTranscribe::UserLookupTable::"+email,userid);
@@ -134,7 +135,7 @@ router.post('/signup/submit', function (request, response) {
                                 //     'courses_as_TA', '',
                                 //     'courses_as_student', ''
                                 // ], function (err, results) {
-                                console.log(4);
+
                                     if (err) console.log(err)
                                     console.log(results);
 
