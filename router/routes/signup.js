@@ -86,7 +86,6 @@ router.post('/signup/submit', function (request, response) {
                     console.log(error);
                     response.send({ message: error, html: '' });
                 } else {
-                  console.log('lookUpTable')
                     // Check if email is already in the database
                     client_api.lookUpTable(email, function (err, obj) {
                     // client.get("ClassTranscribe::UserLookupTable::" + email, function (err, obj) {
@@ -119,7 +118,7 @@ router.post('/signup/submit', function (request, response) {
                                   getUniversity(email), false, '', '', '', ''
                                 ];
 
-                                client_api.signUp(userInfo, function (errr, results) {
+                                client_api.signUp(userInfo, function(err, results) {
                                 // // Potentially better performance using hashes instead
                                 // client.set("ClassTranscribe::UserLookupTable::"+email,userid);
                                 // // Add new user to database
@@ -136,8 +135,10 @@ router.post('/signup/submit', function (request, response) {
                                 //     'courses_as_student', ''
                                 // ], function (err, results) {
 
-                                    if (err) console.log(err)
-                                    console.log(results);
+                                    if (err) {
+                                      console.log("err:", err);
+                                    }
+                                    console.log("results:", results);
 
                                     // Generate a unique link specific to the user
                                     crypto.randomBytes(48, function (err, buffer) {
@@ -158,14 +159,14 @@ router.post('/signup/submit', function (request, response) {
                                         // client.hmset("ClassTranscribe::Users::" + userid, [
                                         //     'verify_id', token
                                         // ], function (err, results) {
-                                            if (err) console.log(err)
-                                            console.log(results);
+                                            if (err) console.log("err:", err)
+                                            console.log("results:", results);
                                         });
 
                                         // Send the custom email to the user
                                         transporter.sendMail(mailOptions, (error, response) => {
                                             if (err) console.log(err)
-                                            console.log("Send mail status: " + response);
+                                            console.log("response:", response);
                                         });
                                     });
 

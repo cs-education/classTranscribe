@@ -3,11 +3,12 @@
  *     https://www.npmjs.com/package/acl
  */
 
+client = require('./../../modules/redis');
 macl = require('acl');
-acl = new macl(new macl.redisBackend(client,"ClassTranscribe::acl::"));
+acl = new macl(new macl.redisBackend(client, "ClassTranscribe::acl::"));
 
 function addUser(userID) {
-  acl.addUerRoles(userID, userID);
+  acl.addUserRoles(userID, userID);
 }
 
 function addCoursePermission(userID, classID, permission) {

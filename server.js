@@ -19,7 +19,7 @@ LocalStrategy = require('passport-local').Strategy;
 router = express.Router();
 multer = require('multer');
 
-client = require('./modules/redis');
+// client = require('./modules/redis');
 mailer = require('./modules/mailer');
 /* moved into permission.js */
 // macl = require('acl');
@@ -27,10 +27,14 @@ mailer = require('./modules/mailer');
 uuidv4 = require('uuid/v4');
 /* end global variables */
 
+var debug = require('debug');
+var favicon = require('serve-favicon');
+var logger = require('morgan');
+var db = require('./db/db');
+
 
 var webvtt = require('./modules/webvtt');
 var validator = require('./modules/validator');
-
 var http = require('http');
 var zlib = require('zlib');
 var spawn = require('child_process').spawn;

@@ -6,13 +6,25 @@
  */
 var router = express.Router();
 var fs = require('fs');
-
+var db = require('../../db/db');
 var adminMustache = fs.readFileSync(mustachePath + 'admin.mustache').toString();
 
 router.get('/admin', function (request, response) {
     response.writeHead(200, {
         'Content-Type': 'text.html'
     });
+    renderWithPartial(adminMustache, request, response);
+});
+
+router.get('/admin/test', function (request, response) {
+  var user = {
+    firstName : "blah",
+    lastName : "foo",
+    mailId : "asd"
+  };
+  db.createUser(user).then(result => {
+    console.log(result);
+  });
     renderWithPartial(adminMustache, request, response);
 });
 

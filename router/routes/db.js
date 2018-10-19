@@ -1,9 +1,34 @@
-/* This file is meant to be a wrapper module for every client calls
- * It is exported as a module, use it by using requires()
- * example usage:
- *           var api = require('./api');
- *           var client_api = new api();
- */
+ // Current database structure overview
+ //  ========== Class section ==========
+ //                                |--ClassTranscribe::Course::Classid_1
+ //                                |--ClassTranscribe::Course::C2
+ //  |--ClassTranscribe::CourseList|--ClassTranscribe::Course::C3
+ //  |
+ //  |--ClassTranscribe::Terms::XX|--ClassTranscribe::Course::Classid_1
+ //  |                            |--ClassTranscribe::Course::C2
+ //  |
+ //  |--ClassTranscribe::Terms::YY|--ClassTranscribe::Course::C3
+ // -|
+ //  |--ClassTranscribe::SubjectList--|--ClassTranscribe::Subject::XX --ClassTranscribe::Course::Classid_1
+ //  |                                |--ClassTranscribe::Subject::YY::|--ClassTranscribe::Course::C2
+ //  |                                                                 |--ClassTranscribe::Course::C3
+ //  |--ClassTranscribe::Course::C1--Attributes("ClassNumber","SectionNumber","ClassName","ClassDesc","University","Instructor","Term"...)
+ //  |--ClassTranscribe::Course::...::Students
+ //  |                                |--Instructors
+ //  |
+ //  ========== User section ==========
+ //  |
+ //  |--ClassTranscribe::Users::userid_1--Attributes('first_name', 'last_name', 'password'...)
+ //  |--ClassTranscribe::Users::userid_1::Courses_as_Instructor
+ //  |--ClassTranscribe::Users::userid_1::Courses_as_TA
+ //  |--ClassTranscribe::Users::userid_1::Courses_as_Student//  |--ClassTranscribe::Users::...
+ //  |
+ //  |--ClassTranscribe::Users::...
+ //  |
+ //  |
+ //  ========== Misc section ==========
+ //  |--ClassTranscribe::UserLookupTable::Email_1
+ //  |
 
 /* Global Variables */
 // var router = express.Router();
@@ -18,12 +43,11 @@ var client = require('./../../modules/redis');
   };
 
   function removeStudent(userID, classID, callback) {
-    client.srem("ClassTranscribe::Users::"+userid+"::Courses_as_Student", "ClassTranscribe::Course::"+classid);
-    callback();
+    client.srem("ClassTranscribe::Users::"+userid+"::Courses_as_Student", "ClassTranscribe::Course::"+classid, callback());
   };
 
   /* Course Management */
-  /* couse = [subject, classNumber, sectionNumber, className, classDesc, university, instructor, classID] */
+  /* course = [subject, classNumber, sectionNumber, className, classDesc, university, instructor, classID] */
   function addCourse(course, term) {
     var classID = course[7];
     // General information update
@@ -84,27 +108,48 @@ var client = require('./../../modules/redis');
   */
   function signUp(userInfo, callback) {
     var userID = userInfo[1];
+    var signUpCallback = callback || function(err){ console.log("err:", err); };
 
     // Potentially better performance using hashes instead
-    client.set("ClassTranscribe::UserLookupTable::" + userInfo[0], userID);
-    // Add new user to database
-    client.hmset("ClassTranscribe::Users::" + userID, [
-        'first_name', userInfo[2],
-        'last_name', userInfo[3],
-        'password', userInfo[4],
-        'change_password_id', userInfo[5],
-        'university', userInfo[6],
-        'verified', userInfo[7],
-        'verify_id', userInfo[8],
-        'courses_as_instructor', userInfo[9],
-        'courses_as_TA', userInfo[10],
-        'courses_as_student', userInfo[11]]);
-    if(callback) {
-      callback();
-    }
+    client.set("ClassTranscribe::UserLookupTable::" + userInfo[0], userID, function(err, res){
+      console.log("set UserID to UserLookupTable: ", res);
+
+      // Add new user to database
+      if(callback) {
+        client.hmset(
+          "ClassTranscribe::Users::" + userID,
+          [
+            'first_name', userInfo[2],
+            'last_name', userInfo[3],
+            'password', userInfo[4],
+            'change_password_id', userInfo[5],
+            'university', userInfo[6],
+            'verified', userInfo[7],
+            'verify_id', userInfo[8],
+            'courses_as_instructor', userInfo[9],
+            'courses_as_TA', userInfo[10],
+            'courses_as_student', userInfo[11]
+          ],
+          callback());
+      } else {
+        client.hmset(
+          "ClassTranscribe::Users::" + userID,
+          [
+            'first_name', userInfo[2],
+            'last_name', userInfo[3],
+            'password', userInfo[4],
+            'change_password_id', userInfo[5],
+            'university', userInfo[6],
+            'verified', userInfo[7],
+            'verify_id', userInfo[8],
+            'courses_as_instructor', userInfo[9],
+            'courses_as_TA', userInfo[10],
+            'courses_as_student', userInfo[11]
+          ]);}
+    });
   };
 
-  /* Add the token ID to database to check it is linked with the user */
+  /* Add the token ID to database to checOk it is linked with the user */
   function setVerifyID(userID, verifyID, callback) {
     client.hmset("ClassTranscribe::Users::" + userID, ['verify_id', verifyID], callback());
   };
