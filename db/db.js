@@ -128,11 +128,11 @@ function setUserPassword(newPassword, email) {
   });
 }
 
-/* Add university to Table Universities,
+/* findOrCreate university to Table Universities,
  * Shouldn't be used since we
  * currently only support UIUC
  */
-function addUniversity(University) {
+function getUniversityId(University) {
   return University.findOrCreate({
     where: {
       universityName : University,
@@ -140,25 +140,31 @@ function addUniversity(University) {
   });
 }
 
-/* Assming input is an array */
+/* Assuming input is an array */
 function getCoursesByTerms(term) {
   return Term.findAll({ // fetch termId
     where : {
       termName : { [Op.or] : term } // SELECT * FROM Term WHERE termName IN term
     }
   }).then((result) => { // fetch offeringId
+    console.log("OfferingId:");
+    console.log(result);
     return Offering.findAll({
       where : {
         termId: { [Op.or] : result } // SELECT * FROM Offering WHERE termId IN result
       }
     });
   }).then((result) => { // fetch courseId
+    console.log("courseId:")
+    console.log(result);
     return CourseOffering.findAll({
       where : {
         offeringId : { [Op.or] : result} // SELECT * FROM CourseOffering WHERE offeringId IN result
       }
     });
   }).then((result) => { // fetch Courses
+    console.log("courses:");
+    console.log(result)
     return getCoursesByIds(result);
   });
 }
@@ -172,7 +178,7 @@ function getCoursesByIds(courseId) {
   })
 }
 
-function addLecture( courseId, mediaId, date ) {
+function addLecture(courseId, mediaId, date) {
   return Lecture.findOrCreate({
     where : {
       courseId : courseId,
@@ -181,6 +187,60 @@ function addLecture( courseId, mediaId, date ) {
     defaults : {
       date : date,
     },
+  });
+}
+
+/* findOrCreate term, and return termId */
+function getTermId(term) {
+  return Term.findOrCreate({
+    where : { termName : term }
+  });
+}
+
+function getDeptId(dept) {
+  return Dept.findOrCreate({
+    where : { deptName : dept.name }
+    defaults : { acronym : dept.acronym }
+  })
+}
+
+/* findOrCreate the course,
+ * then use provided offeringId,
+ * update userOffering table
+ * course : { courseNumber, courseName, courseDescription, dept, term}
+ * creator : { University, }
+ */
+function addCourse(course, creator) {
+  /* Get termId for later use */
+  var termId = await getTermId(course.term);
+  var deptId = await getDeptId(course.dept);
+  var universityId = await getUniversityId(course.university);
+
+  return Offering.findOrCreate({ // findOrCreate offeringId
+    where : {
+      termId : termId,
+      deptId : deptId,
+      universityId : universityId,
+      section : course.seciton,
+    }
+  })
+  .then((result) => { // use offeringId to findOrCreate UserOffering
+    return UserOffering.findOrCreate({
+      where : {
+        offeringId : result
+      }
+      defaults : {
+        userId : creator.id,
+        roleId : role.id,
+      }
+    });
+  });
+}
+
+/* getRole() findOrCreate a role */
+function getRole(role) {
+  return Role.findOrCreate({
+    where : { roleName : role },
   });
 }
 
@@ -196,7 +256,8 @@ module.exports = {
     getUserByEmail: getUserByEmail,
     verifyUser: verifyUser,
     setUserName: setUserName,
-    addUniversity: addUniversity,
+    getUniversityId: getUniversityId,
     getCoursesByTerms : getCoursesByTerms,
-    getCoursesByIds : getCoursesByIds
+    getCoursesByIds : getCoursesByIds,
+    addLecture : addLecture,
 }

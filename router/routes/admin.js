@@ -6,7 +6,6 @@
  */
 var router = express.Router();
 var fs = require('fs');
-var db = require('../../db/db');
 var adminMustache = fs.readFileSync(mustachePath + 'admin.mustache').toString();
 
 router.get('/admin', function (request, response) {
