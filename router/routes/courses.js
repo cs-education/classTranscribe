@@ -184,7 +184,7 @@ router.get('/courses/', function (request, response) {
     // Get all terms data from the database
     client_api.getTerms(function(err, reply) {
     // client.smembers("ClassTranscribe::Terms", function(err, reply) {
-    
+
         // reply is null if the key is missing
         allterms= reply.map( term => {
             return term.split("::")[2];
@@ -624,7 +624,6 @@ function  generateListings(data, user, cb) {
             var classid = "ClassTranscribe::Course::" + e['id'];
             permission.checkCoursePermission(user, classid, 'Modify', function (err, res) {
             // acl.isAllowed(user, classid, 'Modify', function (err, res) {
-                res = true // DEBUG: for develop meaning
                 if (res) {
                     // Modify and remove functionalityies will be moved from this page
                     // html +=

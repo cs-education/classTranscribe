@@ -12,11 +12,6 @@ $(function(){
 	})
 });
 
-function log() {
-	 console.log(document.getElementById("input-file"));
-	 console.log(document.getElementById("input-submit"));
-}
-
 /* after the file has been uploaded, display it so the user knows which file was chosen*/
 function getFilename(file_upload) {
     var file = file_upload.files[0];

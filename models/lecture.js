@@ -4,7 +4,7 @@ const uuid = require('uuid/v4');
 module.exports = (sequelize, DataTypes) => {
     var Lecture = sequelize.define('Lecture', {
         id: { type: DataTypes.UUIDV4, primaryKey: true, defaultValue: uuid() },
-        date: DataTypes.TEXT,
+        date: DataTypes.DATEONLY,
     });
 
     Lecture.associate = function(models) {

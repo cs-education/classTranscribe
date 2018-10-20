@@ -16,16 +16,5 @@ router.get('/admin', function (request, response) {
     renderWithPartial(adminMustache, request, response);
 });
 
-router.get('/admin/test', function (request, response) {
-  var user = {
-    firstName : "blah",
-    lastName : "foo",
-    mailId : "asd"
-  };
-  db.createUser(user).then(result => {
-    console.log(result);
-  });
-    renderWithPartial(adminMustache, request, response);
-});
 
 module.exports = router;
