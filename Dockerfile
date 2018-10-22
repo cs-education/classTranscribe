@@ -62,9 +62,9 @@ RUN cd /data && npm install
 RUN npm cache clean -f
 RUN npm install -g n
 RUN n stable
-RUN npm install
+# RUN npm install
 # RUN npm install express http-proxy dotenv mustache passport passport-local multer redis nodemailer acl uuid cookie-parser express-session passport-saml connect-flash email-verify password-validator
-RUN npm audit fix
+# RUN npm audit fix
 RUN apt-get install sqlite3
 
 RUN mkdir cert
