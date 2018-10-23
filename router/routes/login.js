@@ -6,7 +6,6 @@
  */
 var router = express.Router();
 var fs = require('fs');
-//var client = require('./../../modules/redis');
 var passport = require('passport')
 //var flash = require('connect-flash');
 

@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 var fs = require('fs');
-// var client = require('./../../modules/redis');
 var readline = require('readline');
 var sys = require('sys');
 var exec = require('child_process').exec;

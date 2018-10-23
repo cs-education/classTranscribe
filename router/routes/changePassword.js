@@ -6,7 +6,6 @@
  */
 var router = express.Router();
 var fs = require('fs');
-// var client = require('./../../modules/redis');
 var passwordHash = require('password-hash');
 var passwordValidator = require('password-validator');
 

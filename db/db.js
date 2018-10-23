@@ -1,11 +1,11 @@
-﻿'use strict';
+'use strict';
 var Sequelize = require('sequelize');
 var models = require('../models');
 models.sequelize.sync();
 
 const Op = Sequelize.Op;
 const CourseOffering = models.CourseOffering;
-const Courses = models.Courses;
+const Course = models.Course;
 const Dept = models.Dept;
 const EchoSection = models.EchoSection;
 const Lecture = models.Lecture;
@@ -67,12 +67,10 @@ function getEchoSection(sectionId) {
  * though I haven't found a better and correct implementation.
  */
 function createUser(user) {
-  return
-  University
-  .findOrCreate({
+  return University.findOrCreate({
     where : { universityName : user.university }
-  })
-  .then((result) => {
+  }).then((result) => {
+    console.log('result:', result);
     return User.findOrCreate({
       where : { mailId : user.mailId },
       defaults : {
@@ -132,40 +130,59 @@ function setUserPassword(newPassword, email) {
  * Shouldn't be used since we
  * currently only support UIUC
  */
-function getUniversityId(University) {
+function getUniversityId(universityName) {
+  console.log('--------------------------------------------------------------------');
+  console.log(universityName);
+  console.log('--------------------------------------------------------------------');
+
   return University.findOrCreate({
     where: {
-      universityName : University,
+      universityName : universityName,
     }
   });
 }
 
 /* Assuming input is an array */
 function getCoursesByTerms(term) {
+  var termId_list = []
+  var offeringId_list = [];
+  var courseId_list = [];
+  console.log('++++++++++++++++++++++++++++++++++++');
+  console.log(term);
+  console.log('++++++++++++++++++++++++++++++++++++');
   return Term.findAll({ // fetch termId
     where : {
-      termName : { [Op.or] : term } // SELECT * FROM Term WHERE termName IN term
+      termName : { [Op.in] : term } // SELECT * FROM Term WHERE termName IN term
     }
   }).then((result) => { // fetch offeringId
-    console.log("OfferingId:");
+    console.log("termid:");
     console.log(result);
+    for (let i = 0; i < result.length; i++) {
+      termId_list[i] = result[i].dataValues.id;
+    }
     return Offering.findAll({
       where : {
-        termId: { [Op.or] : result } // SELECT * FROM Offering WHERE termId IN result
+        termId: { [Op.in] : termId_list } // SELECT * FROM Offering WHERE termId == result:  (list)
       }
     });
   }).then((result) => { // fetch courseId
-    console.log("courseId:")
+    console.log("offeringid:")
     console.log(result);
+    for (let i = 0; i < result.length; i++) {
+      offeringId_list[i] = result[i].dataValues.id;
+    }
     return CourseOffering.findAll({
       where : {
-        offeringId : { [Op.or] : result} // SELECT * FROM CourseOffering WHERE offeringId IN result
+        offeringId : { [Op.in] : offeringId_list} // SELECT * FROM CourseOffering WHERE offeringId IN result
       }
     });
   }).then((result) => { // fetch Courses
-    console.log("courses:");
+    console.log("coursesid:");
     console.log(result)
-    return getCoursesByIds(result);
+    for (let i = 0; i < result.length; i++) {
+      courseId_list[i] = result[i].dataValues.courseId;
+    }
+    return getCoursesByIds(courseId_list);
   });
 }
 
@@ -173,7 +190,7 @@ function getCoursesByTerms(term) {
 function getCoursesByIds(courseId) {
   return Course.findAll({
     where : {
-      id : { [Op.or] : result }
+      id : {[Op.in] : courseId}
     }
   })
 }
@@ -190,6 +207,46 @@ function addLecture(courseId, mediaId, date) {
   });
 }
 
+/* findOrCreate the course,
+ * then use provided offeringId,
+ * update userOffering table
+ */
+function addCourse(id) {
+  return CourseOffering.findOrCreate({
+    where : {
+      courseId : id.courseId,
+      offeringId : id.offeringId,
+    },
+  }).then(result => {
+    return UserOffering.findOrCreate({
+      where : {
+        userId : id.userId,
+        offeringId : id.offeringId,
+        roleId : id.roleId,
+      },
+    })
+  })
+}
+
+function getCourseId(courseInfo) {
+  return Course.findOrCreate({
+    where : {
+      courseName : courseInfo.courseName,
+      courseNumber : courseInfo.courseNumber,
+    },
+    defaults : {
+      courseDescription : courseInfo.courseDescription,
+    }
+  })
+}
+
+/* getRole() findOrCreate a role */
+function getRoleId(role) {
+  return Role.findOrCreate({
+    where : { roleName : role },
+  });
+}
+
 /* findOrCreate term, and return termId */
 function getTermId(term) {
   return Term.findOrCreate({
@@ -199,48 +256,19 @@ function getTermId(term) {
 
 function getDeptId(dept) {
   return Dept.findOrCreate({
-    where : { deptName : dept.name }
+    where : { deptName : dept.name },
     defaults : { acronym : dept.acronym }
   })
 }
 
-/* findOrCreate the course,
- * then use provided offeringId,
- * update userOffering table
- * course : { courseNumber, courseName, courseDescription, dept, term}
- * creator : { University, }
- */
-function addCourse(course, creator) {
-  /* Get termId for later use */
-  var termId = await getTermId(course.term);
-  var deptId = await getDeptId(course.dept);
-  var universityId = await getUniversityId(course.university);
-
-  return Offering.findOrCreate({ // findOrCreate offeringId
+/* getOfferingId() findOrCreate an offeringId */
+function getOfferingId(id) {
+  return Offering.findOrCreate({
     where : {
-      termId : termId,
-      deptId : deptId,
-      universityId : universityId,
-      section : course.seciton,
-    }
-  })
-  .then((result) => { // use offeringId to findOrCreate UserOffering
-    return UserOffering.findOrCreate({
-      where : {
-        offeringId : result
-      }
-      defaults : {
-        userId : creator.id,
-        roleId : role.id,
-      }
-    });
-  });
-}
-
-/* getRole() findOrCreate a role */
-function getRole(role) {
-  return Role.findOrCreate({
-    where : { roleName : role },
+      termId : id.termId,
+      deptId : id.deptId,
+      universityId : id.universityId,
+    },
   });
 }
 
@@ -249,15 +277,21 @@ module.exports = {
     addCourseAndSection: addCourseAndSection,
     addMedia: addMedia,
     addMSTranscriptionTask: addMSTranscriptionTask,
+    addLecture : addLecture,
+    addCourse : addCourse,
+    createUser: createUser,
+    setUserName: setUserName,
+    verifyUser: verifyUser,
     getTask: getTask,
     getMedia: getMedia,
     getEchoSection: getEchoSection,
-    createUser: createUser,
     getUserByEmail: getUserByEmail,
-    verifyUser: verifyUser,
-    setUserName: setUserName,
     getUniversityId: getUniversityId,
     getCoursesByTerms : getCoursesByTerms,
     getCoursesByIds : getCoursesByIds,
-    addLecture : addLecture,
+    getCourseId : getCourseId,
+    getRoleId : getRoleId,
+    getTermId : getTermId,
+    getDeptId : getDeptId,
+    getOfferingId : getOfferingId,
 }

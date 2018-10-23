@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 var searchMustache = fs.readFileSync(mustachePath + 'search.mustache').toString();
-// var client = require('./../../modules/redis');
 
 var client_api = require('./db');
 // var api = require('./api');

@@ -40,7 +40,6 @@ async = require('async');
 var router = express.Router();
 // Search helper
 var srchHelper = require("../../utility_scripts/searchContent.js");
-// var client = require('./../../modules/redis');
 
 var client_api = require('./db');
 var permission = require('./permission');

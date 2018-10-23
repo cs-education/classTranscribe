@@ -13,7 +13,6 @@ var router = express.Router();
 var fs = require('fs');
 var mkdirp = require('mkdirp');
 var validator = require('../../modules/validator.js');
-//var client = require('./modules/redis');
 
 var client_api = require('./db');
 // var api = require('./api');
