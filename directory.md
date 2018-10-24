@@ -12,7 +12,11 @@ website tutorials, and FAQs.
 ## [javascripts](/javascripts)
 [manageCourse.js](/javascripts/controllers/manageCourse.js) is relative to manageCourse page
 
-## [modules] (/modules)
+## [models](/models)
+[index.js](/models/index.js) creates every table in this directory, other files contain column information for the tables.
+
+
+## [modules](/modules)
 [mailer.js](/modules/mailer.js) is relative to mailing systems
 [redis.js](/modules/redis.js) is relative to redis database
 [validator.js](/modules/validator.js) is relative to validating transcript files
