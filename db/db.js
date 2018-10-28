@@ -131,9 +131,6 @@ function setUserPassword(newPassword, email) {
  * currently only support UIUC
  */
 function getUniversityId(universityName) {
-  console.log('--------------------------------------------------------------------');
-  console.log(universityName);
-  console.log('--------------------------------------------------------------------');
 
   return University.findOrCreate({
     where: {
@@ -147,16 +144,12 @@ function getCoursesByTerms(term) {
   var termId_list = []
   var offeringId_list = [];
   var courseId_list = [];
-  console.log('++++++++++++++++++++++++++++++++++++');
-  console.log(term);
-  console.log('++++++++++++++++++++++++++++++++++++');
+
   return Term.findAll({ // fetch termId
     where : {
       termName : { [Op.in] : term } // SELECT * FROM Term WHERE termName IN term
     }
   }).then((result) => { // fetch offeringId
-    console.log("termid:");
-    console.log(result);
     for (let i = 0; i < result.length; i++) {
       termId_list[i] = result[i].dataValues.id;
     }
@@ -166,8 +159,6 @@ function getCoursesByTerms(term) {
       }
     });
   }).then((result) => { // fetch courseId
-    console.log("offeringid:")
-    console.log(result);
     for (let i = 0; i < result.length; i++) {
       offeringId_list[i] = result[i].dataValues.id;
     }
@@ -177,8 +168,6 @@ function getCoursesByTerms(term) {
       }
     });
   }).then((result) => { // fetch Courses
-    console.log("coursesid:");
-    console.log(result)
     for (let i = 0; i < result.length; i++) {
       courseId_list[i] = result[i].dataValues.courseId;
     }

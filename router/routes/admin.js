@@ -21,6 +21,7 @@ router.get('/admin/test', function (request, response) {
     response.writeHead(200, {
         'Content-Type': 'text.html'
     });
+
     var user = {
       firstName : "123",
       lastName : "321",
@@ -29,9 +30,9 @@ router.get('/admin/test', function (request, response) {
     };
 
     var course = {
-      courseNumber : '123',
-      courseName : 'DATA ST',
-      courseDescription : 'blah blah blah',
+      courseNumber : '230',
+      courseName : 'DATA foo',
+      courseDescription : 'foo foo blah blah',
       dept : 'Computer Science',
       term : 'Fa18',
       section : 'AL',
@@ -43,53 +44,80 @@ router.get('/admin/test', function (request, response) {
       acronym : 'CS',
     }
 
-    var user_result;
-    var term_result;
-    var university_result;
-    var dept_result;
-    var role_result;
-    var course_result;
     var id = {};
+
+    var role_result = db.getRoleId('Instructor');
+    var term_result = db.getTermId(course.term);
+    var dept_result = db.getDeptId(dept);
+    var university_result = db.getUniversityId(course.university);
+    var course_result = db.getCourseId(course);
 
     db
     .createUser(user)
     .then(result => {
-      user_result = result[0].dataValues;
-      console.log(user_result);
-      id.userId = user_result.id;
-      return db.getRoleId('Instructor').then(result => {
-        role_result = result[0].dataValues;
-        console.log(role_result);
-        id.roleId = role_result.id;
-        return db.getTermId(course.term).then(result => {
-          id.termId = result[0].dataValues.id;
-          return db.getDeptId(dept).then(result => {
-            dept_result = result[0].dataValues;
-            console.log(dept_result);
-            id.deptId = dept_result.id;
-            return db.getUniversityId(course.university).then(result => {
-              university_result = result[0].dataValues;
-              console.log(university_result)
-              id.universityId = university_result.id;
-              return db.getCourseId(course).then(result => {
-                id.courseId = result[0].dataValues.id;
-                return db.getOfferingId(id).then(result => {
-                  id.offeringId = result[0].dataValues.id;
-                  return db.addCourse(id).then(result => {
-                    console.log('_________________________________');
-                    console.log(result);
-                    console.log('_________________________________');
-                    return db.getCoursesByTerms(['Fa18']).then(result => {
-                      console.log(result);
-                    })
-                  })
-                })
-              })
-              })
+    Promise.all([role_result, term_result, dept_result, university_result, course_result]).then((values) => {
+      id.roleId = values[0][0].dataValues.id;
+      id.termId = values[1][0].dataValues.id;
+      id.deptId = values[2][0].dataValues.id;
+      id.universityId = values[3][0].dataValues.id;
+      id.courseId = values[4][0].dataValues.id;
+      console.log(id);
+      return db.getOfferingId(id).then(result => {
+        id.offeringId = result[0].dataValues.id;
+          return db.addCourse(id).then(result => {
+            return db.getCoursesByTerms(['Fa18']).then(result => {
+              console.log('_________________________________');
+              for(let i =0; i < result.length; i++) {
+                console.log(result[i].dataValues.id);
+              }
+              console.log('_________________________________');
             })
           })
         })
-      })
+      }).catch(err=>console.log(err))
+    })
+
+    // db
+    // .createUser(user)
+    // .then(result => {
+    //
+    //   id.userId = result[0].dataValues.id;
+    //   return db.getRoleId('Instructor').then(result => {
+    //     id.roleId = result[0].dataValues.id;
+    //
+    //     return db.getTermId(course.term).then(result => {
+    //       id.termId = result[0].dataValues.id;
+    //
+    //       return db.getDeptId(dept).then(result => {
+    //         id.deptId = result[0].dataValues.id;
+    //
+    //         return db.getUniversityId(course.university).then(result => {
+    //           id.universityId = result[0].dataValues.id;
+    //
+    //           return db.getCourseId(course).then(result => {
+    //             id.courseId = result[0].dataValues.id;
+    //
+    //             return db.getOfferingId(id).then(result => {
+    //               id.offeringId = result[0].dataValues.id;
+    //
+    //               return db.addCourse(id).then(result => {
+    //
+    //                 return db.getCoursesByTerms(['Fa18']).then(result => {
+    //                   console.log('_________________________________');
+    //                   for(let i =0; i < result.length; i++) {
+    //                     console.log(result[i].dataValues.id);
+    //                   }
+    //                   console.log('_________________________________');
+    //
+    //                 })
+    //               })
+    //             })
+    //           })
+    //           })
+    //         })
+    //       })
+    //     })
+    //   })
 
     /*
     var termValue = await getTermId(course.term);
