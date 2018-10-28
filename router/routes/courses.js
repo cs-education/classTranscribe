@@ -1,35 +1,3 @@
-// Current database structure overview
-//  ========== Class section ==========
-//                                |--ClassTranscribe::Course::Classid_1
-//                                |--ClassTranscribe::Course::C2
-//  |--ClassTranscribe::CourseList|--ClassTranscribe::Course::C3
-//  |
-//  |--ClassTranscribe::Terms::XX|--ClassTranscribe::Course::Classid_1
-//  |                            |--ClassTranscribe::Course::C2
-//  |
-//  |--ClassTranscribe::Terms::YY|--ClassTranscribe::Course::C3
-// -|
-//  |--ClassTranscribe::SubjectList--|--ClassTranscribe::Subject::XX --ClassTranscribe::Course::Classid_1
-//  |                                |--ClassTranscribe::Subject::YY::|--ClassTranscribe::Course::C2
-//  |                                                                 |--ClassTranscribe::Course::C3
-//  |--ClassTranscribe::Course::C1--Attributes("ClassNumber","SectionNumber","ClassName","ClassDesc","University","Instructor","Term"...)
-//  |--ClassTranscribe::Course::...::Students
-//  |                                |--Instructors
-//  |
-//  ========== User section ==========
-//  |
-//  |--ClassTranscribe::Users::userid_1--Attributes('first_name', 'last_name', 'password'...)
-//  |--ClassTranscribe::Users::userid_1::Courses_as_Instructor
-//  |--ClassTranscribe::Users::userid_1::Courses_as_TA
-//  |--ClassTranscribe::Users::userid_1::Courses_as_Student//  |--ClassTranscribe::Users::...
-//  |
-//  |--ClassTranscribe::Users::...
-//  |
-//  |
-//  ========== Misc section ==========
-//  |--ClassTranscribe::UserLookupTable::Email_1
-//  |
-
 // TODO: create class consistency, create class permission, uid changes, more permission check, delete confirmation/adjustment, uuid, trash bin, public/private course displat
 // note: for classid see genNewClassUid() function
 
@@ -41,17 +9,16 @@ var router = express.Router();
 // Search helper
 var srchHelper = require("../../utility_scripts/searchContent.js");
 
-var client_api = require('./db');
+var client_api = require('../../db/db');
 var permission = require('./permission');
-// var api = require('./api');
-// var client_api = new api();
+
 //=======================Sample data for testing=====================================
 // create Uid for the class
 function genNewClassUid(){
     return uuidv4();
 }
 
-
+/*
 var courseList = {
     "Spring 2016":[
         ["Chemistry", "Chem 233", "AL2", "Elementary Organic Chem Lab I", "Basic laboratory techniques in organic" +
@@ -85,16 +52,104 @@ var courseList = {
         "series; Fourier transform; active filters; AM radio.", "UIUC", "Hasegawa-Johnson, M","ba30de6f-5295-449b-9744-ac72172713ad"],
     ],
     "All":[]
+};*/
+
+// client_api.addCourse(dummyData, "All");
+// client.sadd("ClassTranscribe::CourseList", "ClassTranscribe::Course::"+testclassid);
+// client.sadd("ClassTranscribe::Terms::"+'All', "ClassTranscribe::Course::"+testclassid);
+// client.sadd("ClassTranscribe::SubjectList", "ClassTranscribe::Subject::"+"Computer Science");
+// client.sadd("ClassTranscribe::Subject::"+"Computer Science", "ClassTranscribe::Course::"+testclassid);
+// client.hset("ClassTranscribe::Course::"+testclassid, "Subject", "Computer Science");
+// client.hset("ClassTranscribe::Course::"+testclassid, "ClassNumber", "CS 123");
+// client.hset("ClassTranscribe::Course::"+testclassid, "SectionNumber", "BL2");
+// client.hset("ClassTranscribe::Course::"+testclassid, "ClassName", "Data Structure");
+// client.hset("ClassTranscribe::Course::"+testclassid, "ClassDesc", "No description");
+// client.hset("ClassTranscribe::Course::"+testclassid, "University", "N/A");
+// client.hset("ClassTranscribe::Course::"+testclassid, "Instructor", "N/A");
+// client.hset("ClassTranscribe::Course::"+testclassid, "Term", "All");
+var courseList = [
+  {
+    courseName : "Elementary Organic Chem Lab I",
+    courseNumber : "233",
+    courseDescription : "Basic laboratory techniques in organic chemistry "+
+    "are presented with emphasis on the separation, isolation, and purification" +
+    "of organic compounds. For students in agricultural science, dairy technology,"+
+    "food technology, nutrition, dietetics, premedical, predental, and"+
+    "preveterinary programs.",
+    section : "AL2",
+    term : "Spring 2016",
+    dept : {
+      deptName : "Chemistry",
+      acronym : "Chem",
+    }
+  } ,
+  {
+    courseName : "Data Structures",
+    courseNumber : "225",
+    courseDescription : "Data abstractions: elementary data structures (lists, " +
+    "stacks, queues, and trees) and their implementation using an object-oriented programming language. Solutions " +
+    "to a variety of computational problems such as search on graphs and trees. Elementary analysis of " +
+    "algorithms",
+    section : "AL1",
+    term : "Spring 2016",
+    dept : {
+      deptName : "Computer Science",
+      acronym : "CS",
+    }
+  },
+  {
+    courseName : "Machine Learning",
+    courseNumber : "446",
+    courseDescription : "Theory and basic techniques in machine learning. Major" +
+    " theoretical paradigms and key concepts developed in machine learning in the context of applications such as natural" +
+    " language and text processing, computer vision, data mining, adaptive computer systems and others. Review of several" +
+    " supervised and unsupervised learning approaches: methods for learning linear representations; on-line learning," +
+    " Bayesian methods; decision-trees; features and kernels; clustering and dimensionality reduction.",
+    section : "D3",
+    term : "Fall 2016",
+    dept : {
+      deptName : "Computer Science",
+      acronym : "CS",
+    }
+  }]
+
+var passwordHash = require('password-hash');
+// test user profile
+var testInfo = {
+  mailId : 'testing@testdomabbccc.edu',
+  firstName : 'First',
+  lastName :'Sur',
+  password: passwordHash.generate("passtest"),
+  university : 'test uni',
+  verifiedId : 'sample-verification-buffer',
 };
 
-// Just a wrapper
-function print(msg){
-    console.log(msg)
-}
+client_api.createUser(testInfo).then(
+  result => {
+    var userInfo = result[0].dataValues;
+    client_api.verifyUser('sample-verification-buffer', 'testing@testdomabbccc.edu').then(result => {
+      for(let i = 0; i < courseList.length; i++) {
+        client_api.addCourse(userInfo, courseList[i]);
+      }
+    });
+  }).catch(err => {
+  console.log(err)
+})
+
+/*
+* course = {
+*   courseName, courseNumber, courseDescription,
+*   term, section, *dept*
+*  }
+*
+* dept = {
+* deptName, acronym
+* }
+*/
 
 // Loading sample data into database
-Object.keys(courseList).forEach( function (t) {
-  client_api.addCoursesByTerm(courseList[t], t);
+// Object.keys(courseList).forEach( function (t) {
+  // client_api.addCourses(courseList[t]);
     // client.sadd("ClassTranscribe::Terms", "ClassTranscribe::Terms::"+t);
     // courseList[t].forEach(function (course) {
     //     // Add course
@@ -116,34 +171,14 @@ Object.keys(courseList).forEach( function (t) {
     //     client.hset("ClassTranscribe::Course::"+classid, "Instructor", course[6]);
     //     client.hset("ClassTranscribe::Course::"+classid, "Term", t);
     // });
-});
-let testcourse = courseList["Spring 2016"][0];
-let testclassid='bb4e5382-42ed-40e7-ad8d-0086838f3e0c';
-/* couse = [subject, classNumber, sectionNumber, className, classDesc, university, instructor, classID] */
-let dummyData = ["Computer Science", "CS 123", "BL2", "Data Structure", "No description", "N/A", "N/A", testclassid];
-// client_api.addCourse(dummyData, "All");
-// client.sadd("ClassTranscribe::CourseList", "ClassTranscribe::Course::"+testclassid);
-// client.sadd("ClassTranscribe::Terms::"+'All', "ClassTranscribe::Course::"+testclassid);
-// client.sadd("ClassTranscribe::SubjectList", "ClassTranscribe::Subject::"+"Computer Science");
-// client.sadd("ClassTranscribe::Subject::"+"Computer Science", "ClassTranscribe::Course::"+testclassid);
-// client.hset("ClassTranscribe::Course::"+testclassid, "Subject", "Computer Science");
-// client.hset("ClassTranscribe::Course::"+testclassid, "ClassNumber", "CS 123");
-// client.hset("ClassTranscribe::Course::"+testclassid, "SectionNumber", "BL2");
-// client.hset("ClassTranscribe::Course::"+testclassid, "ClassName", "Data Structure");
-// client.hset("ClassTranscribe::Course::"+testclassid, "ClassDesc", "No description");
-// client.hset("ClassTranscribe::Course::"+testclassid, "University", "N/A");
-// client.hset("ClassTranscribe::Course::"+testclassid, "Instructor", "N/A");
-// client.hset("ClassTranscribe::Course::"+testclassid, "Term", "All");
+// });
+// let testcourse = courseList["Spring 2016"][0];
+// let testclassid='bb4e5382-42ed-40e7-ad8d-0086838f3e0c';
+// /* couse = [subject, classNumber, sectionNumber, className, classDesc, university, instructor, classID] */
+// let dummyData = ["Computer Science", "CS 123", "BL2", "Data Structure", "No description", "N/A", "N/A", testclassid];
 
-var passwordHash = require('password-hash');
-// test user profile
-/*
-userInfo = [ email, userid, first_name, last_name, password, change_password_id,
-university, verified, verify_id, courses_as_instructor, courses_as_TA, courses_as_student]
-*/
-var testInfo = ['testing@testdomabbccc.edu', 'testing@testdomabbccc.edu',
-'First', 'Sur', passwordHash.generate("passtest"), '', 'test uni', true, '', '', '', ''];
-client_api.signUp(testInfo);
+
+
 //
 // client.hmset("ClassTranscribe::Users::" + 'testing@testdomabbccc.edu', [
 //     'first_name', 'First',
@@ -181,7 +216,8 @@ router.get('/courses/', function (request, response) {
     });
     var userid = getUserId(request);
     // Get all terms data from the database
-    client_api.getTerms(function(err, reply) {
+    client_api.getTerms().then(reply => {
+    // client_api.getTerms(function(err, reply) {
     // client.smembers("ClassTranscribe::Terms", function(err, reply) {
 
         // reply is null if the key is missing
@@ -191,8 +227,9 @@ router.get('/courses/', function (request, response) {
 
         var form = '';
         var createClassBtn = '';
-        client_api.getUserByID(getUserId(request), function(err, userinfo) {
+        // client_api.getUserByID(getUserId(request), function(err, userinfo) {
         // client.hgetall("ClassTranscribe::Users::"+getUserId(request), function (err, usrinfo) {
+        client_api.getUserByEmail(getUserId(request)).then(result => {
             // Add create-a-class section if user is authenticated
             if (request.isAuthenticated()) {
                 form = getCreateClassForm(usrinfo);
@@ -212,7 +249,7 @@ router.get('/courses/', function (request, response) {
                 "                    <th>Course Descruption</th>\n" +
                 "                    <th>Action</th>\n" +
                 "                </tr>";
-            client_api.getCourses( function(err, reply) {
+            client_api.getCourses().then( reply => {//function(err, reply) {
             // client.smembers("ClassTranscribe::CourseList", function (err, reply) {
                 var commands = [];
                 reply.forEach(function (c) {
@@ -254,7 +291,7 @@ router.post('/courses/newclass', function (request, response) {
     var course = request.body;
     var userid = getUserId(request);
     if (userid==''){
-        print("Invalid user id");
+        console.log("Invalid user id");
         response.end();
         return;
     }
@@ -320,7 +357,7 @@ router.get('/courses/search', function (request, response) {
         'Content-Type': 'text/html'
     });
     // Same as the main page
-    client_api.getTerms(function(err, reply) {
+    client_api.getTerms().then(reply => {//function(err, reply) {
     // client.smembers("ClassTranscribe::Terms", function(err, reply) {
         allterms=[];
         reply.forEach(function (e) {
@@ -447,24 +484,6 @@ router.delete('/courses/deleteclass/', function (request, response) {
     response.send();
 });
 
-
-// return courses and their information offered in a term
-// router.get('/courses/getterminfo', function (request, response) {
-//     if(request.query["term"]=="All")
-//         var term = "ClassTranscribe::CourseList";
-//     else
-//         var term = "ClassTranscribe::Terms::" + request.query["term"];
-//     client.smembers(term, function (err, reply) {
-//         var commands = [];
-//         reply.forEach(function (c){
-//             commands.push(["hgetall", c]);
-//         });
-//         client.multi(commands).exec(function (err, replies) {
-//             response.send(replies);
-//         });
-//     });
-// });
-
 // Same with delete, to be removed from this page
 // Modifies class
 router.post('/courses/modifyclass',function (request, response) {
@@ -515,7 +534,7 @@ router.post('/courses/applyfilter', function (request, response) {
             result.push(e)
         }
     });
-    generateListings(result,getUserId(request), function (res) {
+    generateListings(result, getUserId(request), function (res) {
         rethtml+=res;
         response.send(rethtml);
     });
@@ -556,57 +575,6 @@ function generateFilters(data){
 // user - user id
 // cb   - callback function
 function  generateListings(data, user, cb) {
-    // async.eachSeries(data, function (c, fcb) {
-    //         html += '<tr>';
-    //         html += '<td hidden="yes">' + c["Term"] + '</td>';
-    //         html += '<td>' + c["University"] + '</td>';
-    //         html += '<td>' + c["Subject"] + '</td>';
-    //         html += '<td>' + c["ClassNumber"] + '</td>';
-    //         html += '<td>' + c["SectionNumber"] + '</td>';
-    //         html += '<td>' + c["ClassName"] + '</td>';
-    //         html += '<td>' + c["Instructor"] + '</td>';
-    //         html += '<td class="tddesc">' + c["ClassDesc"] + '</td>';
-    //         html += '<td class="col-md-2">';
-    //         var debug = false;
-    //         if (debug || (user != '' && user != undefined)) {
-    //             var classid = "ClassTranscribe::Course::" + getClassUid(c["University"], c["Term"], c['ClassNumber'], c['SectionNumber']);
-    //             acl.isAllowed(user, classid, 'Drop', function (err, res) {
-    //                 if (!res) {
-    //                     html +=
-    //                         '<a class="actionbtn erbtn">' +
-    //                         '          <span class="glyphicon glyphicon-plus"></span> Enroll\n' +
-    //                         '        </a>';
-    //                 }
-    //                 else {
-    //                     html +=
-    //                         '<a class="actionbtn dpbtn">' +
-    //                         '          <span class="glyphicon glyphicon-minus"></span> Drop\n' +
-    //                         '        </a>';
-    //                 }
-    //                 html += '</br>';
-    //                 acl.isAllowed(user, classid, 'Modify', function (err, res) {
-    //                     if (res) {
-    //                         html +=
-    //                             '<a class="actionbtn modbtn" data-toggle="modal" data-target="#modpanel">' +
-    //                             '          <span class="glyphicon glyphicon-pencil"></span> Modify\n' +
-    //                             '        </a>';
-    //                     }
-    //                     acl.isAllowed(user, classid, 'Remove', function (err, res) {
-    //                         if (res) {
-    //                             html +=
-    //                                 '<a class="actionbtn rmbtn">' +
-    //                                 '          <span class="glyphicon glyphicon-remove"></span> Remove\n' +
-    //                                 '        </a>' +
-    //                                 '</td>';
-    //                         }
-    //                         html += '</tr>';
-    //                         fcb(null);
-    //                     });
-    //                 });
-    //             });
-    //         }
-    //         else{fcb(null)}
-    //     },function (err, res) {cb(html);});
     async.reduce(data, '', function (html, e, fcb) {
         html += '<tr id="'+e['id']+'">';
         html += '<td hidden="yes">' + e["Term"] + '</td>';
@@ -672,16 +640,6 @@ function  generateListings(data, user, cb) {
     },function (err, res) {cb(res);});
 }
 
-// var manageCorseMustache = fs.readFileSync(mustachePath + 'manageCourse.mustache').toString();
-// router.get('/:className', function (request, response) {
-//     var className = request.params.className;
-//     var view = {
-//       className:className
-//     }
-//     var html = Mustache.render(manageCourseMustache, view);
-//     response.end(html);
-// });
-
 
 // Get user id from email
 // return -  currently just returns the email (i.e. abc@def.edu) or '' in case of error
@@ -692,7 +650,7 @@ function getUserId(req) {
     }
     catch(e) {
         id="";
-        print("Invalid user id detected")
+        console.log("Invalid user id detected");
     }
     return id;
 }
@@ -703,7 +661,7 @@ router.post('/courses/enroll/', function (request, response) {
     params = params.split(',,');
     var userid = getUserId(request);
     var classid = request.body.cid;
-    enrollStudent(userid, classid);
+    client_api.enrollStudent(userid, classid);
     permission.addCoursePermission(userid, classid, 'Drop');
     // acl.allow(userid, "ClassTranscribe::Course::"+classid, 'Drop');
 

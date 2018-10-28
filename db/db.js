@@ -70,14 +70,14 @@ function createUser(user) {
   return University.findOrCreate({
     where : { universityName : user.university }
   }).then((result) => {
-    console.log('result:', result);
     return User.findOrCreate({
       where : { mailId : user.mailId },
       defaults : {
         firstName : user.firstName,
         lastName : user.lastName,
         password : user.password,
-        verifiedId : null, // provide verifyId after being verified
+        verified : false,
+        verifiedId : user.verifiedId, // provide verifyId after being verified
         universityId : result[0].dataValues.id, // result is an array of json object
       }
     });
@@ -96,11 +96,13 @@ function getUserByEmail(email) {
 
 /* UPDATE User SET verifiedId = verifiedId WHERE mailId = email */
 function verifyUser(verifiedId, email) {
+  console.log('VerifyUser');
   return User.update( {
-    verifiedId : verifiedId,
+    verified : true,
   }, {
     where : {
       mailId : email,
+      verifiedId : verifiedId,
     }
   });
 }
@@ -177,10 +179,16 @@ function getCoursesByTerms(term) {
 
 /* SELECT * FROM Course WHERE id IN courseId */
 function getCoursesByIds(courseId) {
+  var jsonList = [];
   return Course.findAll({
     where : {
       id : {[Op.in] : courseId}
     }
+  }).then(result => {
+    for (let  i = 0; i < result.length; i++) {
+      jsonList[i] = result[i].dataValues;
+    }
+    return jsonList;
   })
 }
 
@@ -200,7 +208,7 @@ function addLecture(courseId, mediaId, date) {
  * then use provided offeringId,
  * update userOffering table
  */
-function addCourse(id) {
+function addCourseHelper(id) {
   return CourseOffering.findOrCreate({
     where : {
       courseId : id.courseId,
@@ -261,6 +269,79 @@ function getOfferingId(id) {
   });
 }
 
+/*
+ * course = {
+ *   courseName, courseNumber, courseDescription,
+ *   dept, term, section, deptName, acronym
+ *  }
+ */
+function addCourse(user, course) {
+  /* if user and courseList are not empty */
+  if(user && course) {
+    var id = { universityId : user.universityId };
+    var role_result = getRoleId( 'Instructor' );
+    var user_result = getUserByEmail( user.mailId );
+    return Promise.all([role_result, user_result]).then( values => {
+      var id = {
+        roleId : values[0][0].dataValues.id,
+        userId : values[1][0].dataValues.id,
+      }
+
+      /* userId is not matched */
+      if (id.userId != user.id) {
+        throw Error('User ID is not matched');
+      }
+
+      /* add course */
+      let term_result = getTermId( course.term );
+      let dept_result = getDeptId( course.dept );
+      let course_result = getCourseId(course);
+      return Promise.all([term_result, dept_result, course_result]).then(values => {
+        id.termId = values[0][0].dataValues.id;
+        id.deptId = values[1][0].dataValues.id;
+        id.courseId = values[2][0].dataValues.id;
+        return getOfferingId(id).then(result => {
+          id.offeringId = result.dataValues.id;
+          return addCourseHelper(id);
+        }).catch(err => { console.log(err) }); /* end of getOfferingId() */
+      }).catch(err => { console.log(err) }); /* end of Promise.all */
+    }).catch(err => { console.log(err) }); /* end of Promise.all */
+  }
+  throw Error('User Info or Course List is empty');
+}
+
+/* Get All Terms */
+function getTerms() {
+  return Term.findAll().then(values => {
+    var result;
+    for (let i = 0; i < values.length; i++) {
+      result[i] = values[i].dataValues;
+    }
+    return result;
+  });
+}
+
+/* Get All Courses */
+function getCourses() {
+  return Course.findAll().then(values => {
+    var result;
+    for (let i = 0; i < values.length; i++) {
+      result[i] = vales[i].dataValues;
+    }
+    return result;
+  })
+}
+
+/* TODO: */
+function addStudent(studentId, courseId) {
+  return;
+}
+
+/* TODO: */
+function removeStudent (studentId, courseId) {
+  return;
+}
+
 module.exports = {
     models: models,
     addCourseAndSection: addCourseAndSection,
@@ -268,6 +349,8 @@ module.exports = {
     addMSTranscriptionTask: addMSTranscriptionTask,
     addLecture : addLecture,
     addCourse : addCourse,
+    addStudent : addStudent,
+    removeStudent : removeStudent,
     createUser: createUser,
     setUserName: setUserName,
     verifyUser: verifyUser,
@@ -279,8 +362,10 @@ module.exports = {
     getCoursesByTerms : getCoursesByTerms,
     getCoursesByIds : getCoursesByIds,
     getCourseId : getCourseId,
+    getCourses : getCourses,
     getRoleId : getRoleId,
     getTermId : getTermId,
+    getTerms : getTerms,
     getDeptId : getDeptId,
     getOfferingId : getOfferingId,
 }

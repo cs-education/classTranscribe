@@ -8,6 +8,7 @@ module.exports = (sequelize, DataTypes) => {
         firstName: DataTypes.TEXT,
         lastName: DataTypes.TEXT,
         password: DataTypes.TEXT,
+        verified : DataTypes.BOOLEAN,
         verifiedId: DataTypes.TEXT,
     });
 

@@ -61,7 +61,6 @@ router.get('/admin/test', function (request, response) {
       id.deptId = values[2][0].dataValues.id;
       id.universityId = values[3][0].dataValues.id;
       id.courseId = values[4][0].dataValues.id;
-      console.log(id);
       return db.getOfferingId(id).then(result => {
         id.offeringId = result[0].dataValues.id;
           return db.addCourse(id).then(result => {
@@ -119,12 +118,6 @@ router.get('/admin/test', function (request, response) {
     //     })
     //   })
 
-    /*
-    var termValue = await getTermId(course.term);
-    var deptValue = await getDeptId(course.dept);
-    var universityValue = await getUniversityId(course.university);
-    var roleValue = await getRoleId('Instructor');
-    */
     renderWithPartial(adminMustache, request, response);
 });
 
