@@ -96,7 +96,6 @@ function getUserByEmail(email) {
 
 /* UPDATE User SET verifiedId = verifiedId WHERE mailId = email */
 function verifyUser(verifiedId, email) {
-  console.log('VerifyUser');
   return User.update( {
     verified : true,
   }, {

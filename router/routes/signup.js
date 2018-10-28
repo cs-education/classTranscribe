@@ -234,9 +234,8 @@ router.get('/verify', function (request, response) {
     var email = request.query.email
 
     client_api.getUserByEmail(email).then(result => {
-      
+
       if (!result) {
-        console.log('---------------------')
         //TODO: ADD 404 PAGE
         var error = 'Account does not exist';
         console.log(error);
@@ -244,8 +243,8 @@ router.get('/verify', function (request, response) {
       }
 
       var userId = result.dataValues.id;
-      client_api.verifyUser(result.dataValues.verifiedId, userId).then(result => {
-        console.log(result)
+      console.log(result.dataValues);
+      client_api.verifyUser(result.dataValues.verifiedId, email).then(result => {
         // Display error if the generated unique link does not match the user
         // var userId = result[0].dataValues.id
         // if (userId != request.query.id) {

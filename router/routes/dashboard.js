@@ -17,7 +17,6 @@ router.get('/dashboard', function (request, response) {
             'Content-Type': 'text/html'
         });
 
-        console.log(request.user);
         // Obtain user information to display user data
         var email = request.user.mailId;
         var user = email.substr(0, email.indexOf('@'));

@@ -14,7 +14,6 @@ var loginMustache = fs.readFileSync(mustachePath + 'login.mustache').toString();
 
 // Render the login mustache page; if account is authenticated, just bring user to dashboard
 router.get('/login', function(request, response) {
-  console.log('Login')
     if (request.isAuthenticated()) {
         response.redirect('../dashboard');
     } else {
@@ -30,11 +29,9 @@ router.post('/login/submit', function(request, response, next) {
     passport.authenticate('local', function(err, user, info) {
       // Display error if failed to login; otherwise, redirect to dashboard
       if (!user) {
-        console.log(user)
         response.send({ message: info.message, html: '../login'});
       } else {
         request.logIn(user, function(err) {
-          console.log(err);
           response.send({ message: 'success', html: '../dashboard' });
         });
       }
