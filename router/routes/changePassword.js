@@ -30,46 +30,87 @@ router.get('/changePassword', function (request, response) {
         email = request.query.email;
 
         // Check if email is already in the database
-        client_api.getUserByEmail(email, function(err, usr) {
-        // client.hgetall("ClassTranscribe::Users::" + email, function (err, usr) {
-            // Display error if the account does not exist
-            if (!usr) {
-                var error = "Account does not exist.";
+        // get mailid
+        client_api.getUserByEmail(email).then(result => {
+          // Display error if the account does not exist
+          if (!result) {
+            //TODO: ADD 404 PAGE
+            var error = 'Account does not exist';
+            console.log(error);
+            response.status(404).send({message : error});
+          } else {
+            //get userid
+            console.log(result)
+
+            // var user_mail_id = result[0].dataValues.id; // may have bug
+            // TODO: get user_id with email if the user is valid
+            client_api.validUserID(email).then(result => {
+              var user_id = result[0].dataValues.id
+              if (user_id != request.query.id) { // false
+                var error = "Incorrect reset password link.";
                 console.log(error);
                 response.end();
                 // TODO: ADD 404 PAGE
-            } else {
-                // Check if the user reset password link ID matches the email
-                client_api.validUserID(email, function(err, obj) {
-                // client.hget("ClassTranscribe::Users::" + email, "change_password_id", function (err, obj) {
-                    // Display error if the generated unique link does not match the user
-                    // Change the info in the database if the unique link matches
-                    if (obj != request.query.id) {
-                        var error = "Incorrect reset password link.";
-                        console.log(error);
-                        response.end();
-                        // TODO: ADD 404 PAGE
-                    } else {
-                      client_api.setPasswordID(email, "", function(err, results) {
-                        // client.hmset("ClassTranscribe::Users::" + email, [
-                        //     'change_password_id', ''
-                        // ], function (err, results) {
-                            if (err) console.log(err)
-                            console.log(results);
-                        });
-
-                        // Render the changePassword mustache page
-                        response.writeHead(200, {
-                            'Content-Type': 'text.html'
-                        });
-                        renderWithPartial(changePasswordMustache, request, response);
-                    }
+              } else {
+                // TODO: unfinished function setPasswordID(user_id
+                // but idk the meaning of this function
+                // client_api.setPasswordID(user_id).then(result => {
+                //   // TODO: get err from result
+                //   var err = result
+                //   if (err) console.log(err)
+                //   console.log(results);
+                // });
+                response.writeHead(200, {
+                    'Content-Type': 'text.html'
                 });
-            }
-        });
+                renderWithPartial(changePasswordMustache, request, response);
+              }
+            })
+          }
+        })
+
+        // // Check if email is already in the database
+        // client_api.getUserByEmail(email, function(err, usr) {
+        // // client.hgetall("ClassTranscribe::Users::" + email, function (err, usr) {
+        //     // Display error if the account does not exist
+        //     if (!usr) {
+        //         var error = "Account does not exist.";
+        //         console.log(error);
+        //         response.end();
+        //         // TODO: ADD 404 PAGE
+        //     } else {
+        //         client_api.validUserID(email, function(err, obj) {
+        //         // client.hget("ClassTranscribe::Users::" + email, "change_password_id", function (err, obj) {
+        //             // Display error if the generated unique link does not match the user
+        //             // Change the info in the database if the unique link matches
+        //             if (obj != request.query.id) {
+        //                 var error = "Incorrect reset password link.";
+        //                 console.log(error);
+        //                 response.end();
+        //                 // TODO: ADD 404 PAGE
+        //             } else {
+        //               client_api.setPasswordID(email, "", function(err, results) {
+        //                 // client.hmset("ClassTranscribe::Users::" + email, [
+        //                 //     'change_password_id', ''
+        //                 // ], function (err, results) {
+        //                     if (err) console.log(err)
+        //                     console.log(results);
+        //               });
+        //
+        //               // Render the changePassword mustache page
+        //               response.writeHead(200, {
+        //                   'Content-Type': 'text.html'
+        //               });
+        //               renderWithPartial(changePasswordMustache, request, response);
+        //             }
+        //         });
+        //     }
+        // });
+
     }
 });
 
+// TODO: db needs add "setPassword()"
 // Change user information in database after the form is submitted
 router.post('/changePassword/submit', function (request, response) {
     var password = request.body.password;
@@ -103,19 +144,34 @@ router.post('/changePassword/submit', function (request, response) {
             // Salt and hash password before putting into redis database
             var hashedPassword = passwordHash.generate(password);
 
+            // new version
+            // TODO: setPassword()
+            client_api.setPassword(email, hashedPassword).then(result => {
+              console.log(result);
+              var err = result[0]
+              if (err) console.log(err)
+              if (request.isAuthenticated()) {
+                  response.send({ message: 'success', html: '../settings' })
+              } else {
+                  response.send({ message: 'success', html: '../login' })
+              }
+            })
+
+            //-------------------------OLD VERSION------------------------------
             // Change user password in database
-            client_api.setPassword(email, hashedPassword, function(err,result) {
-            // client.hmset("ClassTranscribe::Users::" + email, [
-            //     'password', hashedPassword
-            // ], function (err, results) {
-                if (err) console.log(err)
-                console.log(result);
-                if (request.isAuthenticated()) {
-                    response.send({ message: 'success', html: '../settings' })
-                } else {
-                    response.send({ message: 'success', html: '../login' })
-                }
-            });
+            // client_api.setPassword(email, hashedPassword, function(err,result) {
+            // // client.hmset("ClassTranscribe::Users::" + email, [
+            // //     'password', hashedPassword
+            // // ], function (err, results) {
+            //     if (err) console.log(err)
+            //     console.log(result);
+            //     if (request.isAuthenticated()) {
+            //         response.send({ message: 'success', html: '../settings' })
+            //     } else {
+            //         response.send({ message: 'success', html: '../login' })
+            //     }
+            // });
+            //-------------------------OLD VERSION------------------------------
         }
     }
 });

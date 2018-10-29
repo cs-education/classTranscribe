@@ -66,13 +66,13 @@ Otherwise, setup your own gmail account, and do one of the following for redis:
 5. Restart the server.
 
 ## Structure
-### /db/db.js
+### [db.js](/db/db.js)
 A SQLite based API tool offering database-interaction functions.
 
-### models
+### [models](/models)
 > models used to build sql tables
 
-#### index.js
+#### [index.js](/models/index.js)
 >Initialize the tables
 
 *primary_key*<br>

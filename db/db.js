@@ -17,7 +17,20 @@ const Term = models.Term;
 const University = models.University;
 const User = models.User;
 const UserOffering = models.UserOffering;
+const YoutubeChannel = models.YoutubeChannel;
 /* ----- end of defining ----- */
+
+function addYoutubeChannelPlaylist(playlistId, channelId) {
+    return YoutubeChannel.findOrCreate({
+        where: {
+            playlistId: playlistId
+        },
+        defaults: {
+            playlistId: playlistId,
+            channelId: channelId
+        }
+    });
+}
 
 function addCourseAndSection(courseId, sectionId, downloadHeader) {
     return EchoSection.findOrCreate({
