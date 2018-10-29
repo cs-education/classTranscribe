@@ -18,6 +18,7 @@ function genNewClassUid(){
     return uuidv4();
 }
 
+console.log('------------------------------------COURSES--------------------------------------------------');
 /*
 var courseList = {
     "Spring 2016":[
@@ -139,6 +140,8 @@ client_api.createUser(testInfo).then(
       //   console.log('----------------------------------------');
       // }).catch(err => console.log(err));
       client_api.addCourse(userInfo, courseList[0])
+      console.log('------------------------------------COURSES--------------------------------- -----------------');
+
       // .then(()=>
         // client_api.addCourse(userInfo, courseList[1]).then(()=>
           // client_api.addCourse(userInfo, courseList[2])

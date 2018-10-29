@@ -80,9 +80,13 @@ function getEchoSection(sectionId) {
  * though I haven't found a better and correct implementation.
  */
 function createUser(user) {
+  console.log('------------------------------------UNIV--------------------------------- -----------------');
+
   return University.findOrCreate({
     where : { universityName : user.university }
   }).then((result) => {
+    console.log('------------------------------------UNIV----JIJ----------------------------- -----------------');
+
     return User.findOrCreate({
       where : { mailId : user.mailId },
       defaults : {
@@ -290,10 +294,12 @@ function getOfferingId(id) {
 function addCourse(user, course) {
   /* if user and courseList are not empty */
   if(user && course) {
+    console.log('____________________________________________________');
     var id = { universityId : user.universityId };
     var role_result = getRoleId( 'Instructor' );
     var user_result = getUserByEmail( user.mailId );
     return Promise.all([role_result, user_result]).then( values => {
+      console.log('_______________________VLUES_________________________');
 
       var id = {
         roleId : values[0][0].dataValues.id,

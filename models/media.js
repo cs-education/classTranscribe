@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
         id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
         videoURL: { type: DataTypes.TEXT, unique: true },
         sourceType: DataTypes.TINYINT, // 0 for echo, 1 for youtube
-        siteSpecificJSON: DataTypes.JSON
+        siteSpecificJSON: DataTypes.TEXT
     });
     return Media;
 };

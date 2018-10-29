@@ -14,18 +14,34 @@ var sequelize;
 //} else {
 //    sequelize = new Sequelize(config.database, config.username, config.password, config);
 //}
-sequelize = new Sequelize('database', 'username', 'password', {
-    host: 'localhost',
-    dialect: 'sqlite',
+// sequelize = new Sequelize('database', 'username', 'password', {
+//     host: 'localhost',
+//     dialect: 'sqlite',
+//
+//     pool: {
+//         max: 5,
+//         min: 0,
+//         idle: 10000
+//     },
+//
+//     // SQLite only
+//     storage: 'sqldb.db'
+// });
+sequelize = new Sequelize('TestDb', 'TestAdmin', 'Test123!', {
+    host: 'ct18.database.windows.net',
+    dialect: 'mssql',
+    port: 1433,
 
     pool: {
         max: 5,
         min: 0,
         idle: 10000
     },
-
+    dialectOptions: {
+        encrypt: true
+    }
     // SQLite only
-    storage: 'sqldb.db'
+    //storage: 'sqldb.db'
 });
 
 fs
