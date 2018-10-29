@@ -281,9 +281,10 @@ function addCourse(user, course) {
     var role_result = getRoleId( 'Instructor' );
     var user_result = getUserByEmail( user.mailId );
     return Promise.all([role_result, user_result]).then( values => {
+
       var id = {
         roleId : values[0][0].dataValues.id,
-        userId : values[1][0].dataValues.id,
+        userId : values[1].dataValues.id,
       }
 
       /* userId is not matched */
@@ -300,7 +301,7 @@ function addCourse(user, course) {
         id.deptId = values[1][0].dataValues.id;
         id.courseId = values[2][0].dataValues.id;
         return getOfferingId(id).then(result => {
-          id.offeringId = result.dataValues.id;
+          id.offeringId = result[0].dataValues.id;
           return addCourseHelper(id);
         }).catch(err => { console.log(err) }); /* end of getOfferingId() */
       }).catch(err => { console.log(err) }); /* end of Promise.all */
@@ -312,7 +313,7 @@ function addCourse(user, course) {
 /* Get All Terms */
 function getTerms() {
   return Term.findAll().then(values => {
-    var result;
+    var result = [];
     for (let i = 0; i < values.length; i++) {
       result[i] = values[i].dataValues;
     }
@@ -323,9 +324,9 @@ function getTerms() {
 /* Get All Courses */
 function getCourses() {
   return Course.findAll().then(values => {
-    var result;
+    var result = [];
     for (let i = 0; i < values.length; i++) {
-      result[i] = vales[i].dataValues;
+      result[i] = values[i].dataValues;
     }
     return result;
   })
@@ -339,6 +340,14 @@ function addStudent(studentId, courseId) {
 /* TODO: */
 function removeStudent (studentId, courseId) {
   return;
+}
+
+function getUniversityName (universityId) {
+  return University.findById(universityId);
+}
+
+function queuePromise (promise) {
+
 }
 
 module.exports = {
@@ -358,6 +367,7 @@ module.exports = {
     getEchoSection: getEchoSection,
     getUserByEmail: getUserByEmail,
     getUniversityId: getUniversityId,
+    getUniversityName : getUniversityName,
     getCoursesByTerms : getCoursesByTerms,
     getCoursesByIds : getCoursesByIds,
     getCourseId : getCourseId,

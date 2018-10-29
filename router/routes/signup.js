@@ -71,7 +71,6 @@ router.post('/signup/submit', function (request, response) {
     verifier.verify(email, function(err, info) {
       if ( err ) console.log(err);
       else {
-        console.log("Info: " + info.info)
         var isInvalid = info.info.includes("invalid");
         if (isInvalid == true) {
           var error = "Email does not exist";
@@ -231,10 +230,11 @@ var verifyMustache = fs.readFileSync(mustachePath + 'verify.mustache').toString(
 
 router.get('/verify', function (request, response) {
     // Get the current user's data to access information in database
-    var email = request.query.email
+    var email = request.query.email;
 
     client_api.getUserByEmail(email).then(result => {
 
+      // User is not found in db
       if (!result) {
         //TODO: ADD 404 PAGE
         var error = 'Account does not exist';
@@ -242,18 +242,23 @@ router.get('/verify', function (request, response) {
         response.status(404).send({message : error});
       }
 
-      var userId = result.dataValues.id;
-      console.log(result.dataValues);
-      client_api.verifyUser(result.dataValues.verifiedId, email).then(result => {
-        // Display error if the generated unique link does not match the user
-        // var userId = result[0].dataValues.id
-        // if (userId != request.query.id) {
-        //   var error = 'Email is not verified';
-        //   console.log(error);
-        //   response.status(404).send({message: error, html: ''});
-        // }
-        console.log('Email is verified');
+      var userInfo = result.dataValues;
+      // User has been verified already
+      if (userInfo.verified) {
+        var error = 'Email is already verified';
+        console.log(error);
+        response.send({message : error, html: '/login'});
+      }
 
+      // Display error if the generated unique link does not match the user
+      if (userInfo.verifiedId !== request.query.id) {
+        var error = 'verifyId is not matched';
+        console.log(error);
+        response.sned({message : error, html: '/login'});
+      }
+
+      // Verify user
+      client_api.verifyUser(userInfo.verifiedId, email).then(result => {
         // Render the verify mustache page
         response.writeHead(200, {
             'Content-Type': 'text.html'
@@ -262,13 +267,15 @@ router.get('/verify', function (request, response) {
       })
       .catch(err => {
         console.log(err);
-        response.send({message : error, html: ''});
-      })
+        response.send({message : err, html: ''});
+      })/* catch verifyUser() error */
 
     })
     .catch(err=> {
       console.log(err);
-    })
+      response.send({message :err, html : ''});
+    })/* catch getUserByEmail() error */
+
     // client_api.lookUpTable(email, function(err, usr) {
     // // Search in the database for instances of the key
     // // client.get("ClassTranscribe::UserLookupTable::" + email, function (err, usr) {

@@ -79,7 +79,7 @@ var courseList = [
     section : "AL2",
     term : "Spring 2016",
     dept : {
-      deptName : "Chemistry",
+      name : "Chemistry",
       acronym : "Chem",
     }
   } ,
@@ -93,7 +93,7 @@ var courseList = [
     section : "AL1",
     term : "Spring 2016",
     dept : {
-      deptName : "Computer Science",
+      name : "Computer Science",
       acronym : "CS",
     }
   },
@@ -108,7 +108,7 @@ var courseList = [
     section : "D3",
     term : "Fall 2016",
     dept : {
-      deptName : "Computer Science",
+      name : "Computer Science",
       acronym : "CS",
     }
   }]
@@ -124,16 +124,33 @@ var testInfo = {
   verifiedId : 'sample-verification-buffer',
 };
 
+// NOTE: SQLite has internal reader/writer lock that doesn't allow multiple updates concurrently
 client_api.createUser(testInfo).then(
   result => {
     var userInfo = result[0].dataValues;
-    client_api.verifyUser('sample-verification-buffer', 'testing@testdomabbccc.edu').then(result => {
-      for(let i = 0; i < courseList.length; i++) {
-        client_api.addCourse(userInfo, courseList[i]);
-      }
+    client_api.verifyUser('sample-verification-buffer', 'testing@testdomabbccc.edu').then(() => {
+      // var promises = [];
+      // for (let i = 0; i < courseList.length; i++) {
+      //   promises.push(client_api.addCourse(userInfo, courseList[i]));
+      // }
+      /* there should be a better way than doing multiple callbacks */
+      // client_api.addCourseMultiple(userInfo, courseList).then(values => {
+      //   console.log(values);
+      //   console.log('----------------------------------------');
+      // }).catch(err => console.log(err));
+      client_api.addCourse(userInfo, courseList[0])
+      // .then(()=>
+        // client_api.addCourse(userInfo, courseList[1]).then(()=>
+          // client_api.addCourse(userInfo, courseList[2])
+        // )
+
+      // Promise.all(promises).then(values=>{
+      //   console.log(values)
+      //   console.log('-------------------------------------------------')
+      // });
     });
   }).catch(err => {
-  console.log(err)
+  console.log(err);
 })
 
 /*
@@ -219,20 +236,24 @@ router.get('/courses/', function (request, response) {
     client_api.getTerms().then(reply => {
     // client_api.getTerms(function(err, reply) {
     // client.smembers("ClassTranscribe::Terms", function(err, reply) {
-
+    if(reply) {
         // reply is null if the key is missing
         allterms= reply.map( term => {
-            return term.split("::")[2];
+            return term.id;
         });
+      }
 
         var form = '';
         var createClassBtn = '';
         // client_api.getUserByID(getUserId(request), function(err, userinfo) {
         // client.hgetall("ClassTranscribe::Users::"+getUserId(request), function (err, usrinfo) {
         client_api.getUserByEmail(getUserId(request)).then(result => {
+          var userInfo = result.dataValues;
+          client_api.getUniversityName(userInfo.universityId).then(result => {
+            userInfo.university = result.dataValues.name;
             // Add create-a-class section if user is authenticated
             if (request.isAuthenticated()) {
-                form = getCreateClassForm(usrinfo);
+                form = getCreateClassForm(userInfo);
                 createClassBtn =
                     '<button class="btn" data-toggle="modal" data-target="#createPanel">' +
                     '          Create a New Class</button>';
@@ -249,66 +270,98 @@ router.get('/courses/', function (request, response) {
                 "                    <th>Course Descruption</th>\n" +
                 "                    <th>Action</th>\n" +
                 "                </tr>";
-            client_api.getCourses().then( reply => {//function(err, reply) {
+            client_api.getCourses().then( values => {//function(err, reply) {
             // client.smembers("ClassTranscribe::CourseList", function (err, reply) {
                 var commands = [];
-                reply.forEach(function (c) {
+
+                values.forEach(function (value) {
                     // Query classes to get info for display
-                    commands.push(["hgetall", c]);
+                    // commands.push(["hgetall", c]);
+                    commands.push(client_api.getUniversityName(value.universityId));
                 });
-                var listingdata = reply.map(e=>{return e.split("::")[2];});
-                client.multi(commands).exec(function (err, replies) {
-                    // Saving current content before applying filters
-                    request.session['currentContent'] = replies;
-                    listingdata = replies.map( (ele, i) =>{
-                        ele['id']=listingdata[i];
-                        return ele;
-                    });
-                    generateListings(listingdata, userid, function (res) {
-                        thtml += res;
-                        filterdata = generateFilters(replies);
-                        var view = {
-                            termlist: allterms,
-                            createform: form,
-                            tabledata: thtml,
-                            termfilterdata: filterdata[0],
-                            subjectfilterdata: filterdata[1],
-                            createClassButton: createClassBtn
-                        };
-                        var html = Mustache.render(managementMustache, view);
-                        response.end(html);
-                    });
+
+                var listingData = reply.map(e=> {return e.id});
+
+                // var listingdata = reply.map(e=>{return e.split("::")[2];});
+                Promise.all(commands).then(values => {
+                  var contents = [];
+                  for (let i = 0; i < values.length; i ++) {
+                    contents[i] = values[i].dataValues;
+                  }
+                // client.multi(commands).exec(function (err, replies) {
+                // Saving current content before applying filters
+                request.session['currentContent'] = contents;
+
+                // listingData = replies.map( (ele, i) =>{
+                //   ele['id']=listingData[i];
+                //   return ele;
+                // });
+                generateListings(listingdata, userid, function (res) {
+                  thtml += res;
+                  filterdata = generateFilters(replies);
+                  var view = {
+                    termlist: allterms,
+                    createform: form,
+                    tabledata: thtml,
+                    termfilterdata: filterdata[0],
+                    subjectfilterdata: filterdata[1],
+                    createClassButton: createClassBtn
+                  };
+                  var html = Mustache.render(managementMustache, view);
+                  response.end(html);
                 });
+              }).catch(err => console.log(err));
             });
         });
     });
+  });
 });
 
 // Create new class
 router.post('/courses/newclass', function (request, response) {
     var classid = genNewClassUid()
-    var term = "ClassTranscribe::Terms::"+request.body.Term;
+    // var term = "ClassTranscribe::Terms::"+request.body.Term;
+    var term = request.body.Term;
+    var dept = request.body.Dept;
     var course = request.body;
-    var userid = getUserId(request);
-    if (userid==''){
-        console.log("Invalid user id");
-        response.end();
-        return;
+    var userInfo = req.session.passport.user;
+    // var userid = getUserId(request);
+    if (!userInfo) {
+      console.log('Invalid userInfo');
+      response.end();
+      return;
     }
+    course.dept = dept;
+    course.term = term;
+    // if (userid==''){
+    //     console.log("Invalid user id");
+    //     response.end();
+    //     return;
+    //   }
 
-    client_api.getKeysByClass(classid, function(err, rep) {
+
+    // since we have role and userOffering table to keep track of permissions, we don't really need permission for our purpose
+    // since the creator automatically become the instructor of the course, you don't need to enroll yourself
+    client_api.addCourse(userInfo, course).catch(err => {
+      // Add permissions
+      // permission.addCoursePermission(userid, classid, 'Modify');
+      // permission.addCoursePermission(userid, classid, 'Remove');
+      // client_api.enrollInstuctor(classid, userid);
+      console.log(err);
+    })
+    // client_api.getKeysByClass(classid, function(err, rep) {
     // client.keys("ClassTranscribe::Course::"+classid, function(err, rep){
-        if (rep.length>0){
-            // Check if uuid already in use
-            console.log("Failed creating class: uuid already in use, try again.");
-            response.end();
-        }
-        else{
+        // if (rep.length>0){
+        //     // Check if uuid already in use
+        //     console.log("Failed creating class: uuid already in use, try again.");
+        //     response.end();
+        // }
+        // else{
           /* couse = [subject, classNumber, sectionNumber, className, classDesc,
           university, instructor, classID] */
-          courseInfo = [course['Subject'], course['ClassNumber'], course['SectionNumber'],
-          course['ClassName'], course['ClassDescription'], course['University'], course['Instructor'], classid]
-          client_api.addCourse(courseInfo, course['Term']);
+          // courseInfo = [course['Subject'], course['ClassNumber'], course['SectionNumber'],
+          // course['ClassName'], course['ClassDescription'], course['University'], course['Instructor'], classid]
+          // client_api.addCourse(courseInfo, course['Term']);
 
             // // Add class to class list
             // client.sadd("ClassTranscribe::CourseList", "ClassTranscribe::Course::"+classid);
@@ -332,23 +385,22 @@ router.post('/courses/newclass', function (request, response) {
             // client.hset("ClassTranscribe::Course::"+classid, "Instructor", course["Instructor"]);
             // client.hset("ClassTranscribe::Course::"+classid, "Term", course["Term"]);
 
-            var userid = getUserId(request)
+            // var userid = getUserId(request)
             // Add permissions
-            permission.addCoursePermission(userid, classid, 'Modify');
-            permission.addCoursePermission(userid, classid, 'Remove');
+            // permission.addCoursePermission(userid, classid, 'Modify');
+            // permission.addCoursePermission(userid, classid, 'Remove');
             // acl.allow(userid, "ClassTranscribe::Course::"+classid, "Modify");
             // acl.allow(userid, "ClassTranscribe::Course::"+classid, "Remove");
             //acl.allow(userid, "ClassTranscribe::Course::"+classid, "Drop");
-            client_api.enrollInstuctor(classid, userid);
+            // client_api.enrollInstuctor(classid, userid);
             // client.sadd("ClassTranscribe::Course::"+classid+"::Instructors", "ClassTranscribe::Users::"+userid);
             // client.sadd("ClassTranscribe::Users::"+userid+"::Courses_as_Instructor", "ClassTranscribe::Course::"+classid);
 
             response.end();
-        }
-    });
+      //   }
+      // });
 
 });
-
 
 // Handles search and renders the whole page
 router.get('/courses/search', function (request, response) {
@@ -357,18 +409,33 @@ router.get('/courses/search', function (request, response) {
         'Content-Type': 'text/html'
     });
     // Same as the main page
-    client_api.getTerms().then(reply => {//function(err, reply) {
+    client_api.getTerms().then(values => {//function(err, reply) {
     // client.smembers("ClassTranscribe::Terms", function(err, reply) {
         allterms=[];
-        reply.forEach(function (e) {
-            allterms.push(e.split("::")[2]);
+        values.forEach(function (value) {
+          allterms.push(value.dataValues);
+            // allterms.push(e.split("::")[2]);
         });
-        client_api.getUserByID(getUserId(request), function(err, userinfo) {
+
+        var userInfo = req.session.passport.user;
+
+        if (!userInfo) {
+          console.log('Invalid userInfo');
+          response.end();
+          return;
+        }
+
+        var form = '';
+        if(request.isAuthenticated()) {
+          form = getCreateClassForm(userInfo);
+        }
+
+        // client_api.getUserByID(getUserId(request), function(err, userinfo) {
         // client.hgetall("ClassTranscribe::Users::"+getUserId(request), function (err, usrinfo) {
-            var form = '';
-            if (request.isAuthenticated()) {
-                form = getCreateClassForm(usrinfo);
-            }
+            // var form = '';
+            // if (request.isAuthenticated()) {
+            //     form = getCreateClassForm(usrinfo);
+            // }
             //========================starting search==========================================
             var searchterm = request.query.q;
             // console.log("Searching: "+searchterm);
@@ -390,19 +457,23 @@ router.get('/courses/search', function (request, response) {
                     return re.slice(0, -3);
                 });
                 commands = res.map( e=> {
-                    return ['hgetall', "ClassTranscribe::Course::" + e];
+                    // return ['hgetall', "ClassTranscribe::Course::" + e];
+                    return e.id;
                 });
-                client_api.multi(commands).exec(function(err, replies) {
+                // client_api.multi(commands).exec(function(err, replies) {
                 // client.multi(commands).exec(function (err, replies) {
+                // Promise.all(commands).then( replies => {
+                client_api.getCoursesByIds(commands).then(replies => {
                     if (err) throw(err)
                     var origlen =replies.length;
                     replies = replies.filter(function(n){ return n != undefined });
                     if(replies.length!=origlen){console.log("nil in search replies detected")}
                     request.session['currentContent'] = replies;
-                    var listingData = replies.map(function(e, i) {
-                        e['id'] = res[i];
-                        return e;
-                    });
+                    // var listingData = replies.map(function(e, i) {
+                    //     e['id'] = res[i];
+                    //     return e;
+                    //   });
+                    var listingData = replies;
                     generateListings(listingData,getUserId(request),function (listRes) {
                         if (replies.length==0){
                             rethtml = 'No result found for "'+searchterm+'"';
@@ -422,7 +493,7 @@ router.get('/courses/search', function (request, response) {
                         response.end(html);
                     });
                 });
-            });
+            // });
         });
     });
 });
@@ -646,7 +717,7 @@ function  generateListings(data, user, cb) {
 function getUserId(req) {
     var id = "";
     try{
-        id = req.session.passport.user;
+        id = req.session.passport.user.mailId;
     }
     catch(e) {
         id="";
@@ -706,7 +777,7 @@ function getCreateClassForm(rep){
                                 "<label>Course Number</label> <input type=\"text\" class=\"form-control\" id=\"fminput2\" placeholder=\"\" name=\"ClassNumber\"> </div> " +
                             "<div class=\"col-md-4\"> " +
                                 "<label>Class Name</label> <input type=\"text\" class=\"form-control\" id=\"fminput3\" placeholder=\"\" name=\"ClassName\"> " +
-                                "<label>Instructor</label> <input type=\"text\" class=\"form-control\" id=\"fminput4\" value=\""+rep.first_name+' '+rep.last_name+"\" name=\"Instructor\" readonly> </div> " +
+                                "<label>Instructor</label> <input type=\"text\" class=\"form-control\" id=\"fminput4\" value=\""+rep.firsName+' '+rep.lastName+"\" name=\"Instructor\" readonly> </div> " +
                             "<div class=\"col-md-4\"> " +
                                 "<label>Section Number</label> <input type=\"text\" class=\"form-control\" id=\"fminput5\" placeholder=\"\" name=\"SectionNumber\"> " +
                                 "<label>University</label> <input type=\"text\" class=\"form-control\" id=\"fminput6\" value=\""+rep.university+"\" name=\"University\" readonly> </div> </div> " +

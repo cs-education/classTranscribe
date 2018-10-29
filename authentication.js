@@ -74,7 +74,6 @@ passport.use(new LocalStrategy(
             return done(null, false, {message : error});
           } else {
             var userInfo = result.dataValues;
-            console.log(userInfo);
             // Check if the user has verified their email address
             if (!userInfo.verified) {
               var error = 'Email not verified';
@@ -85,7 +84,7 @@ passport.use(new LocalStrategy(
             var isCorrectPassword = passwordHash.verify(password, userInfo.password);
             if (!isCorrectPassword) {
               var error = "Invalid password";
-                              console.log(error);
+              console.log(error);
               return done(null, false, { message: error });
           }
           // Return the user if the login value matches the database

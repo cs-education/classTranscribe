@@ -4,6 +4,7 @@
  */
 
 client = require('./../../modules/redis');
+// client = require('./../../db/db');
 macl = require('acl');
 acl = new macl(new macl.redisBackend(client, "ClassTranscribe::acl::"));
 
