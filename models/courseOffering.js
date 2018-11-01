@@ -3,6 +3,7 @@ const uuid = require('uuid/v4');
 // var models = require('../models');
 module.exports = (sequelize, DataTypes) => {
     var CourseOffering = sequelize.define('CourseOffering', {
+      id: { type: DataTypes.UUID, primaryKey: true, defaultValue: uuid() },
     });
 
     CourseOffering.associate = function(models) {

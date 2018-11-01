@@ -18,7 +18,6 @@ function genNewClassUid(){
     return uuidv4();
 }
 
-console.log('------------------------------------COURSES--------------------------------------------------');
 /*
 var courseList = {
     "Spring 2016":[
@@ -140,8 +139,6 @@ client_api.createUser(testInfo).then(
       //   console.log('----------------------------------------');
       // }).catch(err => console.log(err));
       client_api.addCourse(userInfo, courseList[0])
-      console.log('------------------------------------COURSES--------------------------------- -----------------');
-
       // .then(()=>
         // client_api.addCourse(userInfo, courseList[1]).then(()=>
           // client_api.addCourse(userInfo, courseList[2])
@@ -152,9 +149,7 @@ client_api.createUser(testInfo).then(
       //   console.log('-------------------------------------------------')
       // });
     });
-  }).catch(err => {
-  console.log(err);
-})
+  }).catch(err => { console.log(err);})
 
 /*
 * course = {
@@ -237,93 +232,97 @@ router.get('/courses/', function (request, response) {
     var userid = getUserId(request);
     // Get all terms data from the database
     client_api.getTerms().then(reply => {
-    // client_api.getTerms(function(err, reply) {
-    // client.smembers("ClassTranscribe::Terms", function(err, reply) {
-    if(reply) {
+      // client_api.getTerms(function(err, reply) {
+      // client.smembers("ClassTranscribe::Terms", function(err, reply) {
+      if(reply) {
         // reply is null if the key is missing
-        allterms= reply.map( term => {
-            return term.id;
-        });
+        allterms= reply.map( term => term.termName );
       }
 
         var form = '';
         var createClassBtn = '';
         // client_api.getUserByID(getUserId(request), function(err, userinfo) {
         // client.hgetall("ClassTranscribe::Users::"+getUserId(request), function (err, usrinfo) {
-        client_api.getUserByEmail(getUserId(request)).then(result => {
-          var userInfo = result.dataValues;
-          client_api.getUniversityName(userInfo.universityId).then(result => {
-            userInfo.university = result.dataValues.name;
-            // Add create-a-class section if user is authenticated
-            if (request.isAuthenticated()) {
-                form = getCreateClassForm(userInfo);
-                createClassBtn =
-                    '<button class="btn" data-toggle="modal" data-target="#createPanel">' +
-                    '          Create a New Class</button>';
-            }
-            // Table header
-            var thtml = "<tr id=\"#header\">\n" +
-                '<th hidden="yes">Term</th>' +
-                "                    <th>University</th>\n" +
-                "                    <th>Subject</th>\n" +
-                "                    <th>Course Number</th>\n" +
-                "                    <th>Section Number</th>\n" +
-                "                    <th>Course Name</th>\n" +
-                "                    <th>Course Instructor</th>\n" +
-                "                    <th>Course Descruption</th>\n" +
-                "                    <th>Action</th>\n" +
-                "                </tr>";
-            client_api.getCourses().then( values => {//function(err, reply) {
+        var userInfo = request.session.passport.user;
+        // client_api.getUserByEmail(getUserId(request)).then(result => {
+        client_api.getUniversityName(userInfo.universityId).then(result => {
+          userInfo.university = result.dataValues.universityName;
+          // Add create-a-class section if user is authenticated
+          if (request.isAuthenticated()) {
+            form = getCreateClassForm(userInfo);
+            createClassBtn =
+            '<button class="btn" data-toggle="modal" data-target="#createPanel">' +
+            '          Create a New Class</button>';
+          }
+          // Table header
+          var thtml = "<tr id=\"#header\">\n" +
+          '<th hidden="yes">Term</th>' +
+          "                    <th>University</th>\n" +
+          "                    <th>Subject</th>\n" +
+          "                    <th>Course Number</th>\n" +
+          "                    <th>Section Number</th>\n" +
+          "                    <th>Course Name</th>\n" +
+          "                    <th>Course Instructor</th>\n" +
+          "                    <th>Course Descruption</th>\n" +
+          "                    <th>Action</th>\n" +
+          "                </tr>";
+          client_api.getCoursesByUniversityId( userInfo.universityId ).then( values => {
             // client.smembers("ClassTranscribe::CourseList", function (err, reply) {
-                var commands = [];
+            var termIds = [];
+            var deptIds = [];
+            var courses = [];
+            var offeringIds = [];
+            for (let i = 0; i < values.length; i ++) {
+              termIds.push(values[i].termId);
+              deptIds.push(values[i].deptId);
+              offeringIds.push(values[i].offeringId);
+              courses.push(values[i]);
+              values[i].university = userInfo.university;
+            }
 
-                values.forEach(function (value) {
-                    // Query classes to get info for display
-                    // commands.push(["hgetall", c]);
-                    commands.push(client_api.getUniversityName(value.universityId));
-                });
+            var termFetches = client_api.getTermsById(termIds);
+            var deptFetches = client_api.getDeptsById(deptIds);
+            var sectionFetches = client_api.getSectionsById(offeringIds);
 
-                var listingData = reply.map(e=> {return e.id});
+            Promise.all([termFetches, deptFetches, sectionFetches]).then(values => {
+              var filters = [];
+              for (let i = 0; i < courses.length; i++) {
+                let filter = {};
+                filter.termName = values[0][i].termName;
+                filter.deptName = values[1][i].deptName;
+                filters.push(filter);
+                courses[i].termName = values[0][i].termName;
+                courses[i].deptName = values[1][i].deptName;
+                courses[i].acronym = values[1][i].acronym;
+                courses[i].section = values[2][i].section;
+              }
 
-                // var listingdata = reply.map(e=>{return e.split("::")[2];});
-                Promise.all(commands).then(values => {
-                  var contents = [];
-                  for (let i = 0; i < values.length; i ++) {
-                    contents[i] = values[i].dataValues;
-                  }
-                // client.multi(commands).exec(function (err, replies) {
-                // Saving current content before applying filters
-                request.session['currentContent'] = contents;
+              // Saving current content(courseId, termId) before applying filters
+              request.session['currentContent'] = courses;
 
-                // listingData = replies.map( (ele, i) =>{
-                //   ele['id']=listingData[i];
-                //   return ele;
-                // });
-                generateListings(listingdata, userid, function (res) {
-                  thtml += res;
-                  filterdata = generateFilters(replies);
-                  var view = {
-                    termlist: allterms,
-                    createform: form,
-                    tabledata: thtml,
-                    termfilterdata: filterdata[0],
-                    subjectfilterdata: filterdata[1],
-                    createClassButton: createClassBtn
-                  };
-                  var html = Mustache.render(managementMustache, view);
-                  response.end(html);
-                });
-              }).catch(err => console.log(err));
-            });
-        });
+              generateListings(courses, userid, function (res) {
+                thtml += res;
+                filterdata = generateFilters(filters);
+                var view = {
+                  termlist: allterms,
+                  createform: form,
+                  tabledata: thtml,
+                  termfilterdata: filterdata[0],
+                  subjectfilterdata: filterdata[1],
+                  createClassButton: createClassBtn
+                };
+                var html = Mustache.render(managementMustache, view);
+                response.end(html);
+              });
+            }).catch(err => console.log(err));
+          });
     });
   });
 });
 
 // Create new class
 router.post('/courses/newclass', function (request, response) {
-    var classid = genNewClassUid()
-    // var term = "ClassTranscribe::Terms::"+request.body.Term;
+
     var term = request.body.Term;
     var dept = request.body.Dept;
     var course = request.body;
@@ -336,16 +335,12 @@ router.post('/courses/newclass', function (request, response) {
     }
     course.dept = dept;
     course.term = term;
-    // if (userid==''){
-    //     console.log("Invalid user id");
-    //     response.end();
-    //     return;
-    //   }
-
 
     // since we have role and userOffering table to keep track of permissions, we don't really need permission for our purpose
     // since the creator automatically become the instructor of the course, you don't need to enroll yourself
-    client_api.addCourse(userInfo, course).catch(err => {
+    client_api.addCourse(userInfo, course)
+    .then(result => console.log(result))
+    .catch(err => {
       // Add permissions
       // permission.addCoursePermission(userid, classid, 'Modify');
       // permission.addCoursePermission(userid, classid, 'Remove');
@@ -405,6 +400,7 @@ router.post('/courses/newclass', function (request, response) {
 
 });
 
+/* TODO: THERE SHOULD BE A BETTER WAY OF DOING SO */
 // Handles search and renders the whole page
 router.get('/courses/search', function (request, response) {
     //console.log("start processing search...");
@@ -414,13 +410,9 @@ router.get('/courses/search', function (request, response) {
     // Same as the main page
     client_api.getTerms().then(values => {//function(err, reply) {
     // client.smembers("ClassTranscribe::Terms", function(err, reply) {
-        allterms=[];
-        values.forEach(function (value) {
-          allterms.push(value.dataValues);
-            // allterms.push(e.split("::")[2]);
-        });
+        allterms = values.map( value => value.termName );
 
-        var userInfo = req.session.passport.user;
+        var userInfo = request.session.passport.user;
 
         if (!userInfo) {
           console.log('Invalid userInfo');
@@ -441,6 +433,7 @@ router.get('/courses/search', function (request, response) {
             // }
             //========================starting search==========================================
             var searchterm = request.query.q;
+
             // console.log("Searching: "+searchterm);
             var search = new srchHelper.SearchHelper(searchterm);
             search.search(function (line) {
@@ -463,28 +456,23 @@ router.get('/courses/search', function (request, response) {
                     // return ['hgetall', "ClassTranscribe::Course::" + e];
                     return e.id;
                 });
-                // client_api.multi(commands).exec(function(err, replies) {
-                // client.multi(commands).exec(function (err, replies) {
-                // Promise.all(commands).then( replies => {
-                client_api.getCoursesByIds(commands).then(replies => {
-                    if (err) throw(err)
-                    var origlen =replies.length;
-                    replies = replies.filter(function(n){ return n != undefined });
-                    if(replies.length!=origlen){console.log("nil in search replies detected")}
-                    request.session['currentContent'] = replies;
-                    // var listingData = replies.map(function(e, i) {
-                    //     e['id'] = res[i];
-                    //     return e;
-                    //   });
-                    var listingData = replies;
+
+                client_api.getCoursesByIds(commands).then(values => {
+                    var origlen =values.length;
+                    values = values.filter(value => value != undefined);
+                    if(values.length!=origlen) { console.log("nil in search replies detected"); }
+
+                    request.session['currentContent'] = values;
+
+                    var listingData = values;
                     generateListings(listingData,getUserId(request),function (listRes) {
-                        if (replies.length==0){
+                        if (values.length==0){
                             rethtml = 'No result found for "'+searchterm+'"';
                         }
                         else{
                             rethtml+=listRes;
                         }
-                        filterdata = generateFilters(replies);
+                        filterdata = generateFilters(values);
                         var view = {
                             termlist: allterms,
                             createform:form,
@@ -495,7 +483,7 @@ router.get('/courses/search', function (request, response) {
                         var html = Mustache.render(managementMustache, view);
                         response.end(html);
                     });
-                });
+                }).catch(err => console.log(err));
             // });
         });
     });
@@ -604,7 +592,7 @@ router.post('/courses/applyfilter', function (request, response) {
         "                </tr>";
     var result = [];
     request.session['currentContent'].forEach(function(e){
-        if( subjectf.indexOf(e['Subject'])>=0 && termf.indexOf(e['Term'])>=0) {
+        if( subjectf.indexOf(e.deptName)>=0 && termf.indexOf(e.termName)>=0) {
             result.push(e)
         }
     });
@@ -622,21 +610,21 @@ function generateFilters(data){
     var termhtml = '';
     var subjecthtml = '';
     data.forEach(function(e){
-        if  (subjectlist.indexOf(e['Subject'])<0){
+        if  (subjectlist.indexOf(e.deptName) < 0 ) {
             subjectlist.push(e['Subject']);
             subjecthtml  += '<div class="form-check">'+
                 '    <label class="form-check-label checkboxlabel">'+
-                '    <input class="form-check-input" type="checkbox" value="'+e['Subject']+'" checked>'+
-                e['Subject']+
+                '    <input class="form-check-input" type="checkbox" value="'+ e.deptName + '" checked>'+
+                e.deptName +
                 '</label>'+
                 '</div>'
         }
-        if  (termlist.indexOf(e['Term'])<0){
+        if  (termlist.indexOf(e.termName)<0){
             termlist.push(e['Term']);
             termhtml  += '<div class="form-check">'+
                 '    <label class="form-check-label checkboxlabel">'+
-                '    <input class="form-check-input" type="checkbox" value="'+e['Term']+'" checked>'+
-                e['Term']+
+                '    <input class="form-check-input" type="checkbox" value="'+ e.termName +'" checked>'+
+                e.termName+
                 '</label>'+
                 '</div>'
         }
@@ -649,20 +637,21 @@ function generateFilters(data){
 // user - user id
 // cb   - callback function
 function  generateListings(data, user, cb) {
+  /* async.reduce(array, startValue, reducer) */
     async.reduce(data, '', function (html, e, fcb) {
-        html += '<tr id="'+e['id']+'">';
-        html += '<td hidden="yes">' + e["Term"] + '</td>';
-        html += '<td>' + e["University"] + '</td>';
-        html += '<td>' + e["Subject"] + '</td>';
-        html += '<td>' + e["ClassNumber"] + '</td>';
-        html += '<td>' + e["SectionNumber"] + '</td>';
-        html += '<td>' + e["ClassName"] + '</td>';
-        html += '<td>' + e["Instructor"] + '</td>';
-        html += '<td class="tddesc">' + e["ClassDesc"] + '</td>';
+        html += '<tr id="'+ e.id +'">';
+        html += '<td hidden="yes">' + e.termName + '</td>';
+        html += '<td>' + e.university + '</td>';
+        html += '<td>' + e.acronym + '</td>';
+        html += '<td>' + e.courseNumber + '</td>';
+        html += '<td>' + e.section + '</td>';
+        html += '<td>' + e.courseName + '</td>';
+        html += '<td>' + e.instructor + '</td>';
+        html += '<td class="tddesc">' + e.courseDescription + '</td>';
         html += '<td class="col-md-2">';
         var debug = false;
         if (debug || (user != '' && user != undefined)) {
-            var classid = "ClassTranscribe::Course::" + e['id'];
+            var classid = e.id;
             permission.checkCoursePermission(user, classid, 'Modify', function (err, res) {
             // acl.isAllowed(user, classid, 'Modify', function (err, res) {
                 if (res) {

@@ -80,13 +80,10 @@ function getEchoSection(sectionId) {
  * though I haven't found a better and correct implementation.
  */
 function createUser(user) {
-  console.log('------------------------------------UNIV--------------------------------- -----------------');
 
   return University.findOrCreate({
     where : { universityName : user.university }
   }).then((result) => {
-    console.log('------------------------------------UNIV----JIJ----------------------------- -----------------');
-
     return User.findOrCreate({
       where : { mailId : user.mailId },
       defaults : {
@@ -242,15 +239,24 @@ function addCourseHelper(id) {
 }
 
 function getCourseId(courseInfo) {
-  return Course.findOrCreate({
+  var dept = courseInfo.dept;
+  return Dept.findOne({
     where : {
-      courseName : courseInfo.courseName,
-      courseNumber : courseInfo.courseNumber,
-    },
-    defaults : {
-      courseDescription : courseInfo.courseDescription,
+      deptName : dept.name,
+      acronym : dept.acronym,
     }
-  })
+  }).then(result => {
+    return Course.findOrCreate({
+      where : {
+        courseName : courseInfo.courseName,
+        courseNumber : courseInfo.courseNumber,
+        deptId : result.dataValues.id,
+      },
+      defaults : {
+        courseDescription : courseInfo.courseDescription,
+      }
+    });
+  }).catch(err => console.log(err)); /* Dept.findOne() */
 }
 
 /* getRole() findOrCreate a role */
@@ -275,12 +281,13 @@ function getDeptId(dept) {
 }
 
 /* getOfferingId() findOrCreate an offeringId */
-function getOfferingId(id) {
+function getOfferingId(id, sectionName) {
   return Offering.findOrCreate({
     where : {
       termId : id.termId,
       deptId : id.deptId,
       universityId : id.universityId,
+      section : sectionName,
     },
   });
 }
@@ -294,16 +301,15 @@ function getOfferingId(id) {
 function addCourse(user, course) {
   /* if user and courseList are not empty */
   if(user && course) {
-    console.log('____________________________________________________');
     var id = { universityId : user.universityId };
     var role_result = getRoleId( 'Instructor' );
     var user_result = getUserByEmail( user.mailId );
     return Promise.all([role_result, user_result]).then( values => {
-      console.log('_______________________VLUES_________________________');
 
       var id = {
         roleId : values[0][0].dataValues.id,
         userId : values[1].dataValues.id,
+        universityId : values[1].dataValues.universityId,
       }
 
       /* userId is not matched */
@@ -314,13 +320,14 @@ function addCourse(user, course) {
       /* add course */
       let term_result = getTermId( course.term );
       let dept_result = getDeptId( course.dept );
-      let course_result = getCourseId(course);
-      return Promise.all([term_result, dept_result, course_result]).then(values => {
+      return Promise.all([term_result, dept_result]).then(values => {
         id.termId = values[0][0].dataValues.id;
         id.deptId = values[1][0].dataValues.id;
-        id.courseId = values[2][0].dataValues.id;
-        return getOfferingId(id).then(result => {
-          id.offeringId = result[0].dataValues.id;
+        let course_result = getCourseId(course);
+        let offering_result = getOfferingId(id, course.section);
+        return Promise.all([course_result, offering_result]).then(values => {
+          id.courseId = values[0][0].dataValues.id;
+          id.offeringId = values[1][0].dataValues.id;
           return addCourseHelper(id);
         }).catch(err => { console.log(err) }); /* end of getOfferingId() */
       }).catch(err => { console.log(err) }); /* end of Promise.all */
@@ -341,14 +348,33 @@ function getTerms() {
 }
 
 /* Get All Courses */
-function getCourses() {
-  return Course.findAll().then(values => {
-    var result = [];
-    for (let i = 0; i < values.length; i++) {
-      result[i] = values[i].dataValues;
-    }
-    return result;
-  })
+function getCoursesByUniversityId( universityId ) {
+  return Offering.findAll({
+    where : {universityId : universityId},
+  }).then(values => {
+    var offeringValues = values.map( value => value.dataValues);
+    var offeringIds = offeringValues.map( offeringValue => offeringValue.id );
+    return CourseOffering.findAll({
+      where : {
+        offeringId : { [Op.in] : offeringIds }
+      }
+    }).then(values => {
+      var courseList = values.map( value => value.dataValues.courseId );
+      return Course.findAll({
+        where : {
+          id : { [Op.in] : courseList }
+        }
+      }).then(values => {
+        var v =values.map((value, index) => {
+          value = value.dataValues;
+          value.offeringId = offeringIds[index];
+          value.termId = offeringValues[index].termId;
+          return value;
+        });
+        return v;
+      }).catch(err => console.log(err)); /* Course.findAll() */
+    }).catch(err => console.log(err)); /* CourseOffering.findAll() */
+  }).catch(err => console.log(err)) /* Offering.findAll() */
 }
 
 /* TODO: */
@@ -365,8 +391,34 @@ function getUniversityName (universityId) {
   return University.findById(universityId);
 }
 
-function queuePromise (promise) {
+function getTermsById (ids) {
+  return Term.findAll({
+    where : {
+      id : { [Op.in] : ids }
+    }
+  }).then(values => {
+    return values.map(value => value.dataValues);
+  }).catch(err => console.log(err))
+}
 
+function getDeptsById (ids) {
+  return Dept.findAll({
+    where : {
+      id : { [Op.in] : ids }
+    }
+  }).then(values => {
+    return values.map(value => value.dataValues);
+  }).catch(err => console.log(err))
+}
+
+function getSectionsById (ids) {
+  return Offering.findAll({
+    where : {
+      id : { [Op.in] : ids }
+    }
+  }).then(values => {
+    return values.map(value => value.dataValues);
+  }).catch(err => console.log(err))
 }
 
 module.exports = {
@@ -389,11 +441,14 @@ module.exports = {
     getUniversityName : getUniversityName,
     getCoursesByTerms : getCoursesByTerms,
     getCoursesByIds : getCoursesByIds,
+    getCoursesByUniversityId : getCoursesByUniversityId,
     getCourseId : getCourseId,
-    getCourses : getCourses,
     getRoleId : getRoleId,
     getTermId : getTermId,
+    getTermsById : getTermsById,
     getTerms : getTerms,
     getDeptId : getDeptId,
     getOfferingId : getOfferingId,
+    getDeptsById : getDeptsById,
+    getSectionsById : getSectionsById,
 }
