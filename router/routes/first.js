@@ -9,14 +9,13 @@
 
 //var mustachePath = 'templates/';
 
-var router = express.Router();
-var fs = require('fs');
-var mkdirp = require('mkdirp');
-var validator = require('../../modules/validator.js');
+const router = express.Router();
+const fs = require('fs');
+const mkdirp = require('mkdirp');
+const validator = require('../../modules/validator.js');
 
-var client_api = require('./db');
-// var api = require('./api');
-// var client_api = new api();
+var client_api = require('../../db/db');
+
 
 var firstPassMustache = fs.readFileSync(mustachePath + 'index.mustache').toString();
 router.get('/first/:className/:id', function (request, response) {

@@ -5,17 +5,21 @@
 
 
 
-client = require('./../../modules/redis');
-macl = require('acl');
+const client = require('./../../modules/redis');
+const macl = require('acl');
+// const aclSeq = require('acl-sequelize');
+const db = require('../../db/db');
+// const acl = new macl(new aclSeq(db, { prefix : 'acl_'}));
+
 acl = new macl(new macl.redisBackend(client, "ClassTranscribe::acl::"));
-var client_api = require('../../db/db');
+// var client_api = require('../../db/db');
 
 function addUser(userID) {
   acl.addUserRoles(userID, userID);
 }
 
 function addCoursePermission(userID, classID, permission) {
-  acl.allow(userID, "ClassTranscribe::Course::"+classID, permission);
+  acl.allow(userID, classID, permission);
 }
 
 function checkCoursePermission(userID, classID, permission, callback) {
@@ -23,7 +27,7 @@ function checkCoursePermission(userID, classID, permission, callback) {
 }
 
 function removeCoursePermission(userID, classID, permission) {
-  acl.removeAllow(userID, "ClassTranscribe::Course::"+classID, permission);
+  acl.removeAllow(userID, classID, permission);
 }
 
 module.exports = {

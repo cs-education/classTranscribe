@@ -4,10 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-var router = express.Router();
-var fs = require('fs');
-var mime = require('mime');
-var path = require('path');
+const router = express.Router();
+const fs = require('fs');
+const mime = require('mime');
+const path = require('path');
 
 router.post('/download', function (request, response) {
   var transcriptions = JSON.parse(request.body.transcriptions);

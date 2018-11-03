@@ -10,7 +10,7 @@ module.exports = function(app) {
 	There's probably a way to better enforce it, though.
 
 */
-    var router = express.Router();
+    const router = express.Router();
 
     // app.use(require('./routes/api'));
     app.use(require('./routes/base'));
@@ -39,12 +39,12 @@ module.exports = function(app) {
     app.use(require('./routes/courses'));
 }
 
-authenticatedPartial = fs.readFileSync(mustachePath + 'authenticated.mustache').toString();
-notAuthenticatedPartial = fs.readFileSync(mustachePath + 'notAuthenticated.mustache').toString();
-adminPartial = fs.readFileSync(mustachePath + 'admin.mustache').toString();
+const authenticatedPartial = fs.readFileSync(mustachePath + 'authenticated.mustache').toString();
+const notAuthenticatedPartial = fs.readFileSync(mustachePath + 'notAuthenticated.mustache').toString();
+const adminPartial = fs.readFileSync(mustachePath + 'admin.mustache').toString();
+const invalidClassHTML = "<p>Could not find the requested page.<\p> <a href=\"/\">Click here to return to the home page.</a>";
 
-
-var piwikServer = "192.17.96.13:" + process.env.PROXY_PORT;
+const piwikServer = "192.17.96.13:" + process.env.PROXY_PORT;
 
 renderWithPartial = function(mustacheFile, request, response, params) {
   var html;
@@ -69,18 +69,3 @@ renderWithPartial = function(mustacheFile, request, response, params) {
   }
   response.end(html);
 }
-
-isClassNameValid = function(className) {
-
-  var classes = [
-    "cs241", "cs225", "cs225-sp16", "cs446-fa16", "adv582", "ece210", "chem233-sp16"
-  ]
-
-  if (classes.indexOf(className) >= 0) {
-    return true;
-  }
-
-  return false;
-}
-
-invalidClassHTML = "<p>Could not find the requested page.<\p> <a href=\"/\">Click here to return to the home page.</a>";

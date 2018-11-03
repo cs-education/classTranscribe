@@ -4,118 +4,61 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-var router = express.Router();
-var fs = require('fs');
-var passwordHash = require('password-hash');
-var passwordValidator = require('password-validator');
+const router = express.Router();
+const fs = require('fs');
+const passwordHash = require('password-hash');
+const passwordValidator = require('password-validator');
+const db = require('../../db/db');
 
 // Get the mustache page that will be rendered for the changePassword route
 var changePasswordMustache = fs.readFileSync(mustachePath + 'changePassword.mustache').toString();
-var email;
-
-var client_api = require('./db');
-// var api = require('./api');
-// var client_api = new api();
 
 // Render the changePassword mustache page; if account is authenticated just password in settings page
 router.get('/changePassword', function (request, response) {
-    if (request.isAuthenticated()) {
-        email = request.user.email;
+  if (request.isAuthenticated()) {
+    response.writeHead(200, {
+      'Content-Type': 'text.html'
+    });
+    renderWithPartial(changePasswordMustache, request, response);
+  } else {
+    var email = request.query.email;
 
-        response.writeHead(200, {
+    // Check if email is already in the database
+    db.getUserByEmail(email).then(result => {
+      // Display error if the account does not exist
+      if (!result) {
+        //TODO: ADD 404 PAGE
+        var error = 'Account does not exist';
+        console.log(error);
+        response.status(404).send({message : error});
+      } else {
+        var userInfo = result.dataValues;
+        if (!userInfo.verified) {
+          var error = 'Account is not verified';
+          console.log(error);
+          response.send({message : error});
+        } else if (userInfo.id != request.query.id) {
+          var error = "Incorrect reset password link.";
+          console.log(error);
+          response.send({message : error});
+        } else {
+          response.writeHead(200, {
             'Content-Type': 'text.html'
-        });
-        renderWithPartial(changePasswordMustache, request, response);
-    } else {
-        email = request.query.email;
-
-        // Check if email is already in the database
-        // get mailid
-        client_api.getUserByEmail(email).then(result => {
-          // Display error if the account does not exist
-          if (!result) {
-            //TODO: ADD 404 PAGE
-            var error = 'Account does not exist';
-            console.log(error);
-            response.status(404).send({message : error});
-          } else {
-            //get userid
-            console.log(result)
-
-            // var user_mail_id = result[0].dataValues.id; // may have bug
-            // TODO: get user_id with email if the user is valid
-            client_api.validUserID(email).then(result => {
-              var user_id = result[0].dataValues.id
-              if (user_id != request.query.id) { // false
-                var error = "Incorrect reset password link.";
-                console.log(error);
-                response.end();
-                // TODO: ADD 404 PAGE
-              } else {
-                // TODO: unfinished function setPasswordID(user_id
-                // but idk the meaning of this function
-                // client_api.setPasswordID(user_id).then(result => {
-                //   // TODO: get err from result
-                //   var err = result
-                //   if (err) console.log(err)
-                //   console.log(results);
-                // });
-                response.writeHead(200, {
-                    'Content-Type': 'text.html'
-                });
-                renderWithPartial(changePasswordMustache, request, response);
-              }
-            })
-          }
-        })
-
-        // // Check if email is already in the database
-        // client_api.getUserByEmail(email, function(err, usr) {
-        // // client.hgetall("ClassTranscribe::Users::" + email, function (err, usr) {
-        //     // Display error if the account does not exist
-        //     if (!usr) {
-        //         var error = "Account does not exist.";
-        //         console.log(error);
-        //         response.end();
-        //         // TODO: ADD 404 PAGE
-        //     } else {
-        //         client_api.validUserID(email, function(err, obj) {
-        //         // client.hget("ClassTranscribe::Users::" + email, "change_password_id", function (err, obj) {
-        //             // Display error if the generated unique link does not match the user
-        //             // Change the info in the database if the unique link matches
-        //             if (obj != request.query.id) {
-        //                 var error = "Incorrect reset password link.";
-        //                 console.log(error);
-        //                 response.end();
-        //                 // TODO: ADD 404 PAGE
-        //             } else {
-        //               client_api.setPasswordID(email, "", function(err, results) {
-        //                 // client.hmset("ClassTranscribe::Users::" + email, [
-        //                 //     'change_password_id', ''
-        //                 // ], function (err, results) {
-        //                     if (err) console.log(err)
-        //                     console.log(results);
-        //               });
-        //
-        //               // Render the changePassword mustache page
-        //               response.writeHead(200, {
-        //                   'Content-Type': 'text.html'
-        //               });
-        //               renderWithPartial(changePasswordMustache, request, response);
-        //             }
-        //         });
-        //     }
-        // });
-
-    }
+          });
+          renderWithPartial(changePasswordMustache, request, response);
+        }
+      }
+    }).catch(err => console.log(err)); /* db.getUserByEmail() */
+  }
 });
 
 // TODO: db needs add "setPassword()"
 // Change user information in database after the form is submitted
 router.post('/changePassword/submit', function (request, response) {
+  if (request.isAuthenticated()) {
     var password = request.body.password;
     var re_password = request.body.re_password;
-
+    var userInfo = request.user;
     // Pattern schema for valid password
     var schema = new passwordValidator();
     schema
@@ -126,54 +69,30 @@ router.post('/changePassword/submit', function (request, response) {
         .has().digits()                                 // Must have digits
         .has().not().spaces()                           // Should not have spaces
 
-    console.log(email)
-
     // Check that the two passwords are the same
     if (password != re_password) {
         var error = "Passwords are not the same";
         console.log(error);
         response.send({ message: error, html: '' });
     } else {
-        // Check if password follows pattern schema
-        var valid_pattern = schema.validate(password)
-        if (valid_pattern != true) {
-            var error = "Password must have at least 8 character, an uppercase letter, a lowercase leter, a digit, and no spaces.";
-            console.log(error);
-            response.send({ message: error, html: '' });
-        } else {
-            // Salt and hash password before putting into redis database
-            var hashedPassword = passwordHash.generate(password);
+      // Check if password follows pattern schema
+      var valid_pattern = schema.validate(password)
+      if (valid_pattern != true) {
+        var error = "Password must have at least 8 character, an uppercase letter, a lowercase leter, a digit, and no spaces.";
+        console.log(error);
+        response.send({ message: error, html: '' });
+      } else {
+        // Salt and hash password before putting into redis database
+        var hashedPassword = passwordHash.generate(password);
 
-            // new version
-            // TODO: setPassword()
-            client_api.setPassword(email, hashedPassword).then(result => {
-              console.log(result);
-              var err = result[0]
-              if (err) console.log(err)
-              if (request.isAuthenticated()) {
-                  response.send({ message: 'success', html: '../settings' })
-              } else {
-                  response.send({ message: 'success', html: '../login' })
-              }
-            })
-
-            //-------------------------OLD VERSION------------------------------
-            // Change user password in database
-            // client_api.setPassword(email, hashedPassword, function(err,result) {
-            // // client.hmset("ClassTranscribe::Users::" + email, [
-            // //     'password', hashedPassword
-            // // ], function (err, results) {
-            //     if (err) console.log(err)
-            //     console.log(result);
-            //     if (request.isAuthenticated()) {
-            //         response.send({ message: 'success', html: '../settings' })
-            //     } else {
-            //         response.send({ message: 'success', html: '../login' })
-            //     }
-            // });
-            //-------------------------OLD VERSION------------------------------
-        }
+        db.setUserPassword(hashedPassword, userInfo.mailId).then(() => {
+          response.send({ message: 'success', html: '../settings' })
+        }).catch(err => console.log(err)); /* db.setUserPassword() */
+      }
     }
+  } else {
+    response.send({ message: 'Not Authenticated', html: '../login' })
+  }
 });
 
 module.exports = router;

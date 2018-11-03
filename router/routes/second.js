@@ -5,13 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-var fs = require('fs');
-var mkdirp = require('mkdirp');
-var validator = require('../../modules/validator.js');
+const fs = require('fs');
+const mkdirp = require('mkdirp');
+const validator = require('../../modules/validator.js');
 
-var client_api = require('./db');
-// var api = require('./api');
-// var client_api = new api();
+const client_api = require('./db');
 
 var secondPassMustache = fs.readFileSync(mustachePath + 'editor.mustache').toString();
 router.get('/second/:className/:id', function (request, response) {

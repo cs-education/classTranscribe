@@ -4,13 +4,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-var router = express.Router();
-var fs = require('fs');
-var passport = require('passport')
-//var flash = require('connect-flash');
+const router = express.Router();
+const fs = require('fs');
+const passport = require('passport')
 
 // Get the mustache page that will be rendered for the login route
-var loginMustache = fs.readFileSync(mustachePath + 'login.mustache').toString();
+const loginMustache = fs.readFileSync(mustachePath + 'login.mustache').toString();
 
 // Render the login mustache page; if account is authenticated, just bring user to dashboard
 router.get('/login', function(request, response) {

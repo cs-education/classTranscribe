@@ -5,10 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-//var router = express.Router();
-var client_api = require('./db');
-// var api = require('./api');
-// var client_api = new api();
+const router = express.Router();
+const client_api = require('./db');
 
 var progressMustache = fs.readFileSync(mustachePath + 'progress.mustache').toString();
 router.get('/progress/:className', function (request, response) {

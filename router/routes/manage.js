@@ -4,11 +4,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-var fs = require('fs');
-var readline = require('readline');
-var sys = require('sys');
-var exec = require('child_process').exec;
-var storage = multer.diskStorage({
+const fs = require('fs');
+const readline = require('readline');
+const sys = require('sys');
+const exec = require('child_process').exec;
+const db = require('../../db/db');
+const storage = multer.diskStorage({
   destination: function(req, file, callback) {
     callback(null, './videos');
   },
@@ -18,54 +19,48 @@ var storage = multer.diskStorage({
   }
 });
 
-var client_api = require('./db');
-// var api = require('./api');
-// var client_api = new api();
-/**var storage = multer.diskStorage({
-  dest: './videos',
-  rename: function(fieldname, filename) {
-    var split = filename.split(/(?:.mp4|.avi|.flv|.wmv|.mov|.wav|.ogv|.mpg|.m4v)/);
-    console.log(filename);
-    if(split.length != 2) {
-      return "bad_file";
-    }
-    return split[0]+".mp4";
-  },
-  onFileUploadStart: function(file) {
-    if(file.name == "bad_file") {
-      return false;
-    }
-    console.log(file.name + " upload is starting...");
-  }
-});**/
-/**var storage = multer({
-  dest: path.join(__dirname, '../../videos'),
-  rename: function(fieldname, filename) {
-    var split = filename.split(/(?:.mp4|.avi|.flv|.wmv|.mov|.wav|.ogv|.mpg|.m4v)/);
-    if(split.length != 2) {
-      return "bad_file";
-    }
-    return split[0] + ".mp4";
-  }
-});**/
-
 var manageCoursePage = fs.readFileSync(mustachePath + 'manageCourse.mustache').toString();
-router.get('/manage/:className', function (request, response) {
+router.get('/manage/:offeringId', function (request, response) {
   if (request.isAuthenticated()) {
     response.writeHead(200, {
       'Content-Type': 'text/html'
     });
+    var offeringId = request.params;
+    var className = '';
+    var userInfo = request.user;
+    var courses = reqeust.session['currentContent'];
 
-    renderWithPartial(manageCoursePage, request, response, request.params);
-  } else {
-    response.redirect('../');
+    /* check if the offeringId is in the stored in the cookie */
+    for (let i = 0; i < courses.length; i++) {
+      /* offeringId is found */
+      if (offeringId === courses[i].offeringId) {
+        className = courses[i].acronym + ' ' + courses[i].courseNumber;
+        break;
+      }
+    }
+
+    /* relating offeringId is not found */
+    if (className === '') {
+      db.validateUserAccess( offeringId, userInfo.id).then(result => {
+        if (!result) {
+          var error = 'Course Not Found.'
+          console.log(error);
+          response.send({ message : error, html : '/' });
+        } else { /* TODO: check permission */
+          renderWithPartial(manageCoursePage, request, response, { className : className} );
+        }
+      }).catch(err => console.log(err)) /* db.validateUserAccess() */
+    } else {
+      renderWithPartial(manageCoursePage, request, response, { className : className} );
+    }
   }
+  response.redirect('../');
 });
 
 var upload = multer({ dest: 'manage/' })
 
 /* similar to /uploadLectureVideos,  used for single upload*/
-router.post('/manage/:className', upload.single('filename'), function(request, response) {
+router.post('/manage/:offeringId', upload.single('filename'), function(request, response) {
   var className = request._parsedOriginalUrl.pathname.split("/")[2];
   var upload = multer({ storage : storage}).any();
   var path_videos = path.join(__dirname, "../../videos");
@@ -99,13 +94,13 @@ router.post('/manage/:className', upload.single('filename'), function(request, r
         }
         /* node utility_scripts/splitRunner.js <path_to_directory_with_videos> <class_name> */
         /* splits the videos */
-        exec("node " + path_splitRunner + " " + path_class + " " + className, function(err, stdout, stderr) {
+        exec("node " + path_splitRunner + " " + path_class + " " + offeringId, function(err, stdout, stderr) {
           if (err !== null) {
             console.log("%s exec splitRunner error: ", filename, err);
           }
           /* node utility_scripts/taskInitializer.js <path_to_directory_with_videos> <class_name> */
           /* adds the videos to the queue to be transcribed */
-          exec("node " + path_taskInitializer + " " + path_class + " " + className, function(err, stdout, stderr) {
+          exec("node " + path_taskInitializer + " " + path_class + " " + offeringId, function(err, stdout, stderr) {
             if (err !== null) {
               console.log("%s exec taskInitializer error: ", filename, err);
             }
@@ -119,17 +114,6 @@ router.post('/manage/:className', upload.single('filename'), function(request, r
   response.end();
 });
 
-
-router.get('/getUserCourses', function (request, response) {
-  client_api.getCourses(function(err,results) {
-   // client.smembers("ClassTranscribe::CourseList", function(err, results) {
-   	 if(err) console.log(err);
-   	 console.log(results);
-     response.send(results);
-   });
-});
-
-
 /* add the instructors to the database */
 router.post('/addInstructors', function (request, response) {
    var data = request.body.instructors;
@@ -142,7 +126,7 @@ router.post('/addInstructors', function (request, response) {
    }
    console.log(instructors);
    console.log(toadd);
-   client_api.addInstructors(toadd, function(err, res) {
+   db.addInstructors(toadd, function(err, res) {
    // client.sadd("instructors", toadd, function(err, res) {
       if(err) console.log(err);
    		console.log("added instructors");
@@ -155,7 +139,7 @@ router.post('/addInstructors', function (request, response) {
 router.post('/addStudents', function (request, response) {
    var data = request.body.students;
    var students = data.split(/[\s,;:\n]+/);
-   client_api.addStudents(students, function(err, res) {
+   db.addStudents(students, function(err, res) {
    // client.sadd("students", students, function(err, res) {
    		console.log("added students");
    });
@@ -173,7 +157,7 @@ router.post('/UploadStudentsFiles', function (request, response) {
       input: fs.createReadStream(request.files[0].path)
     });
     interface.on('line', function (line) {
-      client_api.addStudents(line, function(err) {
+      db.addStudents(line, function(err) {
       // client.sadd("students", line, function(err) {
         console.log("added student: " + line);
       })

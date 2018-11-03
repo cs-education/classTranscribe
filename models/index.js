@@ -9,24 +9,8 @@ var env = process.env.NODE_ENV || 'development';
 var db = {};
 
 var sequelize;
-//if (config.use_env_variable) {
-//    sequelize = new Sequelize(process.env[config.use_env_variable], config);
-//} else {
-//    sequelize = new Sequelize(config.database, config.username, config.password, config);
-//}
-// sequelize = new Sequelize('database', 'username', 'password', {
-//     host: 'localhost',
-//     dialect: 'sqlite',
-//
-//     pool: {
-//         max: 5,
-//         min: 0,
-//         idle: 10000
-//     },
-//
-//     // SQLite only
-//     storage: 'sqldb.db'
-// });
+
+/* sequelize = new Sequelize('database', 'username', 'password')*/
 sequelize = new Sequelize('TestDb', 'TestAdmin', 'Test123!', {
     host: 'ct18.database.windows.net',
     dialect: 'mssql',
@@ -40,8 +24,6 @@ sequelize = new Sequelize('TestDb', 'TestAdmin', 'Test123!', {
     dialectOptions: {
         encrypt: true
     }
-    // SQLite only
-    //storage: 'sqldb.db'
 });
 
 fs

@@ -4,10 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-var router = express.Router();
-var fs = require('fs');
+const router = express.Router();
+const fs = require('fs');
 
-var activatedMustache = fs.readFileSync(mustachePath + 'activated.mustache').toString();
+const activatedMustache = fs.readFileSync(mustachePath + 'activated.mustache').toString();
 
 router.get('/activated', function (request, response) {
     response.writeHead(200, {

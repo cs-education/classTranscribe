@@ -377,14 +377,42 @@ function getCoursesByUniversityId( universityId ) {
   }).catch(err => console.log(err)) /* Offering.findAll() */
 }
 
-/* TODO: */
-function addStudent(studentId, courseId) {
-  return;
+function addStudent(studentId, offeringId) {
+  return Role.findOrCreate({
+    where : { roleName : 'Student', }
+  }).then(result => {
+    var roleId = result[0].dataValues.id;
+    return UserOffering.findOrCreate({
+      where : {
+        offeringId : offeringId,
+        userId : studentId,
+      },
+      defaults : { roleId : roleId, }
+    }).then((result, created) => {
+      if (created === false) {
+        console.log('YOU HAVE REGISTER ALREADY');
+      }
+      return result[0].dataValues;
+    }).catch(err => console.log(err)); /* UserOffering.findOrCreate() */
+  }).catch(err => console.log(err));/* Role.findOrCreate() */
 }
 
-/* TODO: */
-function removeStudent (studentId, courseId) {
-  return;
+function removeStudent (studentId, offeringId) {
+  /* you need to add students before remove them, assuming the roleId has been created */
+  return Role.findOne({
+    where : { roleName : 'Student',}
+  }).then(result => {
+    var roleId = result.dataValues.id;
+    return UserOffering.destroy({
+      where : {
+        roleId : roleId,
+        userId : studentId,
+        offeringId : offeringId,
+      }
+    }).then(result => {
+      console.log('Student has been removed.');
+    }).catch(err => console.log(err)); /* UserOffering.destroy() */
+  }).catch(err => console.log(err)); /* Role.findOne() */
 }
 
 function getUniversityName (universityId) {
@@ -415,10 +443,88 @@ function getSectionsById (ids) {
   return Offering.findAll({
     where : {
       id : { [Op.in] : ids }
-    }
+    },
   }).then(values => {
     return values.map(value => value.dataValues);
   }).catch(err => console.log(err))
+}
+
+function getInstructorsByOfferingId (ids) {
+  return Role.findOne({
+    where : {
+      roleName : 'Instructor',
+    },
+  }).then(result => {
+    return UserOffering.findAll({
+      where : {
+        roleId : result.dataValues.id,
+        offeringId : { [Op.in]: ids }
+      }
+    }).then(values => {
+      var userOfferingList = values.map(value => value.dataValues);
+      var userIds = userOfferingList.map(value => value.userId);
+      return User.findAll({
+        where : {
+          id : { [Op.in] : userIds }
+        }
+      }).then(values => {
+        var instructors = [];
+        var users = values.map(value => value.dataValues);
+        /* match instructors with courses, there should be a clearer way to do so */
+        for (let i = 0; i < userOfferingList.length; i++) {
+          for (let j = 0; j < users.length; j++) {
+            if (userOfferingList[i].userId === users[j].id) {
+              var instructor = {
+                offeringId : userOfferingList[i].offeringId,
+                userId : users[j].id,
+                firstName : users[j].firstName,
+                lastName : users[j].lastName,
+                mailId : users[j].mailId,
+              };
+              instructors.push(instructor);
+            }
+          }
+        }
+        return instructors;
+      }).catch(err => console.log(err)) /* User.findAll() */
+    }).catch(err => console.log(err)); /* UserOffering.findAll() */
+  }).catch(err => console.log(err)); /* Role.findOne() */
+}
+
+function validateUserAccess( offeringId, userId ) {
+  return UserOffering.findOne({
+    where : {
+      offeringId : offeringId,
+      userId : userId,
+    }
+  }).then(result => {
+    return result.dataValues;
+  }).catch(err => console.log(err));
+}
+
+function getCourseByOfferingId(offeringId) {
+  return CourseOffering.findAll({
+    where : { offeringId : offeringId }
+  }).then(values => {
+    var courseIds = values.map(value => value.dataValues.courseId);
+    return Course.findAll({
+      where : {
+        id : { [Op.in] : courseIds },
+      }
+    }).then(values => {
+      return values.map(value => value.dataValues);
+    }).catch(err => console.log(err)); /* Course.findAll() */
+  }).catch(err => console.log(err)); /* CourseOffering.findAll() */
+}
+
+function getDept(deptId) {
+  return Dept.findOne({
+    where : {
+      id : deptId,
+    }
+  }).then(result => {
+    return result.dataValues;
+  }).catch(err => console.log(err));
 }
 
 module.exports = {
@@ -432,6 +538,7 @@ module.exports = {
     removeStudent : removeStudent,
     createUser: createUser,
     setUserName: setUserName,
+    setUserPassword : setUserPassword,
     verifyUser: verifyUser,
     getTask: getTask,
     getMedia: getMedia,
@@ -443,12 +550,16 @@ module.exports = {
     getCoursesByIds : getCoursesByIds,
     getCoursesByUniversityId : getCoursesByUniversityId,
     getCourseId : getCourseId,
+    getCourseByOfferingId : getCourseByOfferingId,
     getRoleId : getRoleId,
     getTermId : getTermId,
     getTermsById : getTermsById,
     getTerms : getTerms,
     getDeptId : getDeptId,
+    getDept : getDept,
     getOfferingId : getOfferingId,
     getDeptsById : getDeptsById,
     getSectionsById : getSectionsById,
+    getInstructorsByOfferingId : getInstructorsByOfferingId,
+    validateUserAccess : validateUserAccess,
 }

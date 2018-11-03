@@ -4,11 +4,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-var router = express.Router();
-var fs = require('fs');
+const router = express.Router();
+const fs = require('fs');
 
 // Get the mustache page that will be rendered for the dashboard route
-var dashboardMustache = fs.readFileSync(mustachePath + 'dashboard.mustache').toString();
+const dashboardMustache = fs.readFileSync(mustachePath + 'dashboard.mustache').toString();
 
 // Render the dashboard mustache page; if account is not authenticated, redirect to homepage
 router.get('/dashboard', function (request, response) {

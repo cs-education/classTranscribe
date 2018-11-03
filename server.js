@@ -28,27 +28,27 @@ mailer = require('./modules/mailer');
 uuidv4 = require('uuid/v4');
 /* end global variables */
 
-var debug = require('debug');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var db = require('./db/db');
+const debug = require('debug');
+const favicon = require('serve-favicon');
+const logger = require('morgan');
+const db = require('./db/db');
 
 
-var webvtt = require('./modules/webvtt');
-var validator = require('./modules/validator');
-var http = require('http');
-var zlib = require('zlib');
-var spawn = require('child_process').spawn;
-var mkdirp = require('mkdirp');
-var bodyParser = require('body-parser');
+const webvtt = require('./modules/webvtt');
+const validator = require('./modules/validator');
+const http = require('http');
+const zlib = require('zlib');
+const spawn = require('child_process').spawn;
+const mkdirp = require('mkdirp');
+const bodyParser = require('body-parser');
 
-var cookieParser = require('cookie-parser');
-var session = require('express-session');
-var saml = require('passport-saml');
-var flash = require('connect-flash');
-var passwordHash = require('./node_modules/password-hash/lib/password-hash');
-var dotenv = require('dotenv');
-var https = require('https');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+const saml = require('passport-saml');
+const flash = require('connect-flash');
+const passwordHash = require('./node_modules/password-hash/lib/password-hash');
+const dotenv = require('dotenv');
+const https = require('https');
 
 dotenv.load();
 piwik_port = process.env.PIWIK_PORT;
@@ -122,7 +122,7 @@ app.get('/Metadata',
 
 var thirtyMinsInMilliSecs = 30 * 60 * 1000;
 
-setInterval(clearInactiveTranscriptions, thirtyMinsInMilliSecs);
+// setInterval(clearInactiveTranscriptions, thirtyMinsInMilliSecs);
 
 require('./router')(app);
 

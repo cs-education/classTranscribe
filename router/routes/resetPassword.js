@@ -4,11 +4,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-var router = express.Router();
-var fs = require('fs');
-var crypto = require('crypto');
-var verifier = require('email-verify');
-var client_api = require('./db');
+const router = express.Router();
+const fs = require('fs');
+const crypto = require('crypto');
+const verifier = require('email-verify');
+const client_api = require('./db');
 // var api = require('./api');
 // var client_api = new api();
 
@@ -29,6 +29,10 @@ var transporter = nodemailer.createTransport({
     }
 });
 
+/*********************************************************************/
+/*              CURRENT VERSION USES changePassword.js               */
+/*********************************************************************/
+
 // Get the mustache page that will be rendered for the resetPassword route
 var resetPasswordMustache = fs.readFileSync(mustachePath + 'resetPassword.mustache').toString();
 
@@ -44,7 +48,8 @@ router.get('/resetPassword', function (request, response) {
 router.post('/resetPassword/submit', function (request, response) {
     // Get the current user's data to access information in database
     var email = request.body.email;
-
+    console.log(reqeust.body);
+    return;
     // Check if email address exists
     verifier.verify(email, function(err, info) {
         if ( err ) console.log(err);

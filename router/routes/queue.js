@@ -5,9 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-//var router = express.Router();
+const router = express.Router();
+const db = require('../../db/db');
 
-var queueMustache = fs.readFileSync(mustachePath + 'queue.mustache').toString();
+const queueMustache = fs.readFileSync(mustachePath + 'queue.mustache').toString();
+
 router.get('/queue/:className', function (request, response) {
   var className = request.params.className.toUpperCase();
 
@@ -24,7 +26,7 @@ router.get('/queue/:className/:netId', function (request, response) {
   var netId = request.params.netId.toLowerCase();
 
   // var args = ["ClassTranscribe::Tasks::" + className, "0", "99999", "LIMIT", "0", "1"];
-  client_api.getTasks(className, function(err, result) {
+  db.getTasks(className, function(err, result) {
   // client.zrangebyscore(args, function (err, result) {
     if (err) {
       throw err;
@@ -39,7 +41,7 @@ router.get('/queue/:className/:netId', function (request, response) {
 
     // args = ["ClassTranscribe::Tasks::" + className, "1", result[0]];
     // client.zincrby(args);
-    client_api.getsortedTask(className, taskName);
+    db.getsortedTask(className, taskName);
 
     response.end(taskName);
   });

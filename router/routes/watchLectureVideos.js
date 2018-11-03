@@ -1,6 +1,9 @@
-var fs = require('fs');
 
-var watchLectureVideosPage = fs.readFileSync(mustachePath + 'watchLectureVideos.mustache').toString();
+
+const fs = require('fs');
+
+const watchLectureVideosPage = fs.readFileSync(mustachePath + 'watchLectureVideos.mustache').toString();
+
 router.get('/watchLectureVideos', function (request, response) {
 console.log("Got ROUTE", watchLectureVideosPage)
   response.writeHead(200, {

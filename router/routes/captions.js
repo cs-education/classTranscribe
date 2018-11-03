@@ -6,12 +6,11 @@
  */
 
 // captions
-var fs = require('fs');
+const fs = require('fs');
 
-
-router.get('/captions/:className/:index', function (request, response) {
-  var className = request.params.className.toLowerCase();
-  var captions = captionsMapping[className];
+router.get('/captions/:offeringId/:index', function (request, response) {
+  var offeringId = request.params.offeringId;
+  var captions = captionsMapping[offeringId];
 
   response.writeHead(200, {
     'Content-Type': 'application/json'

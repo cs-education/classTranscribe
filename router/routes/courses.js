@@ -4,13 +4,13 @@
 // Potential problem with ajax spam
 // Also currently no instructor verification
 
-async = require('async');
-var router = express.Router();
+const async = require('async');
+const router = express.Router();
 // Search helper
-var srchHelper = require("../../utility_scripts/searchContent.js");
+const srchHelper = require("../../utility_scripts/searchContent.js");
 
-var client_api = require('../../db/db');
-var permission = require('./permission');
+const client_api = require('../../db/db');
+const permission = require('./permission');
 
 //=======================Sample data for testing=====================================
 // create Uid for the class
@@ -18,55 +18,6 @@ function genNewClassUid(){
     return uuidv4();
 }
 
-/*
-var courseList = {
-    "Spring 2016":[
-        ["Chemistry", "Chem 233", "AL2", "Elementary Organic Chem Lab I", "Basic laboratory techniques in organic" +
-        " chemistry are presented with emphasis on the separation, isolation, and purification of organic compounds." +
-        " For students in agricultural science, dairy technology, food technology, nutrition, dietetics, premedical," +
-        " predental, and preveterinary programs.", "UIUC", "Miller, S","9ece21c0-ae3f-4499-89f9-b78f41849ab4"],
-        ["Computer Science", "CS 225", "AL1", "Data Structures", "Data abstractions: elementary data structures (lists, " +
-        "stacks, queues, and trees) and their implementation using an object-oriented programming language. Solutions " +
-        "to a variety of computational problems such as search on graphs and trees. Elementary analysis of " +
-        "algorithms.", "UIUC", "Heeren, C\n Yershova, G","b0864b50-422e-41b2-a254-a15cdb620375"]
-    ],
-    "Fall 2016":[
-        ["Computer Science", "CS 446", "D3", "Machine Learning", "Theory and basic techniques in machine learning. Major" +
-        " theoretical paradigms and key concepts developed in machine learning in the context of applications such as natural" +
-        " language and text processing, computer vision, data mining, adaptive computer systems and others. Review of several" +
-        " supervised and unsupervised learning approaches: methods for learning linear representations; on-line learning," +
-        " Bayesian methods; decision-trees; features and kernels; clustering and dimensionality reduction.", "UIUC", "Roth, D","b20bff0f-c821-44af-96f7-e1b1dca38d63"],
-
-        ["Advertising", "ADV 582", "D", "Qualitative Research in Advert", "Treatment of basic research concepts and procedures in " +
-        "the social sciences with emphasis on advertising.", "UIUC", "Nelson, M","ea4132ce-9b5a-4988-9739-8fbc0d2a838a"],
-
-        ["Computer Science", "CS 241", "AL1", "System Programming", "Basics of system programming, including POSIX processes," +
-        " process control, inter-process communication, synchronization, signals, simple memory management, file I/O and directories," +
-        " shell programming, socket network programming, RPC programming in distributed systems, basic security mechanisms, and" +
-        " standard tools for systems programming such as debugging tools.", "UIUC", "Angrave, L","78c81e71-0d40-4e2e-8c26-fa40fdfa8a7a"]
-    ],
-    "Fall 2015":[
-        ["Electrical and Computer Engineering", "ECE 210", "AL1", "Analog Signal Processing", "Analog signal processing, with an emphasis on underlying" +
-        " concepts from circuit and system analysis: linear systems; review of elementary circuit analysis; differential equation " +
-        "models of linear circuits and systems; Laplace transform; convolution; stability; phasors; frequency response; Fourier " +
-        "series; Fourier transform; active filters; AM radio.", "UIUC", "Hasegawa-Johnson, M","ba30de6f-5295-449b-9744-ac72172713ad"],
-    ],
-    "All":[]
-};*/
-
-// client_api.addCourse(dummyData, "All");
-// client.sadd("ClassTranscribe::CourseList", "ClassTranscribe::Course::"+testclassid);
-// client.sadd("ClassTranscribe::Terms::"+'All', "ClassTranscribe::Course::"+testclassid);
-// client.sadd("ClassTranscribe::SubjectList", "ClassTranscribe::Subject::"+"Computer Science");
-// client.sadd("ClassTranscribe::Subject::"+"Computer Science", "ClassTranscribe::Course::"+testclassid);
-// client.hset("ClassTranscribe::Course::"+testclassid, "Subject", "Computer Science");
-// client.hset("ClassTranscribe::Course::"+testclassid, "ClassNumber", "CS 123");
-// client.hset("ClassTranscribe::Course::"+testclassid, "SectionNumber", "BL2");
-// client.hset("ClassTranscribe::Course::"+testclassid, "ClassName", "Data Structure");
-// client.hset("ClassTranscribe::Course::"+testclassid, "ClassDesc", "No description");
-// client.hset("ClassTranscribe::Course::"+testclassid, "University", "N/A");
-// client.hset("ClassTranscribe::Course::"+testclassid, "Instructor", "N/A");
-// client.hset("ClassTranscribe::Course::"+testclassid, "Term", "All");
 var courseList = [
   {
     courseName : "Elementary Organic Chem Lab I",
@@ -232,8 +183,6 @@ router.get('/courses/', function (request, response) {
     var userid = getUserId(request);
     // Get all terms data from the database
     client_api.getTerms().then(reply => {
-      // client_api.getTerms(function(err, reply) {
-      // client.smembers("ClassTranscribe::Terms", function(err, reply) {
       if(reply) {
         // reply is null if the key is missing
         allterms= reply.map( term => term.termName );
@@ -241,10 +190,8 @@ router.get('/courses/', function (request, response) {
 
         var form = '';
         var createClassBtn = '';
-        // client_api.getUserByID(getUserId(request), function(err, userinfo) {
-        // client.hgetall("ClassTranscribe::Users::"+getUserId(request), function (err, usrinfo) {
         var userInfo = request.session.passport.user;
-        // client_api.getUserByEmail(getUserId(request)).then(result => {
+
         client_api.getUniversityName(userInfo.universityId).then(result => {
           userInfo.university = result.dataValues.universityName;
           // Add create-a-class section if user is authenticated
@@ -267,7 +214,6 @@ router.get('/courses/', function (request, response) {
           "                    <th>Action</th>\n" +
           "                </tr>";
           client_api.getCoursesByUniversityId( userInfo.universityId ).then( values => {
-            // client.smembers("ClassTranscribe::CourseList", function (err, reply) {
             var termIds = [];
             var deptIds = [];
             var courses = [];
@@ -283,8 +229,9 @@ router.get('/courses/', function (request, response) {
             var termFetches = client_api.getTermsById(termIds);
             var deptFetches = client_api.getDeptsById(deptIds);
             var sectionFetches = client_api.getSectionsById(offeringIds);
+            var instructorFetches = client_api.getInstructorsByOfferingId(offeringIds);
 
-            Promise.all([termFetches, deptFetches, sectionFetches]).then(values => {
+            Promise.all([termFetches, deptFetches, sectionFetches, instructorFetches]).then(values => {
               var filters = [];
               for (let i = 0; i < courses.length; i++) {
                 let filter = {};
@@ -295,6 +242,17 @@ router.get('/courses/', function (request, response) {
                 courses[i].deptName = values[1][i].deptName;
                 courses[i].acronym = values[1][i].acronym;
                 courses[i].section = values[2][i].section;
+                courses[i].instructor = ''; /* Initialize purpose */
+                courses[i].instructorMail = '';
+              }
+
+              for (let i = 0; i < values[3].length ; i++) {
+                for (let j = 0; j < courses.length; j++) {
+                  if (values[3][i].offeringId === courses[j].offeringId) {
+                    courses[j].instructor = courses[j].instructor + values[3][i].firstName + ' ' + values[3][i].lastName + ', ';
+                    courses[j].instructorMail = courses[j].instructorMail + values[3][i].mailId + ', ';
+                  }
+                }
               }
 
               // Saving current content(courseId, termId) before applying filters
@@ -632,7 +590,7 @@ function generateFilters(data){
     return [termhtml,subjecthtml];
 }
 
-// generate coourse listing data
+// generate course listing data
 // data - input course info
 // user - user id
 // cb   - callback function
@@ -707,13 +665,11 @@ function  generateListings(data, user, cb) {
 // Get user id from email
 // return -  currently just returns the email (i.e. abc@def.edu) or '' in case of error
 function getUserId(req) {
-    var id = "";
-    try{
-        id = req.session.passport.user.mailId;
-    }
-    catch(e) {
-        id="";
-        console.log("Invalid user id detected");
+    var id = '';
+    try {
+      id = req.session.passport.user.mailId;
+    } catch(e) {
+      console.log("Invalid user id detected");
     }
     return id;
 }

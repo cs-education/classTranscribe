@@ -4,9 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-var client_api = require('./db');
+const client_api = require('./db');
 
-var progressDashboardMustache = fs.readFileSync(mustachePath + 'progressDashboard.mustache').toString();
+const progressDashboardMustache = fs.readFileSync(mustachePath + 'progressDashboard.mustache').toString();
+
 router.get('/viewProgress/:className/:uuid', function (request, response) {
   var className = request.params.className;
   var uuid = request.params.uuid;

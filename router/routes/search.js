@@ -4,41 +4,34 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-var searchMustache = fs.readFileSync(mustachePath + 'search.mustache').toString();
 
-var client_api = require('./db');
-// var api = require('./api');
-// var client_api = new api();
+const fs = require('fs');
+const db = require('../../db/db');
 
-// router.get('/:className',
-//   ensureAuthenticated,
-router.get('/class/:className',
-  function (request, response) {
-    var className = request.params.className.toLowerCase();
-    console.log(className);
-    client_api.getCourses(function(err, results) {
-    // client.smembers("ClassTranscribe::CourseList", function(err, results) {
-      var invalid = true;
-      if (results.indexOf("ClassTranscribe::Course::" + className.toUpperCase()) >= 0) {
-        invalid = false;
-      }
+const searchMustache = fs.readFileSync(mustachePath + 'search.mustache').toString();
 
-      if (!isClassNameValid(className) && invalid || err) {
-        console.log("not valid course: ", err);
+router.get('/:courseId/:offeringId', function (request, response) {
+    var offeringId = request.params.offeringId;
+    var courseId = request.params.courseId;
+
+    db.getCourseByOfferingId(offeringId).then(values => {
+      var course = values.filter(value.courseId === courseId);
+      if (!values || !course) {
+        console.log('Not Valid Course');
         response.end(invalidClassHTML);
         return;
       }
-      response.writeHead(200, {
-        'Content-Type': 'text/html'
-      });
 
-      var view = {
-        className: className,
-        //exampleTerm: exampleTerms[className]
-      };
+      db.getDept(course[0].deptId).then(value => {
+        response.writeHead(200, {
+          'Content-Type': 'text/html'
+        });
 
-      renderWithPartial(searchMustache, request, response, view);
-    });
+        var className = value.acronym + ' ' + course[0].courseNumber;
+        renderWithPartial(searchMustache, request, response, {className : className});
+      }).catch(err => console.log(err)); /* db.getDept() */
+    }).catch(err => console.log(err)); /* db.getCourseByOfferingId() */
+    response.end(invalidClassHTML);
   });
 
 
@@ -87,7 +80,7 @@ router.get('/getCaptions', function(request, response) {
         fs.readdirSync(path_videos + "/" + dir).forEach(function(file) {
           if(! /^\..*/.test(file) && !/.mp3/.test(file) && !/.wav/.test(file)) {
             promises.push(new Promise(function(resolve, reject) {
-              client_api.getCaptions(className, function(err, results) {
+              db.getCaptions(className, function(err, results) {
               // client.smembers("ClassTranscribe::Transcriptions::" + className + "::" + file.replace(".mp4", ""), function(err, results) {
                 if(err) {
                   reject(err);
