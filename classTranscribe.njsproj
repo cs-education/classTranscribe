@@ -1,0 +1,364 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{5859d584-d3f8-41d6-bc69-031837518734}</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <ProjectView>ShowAllFiles</ProjectView>
+    <StartupFile>server.js</StartupFile>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{349c5851-65df-11da-9384-00065b846f21};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">14.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <LastActiveSolutionConfig>Debug|Any CPU</LastActiveSolutionConfig>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
+  <ItemGroup>
+    <Content Include="Acknowledgement.txt" />
+    <Content Include="deployment_instructions.txt" />
+    <Content Include="readme.txt" />
+    <Content Include="package-lock.json" />
+    <Content Include="package.json" />
+    <Content Include="README.md" />
+    <Content Include=".eslintrc.js" />
+    <Content Include="authentication.js" />
+    <Content Include="Gruntfile.js" />
+    <Content Include="proxyServer.js" />
+    <Content Include="redirectServer.js" />
+    <Content Include="second_pass.js" />
+    <Content Include="server.js" />
+    <Content Include="db\db.js" />
+    <Content Include="db\util.js" />
+    <Content Include="deprecated\old_editor.html" />
+    <Content Include="documentation\instructor_faq.md" />
+    <Content Include="documentation\student_faq.md" />
+    <Content Include="documentation\tutorial.md" />
+    <Content Include="models\courseOffering.js" />
+    <Content Include="models\courses.js" />
+    <Content Include="models\dept.js" />
+    <Content Include="models\echo_section.js" />
+    <Content Include="models\index.js" />
+    <Content Include="models\lecture.js" />
+    <Content Include="models\media.js" />
+    <Content Include="models\ms-transcription-task.js" />
+    <Content Include="models\offering.js" />
+    <Content Include="models\role.js" />
+    <Content Include="models\term.js" />
+    <Content Include="models\university.js" />
+    <Content Include="models\user.js" />
+    <Content Include="models\userOffering.js" />
+    <Content Include="models\youtube-channel.js" />
+    <Content Include="modules\database.js" />
+    <Content Include="modules\mailer.js" />
+    <Content Include="modules\redis.js" />
+    <Content Include="modules\validator.js" />
+    <Content Include="modules\webvtt.js" />
+    <Content Include="p2fa-vislab-master\changes.txt" />
+    <Content Include="p2fa-vislab-master\readme.txt" />
+    <Content Include="p2fa-vislab-master\requirements.txt" />
+    <Content Include="p2fa-vislab-master\README.md" />
+    <Content Include="public\favicon.ico" />
+    <Content Include="public\functions.js" />
+    <Content Include="router\index.js" />
+    <Content Include="stylesheets\manageCourse.css" />
+    <Content Include="stylesheets\resetPassword.css" />
+    <Content Include="utility_scripts\captionGenerator.js" />
+    <Content Include="utility_scripts\createCreditCSV.js" />
+    <Content Include="utility_scripts\getWidth.js" />
+    <Content Include="utility_scripts\import.js" />
+    <Content Include="utility_scripts\restoreFSFromRedis.js" />
+    <Content Include="utility_scripts\searchContent.js" />
+    <Content Include="utility_scripts\split.js" />
+    <Content Include="utility_scripts\splitRunner.js" />
+    <Content Include="utility_scripts\taskInitializer.js" />
+    <Content Include="utility_scripts\test.js" />
+    <Content Include="utility_scripts\videoGenerator.js" />
+    <Content Include="utility_scripts\videos.js" />
+    <Content Include="utils\world_universities_and_domains.json" />
+    <Content Include="utils\ttoc.js" />
+    <Content Include="cert\root\ca\index.txt" />
+    <Content Include="javascripts\controllers\manageCourse.js" />
+    <Content Include="p2fa-vislab-master\alignment-schemas\alignment_schema.json" />
+    <Content Include="p2fa-vislab-master\alignment-schemas\transcript_schema.json" />
+    <Content Include="p2fa-vislab-master\test\BREY00538.txt" />
+    <Content Include="p2fa-vislab-master\test\BREY00538.json" />
+    <Content Include="public\Downloads\README.md" />
+    <Content Include="public\stylesheets\accountRecovery.css" />
+    <Content Include="public\stylesheets\activated.css" />
+    <Content Include="public\stylesheets\changePassword.css" />
+    <Content Include="public\stylesheets\courseTable.css" />
+    <Content Include="public\stylesheets\dashboard.css" />
+    <Content Include="public\stylesheets\editor.css" />
+    <Content Include="public\stylesheets\home.css" />
+    <Content Include="public\stylesheets\index.css" />
+    <Content Include="public\stylesheets\login.css" />
+    <Content Include="public\stylesheets\loginbar.css" />
+    <Content Include="public\stylesheets\manageCourse.css" />
+    <Content Include="public\stylesheets\old_editor.css" />
+    <Content Include="public\stylesheets\reset.css" />
+    <Content Include="public\stylesheets\resetHome.css" />
+    <Content Include="public\stylesheets\resetPassword.css" />
+    <Content Include="public\stylesheets\search.css" />
+    <Content Include="public\stylesheets\settings.css" />
+    <Content Include="public\stylesheets\signup.css" />
+    <Content Include="public\stylesheets\style-responsive.css" />
+    <Content Include="public\stylesheets\upload.css" />
+    <Content Include="public\stylesheets\verify.css" />
+    <Content Include="public\stylesheets\viewer.css" />
+    <Content Include="public\stylesheets\watchLectureVideos.css" />
+    <Content Include="public\javascripts\controllers\accountRegistration.js" />
+    <Content Include="public\javascripts\controllers\data_output.js" />
+    <Content Include="public\javascripts\controllers\editor.js" />
+    <Content Include="public\javascripts\controllers\index.deprecated.js" />
+    <Content Include="public\javascripts\controllers\index.js" />
+    <Content Include="public\javascripts\controllers\manageCourse.js" />
+    <Content Include="public\javascripts\controllers\old_editor.js" />
+    <Content Include="public\javascripts\controllers\search.js" />
+    <Content Include="public\javascripts\controllers\upload.js" />
+    <Content Include="public\javascripts\controllers\viewer.js" />
+    <Content Include="public\javascripts\data\transcriptions.js" />
+    <Content Include="public\javascripts\libraries\completely.js" />
+    <Content Include="public\javascripts\libraries\disableMacBack.js" />
+    <Content Include="public\javascripts\libraries\header.js" />
+    <Content Include="public\javascripts\libraries\homeScript.js" />
+    <Content Include="public\javascripts\libraries\jquery-1.11.2.min.js" />
+    <Content Include="public\javascripts\libraries\jquery-ui.min.js" />
+    <Content Include="public\javascripts\libraries\jquery.mousewheel.min.js" />
+    <Content Include="public\javascripts\libraries\jquery.nicescroll.js" />
+    <Content Include="public\javascripts\libraries\jquery.parallax.js" />
+    <Content Include="public\javascripts\libraries\jquery.sticky.js" />
+    <Content Include="public\javascripts\libraries\preventMacBackScroll.js" />
+    <Content Include="public\javascripts\libraries\underscore.js" />
+    <Content Include="public\javascripts\data\captions\78c81e71-0d40-4e2e-8c26-fa40fdfa8a7a.js" />
+    <Content Include="public\javascripts\data\captions\9ece21c0-ae3f-4499-89f9-b78f41849ab4.js" />
+    <Content Include="public\javascripts\data\captions\adv582.js" />
+    <Content Include="public\javascripts\data\captions\b0864b50-422e-41b2-a254-a15cdb620375.js" />
+    <Content Include="public\javascripts\data\captions\b20bff0f-c821-44af-96f7-e1b1dca38d63.js" />
+    <Content Include="public\javascripts\data\captions\ba30de6f-5295-449b-9744-ac72172713ad.js" />
+    <Content Include="public\javascripts\data\captions\bb4e5382-42ed-40e7-ad8d-0086838f3e0c.js" />
+    <Content Include="public\javascripts\data\captions\captions.js" />
+    <Content Include="public\javascripts\data\captions\chem233-sp16.js" />
+    <Content Include="public\javascripts\data\captions\cs225-sp16.js" />
+    <Content Include="public\javascripts\data\captions\cs225.js" />
+    <Content Include="public\javascripts\data\captions\cs241.js" />
+    <Content Include="public\javascripts\data\captions\cs446-fa16.js" />
+    <Content Include="public\javascripts\data\captions\ea4132ce-9b5a-4988-9739-8fbc0d2a838a.js" />
+    <Content Include="public\javascripts\data\captions\ece210.js" />
+    <Content Include="public\javascripts\data\videos\adv582.js" />
+    <Content Include="public\javascripts\data\videos\chem233-sp16.js" />
+    <Content Include="public\javascripts\data\videos\cs225-sp16.js" />
+    <Content Include="public\javascripts\data\videos\cs225.js" />
+    <Content Include="public\javascripts\data\videos\cs241.js" />
+    <Content Include="public\javascripts\data\videos\cs446-fa16.js" />
+    <Content Include="public\javascripts\data\videos\ece210.js" />
+    <Content Include="public\javascripts\data\videos\videos.js" />
+    <Content Include="public\javascripts\libraries\wavesurfer\index.html" />
+    <Content Include="public\javascripts\libraries\wavesurfer\bower.json" />
+    <Content Include="public\javascripts\libraries\wavesurfer\package.json" />
+    <Content Include="public\javascripts\libraries\wavesurfer\README.md" />
+    <Content Include="public\javascripts\libraries\wavesurfer\build\wavesurfer-js-map.json" />
+    <Content Include="public\javascripts\libraries\wavesurfer\build\wavesurfer.min.js" />
+    <Content Include="public\javascripts\libraries\wavesurfer\example\screenshot.png" />
+    <Content Include="public\javascripts\libraries\wavesurfer\example\main.js" />
+    <Content Include="public\javascripts\libraries\wavesurfer\example\trivia.js" />
+    <Content Include="public\javascripts\libraries\wavesurfer\plugin\wavesurfer.elan.js" />
+    <Content Include="public\javascripts\libraries\wavesurfer\plugin\wavesurfer.microphone.js" />
+    <Content Include="public\javascripts\libraries\wavesurfer\plugin\wavesurfer.minimap.js" />
+    <Content Include="public\javascripts\libraries\wavesurfer\plugin\wavesurfer.regions.js" />
+    <Content Include="public\javascripts\libraries\wavesurfer\plugin\wavesurfer.spectrogram.js" />
+    <Content Include="public\javascripts\libraries\wavesurfer\plugin\wavesurfer.timeline.js" />
+    <Content Include="public\javascripts\libraries\wavesurfer\src\drawer.canvas.js" />
+    <Content Include="public\javascripts\libraries\wavesurfer\src\drawer.js" />
+    <Content Include="public\javascripts\libraries\wavesurfer\src\mediaelement.js" />
+    <Content Include="public\javascripts\libraries\wavesurfer\src\util.js" />
+    <Content Include="public\javascripts\libraries\wavesurfer\src\wavesurfer.js" />
+    <Content Include="public\javascripts\libraries\wavesurfer\src\webaudio.js" />
+    <Content Include="public\javascripts\libraries\wavesurfer\example\annotation\index.html" />
+    <Content Include="public\javascripts\libraries\wavesurfer\example\annotation\annotations.json" />
+    <Content Include="public\javascripts\libraries\wavesurfer\example\annotation\rashomon.json" />
+    <Content Include="public\javascripts\libraries\wavesurfer\example\annotation\app.js" />
+    <Content Include="public\javascripts\libraries\wavesurfer\example\audio-element\index.html" />
+    <Content Include="public\javascripts\libraries\wavesurfer\example\audio-element\main.js" />
+    <Content Include="public\javascripts\libraries\wavesurfer\example\css\ribbon.css" />
+    <Content Include="public\javascripts\libraries\wavesurfer\example\css\style.css" />
+    <Content Include="public\javascripts\libraries\wavesurfer\example\elan\index.html" />
+    <Content Include="public\javascripts\libraries\wavesurfer\example\elan\app.js" />
+    <Content Include="public\javascripts\libraries\wavesurfer\example\equalizer\index.html" />
+    <Content Include="public\javascripts\libraries\wavesurfer\example\equalizer\main.js" />
+    <Content Include="public\javascripts\libraries\wavesurfer\example\microphone\index.html" />
+    <Content Include="public\javascripts\libraries\wavesurfer\example\microphone\app.js" />
+    <Content Include="public\javascripts\libraries\wavesurfer\example\panner\index.html" />
+    <Content Include="public\javascripts\libraries\wavesurfer\example\panner\main.js" />
+    <Content Include="public\javascripts\libraries\wavesurfer\example\playlist\index.html" />
+    <Content Include="public\javascripts\libraries\wavesurfer\example\playlist\app.js" />
+    <Content Include="public\javascripts\libraries\wavesurfer\example\spectrogram\index.html" />
+    <Content Include="public\javascripts\libraries\wavesurfer\example\spectrogram\app.js" />
+    <Content Include="public\javascripts\libraries\wavesurfer\example\timeline\index.html" />
+    <Content Include="public\javascripts\libraries\wavesurfer\example\timeline\app.js" />
+    <Content Include="public\javascripts\libraries\wavesurfer\example\elan\css\elan.css" />
+    <Content Include="public\javascripts\libraries\wavesurfer\example\elan\transcripts\001z.xml" />
+    <Content Include="public\stylesheets\img\arrow-down.png" />
+    <Content Include="public\stylesheets\img\background.jpg" />
+    <Content Include="public\stylesheets\libraries\jquery-ui.min.css" />
+    <Content Include="public\stylesheets\libraries\jquery-ui.structure.min.css" />
+    <Content Include="public\stylesheets\libraries\jquery-ui.theme.min.css" />
+    <Content Include="public\stylesheets\img\icons\free.png" />
+    <Content Include="public\stylesheets\img\icons\minimalist.png" />
+    <Content Include="public\stylesheets\img\icons\professor.png" />
+    <Content Include="public\stylesheets\img\icons\question.png" />
+    <Content Include="public\stylesheets\img\icons\responsive.png" />
+    <Content Include="public\stylesheets\img\icons\student.png" />
+    <Content Include="public\stylesheets\libraries\images\ui-bg_diagonals-thick_18_b81900_40x40.png" />
+    <Content Include="public\stylesheets\libraries\images\ui-bg_diagonals-thick_20_666666_40x40.png" />
+    <Content Include="public\stylesheets\libraries\images\ui-bg_flat_10_000000_40x100.png" />
+    <Content Include="public\stylesheets\libraries\images\ui-bg_glass_100_f6f6f6_1x400.png" />
+    <Content Include="public\stylesheets\libraries\images\ui-bg_glass_100_fdf5ce_1x400.png" />
+    <Content Include="public\stylesheets\libraries\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="public\stylesheets\libraries\images\ui-bg_gloss-wave_35_f6a828_500x100.png" />
+    <Content Include="public\stylesheets\libraries\images\ui-bg_highlight-soft_100_eeeeee_1x100.png" />
+    <Content Include="public\stylesheets\libraries\images\ui-bg_highlight-soft_75_ffe45c_1x100.png" />
+    <Content Include="public\stylesheets\libraries\images\ui-icons_222222_256x240.png" />
+    <Content Include="public\stylesheets\libraries\images\ui-icons_228ef1_256x240.png" />
+    <Content Include="public\stylesheets\libraries\images\ui-icons_ef8c08_256x240.png" />
+    <Content Include="public\stylesheets\libraries\images\ui-icons_ffd27a_256x240.png" />
+    <Content Include="public\stylesheets\libraries\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="router\routes\accountRecovery.js" />
+    <Content Include="router\routes\activated.js" />
+    <Content Include="router\routes\admin.js" />
+    <Content Include="router\routes\base.js" />
+    <Content Include="router\routes\captions.js" />
+    <Content Include="router\routes\changePassword.js" />
+    <Content Include="router\routes\courses.js" />
+    <Content Include="router\routes\dashboard.js" />
+    <Content Include="router\routes\db.js" />
+    <Content Include="router\routes\download.js" />
+    <Content Include="router\routes\first.js" />
+    <Content Include="router\routes\login.js" />
+    <Content Include="router\routes\logout.js" />
+    <Content Include="router\routes\manage.js" />
+    <Content Include="router\routes\permission.js" />
+    <Content Include="router\routes\progress.js" />
+    <Content Include="router\routes\queue.js" />
+    <Content Include="router\routes\resetPassword.js" />
+    <Content Include="router\routes\search.js" />
+    <Content Include="router\routes\second.js" />
+    <Content Include="router\routes\settings.js" />
+    <Content Include="router\routes\signup.js" />
+    <Content Include="router\routes\viewer.js" />
+    <Content Include="router\routes\viewProgress.js" />
+    <Content Include="router\routes\watchLectureVideos.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="cert" />
+    <Folder Include="cert\cert" />
+    <Folder Include="cert\root" />
+    <Folder Include="cert\root\ca" />
+    <Folder Include="cert\root\ca\certs" />
+    <Folder Include="cert\root\ca\crl" />
+    <Folder Include="cert\root\ca\newcerts" />
+    <Folder Include="cert\root\ca\private" />
+    <Folder Include="cert\stunnel" />
+    <Folder Include="classTranscribe" />
+    <Folder Include="classTranscribe\classTranscribe" />
+    <Folder Include="db" />
+    <Folder Include="deprecated" />
+    <Folder Include="documentation" />
+    <Folder Include="javascripts" />
+    <Folder Include="javascripts\controllers" />
+    <Folder Include="manage" />
+    <Folder Include="models" />
+    <Folder Include="modules" />
+    <Folder Include="p2fa-vislab-master" />
+    <Folder Include="p2fa-vislab-master\alignment-schemas" />
+    <Folder Include="p2fa-vislab-master\examples" />
+    <Folder Include="p2fa-vislab-master\model" />
+    <Folder Include="p2fa-vislab-master\model\11025" />
+    <Folder Include="p2fa-vislab-master\model\16000" />
+    <Folder Include="p2fa-vislab-master\model\8000" />
+    <Folder Include="p2fa-vislab-master\test" />
+    <Folder Include="p2fa-vislab-master\tmp" />
+    <Folder Include="p2fa-vislab-master\tmpaudio" />
+    <Folder Include="public" />
+    <Folder Include="public\Downloads" />
+    <Folder Include="public\javascripts" />
+    <Folder Include="public\javascripts\controllers" />
+    <Folder Include="public\javascripts\data" />
+    <Folder Include="public\javascripts\data\captions" />
+    <Folder Include="public\javascripts\data\videos" />
+    <Folder Include="public\javascripts\libraries" />
+    <Folder Include="public\javascripts\libraries\wavesurfer" />
+    <Folder Include="public\javascripts\libraries\wavesurfer\build" />
+    <Folder Include="public\javascripts\libraries\wavesurfer\example" />
+    <Folder Include="public\javascripts\libraries\wavesurfer\example\annotation" />
+    <Folder Include="public\javascripts\libraries\wavesurfer\example\audio-element" />
+    <Folder Include="public\javascripts\libraries\wavesurfer\example\css" />
+    <Folder Include="public\javascripts\libraries\wavesurfer\example\elan" />
+    <Folder Include="public\javascripts\libraries\wavesurfer\example\elan\css" />
+    <Folder Include="public\javascripts\libraries\wavesurfer\example\elan\transcripts" />
+    <Folder Include="public\javascripts\libraries\wavesurfer\example\equalizer" />
+    <Folder Include="public\javascripts\libraries\wavesurfer\example\media" />
+    <Folder Include="public\javascripts\libraries\wavesurfer\example\microphone" />
+    <Folder Include="public\javascripts\libraries\wavesurfer\example\panner" />
+    <Folder Include="public\javascripts\libraries\wavesurfer\example\playlist" />
+    <Folder Include="public\javascripts\libraries\wavesurfer\example\spectrogram" />
+    <Folder Include="public\javascripts\libraries\wavesurfer\example\timeline" />
+    <Folder Include="public\javascripts\libraries\wavesurfer\plugin" />
+    <Folder Include="public\javascripts\libraries\wavesurfer\src" />
+    <Folder Include="public\stylesheets" />
+    <Folder Include="public\stylesheets\img" />
+    <Folder Include="public\stylesheets\img\icons" />
+    <Folder Include="public\stylesheets\libraries" />
+    <Folder Include="public\stylesheets\libraries\images" />
+    <Folder Include="router" />
+    <Folder Include="router\routes" />
+    <Folder Include="stylesheets" />
+    <Folder Include="templates" />
+    <Folder Include="utility_scripts" />
+    <Folder Include="utils" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <!--Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them.-->
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="False" />
+  <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsTools.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:48022/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>True</UseCustomServer>
+          <CustomServerUrl>http://localhost:1337</CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}" User="">
+        <WebProjectProperties>
+          <StartPageUrl>
+          </StartPageUrl>
+          <StartAction>CurrentPage</StartAction>
+          <AspNetDebugging>True</AspNetDebugging>
+          <SilverlightDebugging>False</SilverlightDebugging>
+          <NativeDebugging>False</NativeDebugging>
+          <SQLDebugging>False</SQLDebugging>
+          <ExternalProgram>
+          </ExternalProgram>
+          <StartExternalURL>
+          </StartExternalURL>
+          <StartCmdLineArguments>
+          </StartCmdLineArguments>
+          <StartWorkingDirectory>
+          </StartWorkingDirectory>
+          <EnableENC>False</EnableENC>
+          <AlwaysStartWebServerOnDebug>False</AlwaysStartWebServerOnDebug>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

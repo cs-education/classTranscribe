@@ -16,3 +16,5 @@ public/server.log
 /videos
 public/videos
 /.idea
+/bin
+/obj
