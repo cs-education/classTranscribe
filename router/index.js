@@ -37,6 +37,7 @@ module.exports = function(app) {
     app.use(require('./routes/manage'));
     app.use(require('./routes/watchLectureVideos'));
     app.use(require('./routes/courses'));
+    app.use(require('./routes/scraper'));
 }
 
 const authenticatedPartial = fs.readFileSync(mustachePath + 'authenticated.mustache').toString();
