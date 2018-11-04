@@ -9,8 +9,9 @@ const fs = require('fs');
 const db = require('../../db/db');
 
 const searchMustache = fs.readFileSync(mustachePath + 'search.mustache').toString();
+const invalidClassHTML = "<p>Could not find the requested page.<\p> <a href=\"/\">Click here to return to the home page.</a>";
 
-router.get('/:courseId/:offeringId', function (request, response) {
+router.get('/search/:courseId/:offeringId', function (request, response) {
     var offeringId = request.params.offeringId;
     var courseId = request.params.courseId;
 

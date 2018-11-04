@@ -5,13 +5,13 @@
 
 
 
-const client = require('./../../modules/redis');
+// const client = require('./../../modules/redis');
 const macl = require('acl');
-// const aclSeq = require('acl-sequelize');
-const db = require('../../db/db');
-// const acl = new macl(new aclSeq(db, { prefix : 'acl_'}));
+const aclSeq = require('acl-sequelize');
+const db = require('../../models/index');
+const acl = new macl(new aclSeq(db.sequelize, { prefix : 'acl_'}));
 
-acl = new macl(new macl.redisBackend(client, "ClassTranscribe::acl::"));
+// acl = new macl(new macl.redisBackend(client, "ClassTranscribe::acl::"));
 // var client_api = require('../../db/db');
 
 function addUser(userID) {
@@ -23,7 +23,7 @@ function addCoursePermission(userID, classID, permission) {
 }
 
 function checkCoursePermission(userID, classID, permission, callback) {
-  acl.isAllowed(userID, classID, permission, callback());
+  acl.isAllowed(userID, classID, permission, callback);
 }
 
 function removeCoursePermission(userID, classID, permission) {

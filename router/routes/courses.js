@@ -79,6 +79,7 @@ var testInfo = {
 client_api.createUser(testInfo).then(
   result => {
     var userInfo = result[0].dataValues;
+    permission.addUser(userInfo.mailId);
     client_api.verifyUser('sample-verification-buffer', 'testing@testdomabbccc.edu').then(() => {
       // var promises = [];
       // for (let i = 0; i < courseList.length; i++) {
@@ -89,7 +90,9 @@ client_api.createUser(testInfo).then(
       //   console.log(values);
       //   console.log('----------------------------------------');
       // }).catch(err => console.log(err));
-      client_api.addCourse(userInfo, courseList[0])
+      client_api.addCourse(userInfo, courseList[0]).then(result => {
+        permission.addCoursePermission(userInfo.mailId, result[0].dataValues.offeringId, 'Modify');
+      })
       // .then(()=>
         // client_api.addCourse(userInfo, courseList[1]).then(()=>
           // client_api.addCourse(userInfo, courseList[2])
@@ -163,7 +166,6 @@ client_api.createUser(testInfo).then(
 //acl.allow('UserRole', 'ResourceName', 'Action');
 //acl.addUserRoles('UserName', 'UserRole');
 // Example (per user)
-permission.addUser('testing@testdomabbccc.edu');
 // acl.addUserRoles('testing@testdomabbccc.edu', 'testing@testdomabbccc.edu');
 // acl.allow('testing@testdomabbccc.edu', 'ClassTranscribe::Course::UIUC-Fall 2016-CS 446-D3', 'Modify');
 // acl.allow('testing@testdomabbccc.edu', "ClassTranscribe::Course::UIUC-Spring 2016-Chem 233-AL2", 'Drop');
@@ -599,6 +601,7 @@ function  generateListings(data, user, cb) {
     async.reduce(data, '', function (html, e, fcb) {
         html += '<tr id="'+ e.id +'">';
         html += '<td hidden="yes">' + e.termName + '</td>';
+        html += '<td hidden="yes">' + e.offeringId + '</td>';
         html += '<td>' + e.university + '</td>';
         html += '<td>' + e.acronym + '</td>';
         html += '<td>' + e.courseNumber + '</td>';
@@ -609,16 +612,16 @@ function  generateListings(data, user, cb) {
         html += '<td class="col-md-2">';
         var debug = false;
         if (debug || (user != '' && user != undefined)) {
-            var classid = e.id;
-            permission.checkCoursePermission(user, classid, 'Modify', function (err, res) {
+            var classid = e.offeringId;
+            permission.checkCoursePermission(user, classid, 'Modify', function(error, result) {
             // acl.isAllowed(user, classid, 'Modify', function (err, res) {
-                if (res) {
+                if (result) {
                     // Modify and remove functionalityies will be moved from this page
                     // html +=
                     //     '<a class="actionbtn modbtn" data-toggle="modal" data-target="#modpanel">' +
                     //     '          <span class="glyphicon glyphicon-pencil"></span> Modify\n' +
                     //     '        </a>';
-                    permission.checkCoursePermission(user, classid, 'Remove', function (err, res) {
+                    // permission.checkCoursePermission(user, classid, 'Remove', function (err, res) {
                     // acl.isAllowed(user, classid, 'Remove', function (err, res) {
                         // if (res) {
                         //     html +=
@@ -633,7 +636,7 @@ function  generateListings(data, user, cb) {
                             '          <span class="glyphicon glyphicon-plus"></span> Manage\n' +
                             '        </a>';
                         fcb(null,html);
-                    });
+                    // });
                 }
                 else{
                   permission.checkCoursePermission(user, classid, 'Drop', function (err, res) {

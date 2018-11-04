@@ -20,15 +20,14 @@ const storage = multer.diskStorage({
 });
 
 var manageCoursePage = fs.readFileSync(mustachePath + 'manageCourse.mustache').toString();
+
 router.get('/manage/:offeringId', function (request, response) {
+
   if (request.isAuthenticated()) {
-    response.writeHead(200, {
-      'Content-Type': 'text/html'
-    });
-    var offeringId = request.params;
+    var offeringId = request.params.offeringId;
     var className = '';
     var userInfo = request.user;
-    var courses = reqeust.session['currentContent'];
+    var courses = request.session['currentContent'];
 
     /* check if the offeringId is in the stored in the cookie */
     for (let i = 0; i < courses.length; i++) {
@@ -42,6 +41,10 @@ router.get('/manage/:offeringId', function (request, response) {
     /* relating offeringId is not found */
     if (className === '') {
       db.validateUserAccess( offeringId, userInfo.id).then(result => {
+        response.writeHead(200, {
+          'Content-Type': 'text/html'
+        });
+
         if (!result) {
           var error = 'Course Not Found.'
           console.log(error);
@@ -51,10 +54,14 @@ router.get('/manage/:offeringId', function (request, response) {
         }
       }).catch(err => console.log(err)) /* db.validateUserAccess() */
     } else {
+      response.writeHead(200, {
+        'Content-Type': 'text/html'
+      });
       renderWithPartial(manageCoursePage, request, response, { className : className} );
     }
+  } else  {
+    response.redirect('../');
   }
-  response.redirect('../');
 });
 
 var upload = multer({ dest: 'manage/' })
