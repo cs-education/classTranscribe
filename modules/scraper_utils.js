@@ -5,10 +5,10 @@ var Cookie = require('request-cookies').Cookie;
 var rp = require('request-promise');
 var path = require('path');
 var fs = require('fs');
-var youtubedl = require('youtube-dl');
+//var youtubedl = require('youtube-dl');
 var youtube_google_api_key = 'AIzaSyDKnpdznYOFxm_IRnrclGh4oSdQloZycOo';
-//var azureSubscriptionKey = '926e97a14b9946b98175f9b740af6579';
-//var azureRegion = 'westus';
+var azureSubscriptionKey = '926e97a14b9946b98175f9b740af6579';
+var azureRegion = 'westus';
 const _dirname = '../../Data/';
 
 const promiseSerial = funcs =>
@@ -20,7 +20,7 @@ function youtube_scraper_channel(channel_id) {
     var url_channel = 'https://www.googleapis.com/youtube/v3/playlists?part=snippet&' +
         'channelId=' + channel_id + '&key=' + youtube_google_api_key;
     return rp({ url: url_channel })
-        .then(function (body) {            
+        .then(function (body) {
             var body_channel_json = JSON.parse(body);
             var arr_playlist = body_channel_json['items'];
             var output = [];
@@ -46,7 +46,7 @@ function download_youtube_playlist(playlist_id) {
             var body_playlist_json = JSON.parse(body);
             var arr_videoInfo = body_playlist_json['items'];
             var funcs = arr_videoInfo.map(videoInfo => () => addVideoInfo(videoInfo));
-            
+
             return promiseSerial(funcs);
         });
 }
@@ -122,285 +122,193 @@ function download_youtube_video(task, media) {
     }));
 }
 
-//function echo_scraper(email, password) {
-//    var url_directLogin = 'https://echo360.org/directLogin';
-//    var url_login = 'https://echo360.org/login';
-//    return rp({ url: url_directLogin, resolveWithFullResponse: true })
-//        .then(function (response_directLogin) {
-//            var cookie_directLogin = response_directLogin.headers['set-cookie'][0];
-//            var play_session_directLogin = new Cookie(cookie_directLogin);
-//            var csrf_token = play_session_directLogin.value.substring(play_session_directLogin.value.indexOf('csrf') + 10)
-            
-//            var options_login = {
-//                method: 'POST',
-//                url: url_login,
-//                qs: { csrfToken: csrf_token },
-//                headers:
-//                {
-//                    'Content-Type': 'application/x-www-form-urlencoded',
-//                    Cookie: play_session_directLogin.key + "=" + play_session_directLogin.value
-//                },
-//                form:
-//                {
-//                    email: email,
-//                    password: password,
-//                    action: 'Save'
-//                },
-//                resolveWithFullResponse: true
-//            };
-//            return new Promise((resolve, reject) => {
-//                resolve(options_login);
-//            });
-//        }).then(option_login => rp(option_login))
-//        .then(function (response_login) {
-//            console.log(response_login)
-//            var cookie_login = response_login.headers['set-cookie'][0];
-//            var play_session_login = new Cookie(cookie_login);
-//            var options_home = {
-//                method: 'GET',
-//                url: url_home,
-//                headers:
-//                {
-//                    'Content-Type': 'application/x-www-form-urlencoded',
-//                    Cookie: play_session_login.key + "=" + play_session_login.value
-//                }
-//            };
-//            console.log(options_home);
-//        });
-//}
+function echo_scraper(publicAccessUrl) {
+    request({ url: publicAccessUrl, resolveWithFullResponse: true, followAllRedirects: true }, function (error_directLogin, response_directLogin, body_directLogin) {
+        console.log(response_directLogin.headers)
+    });
+    return rp({ url: publicAccessUrl, resolveWithFullResponse: true, followAllRedirects: true })
+        .then(function (response_directLogin) {
+            console.log(response_directLogin.headers['set-cookie']);
+            var cookie_directLogin = response_directLogin.headers['set-cookie'][0];
+            var play_session_directLogin = new Cookie(cookie_directLogin);
+            var csrf_token = play_session_directLogin.value.substring(play_session_directLogin.value.indexOf('csrf') + 10)
 
-//function echo_scraper(email, password) {
-//    var url_directLogin = 'https://echo360.org/directLogin';
-//    request({ url: url_directLogin }, (error_directLogin, response_directLogin, body_directLogin) => {
-//        if (error_directLogin) { return console.log(error_directLogin); }
-//        var cookie_directLogin = response_directLogin.headers['set-cookie'][0];
-//        var play_session_directLogin = new Cookie(cookie_directLogin);
-//        var csrf_token = play_session_directLogin.value.substring(play_session_directLogin.value.indexOf('csrf') + 10)
+            var options_login = {
+                method: 'POST',
+                url: url_login,
+                qs: { csrfToken: csrf_token },
+                headers:
+                {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    Cookie: play_session_directLogin.key + "=" + play_session_directLogin.value
+                },
+                form:
+                {
+                    email: email,
+                    password: password,
+                    action: 'Save'
+                },
+                resolveWithFullResponse: true
+            };
 
-//        var url_login = 'https://echo360.org/login';
-//        var options_login = {
-//            method: 'POST',
-//            url: url_login,
-//            qs: { csrfToken: csrf_token },
-//            headers:
-//            {
-//                'Content-Type': 'application/x-www-form-urlencoded',
-//                Cookie: play_session_directLogin.key + "=" + play_session_directLogin.value
-//            },
-//            form:
-//            {
-//                email: email,
-//                password: password,
-//                action: 'Save'
-//            }
-//        };
+            return new Promise((resolve, reject) => {
+                resolve(options_login);
+            });
+        });
+}
 
-//        var url_home = 'https://echo360.org/home';
-//        request(options_login, function (error_login, response_login, body_login) {
-//            if (error_login) throw new Error(error_login);
+function download_course_info_2(section_url) {
+    var jsonCookieString = require('../../cookieJson.json');
+    var Cookies = ['PLAY_SESSION', 'CloudFront-Key-Pair-Id', 'CloudFront-Policy', 'CloudFront-Signature'];
+    var play_session_login = '';
+    for (var j in jsonCookieString) {
+        if (jsonCookieString[j].name === Cookies[0]) {
+            play_session_login = jsonCookieString[j].name + "=" + jsonCookieString[j].value;
+        }
+    }
+    var download_header = '';
+    var options_section = {
+        method: 'GET',
+        url: section_url + '/home',
+        resolveWithFullResponse: true,
+        headers:
+        {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            Cookie: play_session_login
+        }
+    };
+    var options_syllabus = {
+        method: 'GET',
+        url: section_url + '/syllabus',
+        resolveWithFullResponse: true,
+        headers:
+        {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            Cookie: play_session_login
+        }
+    };
+    rp(options_section).then(function (response_section) {
+        var cookie_home = response_section.headers['set-cookie'];
+        var cloudFront_Key_Pair_Id = new Cookie(cookie_home[0]);
+        var cloudFront_Policy = new Cookie(cookie_home[1]);
+        var cloudFront_Signature = new Cookie(cookie_home[2]);
+        for (var j in jsonCookieString) {
+            if (jsonCookieString[j].name === Cookies[1]) {
+                cloudFront_Key_Pair_Id = jsonCookieString[j].name + "=" + jsonCookieString[j].value;
+            } else if (jsonCookieString[j].name === Cookies[2]) {
+                cloudFront_Policy = jsonCookieString[j].name + "=" + jsonCookieString[j].value;
+            } else if (jsonCookieString[j].name === Cookies[3]) {
+                cloudFront_Signature = jsonCookieString[j].name + "=" + jsonCookieString[j].value;
+            }
+        }
+        download_header = cloudFront_Key_Pair_Id;
+        download_header += "; " + cloudFront_Policy;
+        download_header += "; " + cloudFront_Signature;
+        console.log(download_header);
+    }).then(function () { return rp(options_syllabus) })
+        .then(function (response_syllabus) {
+            var syllabus = JSON.parse(response_syllabus.body);
+            var audio_data_arr = syllabus['data'];
+            for (var j = 0; j < audio_data_arr.length; j++) {
+                var audio_data = audio_data_arr[j];
+                try {
+                    var media = audio_data['lesson']['video']['media'];
+                    var sectionId = audio_data['lesson']['video']['published']['sectionId'];
+                    var mediaId = media['id'];
+                    var userId = media['userId'];
+                    var institutionId = media['institutionId'];
+                    var createdAt = media['createdAt'];
+                    var audioUrl = media['media']['current']['audioFiles'][0]['s3Url'];
+                    var videoUrl = media['media']['current']['primaryFiles'][0]['s3Url'];
+                    var mediaJson = {
+                        sectionId: sectionId,
+                        mediaId: mediaId,
+                        userId: userId,
+                        institutionId: institutionId,
+                        createdAt: createdAt,
+                        audioUrl: audioUrl,
+                        videoUrl: videoUrl
+                    };
+                    return Promise.resolve(mediaJson);
+                } catch (err) {
+                    console.log(err);
+                }
+            }
+        })
+        .then(mediaJson => db.addMedia(mediaJson.videoUrl, 0, mediaJson))
+        .then(media => db.addMSTranscriptionTask(media.id))
+        .then(task => { console.log(task.id) });
+}
 
-//            var cookie_login = response_login.headers['set-cookie'][0];
-//            var play_session_login = new Cookie(cookie_login);
-//            var options_home = {
-//                method: 'GET',
-//                url: url_home,
-//                headers:
-//                {
-//                    'Content-Type': 'application/x-www-form-urlencoded',
-//                    Cookie: play_session_login.key + "=" + play_session_login.value
-//                }
-//            };
+function download_course_info(course, play_session_login, download_header) {
+    var url_syllabus = 'https://echo360.org/section';
+    var options_syllabus = {
+        method: 'GET',
+        url: url_syllabus + '/' + course[1] + '/syllabus',
+        headers:
+        {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            Cookie: play_session_login.key + "=" + play_session_login.value
+        }
+    };
+    request(options_syllabus, function (error_syllabus, response_syllabus, body_syllabus) {
+        if (error_syllabus) throw new Error(error_syllabus);
+        var syllabus = JSON.parse(response_syllabus.body);
+        var audio_data_arr = syllabus['data'];
+        for (var j = 0; j < audio_data_arr.length; j++) {
+            var audio_data = audio_data_arr[j];
+            try {
+                var media = audio_data['lesson']['video']['media'];
+                var sectionId = audio_data['lesson']['video']['published']['sectionId'];
+                var mediaId = media['id'];
+                var userId = media['userId'];
+                var institutionId = media['institutionId'];
+                var createdAt = media['createdAt'];
+                var audioUrl = media['media']['current']['audioFiles'][0]['s3Url'];
+                var videoUrl = media['media']['current']['primaryFiles'][0]['s3Url'];
 
-//            request(options_home, function (error_home, response_home, body_home) {
-//                if (error_home) throw new Error(error_home);
-//                var cookie_home = response_home.headers['set-cookie'];
-//                var cloudFront_Key_Pair_Id = new Cookie(cookie_home[0]);
-//                var cloudFront_Policy = new Cookie(cookie_home[1]);
-//                var cloudFront_Signature = new Cookie(cookie_home[2]);
-//                console.log(cloudFront_Key_Pair_Id.key + "=" + cloudFront_Key_Pair_Id.value);
-//                console.log(cloudFront_Policy.key + "=" + cloudFront_Policy.value);
-//                console.log(cloudFront_Signature.key + "=" + cloudFront_Signature.value);
-//                var download_header = cloudFront_Key_Pair_Id.key + "=" + cloudFront_Key_Pair_Id.value;
-//                download_header += "; " + cloudFront_Policy.key + "=" + cloudFront_Policy.value;
-//                download_header += "; " + cloudFront_Signature.key + "=" + cloudFront_Signature.value;
-//                console.log(download_header);
-//                var body_home_str = JSON.stringify(body_home);
-//                var sections_str = body_home_str.match(/\/section\/([\w-]*)\/home\\" target([^>]*)>/g);
-//                // console.log(sections_str);
-//                var courses = [];
-//                for (var i = 0; i < 2; i++) {
-//                    var course_id = sections_str[i].substring(sections_str[i].indexOf('in ') + 3);
-//                    course_id = course_id.substring(0, course_id.search(/\s[\w]+\s-/g));
-//                    var section_id = sections_str[i].substring(9, sections_str[i].indexOf('/home'));
-//                    courses.push([course_id, section_id]);
-//                }
+                db.addMedia(videoUrl, 0, {
+                    sectionId: sectionId,
+                    mediaId: mediaId,
+                    userId: userId,
+                    institutionId: institutionId,
+                    createdAt: createdAt,
+                    audioUrl: audioUrl
+                }).then(function (media) {
+                    db.addMSTranscriptionTask(media.id)
+                        .then(function (task) {
+                            console.log("TaskId" + task.id);
+                        });
+                });
 
+            } catch (err) {
+                console.log(err);
+            }
+            download_file(audio_url, course[0] + '_' + String(j) + '.mp3', download_header);
+        }
+    });
+}
 
-//                courses.forEach(function (course) {
-//                    // course[0]: courseId
-//                    // course[1]: sectionId
-//                    console.log(course[0]);
-//                    //db.addCourseAndSection(course[0], course[1], download_header)
-//                    // .then(function () {
-//                    //     download_course_info(course, play_session_login, download_header);
-//                    // });
-//                });
-//            });
-//        });
-//    });
-//}
-
-//function echo_scrape_selected_section(email, password, selected_section) {
-//    var url_directLogin = 'https://echo360.org/directLogin';
-//    request({ url: url_directLogin }, (error_directLogin, response_directLogin, body_directLogin) => {
-//        if (error_directLogin) { return console.log(error_directLogin); }
-//        var cookie_directLogin = response_directLogin.headers['set-cookie'][0];
-//        var play_session_directLogin = new Cookie(cookie_directLogin);
-//        var csrf_token = play_session_directLogin.value.substring(play_session_directLogin.value.indexOf('csrf') + 10)
-
-//        var url_login = 'https://echo360.org/login';
-//        var options_login = {
-//            method: 'POST',
-//            url: url_login,
-//            qs: { csrfToken: csrf_token },
-//            headers:
-//            {
-//                'Content-Type': 'application/x-www-form-urlencoded',
-//                Cookie: play_session_directLogin.key + "=" + play_session_directLogin.value
-//            },
-//            form:
-//            {
-//                email: email,
-//                password: password,
-//                action: 'Save'
-//            }
-//        };
-
-//        var url_home = 'https://echo360.org/home';
-//        request(options_login, function (error_login, response_login, body_login) {
-//            if (error_login) throw new Error(error_login);
-
-//            var cookie_login = response_login.headers['set-cookie'][0];
-//            var play_session_login = new Cookie(cookie_login);
-//            var options_home = {
-//                method: 'GET',
-//                url: url_home,
-//                headers:
-//                {
-//                    'Content-Type': 'application/x-www-form-urlencoded',
-//                    Cookie: play_session_login.key + "=" + play_session_login.value
-//                }
-//            };
-
-//            request(options_home, function (error_home, response_home, body_home) {
-//                if (error_home) throw new Error(error_home);
-//                var cookie_home = response_home.headers['set-cookie'];
-//                var cloudFront_Key_Pair_Id = new Cookie(cookie_home[0]);
-//                var cloudFront_Policy = new Cookie(cookie_home[1]);
-//                var cloudFront_Signature = new Cookie(cookie_home[2]);
-//                console.log(cloudFront_Key_Pair_Id.key + "=" + cloudFront_Key_Pair_Id.value);
-//                console.log(cloudFront_Policy.key + "=" + cloudFront_Policy.value);
-//                console.log(cloudFront_Signature.key + "=" + cloudFront_Signature.value);
-//                var download_header = cloudFront_Key_Pair_Id.key + "=" + cloudFront_Key_Pair_Id.value;
-//                download_header += "; " + cloudFront_Policy.key + "=" + cloudFront_Policy.value;
-//                download_header += "; " + cloudFront_Signature.key + "=" + cloudFront_Signature.value;
-//                console.log(download_header);
-//                var body_home_str = JSON.stringify(body_home);
-//                var sections_str = body_home_str.match(/\/section\/([\w-]*)\/home\\" target([^>]*)>/g);
-//                // console.log(sections_str);
-//                var courses = [];
-//                for (var i = 0; i < 2; i++) {
-//                    var course_id = sections_str[i].substring(sections_str[i].indexOf('in ') + 3);
-//                    course_id = course_id.substring(0, course_id.search(/\s[\w]+\s-/g));
-//                    var section_id = sections_str[i].substring(9, sections_str[i].indexOf('/home'));
-//                    courses.push([course_id, section_id]);
-//                }
-
-//                courses.forEach(function (course) {
-//                    // course[0]: courseId
-//                    // course[1]: sectionId
-//                    // select all when selected_section is not specified
-//                    if (selected_section.includes(course[1]) || !selected_section) {
-//                        db.addCourseAndSection(course[0], course[1], download_header)
-//                            .then(function () {
-//                                download_course_info(course, play_session_login, download_header);
-//                            });
-//                    }
-//                });
-//            });
-//        });
-//    });
-//}
-
-//function download_course_info(course, play_session_login, download_header) {
-//    var url_syllabus = 'https://echo360.org/section';
-//    var options_syllabus = {
-//        method: 'GET',
-//        url: url_syllabus + '/' + course[1] + '/syllabus',
-//        headers:
-//        {
-//            'Content-Type': 'application/x-www-form-urlencoded',
-//            Cookie: play_session_login.key + "=" + play_session_login.value
-//        }
-//    };
-//    request(options_syllabus, function (error_syllabus, response_syllabus, body_syllabus) {
-//        if (error_syllabus) throw new Error(error_syllabus);
-//        var syllabus = JSON.parse(response_syllabus.body);
-//        var audio_data_arr = syllabus['data'];
-//        for (var j = 0; j < audio_data_arr.length; j++) {
-//            var audio_data = audio_data_arr[j];
-//            try {
-//                var media = audio_data['lesson']['video']['media'];
-//                var sectionId = audio_data['lesson']['video']['published']['sectionId'];
-//                var mediaId = media['id'];
-//                var userId = media['userId'];
-//                var institutionId = media['institutionId'];
-//                var createdAt = media['createdAt'];
-//                var audioUrl = media['media']['current']['audioFiles'][0]['s3Url'];
-//                var videoUrl = media['media']['current']['primaryFiles'][0]['s3Url'];
-
-//                db.addMedia(videoUrl, 0, {
-//                    sectionId: sectionId,
-//                    mediaId: mediaId,
-//                    userId: userId,
-//                    institutionId: institutionId,
-//                    createdAt: createdAt,
-//                    audioUrl: audioUrl
-//                }).then(function (media) {
-//                    db.addMSTranscriptionTask(media.id)
-//                        .then(function (task) {
-//                            console.log("TaskId" + task.id);
-//                        });
-//                });
-
-//            } catch (err) {
-//                console.log(err);
-//            }
-//            // download_file(audio_url, course[0] + '_' + String(j) + '.mp3', download_header);
-//        }
-//    });
-//}
-
-//function download_echo_lecture(task, media) {
-//    console.log("download_echo_lecture");
-//    var sectionId = media.siteSpecificJSON.sectionId;
-//    return db.getEchoSection(sectionId)
-//        .then(section => {
-//            var wget = require('node-wget-promise');
-//            var url = media.videoURL;
-//            var dest = _dirname + media.id + "_" + url.substring(url.lastIndexOf('/') + 1);
-//            return wget(url, {
-//                output: dest,
-//                headers:
-//                {
-//                    Cookie: section.json.downloadHeader
-//                },
-//            })
-//                .then(result => task.update({
-//                    videoLocalLocation: path.resolve(dest)
-//                }));
-//        });
-//}
+function download_echo_lecture(task, media) {
+    console.log("download_echo_lecture");
+    var sectionId = media.siteSpecificJSON.sectionId;
+    return db.getEchoSection(sectionId)
+        .then(section => {
+            var wget = require('node-wget-promise');
+            var url = media.videoURL;
+            var dest = _dirname + media.id + "_" + url.substring(url.lastIndexOf('/') + 1);
+            return wget(url, {
+                output: dest,
+                headers:
+                {
+                    Cookie: section.json.downloadHeader
+                },
+            })
+                .then(result => task.update({
+                    videoLocalLocation: path.resolve(dest)
+                }));
+        });
+}
 
 function convertVideoToWav(taskId, callback) {
     console.log("convertVideoToWav");
@@ -450,6 +358,6 @@ function wavToSrt(taskId, callback) {
 
 module.exports = {
     youtube_scraper_channel: youtube_scraper_channel,
-    download_youtube_playlist: download_youtube_playlist
-    //echo_scrape_selected_section: echo_scrape_selected_section,
+    download_youtube_playlist: download_youtube_playlist,
+    download_course_info_2: download_course_info_2
 }

@@ -319,6 +319,10 @@
     <Folder Include="utility_scripts" />
     <Folder Include="utils" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="modules\scraper_utils.js" />
+    <Compile Include="router\routes\scraper.js" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <!--Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them.-->
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="False" />

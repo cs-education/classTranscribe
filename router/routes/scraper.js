@@ -21,4 +21,12 @@ router.get('/scraper', function (request, response) {
     renderWithPartial(scraperMustache, request, response);
 });
 
+router.get('/scraperEchoSection', function (request, response) {
+    response.writeHead(200, {
+        'Content-Type': 'text.html'
+    });
+    scraper.download_course_info_2('https://echo360.org/section/286c2340-3852-469d-ba1c-f2cb3f1e2636')
+    renderWithPartial(scraperMustache, request, response);
+});
+
 module.exports = router;
