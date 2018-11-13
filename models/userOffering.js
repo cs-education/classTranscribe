@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
 
     UserOffering.associate = function(models) {
       models.UserOffering.belongsTo(models.User, { foreignKey: 'userId' });
-      models.UserOffering.belongsTo(models.Offering, { foreignKey: 'offeringId' });
+      models.UserOffering.belongsTo(models.CourseOffering, { foreignKey: 'courseOfferingId' });
       models.UserOffering.belongsTo(models.Role, { foreignKey: 'roleId' });
     };
 

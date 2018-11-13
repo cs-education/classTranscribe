@@ -11,7 +11,8 @@ const path = require('path');
 
 router.post('/download', function (request, response) {
   var transcriptions = JSON.parse(request.body.transcriptions);
-  var fileNumber = Math.round(Math.random() * 10000)
+  //TODO:
+  var fileNumber = Math.round(Math.random() * 10000000)
   fs.writeFileSync("public/Downloads/" + fileNumber + ".webvtt", webvtt(transcriptions));
   response.writeHead(200, {
     'Content-Type': 'application/json'

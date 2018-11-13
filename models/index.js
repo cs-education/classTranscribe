@@ -26,6 +26,22 @@ sequelize = new Sequelize('TestDb', 'TestAdmin', 'Test123!', {
     }
 });
 
+// /* sequelize = new Sequelize('database', 'username', 'password')*/
+// sequelize = new Sequelize('TestDB', 'SA', 'Test123!', {
+//     host: '127.0.0.1',
+//     dialect: 'mssql',
+//     port: 1433,
+//
+//     pool: {
+//         max: 5,
+//         min: 0,
+//         idle: 10000
+//     },
+//     dialectOptions: {
+//         encrypt: true
+//     }
+// });
+
 fs
     .readdirSync(__dirname)
     .filter(file => {

@@ -29,6 +29,12 @@ router.get('/manage/:offeringId', function (request, response) {
     var userInfo = request.user;
     var courses = request.session['currentContent'];
 
+    /* no cached courses */
+    if(!courses) {
+      response.redirect('../../courses');
+      return;
+    }
+
     /* check if the offeringId is in the stored in the cookie */
     for (let i = 0; i < courses.length; i++) {
       /* offeringId is found */
@@ -60,7 +66,7 @@ router.get('/manage/:offeringId', function (request, response) {
       renderWithPartial(manageCoursePage, request, response, { className : className} );
     }
   } else  {
-    response.redirect('../');
+    response.redirect('../../');
   }
 });
 

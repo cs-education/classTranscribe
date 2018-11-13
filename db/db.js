@@ -231,7 +231,7 @@ function addCourseHelper(id) {
     return UserOffering.findOrCreate({
       where : {
         userId : id.userId,
-        offeringId : id.offeringId,
+        courseOfferingId : result[0].dataValues.id,
         roleId : id.roleId,
       },
     })
@@ -246,17 +246,18 @@ function getCourseId(courseInfo) {
       acronym : dept.acronym,
     }
   }).then(result => {
+    var deptInfo = result.dataValues;
     return Course.findOrCreate({
       where : {
         courseName : courseInfo.courseName,
         courseNumber : courseInfo.courseNumber,
-        deptId : result.dataValues.id,
+        deptId : deptInfo.id,
       },
       defaults : {
         courseDescription : courseInfo.courseDescription,
       }
     });
-  }).catch(err => console.log(err)); /* Dept.findOne() */
+  }).catch(err => perror(err)); /* Dept.findOne() */
 }
 
 /* getRole() findOrCreate a role */
@@ -329,9 +330,9 @@ function addCourse(user, course) {
           id.courseId = values[0][0].dataValues.id;
           id.offeringId = values[1][0].dataValues.id;
           return addCourseHelper(id);
-        }).catch(err => { console.log(err) }); /* end of getOfferingId() */
-      }).catch(err => { console.log(err) }); /* end of Promise.all */
-    }).catch(err => { console.log(err) }); /* end of Promise.all */
+        }).catch(err => { perror(err) }); /* end of getOfferingId() */
+      }).catch(err => { perror(err) }); /* end of Promise.all */
+    }).catch(err => { perror(err) }); /* end of Promise.all */
   }
   throw Error('User Info or Course List is empty');
 }
@@ -359,32 +360,39 @@ function getCoursesByUniversityId( universityId ) {
         offeringId : { [Op.in] : offeringIds }
       }
     }).then(values => {
-      var courseList = values.map( value => value.dataValues.courseId );
+      var courseMap = {};
+      var courseList = values.map( value => {
+        value = value.dataValues;
+        courseMap[value.courseId] = value.id;
+        return value.courseId;
+      });
+
       return Course.findAll({
         where : {
           id : { [Op.in] : courseList }
         }
       }).then(values => {
-        var v =values.map((value, index) => {
+        var v = values.map((value, index) => {
           value = value.dataValues;
           value.offeringId = offeringIds[index];
           value.termId = offeringValues[index].termId;
+          value.courseOfferingId = courseMap[value.id];
           return value;
         });
         return v;
-      }).catch(err => console.log(err)); /* Course.findAll() */
-    }).catch(err => console.log(err)); /* CourseOffering.findAll() */
-  }).catch(err => console.log(err)) /* Offering.findAll() */
+      }).catch(err => perror(err)); /* Course.findAll() */
+    }).catch(err => perror(err)); /* CourseOffering.findAll() */
+  }).catch(err => perror(err)) /* Offering.findAll() */
 }
 
-function addStudent(studentId, offeringId) {
+function addStudent(studentId, courseOfferingId) {
   return Role.findOrCreate({
     where : { roleName : 'Student', }
   }).then(result => {
     var roleId = result[0].dataValues.id;
     return UserOffering.findOrCreate({
       where : {
-        offeringId : offeringId,
+        courseOfferingId : courseOfferingId,
         userId : studentId,
       },
       defaults : { roleId : roleId, }
@@ -393,8 +401,8 @@ function addStudent(studentId, offeringId) {
         console.log('YOU HAVE REGISTER ALREADY');
       }
       return result[0].dataValues;
-    }).catch(err => console.log(err)); /* UserOffering.findOrCreate() */
-  }).catch(err => console.log(err));/* Role.findOrCreate() */
+    }).catch(err => perror(err)); /* UserOffering.findOrCreate() */
+  }).catch(err => perror(err));/* Role.findOrCreate() */
 }
 
 function removeStudent (studentId, offeringId) {
@@ -407,12 +415,12 @@ function removeStudent (studentId, offeringId) {
       where : {
         roleId : roleId,
         userId : studentId,
-        offeringId : offeringId,
+        courseOfferingId : courseOfferingId,
       }
     }).then(result => {
       console.log('Student has been removed.');
-    }).catch(err => console.log(err)); /* UserOffering.destroy() */
-  }).catch(err => console.log(err)); /* Role.findOne() */
+    }).catch(err => perror(err)); /* UserOffering.destroy() */
+  }).catch(err => perror(err)); /* Role.findOne() */
 }
 
 function getUniversityName (universityId) {
@@ -426,7 +434,7 @@ function getTermsById (ids) {
     }
   }).then(values => {
     return values.map(value => value.dataValues);
-  }).catch(err => console.log(err))
+  }).catch(err => perror(err))
 }
 
 function getDeptsById (ids) {
@@ -436,7 +444,7 @@ function getDeptsById (ids) {
     }
   }).then(values => {
     return values.map(value => value.dataValues);
-  }).catch(err => console.log(err))
+  }).catch(err => perror(err))
 }
 
 function getSectionsById (ids) {
@@ -446,10 +454,10 @@ function getSectionsById (ids) {
     },
   }).then(values => {
     return values.map(value => value.dataValues);
-  }).catch(err => console.log(err))
+  }).catch(err => perror(err))
 }
 
-function getInstructorsByOfferingId (ids) {
+function getInstructorsByCourseOfferingId (ids) {
   return Role.findOne({
     where : {
       roleName : 'Instructor',
@@ -458,7 +466,7 @@ function getInstructorsByOfferingId (ids) {
     return UserOffering.findAll({
       where : {
         roleId : result.dataValues.id,
-        offeringId : { [Op.in]: ids }
+        courseOfferingId : { [Op.in]: ids }
       }
     }).then(values => {
       var userOfferingList = values.map(value => value.dataValues);
@@ -475,7 +483,7 @@ function getInstructorsByOfferingId (ids) {
           for (let j = 0; j < users.length; j++) {
             if (userOfferingList[i].userId === users[j].id) {
               var instructor = {
-                offeringId : userOfferingList[i].offeringId,
+                courseOfferingId : userOfferingList[i].courseOfferingId,
                 userId : users[j].id,
                 firstName : users[j].firstName,
                 lastName : users[j].lastName,
@@ -486,20 +494,20 @@ function getInstructorsByOfferingId (ids) {
           }
         }
         return instructors;
-      }).catch(err => console.log(err)) /* User.findAll() */
-    }).catch(err => console.log(err)); /* UserOffering.findAll() */
-  }).catch(err => console.log(err)); /* Role.findOne() */
+      }).catch(err => perror(err)) /* User.findAll() */
+    }).catch(err => perror(err)); /* UserOffering.findAll() */
+  }).catch(err => perror(err)); /* Role.findOne() */
 }
 
-function validateUserAccess( offeringId, userId ) {
+function validateUserAccess( courseOfferingId, userId ) {
   return UserOffering.findOne({
     where : {
-      offeringId : offeringId,
+      courseOfferingId : courseOfferingId,
       userId : userId,
     }
   }).then(result => {
     return result.dataValues;
-  }).catch(err => console.log(err));
+  }).catch(err => perror(err));
 }
 
 function getCourseByOfferingId(offeringId) {
@@ -513,8 +521,8 @@ function getCourseByOfferingId(offeringId) {
       }
     }).then(values => {
       return values.map(value => value.dataValues);
-    }).catch(err => console.log(err)); /* Course.findAll() */
-  }).catch(err => console.log(err)); /* CourseOffering.findAll() */
+    }).catch(err => perror(err)); /* Course.findAll() */
+  }).catch(err => perror(err)); /* CourseOffering.findAll() */
 }
 
 function getDept(deptId) {
@@ -524,7 +532,12 @@ function getDept(deptId) {
     }
   }).then(result => {
     return result.dataValues;
-  }).catch(err => console.log(err));
+  }).catch(err => perror(err));
+}
+
+/* wrapper function to print error */
+function perror(err) {
+  console.log(err);
 }
 
 module.exports = {
@@ -560,6 +573,6 @@ module.exports = {
     getOfferingId : getOfferingId,
     getDeptsById : getDeptsById,
     getSectionsById : getSectionsById,
-    getInstructorsByOfferingId : getInstructorsByOfferingId,
+    getInstructorsByCourseOfferingId : getInstructorsByCourseOfferingId,
     validateUserAccess : validateUserAccess,
 }
