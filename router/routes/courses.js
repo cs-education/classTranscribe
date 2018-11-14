@@ -90,7 +90,7 @@ client_api.createUser(testInfo).then(
       //   console.log('----------------------------------------');
       // }).catch(err => console.log(err));
       client_api.addCourse(userInfo, courseList[0]).then(result => {
-        permission.addCoursePermission(userInfo.mailId, result[0].dataValues.offeringId, 'Modify');
+        permission.addCoursePermission(userInfo.mailId, result[0].dataValues.courseOfferingId, 'Modify');
       })
       // .then(()=>
         // client_api.addCourse(userInfo, courseList[1]).then(()=>
@@ -316,15 +316,9 @@ router.post('/courses/newclass', function (request, response) {
     /* course creator should be enrolled as instructor */
     client_api.addCourse(userInfo, course)
     .then(result => {
-      console.log('added: ' + result[0].dataValues);
+      permission.addCoursePermission(userInfo.mailId, result[0].dataValues.courseOfferingId, 'Modify');
     })
-    .catch(err => {
-      // Add permissions
-      // permission.addCoursePermission(userid, classid, 'Modify');
-      // permission.addCoursePermission(userid, classid, 'Remove');
-      // client_api.enrollInstuctor(classid, userid);
-      console.log(err);
-    })
+    .catch(err => { console.log(err); }) /* addCourse() */
     response.end();
 });
 
@@ -599,8 +593,15 @@ function  generateListings(data, user, cb) {
         html += '<td class="col-md-2">';
         var debug = false;
         if (debug || (user != '' && user != undefined)) {
-            var classid = e.offeringId;
+            var classid = e.courseOfferingId;
+            console.log(e);
+            console.log(user);
             permission.checkCoursePermission(user, classid, 'Modify', function(error, result) {
+
+              console.log('\x1b[33m' + 'checking permission of ' + classid + '!');
+              console.log('\x1b[35m' + 'result: ' + result + ' err: ' + error);
+              console.log('\x1b[0m')
+
             // acl.isAllowed(user, classid, 'Modify', function (err, res) {
                 if (result) {
                     // Modify and remove functionalityies will be moved from this page

@@ -537,7 +537,8 @@ function getDept(deptId) {
 
 /* wrapper function to print error */
 function perror(err) {
-  console.log(err);
+  /* change font to red, print err, then reset color */
+  console.log('\x1b[31m %s \x1b[0m', err);
 }
 
 module.exports = {
