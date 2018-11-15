@@ -11,19 +11,37 @@ var db = {};
 var sequelize;
 
 /* sequelize = new Sequelize('database', 'username', 'password')*/
-sequelize = new Sequelize('TestDb', 'TestAdmin', 'Test123!', {
-    host: 'ct18.database.windows.net',
+// sequelize = new Sequelize('TestDb', 'TestAdmin', 'Test123!', {
+    // host: 'ct18.database.windows.net',
+    // dialect: 'mssql',
+    // port: 1433,
+
+    // pool: {
+        // max: 5,
+        // min: 0,
+        // idle: 10000
+    // },
+    // dialectOptions: {
+        // encrypt: true
+    // }
+// });
+
+sequelize = new Sequelize('testdb', 'SA', 'Test123!', {
+    host: '172.17.0.2',
     dialect: 'mssql',
     port: 1433,
-
+    logging: true,
     pool: {
         max: 5,
         min: 0,
         idle: 10000
     },
-    dialectOptions: {
-        encrypt: true
-    }
+    //dialectoptions: {
+    //    encrypt: true,
+    //    database: 'testdb'
+    //}
+    // sqlite only
+    //storage: 'sqldb.db'
 });
 
 fs

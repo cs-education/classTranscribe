@@ -227,87 +227,36 @@ function download_course_info_2(section_url) {
                         institutionId: institutionId,
                         createdAt: createdAt,
                         audioUrl: audioUrl,
-                        videoUrl: videoUrl
+                        videoUrl: videoUrl,
+                        download_header: download_header
                     };
-                    return Promise.resolve(mediaJson);
+                    db.addMedia(mediaJson.videoUrl, 0, JSON.stringify(mediaJson))
+                        .then(media => db.addMSTranscriptionTask(media.id))
+                        .then(task => { console.log(task.id) });
                 } catch (err) {
                     console.log(err);
                 }
             }
-        })
-        .then(mediaJson => db.addMedia(mediaJson.videoUrl, 0, mediaJson))
-        .then(media => db.addMSTranscriptionTask(media.id))
-        .then(task => { console.log(task.id) });
-}
-
-function download_course_info(course, play_session_login, download_header) {
-    var url_syllabus = 'https://echo360.org/section';
-    var options_syllabus = {
-        method: 'GET',
-        url: url_syllabus + '/' + course[1] + '/syllabus',
-        headers:
-        {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            Cookie: play_session_login.key + "=" + play_session_login.value
-        }
-    };
-    request(options_syllabus, function (error_syllabus, response_syllabus, body_syllabus) {
-        if (error_syllabus) throw new Error(error_syllabus);
-        var syllabus = JSON.parse(response_syllabus.body);
-        var audio_data_arr = syllabus['data'];
-        for (var j = 0; j < audio_data_arr.length; j++) {
-            var audio_data = audio_data_arr[j];
-            try {
-                var media = audio_data['lesson']['video']['media'];
-                var sectionId = audio_data['lesson']['video']['published']['sectionId'];
-                var mediaId = media['id'];
-                var userId = media['userId'];
-                var institutionId = media['institutionId'];
-                var createdAt = media['createdAt'];
-                var audioUrl = media['media']['current']['audioFiles'][0]['s3Url'];
-                var videoUrl = media['media']['current']['primaryFiles'][0]['s3Url'];
-
-                db.addMedia(videoUrl, 0, {
-                    sectionId: sectionId,
-                    mediaId: mediaId,
-                    userId: userId,
-                    institutionId: institutionId,
-                    createdAt: createdAt,
-                    audioUrl: audioUrl
-                }).then(function (media) {
-                    db.addMSTranscriptionTask(media.id)
-                        .then(function (task) {
-                            console.log("TaskId" + task.id);
-                        });
-                });
-
-            } catch (err) {
-                console.log(err);
-            }
-            download_file(audio_url, course[0] + '_' + String(j) + '.mp3', download_header);
-        }
-    });
+        });        
 }
 
 function download_echo_lecture(task, media) {
     console.log("download_echo_lecture");
-    var sectionId = media.siteSpecificJSON.sectionId;
-    return db.getEchoSection(sectionId)
-        .then(section => {
-            var wget = require('node-wget-promise');
-            var url = media.videoURL;
-            var dest = _dirname + media.id + "_" + url.substring(url.lastIndexOf('/') + 1);
-            return wget(url, {
-                output: dest,
-                headers:
-                {
-                    Cookie: section.json.downloadHeader
-                },
-            })
-                .then(result => task.update({
-                    videoLocalLocation: path.resolve(dest)
-                }));
-        });
+    var wget = require('node-wget-promise');
+    var url = media.videoURL;
+    console.log(JSON.parse(media.siteSpecificJSON).download_header);
+    console.log(url);
+    var dest = _dirname + media.id + "_" + url.substring(url.lastIndexOf('/') + 1);
+    return wget(url, {
+        output: dest,
+        headers:
+        {
+            Cookie: JSON.parse(media.siteSpecificJSON).downloadHeader
+        },
+    })
+        .then(result => task.update({
+            videoLocalLocation: path.resolve(dest)
+        }));
 }
 
 function convertVideoToWav(taskId, callback) {
@@ -359,5 +308,6 @@ function wavToSrt(taskId, callback) {
 module.exports = {
     youtube_scraper_channel: youtube_scraper_channel,
     download_youtube_playlist: download_youtube_playlist,
-    download_course_info_2: download_course_info_2
+    download_course_info_2: download_course_info_2,
+    download_lecture: download_lecture
 }

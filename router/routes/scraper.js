@@ -29,4 +29,12 @@ router.get('/scraperEchoSection', function (request, response) {
     renderWithPartial(scraperMustache, request, response);
 });
 
+router.get('/downloadLecture', function (request, response) {
+    response.writeHead(200, {
+        'Content-Type': 'text.html'
+    });
+    scraper.download_lecture(request.query.taskId)
+    renderWithPartial(scraperMustache, request, response);
+});
+
 module.exports = router;

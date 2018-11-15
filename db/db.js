@@ -1,6 +1,7 @@
 'use strict';
 var Sequelize = require('sequelize');
 var models = require('../models');
+const uuid = require('uuid/v4');
 models.sequelize.sync();
 
 const Op = Sequelize.Op;
@@ -57,6 +58,7 @@ function addMedia(videoURL, sourceType, siteSpecificJSON) {
 
 function addMSTranscriptionTask(mediaId) {
     return MSTranscriptionTask.create({
+        id: uuid(),
         mediaId: mediaId
     });
 }
@@ -67,6 +69,10 @@ function getTask(taskId) {
 
 function getMedia(mediaId) {
     return Media.findById(mediaId);
+}
+
+function getMediaByTask(taskId) {
+    return getTask(taskId).then(task => getMedia(task.mediaId));
 }
 
 function getEchoSection(sectionId) {
@@ -542,6 +548,7 @@ module.exports = {
     verifyUser: verifyUser,
     getTask: getTask,
     getMedia: getMedia,
+    getMediaByTask: getMediaByTask,
     getEchoSection: getEchoSection,
     getUserByEmail: getUserByEmail,
     getUniversityId: getUniversityId,
