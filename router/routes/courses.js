@@ -75,7 +75,6 @@ var testInfo = {
   verifiedId : 'sample-verification-buffer',
 };
 
-// NOTE: SQLite has internal reader/writer lock that doesn't allow multiple updates concurrently
 client_api.createUser(testInfo).then(
   result => {
     var userInfo = result[0].dataValues;
@@ -91,7 +90,7 @@ client_api.createUser(testInfo).then(
       //   console.log('----------------------------------------');
       // }).catch(err => console.log(err));
       client_api.addCourse(userInfo, courseList[0]).then(result => {
-        permission.addCoursePermission(userInfo.mailId, result[0].dataValues.offeringId, 'Modify');
+        permission.addCoursePermission(userInfo.mailId, result[0].dataValues.courseOfferingId, 'Modify');
       })
       // .then(()=>
         // client_api.addCourse(userInfo, courseList[1]).then(()=>
@@ -220,10 +219,13 @@ router.get('/courses/', function (request, response) {
             var deptIds = [];
             var courses = [];
             var offeringIds = [];
+            var courseOfferingIds = [];
+
             for (let i = 0; i < values.length; i ++) {
               termIds.push(values[i].termId);
               deptIds.push(values[i].deptId);
               offeringIds.push(values[i].offeringId);
+              courseOfferingIds.push(values[i].courseOfferingId);
               courses.push(values[i]);
               values[i].university = userInfo.university;
             }
@@ -231,30 +233,43 @@ router.get('/courses/', function (request, response) {
             var termFetches = client_api.getTermsById(termIds);
             var deptFetches = client_api.getDeptsById(deptIds);
             var sectionFetches = client_api.getSectionsById(offeringIds);
-            var instructorFetches = client_api.getInstructorsByOfferingId(offeringIds);
+            var instructorFetches = client_api.getInstructorsByCourseOfferingId(courseOfferingIds);
 
             Promise.all([termFetches, deptFetches, sectionFetches, instructorFetches]).then(values => {
               var filters = [];
-              for (let i = 0; i < courses.length; i++) {
-                let filter = {};
-                filter.termName = values[0][i].termName;
-                filter.deptName = values[1][i].deptName;
-                filters.push(filter);
-                courses[i].termName = values[0][i].termName;
-                courses[i].deptName = values[1][i].deptName;
-                courses[i].acronym = values[1][i].acronym;
-                courses[i].section = values[2][i].section;
-                courses[i].instructor = ''; /* Initialize purpose */
-                courses[i].instructorMail = '';
-              }
+              var terms = {};
+              var depts = {};
+              var acronyms = {};
+              var sections = {};
+              var instructors = {};
 
-              for (let i = 0; i < values[3].length ; i++) {
-                for (let j = 0; j < courses.length; j++) {
-                  if (values[3][i].offeringId === courses[j].offeringId) {
-                    courses[j].instructor = courses[j].instructor + values[3][i].firstName + ' ' + values[3][i].lastName + ', ';
-                    courses[j].instructorMail = courses[j].instructorMail + values[3][i].mailId + ', ';
-                  }
+              values[0].map(value => {
+                terms[value.id] = value.termName;
+              });
+
+              values[1].map(value => {
+                depts[value.id] = value.deptName;
+                acronyms[value.id] = value.acronym;
+              });
+
+              values[2].map(value => {
+                sections[value.id] = value.section;
+              })
+
+              values[3].map(value => {
+                if ( !instructors[value.courseOfferingId] ) {
+                  instructors[value.courseOfferingId] = [];
                 }
+                instructors[value.courseOfferingId].push(value);
+              })
+
+              for (let i = 0; i < courses.length; i++) {
+                let currentCourse = courses[i];
+                courses[i].termName = terms[currentCourse.termId];
+                courses[i].deptName = depts[currentCourse.deptId];
+                courses[i].acronym = acronyms[currentCourse.deptId];
+                courses[i].section = sections[currentCourse.offeringId];
+                courses[i].instructor = instructors[currentCourse.courseOfferingId];
               }
 
               // Saving current content(courseId, termId) before applying filters
@@ -262,7 +277,7 @@ router.get('/courses/', function (request, response) {
 
               generateListings(courses, userid, function (res) {
                 thtml += res;
-                filterdata = generateFilters(filters);
+                filterdata = generateFilters(terms, depts);
                 var view = {
                   termlist: allterms,
                   createform: form,
@@ -274,8 +289,8 @@ router.get('/courses/', function (request, response) {
                 var html = Mustache.render(managementMustache, view);
                 response.end(html);
               });
-            }).catch(err => console.log(err));
-          });
+            }).catch(err => console.log(err)); /* Promise.all() */
+          }).catch(err => console.log(err)); /* getUniversityName() */
     });
   });
 });
@@ -283,81 +298,28 @@ router.get('/courses/', function (request, response) {
 // Create new class
 router.post('/courses/newclass', function (request, response) {
 
-    var term = request.body.Term;
-    var dept = request.body.Dept;
+    var dept = request.body.dept;
+    var userInfo = request.session.passport.user;
     var course = request.body;
-    var userInfo = req.session.passport.user;
-    // var userid = getUserId(request);
+
     if (!userInfo) {
       console.log('Invalid userInfo');
       response.end();
       return;
     }
-    course.dept = dept;
-    course.term = term;
 
-    // since we have role and userOffering table to keep track of permissions, we don't really need permission for our purpose
-    // since the creator automatically become the instructor of the course, you don't need to enroll yourself
+    course.dept = {
+      name: dept,
+      acronym: dept
+    }
+
+    /* course creator should be enrolled as instructor */
     client_api.addCourse(userInfo, course)
-    .then(result => console.log(result))
-    .catch(err => {
-      // Add permissions
-      // permission.addCoursePermission(userid, classid, 'Modify');
-      // permission.addCoursePermission(userid, classid, 'Remove');
-      // client_api.enrollInstuctor(classid, userid);
-      console.log(err);
+    .then(result => {
+      permission.addCoursePermission(userInfo.mailId, result[0].dataValues.courseOfferingId, 'Modify');
     })
-    // client_api.getKeysByClass(classid, function(err, rep) {
-    // client.keys("ClassTranscribe::Course::"+classid, function(err, rep){
-        // if (rep.length>0){
-        //     // Check if uuid already in use
-        //     console.log("Failed creating class: uuid already in use, try again.");
-        //     response.end();
-        // }
-        // else{
-          /* couse = [subject, classNumber, sectionNumber, className, classDesc,
-          university, instructor, classID] */
-          // courseInfo = [course['Subject'], course['ClassNumber'], course['SectionNumber'],
-          // course['ClassName'], course['ClassDescription'], course['University'], course['Instructor'], classid]
-          // client_api.addCourse(courseInfo, course['Term']);
-
-            // // Add class to class list
-            // client.sadd("ClassTranscribe::CourseList", "ClassTranscribe::Course::"+classid);
-            // // Add class to term list
-            // client.sadd(term, "ClassTranscribe::Course::"+classid);
-            // /* DEBUG: DONT KNOW THE PURPOSE OF FOLLOWING CODE, IGNORED */
-            // if(term!='All')
-            //     client.sadd("ClassTranscribe::Terms::All", "ClassTranscribe::Course::"+classid);
-            // // Add class subject to list of subjects
-            // client.sadd("ClassTranscribe::SubjectList", "ClassTranscribe::Subject::"+course["Subject"]);
-            // // Add class to the subject list
-            // client.sadd("ClassTranscribe::Subject::"+course["Subject"], "ClassTranscribe::Course::"+classid);
-            //
-            // // Add course info
-            // client.hset("ClassTranscribe::Course::"+classid, "Subject", course["Subject"]);
-            // client.hset("ClassTranscribe::Course::"+classid, "ClassNumber", course["ClassNumber"]);
-            // client.hset("ClassTranscribe::Course::"+classid, "SectionNumber", course["SectionNumber"]);
-            // client.hset("ClassTranscribe::Course::"+classid, "ClassName", course["ClassName"]);
-            // client.hset("ClassTranscribe::Course::"+classid, "ClassDesc", course["ClassDescription"]);
-            // client.hset("ClassTranscribe::Course::"+classid, "University", course["University"]);
-            // client.hset("ClassTranscribe::Course::"+classid, "Instructor", course["Instructor"]);
-            // client.hset("ClassTranscribe::Course::"+classid, "Term", course["Term"]);
-
-            // var userid = getUserId(request)
-            // Add permissions
-            // permission.addCoursePermission(userid, classid, 'Modify');
-            // permission.addCoursePermission(userid, classid, 'Remove');
-            // acl.allow(userid, "ClassTranscribe::Course::"+classid, "Modify");
-            // acl.allow(userid, "ClassTranscribe::Course::"+classid, "Remove");
-            //acl.allow(userid, "ClassTranscribe::Course::"+classid, "Drop");
-            // client_api.enrollInstuctor(classid, userid);
-            // client.sadd("ClassTranscribe::Course::"+classid+"::Instructors", "ClassTranscribe::Users::"+userid);
-            // client.sadd("ClassTranscribe::Users::"+userid+"::Courses_as_Instructor", "ClassTranscribe::Course::"+classid);
-
-            response.end();
-      //   }
-      // });
-
+    .catch(err => { console.log(err); }) /* addCourse() */
+    response.end();
 });
 
 /* TODO: THERE SHOULD BE A BETTER WAY OF DOING SO */
@@ -564,31 +526,38 @@ router.post('/courses/applyfilter', function (request, response) {
 
 // Generate filters from a list of classes, currently only for terms and subjects
 // returns html sections
-function generateFilters(data){
+function generateFilters(terms, depts){
     var termlist = [];
     var subjectlist = [];
     var termhtml = '';
     var subjecthtml = '';
-    data.forEach(function(e){
-        if  (subjectlist.indexOf(e.deptName) < 0 ) {
-            subjectlist.push(e['Subject']);
-            subjecthtml  += '<div class="form-check">'+
-                '    <label class="form-check-label checkboxlabel">'+
-                '    <input class="form-check-input" type="checkbox" value="'+ e.deptName + '" checked>'+
-                e.deptName +
-                '</label>'+
-                '</div>'
-        }
-        if  (termlist.indexOf(e.termName)<0){
-            termlist.push(e['Term']);
-            termhtml  += '<div class="form-check">'+
-                '    <label class="form-check-label checkboxlabel">'+
-                '    <input class="form-check-input" type="checkbox" value="'+ e.termName +'" checked>'+
-                e.termName+
-                '</label>'+
-                '</div>'
-        }
-    });
+
+    for (var dept in depts) {
+      let deptName = depts[dept];
+      if(subjectlist.indexOf(deptName) < 0) {
+        subjectlist.push(deptName);
+        subjecthtml  += '<div class="form-check">'+
+        '    <label class="form-check-label checkboxlabel">'+
+        '    <input class="form-check-input" type="checkbox" value="'+ deptName + '" checked>'+
+        deptName +
+        '</label>'+
+        '</div>'
+      }
+    }
+
+    for (var term in terms) {
+      let termName = terms[term];
+      if(termlist.indexOf(termName) < 0) {
+        termlist.push(termName);
+        termhtml  += '<div class="form-check">'+
+        '    <label class="form-check-label checkboxlabel">'+
+        '    <input class="form-check-input" type="checkbox" value="'+ termName + '" checked>'+
+        termName +
+        '</label>'+
+        '</div>'
+      }
+    }
+
     return [termhtml,subjecthtml];
 }
 
@@ -597,8 +566,20 @@ function generateFilters(data){
 // user - user id
 // cb   - callback function
 function  generateListings(data, user, cb) {
+
   /* async.reduce(array, startValue, reducer) */
     async.reduce(data, '', function (html, e, fcb) {
+      let instructors = e.instructor;
+      let instructorName = '';
+
+      /* concatenate each instructor's name */
+      instructors.map(instructor => {
+        instructorName = instructorName + ', ' + instructor.firstName + ' ' + instructor.lastName;
+      })
+
+      /* remove first comma */
+      instructorName = instructorName.substring(1);
+
         html += '<tr id="'+ e.id +'">';
         html += '<td hidden="yes">' + e.termName + '</td>';
         html += '<td hidden="yes">' + e.offeringId + '</td>';
@@ -607,13 +588,20 @@ function  generateListings(data, user, cb) {
         html += '<td>' + e.courseNumber + '</td>';
         html += '<td>' + e.section + '</td>';
         html += '<td>' + e.courseName + '</td>';
-        html += '<td>' + e.instructor + '</td>';
+        html += '<td>' + instructorName + '</td>';
         html += '<td class="tddesc">' + e.courseDescription + '</td>';
         html += '<td class="col-md-2">';
         var debug = false;
         if (debug || (user != '' && user != undefined)) {
-            var classid = e.offeringId;
+            var classid = e.courseOfferingId;
+            console.log(e);
+            console.log(user);
             permission.checkCoursePermission(user, classid, 'Modify', function(error, result) {
+
+              console.log('\x1b[33m' + 'checking permission of ' + classid + '!');
+              console.log('\x1b[35m' + 'result: ' + result + ' err: ' + error);
+              console.log('\x1b[0m')
+
             // acl.isAllowed(user, classid, 'Modify', function (err, res) {
                 if (result) {
                     // Modify and remove functionalityies will be moved from this page
@@ -683,7 +671,7 @@ router.post('/courses/enroll/', function (request, response) {
     params = params.split(',,');
     var userid = getUserId(request);
     var classid = request.body.cid;
-    client_api.enrollStudent(userid, classid);
+    client_api.addStudent(userid, classid);
     permission.addCoursePermission(userid, classid, 'Drop');
     // acl.allow(userid, "ClassTranscribe::Course::"+classid, 'Drop');
 
@@ -706,7 +694,7 @@ router.post('/courses/drop/', function (request, response) {
 });
 
 
-
+/* TODO: Should modify, change term, dept to select */
 function getCreateClassForm(rep){
     return '<div id="createPanel" class="modal fade" role="dialog"> ' +
         '<div class="modal-dialog"> ' +
@@ -719,21 +707,21 @@ function getCreateClassForm(rep){
                     "<form id=\"creation-form\" method=\"POST\"> " +
                         '<div class="row">'+
                             "<div class=\"col-md-4\">" +
-                            "<label>Term</label> <input type=\"text\" class=\"form-control\" id=\"fminput0\" placeholder=\"\" name=\"Term\"> " +
+                            "<label>Term</label> <input type=\"text\" class=\"form-control\" id=\"fminput0\" placeholder=\"\" name=\"term\"> " +
                             '</div>'+
                         '</div>'+
                         "<div class=\"row\"> " +
                             "<div class=\"col-md-4\"> " +
-                                "<label>Subject</label> <input type=\"text\" class=\"form-control\" id=\"fminput1\" placeholder=\"\" name=\"Subject\"> " +
-                                "<label>Course Number</label> <input type=\"text\" class=\"form-control\" id=\"fminput2\" placeholder=\"\" name=\"ClassNumber\"> </div> " +
+                                "<label>Subject</label> <input type=\"text\" class=\"form-control\" id=\"fminput1\" placeholder=\"\" name=\"dept\"> " +
+                                "<label>Course Number</label> <input type=\"text\" class=\"form-control\" id=\"fminput2\" placeholder=\"\" name=\"courseNumber\"> </div> " +
                             "<div class=\"col-md-4\"> " +
-                                "<label>Class Name</label> <input type=\"text\" class=\"form-control\" id=\"fminput3\" placeholder=\"\" name=\"ClassName\"> " +
-                                "<label>Instructor</label> <input type=\"text\" class=\"form-control\" id=\"fminput4\" value=\""+rep.firsName+' '+rep.lastName+"\" name=\"Instructor\" readonly> </div> " +
+                                "<label>Class Name</label> <input type=\"text\" class=\"form-control\" id=\"fminput3\" placeholder=\"\" name=\"courseName\"> " +
+                                "<label>Instructor</label> <input type=\"text\" class=\"form-control\" id=\"fminput4\" value=\""+rep.firstName+' '+rep.lastName+"\" name=\"instructor\" readonly> </div> " +
                             "<div class=\"col-md-4\"> " +
-                                "<label>Section Number</label> <input type=\"text\" class=\"form-control\" id=\"fminput5\" placeholder=\"\" name=\"SectionNumber\"> " +
-                                "<label>University</label> <input type=\"text\" class=\"form-control\" id=\"fminput6\" value=\""+rep.university+"\" name=\"University\" readonly> </div> </div> " +
+                                "<label>Section Number</label> <input type=\"text\" class=\"form-control\" id=\"fminput5\" placeholder=\"\" name=\"section\"> " +
+                                "<label>University</label> <input type=\"text\" class=\"form-control\" id=\"fminput6\" value=\""+rep.university+"\" name=\"university\" readonly> </div> </div> " +
                         "<div class=\"row\"> <div class=\"col-md-12\"> " +
-                            "<label>Course Description</label> <input type=\"text\" class=\"form-control\" id=\"fminput7\" placeholder=\"\" name=\"ClassDescription\"> </div> </div> " +
+                            "<label>Course Description</label> <input type=\"text\" class=\"form-control\" id=\"fminput7\" placeholder=\"\" name=\"courseDescription\"> </div> </div> " +
                     '<div class="modal-footer">'+
                         '<input id="cfmCreate" type="submit" class="btn btn-default" value="Create"></input>'+
                         '<button id="cfmCancel" type="button" class="btn btn-default" data-dismiss="modal">Close</button>'+
