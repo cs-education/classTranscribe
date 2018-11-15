@@ -14,32 +14,35 @@
 6. Pull a redis image from docker - "docker pull redis"
 7. docker run -d -p 6379:6379 --name redisdb redis redis-server
     This should start the docker container, you could see the running containers with the command - "docker ps"
-8. docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=Test123!' -p 1433:1433 --name CTdb -d mcr.microsoft.com/mssql/server:2017-latest
+8. Pull a mssql image from microsoft
+    sudo docker pull mcr.microsoft.com/mssql/server:2017-latest
+9. docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=Test123!' -p 1433:1433 --name CTdb -d mcr.microsoft.com/mssql/server:2017-latest
     This should start a mssql docker container
-9. Run the following command to start the cs-education/classtranscribe container
+10. Run the following command to start the cs-education/classtranscribe container
 docker run -i -t -p 443:8000 -p 80:7000 -p 1443:1443 --link redisdb:redis --link CTdb:mssql -e "MAILER_ID=classtranscribe@gmail.com" -e "MAILER_PASS=NRRQeuQtuFa2X1p61rchNuTe7yqTTNh0" -e "REDIS_PASS=5z&Joj#FdNmI3lZc" -e "EMAIL_ID=classtranscribenoreply@gmail.com" -e "EMAIL_PASS=db2c10cf68b6456086d2d54175ba4cb5" -e "SQL_PASS=Test123!" -e "SQL_USER=SA" -e "SQL_DB=Testdb" cs-education/classtranscribe /bin/bash
 Please read about the above arguments of docker (namely -i, -t, -p, -e, -v etc.)
     The above command should start the bash within the container
-9. A few packages are missing at this point within the container, run the following commands,
+11. A few packages are missing at this point within the container, run the following commands,
     npm install
     npm audit fix (this may be ignored)
-10. Start the node server,
+12. Start the node server,
     npm start
-11. And now, hopefully (if my instructions are right) your node server should start.
-12. You can access it via your browser on the address "https:///127.0.0.1"
+13. And now, hopefully (if my instructions are right) your node server should start.
+14. You can access it via your browser on the address "https:///127.0.0.1"
 
 
 A few useful articles
 https://docs.docker.com/engine/reference/commandline/attach/#examples
 https://docs.docker.com/engine/reference/commandline/commit/
+https://docs.microsoft.com/en-us/sql/linux/quickstart-install-connect-docker?view=sql-server-2017
 
 Remember,
-On exiting a container your changes ARE NOT persisted. So step 7 onwards nothing gets persisted until you commit.
+On exiting a container your changes ARE NOT persisted. So step 7(except step 8) onwards nothing gets persisted until you commit.
 
 NOTE:
 1. The usage of redis should be removed later, for now, you will need both redis and mssql running.
 2. To mount your local directory into docker, you should take a look of
     https://docs.docker.com/storage/bind-mounts/
-    *TLDR; add '--mount type=bind,source=/your/full/local/path,target=/data' after 'docker run -i -t' in step 9*
+    *TLDR; add '--mount type=bind,source=/your/full/local/path,target=/data' after 'docker run -i -t' in step 10*
 3. Since we are giving redis and mssql names, when there is error of running those images, clean previous container first.
     https://gist.github.com/bastman/5b57ddb3c11942094f8d0a97d461b430
