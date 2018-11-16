@@ -52,7 +52,7 @@
 	docker run -i -t --mount type=bind,source={Absolute_path_to_local_classTranscribe_repository},target=/classTranscribe -p 443:8000 -p 80:7000 --link redisdb:redis --link CTdb:mssql --env-file env.list --name CT_Dev cs-education/classtranscribe/dev /bin/bash -c "npm install; npm audit fix; npm start"
 
 	For example,
-	docker run -i -t --mount type=bind,source=D:\CT\classTranscribe,target=/classTranscribe -p 443:8000 -p 80:7000 --link redisdb:redis --link CTdb:mssql --env-file env.list cs-education/classtranscribe/dev /bin/bash -c "npm install; npm audit fix; npm start"
+	docker run -i -t --mount type=bind,source=D:\CT\classTranscribe,target=/classTranscribe -p 443:8000 -p 80:7000 --link redisdb:redis --link CTdb:mssql --env-file env.list cs-education/classtranscribe/dev /bin/bash -c "npm install; npm audit fix; npm start "
 
 8. You can access it via your browser on the address "https://127.0.0.1"
 
