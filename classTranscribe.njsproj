@@ -19,6 +19,11 @@
   <ItemGroup>
     <Content Include="Acknowledgement.txt" />
     <Content Include="deployment_instructions.txt" />
+    <Content Include="Docker\Dockerfile.base" />
+    <Content Include="Docker\Dockerfile.dev" />
+    <Content Include="Docker\Dockerfile.production" />
+    <Content Include="Docker\env.list" />
+    <Content Include="Docker\readme.txt" />
     <Content Include="readme.txt" />
     <Content Include="package-lock.json" />
     <Content Include="package.json" />
@@ -265,6 +270,7 @@
     <Folder Include="classTranscribe\classTranscribe" />
     <Folder Include="db" />
     <Folder Include="deprecated" />
+    <Folder Include="Docker\" />
     <Folder Include="documentation" />
     <Folder Include="javascripts" />
     <Folder Include="javascripts\controllers" />
