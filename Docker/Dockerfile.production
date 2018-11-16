@@ -1,0 +1,8 @@
+FROM cs-education/classtranscribe/base:latest
+
+WORKDIR /
+RUN git clone -b fa18-demo https://github.com/cs-education/classTranscribe.git
+WORKDIR classTranscribe
+
+ADD cert /classTranscribe/cert
+RUN npm install
