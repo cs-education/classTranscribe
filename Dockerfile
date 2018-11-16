@@ -52,28 +52,15 @@ WORKDIR p2fa-vislab
 RUN pip install -r requirements.txt; git submodule init; git submodule update
 
 WORKDIR /
-# RUN git clone https://github.com/adammoy2/classTranscribe
+RUN git clone -b fa18-demo https://github.com/cs-education/classTranscribe.git
+WORKDIR classTranscribe
 
+#VOLUME ["/data"]
+ADD cert /classTranscribe/cert
+RUN npm install
 
-VOLUME ["/data"]
-
-ADD . /data
-RUN cd /data && npm install
 RUN npm cache clean -f
 RUN npm install -g n
 RUN n stable
-# RUN npm install
-# RUN npm install express http-proxy dotenv mustache passport passport-local multer redis nodemailer acl uuid cookie-parser express-session passport-saml connect-flash email-verify password-validator
-# RUN npm audit fix
-RUN apt-get install sqlite3
-
-RUN mkdir cert
-# COPY . classTranscribe
-WORKDIR data
-# RUN git fetch
-# RUN git checkout RouteCleanUp
-# RUN git pull origin RouteCleanUp
-
 
 EXPOSE 8000
-CMD node server.js
