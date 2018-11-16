@@ -18,17 +18,25 @@
     sudo docker pull mcr.microsoft.com/mssql/server:2017-latest
 9. docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=Test123!' -p 1433:1433 --name CTdb -d mcr.microsoft.com/mssql/server:2017-latest
     This should start a mssql docker container
-10. Run the following command to start the cs-education/classtranscribe container
+10. Since the database runs on docker, and there is nothing in the container, we should setup the tables first
+    Run following commands one by one:
+    sudo docker exec -it CTdb "bash"
+    /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'Test123!'
+    CREATE DATABASE TestDB
+    SELECT Name from sys.Databases
+    GO
+    Now, the terminal should display a list tables like "TestDB", "master", etc.
+11. Run the following command to start the cs-education/classtranscribe container
 docker run -i -t -p 443:8000 -p 80:7000 -p 1443:1443 --link redisdb:redis --link CTdb:mssql -e "MAILER_ID=classtranscribe@gmail.com" -e "MAILER_PASS=NRRQeuQtuFa2X1p61rchNuTe7yqTTNh0" -e "REDIS_PASS=5z&Joj#FdNmI3lZc" -e "EMAIL_ID=classtranscribenoreply@gmail.com" -e "EMAIL_PASS=db2c10cf68b6456086d2d54175ba4cb5" -e "SQL_PASS=Test123!" -e "SQL_USER=SA" -e "SQL_DB=Testdb" cs-education/classtranscribe /bin/bash
 Please read about the above arguments of docker (namely -i, -t, -p, -e, -v etc.)
     The above command should start the bash within the container
-11. A few packages are missing at this point within the container, run the following commands,
+12. A few packages are missing at this point within the container, run the following commands,
     npm install
     npm audit fix (this may be ignored)
-12. Start the node server,
+13. Start the node server,
     npm start
-13. And now, hopefully (if my instructions are right) your node server should start.
-14. You can access it via your browser on the address "https:///127.0.0.1"
+14. And now, hopefully (if my instructions are right) your node server should start.
+15. You can access it via your browser on the address "https:///127.0.0.1"
 
 
 A few useful articles
@@ -43,6 +51,8 @@ NOTE:
 1. The usage of redis should be removed later, for now, you will need both redis and mssql running.
 2. To mount your local directory into docker, you should take a look of
     https://docs.docker.com/storage/bind-mounts/
-    *TLDR; add '--mount type=bind,source=/your/full/local/path,target=/data' after 'docker run -i -t' in step 10*
+    *TLDR; add '--mount type=bind,source=/your/full/local/path,target=/data' after 'docker run -i -t' in step 11*
 3. Since we are giving redis and mssql names, when there is error of running those images, clean previous container first.
     https://gist.github.com/bastman/5b57ddb3c11942094f8d0a97d461b430
+4. If there are docker container name conflicts, instead of "docker run", try "docker start"
+    docker start redisdb/CTdb
