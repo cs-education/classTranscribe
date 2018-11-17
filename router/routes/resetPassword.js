@@ -8,9 +8,12 @@ const router = express.Router();
 const fs = require('fs');
 const crypto = require('crypto');
 const verifier = require('email-verify');
-const client_api = require('./db');
-// var api = require('./api');
-// var client_api = new api();
+const db = require('../../db/db');
+const utils = require('../../utils/logging');
+
+const perror = utils.perror;
+const info = utils.info;
+const log = utils.log;
 
 // Variables that will be passed into the command line when running containers
 var nodemailer = require('nodemailer');
@@ -29,10 +32,6 @@ var transporter = nodemailer.createTransport({
     }
 });
 
-/*********************************************************************/
-/*              CURRENT VERSION USES changePassword.js               */
-/*********************************************************************/
-
 // Get the mustache page that will be rendered for the resetPassword route
 var resetPasswordMustache = fs.readFileSync(mustachePath + 'resetPassword.mustache').toString();
 
@@ -48,67 +47,69 @@ router.get('/resetPassword', function (request, response) {
 router.post('/resetPassword/submit', function (request, response) {
     // Get the current user's data to access information in database
     var email = request.body.email;
-    console.log(reqeust.body);
-    return;
+
     // Check if email address exists
     verifier.verify(email, function(err, info) {
-        if ( err ) console.log(err);
-        else {
-            console.log("Info: " + info.info)
-            var isInvalid = info.info.includes("invalid");
-            if (isInvalid == true) {
-                var error = "Email does not exist";
-                console.log(error);
+        if ( err ) {
+          perror(err);
+        } else {
+
+          // Display error when email is not valid
+          if ( info.success == false ) {
+            var error = "Email does not exist";
+            perror(error);
+            response.send({ message: error, html: '' });
+
+          } else {
+            // Check if email is already in the database
+            db.getUserByEmail(email)
+            .then(result => {
+
+              // Display error when account does not exist in the database
+              if (!result) {
+                var error = "Account does not exist";
+                perror(error);
                 response.send({ message: error, html: '' });
-            } else {
-                // Check if email is already in the database
-                client_api.getUserByEmail(email, function(err, obj) {
-                // client.hgetall("ClassTranscribe::Users::" + email, function (err, obj) {
-                    // Display error when account does not exist in the database
-                    if (!obj) {
-                        var error = "Account does not exist";
-                        console.log(error);
-                        response.send({ message: error, html: '' });
-                    } else {
-                        // Redirect user to new mustache web with a note to check their email
-                        response.send({ message: 'success', html: '../accountRecovery' })
+              } else {
+                info(result);
+                // Redirect user to new mustache web with a note to check their email
+                response.send({ message: 'success', html: '../accountRecovery' })
 
-                        // Generate a unique link specific to the user
-                        crypto.randomBytes(48, function (err, buffer) {
-                            var token = buffer.toString('hex');
-                            var host = request.get('host');
-                            var link = "https://" + host + "/changePassword?email=" + email + "&id=" + token;
+                // Generate a unique link specific to the user
+                crypto.randomBytes(48, function (err, buffer) {
+                  var token = buffer.toString('hex');
+                  var host = request.get('host');
+                  var link = "https://" + host + "/changePassword?email=" + email + "&id=" + token;
 
-                            // Send email to reset password
-                            var mailOptions = {
-                                from: 'ClassTranscribe Team <' + mailID + '>', // ClassTranscribe no-reply email
-                                to: email, // receiver who signed up for ClassTranscribe
-                                subject: 'ClassTranscribe Password Reset', // subject line of the email
-                                html: 'Hi, <br><br> We have just received a password reset request for ' + email + '. Please click this <a href=' + link + '>link</a> to reset your password. <br><br> Thanks! <br> ClassTranscribe Team'
-                            };
+                  // Send email to reset password
+                  var mailOptions = {
+                    from: 'ClassTranscribe Team <' + mailID + '>', // ClassTranscribe no-reply email
+                    to: email, // receiver who signed up for ClassTranscribe
+                    subject: 'ClassTranscribe Password Reset', // subject line of the email
+                    html: 'Hi, <br><br> We have just received a password reset request for ' + email + '. Please click this <a href=' + link + '>link</a> to reset your password. <br><br> Thanks! <br> ClassTranscribe Team'
+                  };
 
-                            // Add the token ID to database to check it is linked with the user
-                            client_api.setPasswordID(email, token, function(err, results) {
-                            // client.hmset("ClassTranscribe::Users::" + email, [
-                            //     'change_password_id', token
-                            // ], function (err, results) {
-                                if (err) console.log(err)
-                                console.log(results);
-                            });
-
-                            // Send the custom email to the user
-                            transporter.sendMail(mailOptions, (error, response) => {
-                                if (err) console.log(err)
-                                console.log("Send mail status: " + response);
-                            });
-                        });
-
-                        response.end();
-                    }
+                  // Add the token ID to database to check it is linked with the user
+                  db.addPasswordToken(result, token)
+                  .then(result => {
+                    // Send the custom email to the user
+                    transporter.sendMail(mailOptions, (error, response) => {
+                      if (err) {
+                        perror(err);
+                      } else {
+                        log("Send mail status: " + response);
+                      }
+                    });
+                  })
+                  .catch(err => perror(err));/* db.addPasswordToken() */
                 });
-            }
+
+                response.end();
+              }
+            }); /* db.getUserByEmail() */
+          }
         }
+      });/* verifier.verify() */
     });
-});
 
 module.exports = router;

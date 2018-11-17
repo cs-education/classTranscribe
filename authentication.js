@@ -18,6 +18,9 @@ var KEY = fs.readFileSync('./cert/cert/key.pem');
 var CERT = fs.readFileSync('./cert/cert/cert.pem');
 
 const client = require('./db/db');
+const utils = require('./utils/logging');
+const log = utils.log;
+const perror = utils.perror;
 
 samlStrategy = new saml.Strategy({
     // URL that goes from the Identity Provider -> Service Provider
@@ -46,7 +49,7 @@ samlStrategy = new saml.Strategy({
 
 ensureAuthenticated = function(req, res, next) {
   if (process.env.DEV == "DEV") {
-    console.log("Skipping login");
+    log("DEV mode: skipping login");
     return next();
   }
   if (req.isAuthenticated()) {
@@ -70,21 +73,21 @@ passport.use(new LocalStrategy(
           // Display error if the account does not exist
           if(!result) {
             var error = 'Account does not exist';
-            console.log(error);
+            perror(error);
             return done(null, false, {message : error});
           } else {
-            var userInfo = result.dataValues;
+            var userInfo = result;
             // Check if the user has verified their email address
             if (!userInfo.verified) {
               var error = 'Email not verified';
-              console.log(error);
+              perror(error);
               return done(null, false, {message : error});
             }
             // Verify the inputted password is equivalent to the hashed password stored in the database
             var isCorrectPassword = passwordHash.verify(password, userInfo.password);
             if (!isCorrectPassword) {
               var error = "Invalid password";
-              console.log(error);
+              perror(error);
               return done(null, false, { message: error });
           }
           // Return the user if the login value matches the database
@@ -152,7 +155,7 @@ function findUser(id,cb){
     if(!result) {
       return cb(false,null);
     }
-    return cb(false, result.dataValues);
+    return cb(false, result);
   }).catch(err => cb(err, null));
     // client.hgetall("ClassTranscribe::Users::" + id, function(err, usr) {
     //     if(err){

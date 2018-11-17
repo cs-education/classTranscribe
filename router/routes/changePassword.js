@@ -9,6 +9,10 @@ const fs = require('fs');
 const passwordHash = require('password-hash');
 const passwordValidator = require('password-validator');
 const db = require('../../db/db');
+const utils = require('../../utils/logging');
+const perror = utils.perror;
+const info = utils.info;
+const log = utils.log;
 
 // Get the mustache page that will be rendered for the changePassword route
 var changePasswordMustache = fs.readFileSync(mustachePath + 'changePassword.mustache').toString();
@@ -29,32 +33,41 @@ router.get('/changePassword', function (request, response) {
       if (!result) {
         //TODO: ADD 404 PAGE
         var error = 'Account does not exist';
-        console.log(error);
+        perror(error);
         response.status(404).send({message : error});
       } else {
-        var userInfo = result.dataValues;
+        var userInfo = result;
         if (!userInfo.verified) {
           var error = 'Account is not verified';
-          console.log(error);
+          perror(error);
           response.send({message : error});
-        } else if (userInfo.id != request.query.id) {
+          /* passwordToken does not match */
+        } else if ((request.query.id != '') && (userInfo.passwordToken != request.query.id)) {
           var error = "Incorrect reset password link.";
-          console.log(error);
+          perror(error);
           response.send({message : error});
         } else {
           response.writeHead(200, {
             'Content-Type': 'text.html'
           });
+
+          /* login first for user who forgot password */
+          if (request.query.id) {
+            request.logIn(userInfo, function(err) {
+            perror(err);
+            });
+          }
+
           renderWithPartial(changePasswordMustache, request, response);
         }
       }
-    }).catch(err => console.log(err)); /* db.getUserByEmail() */
+    }).catch(err => perror(err)); /* db.getUserByEmail() */
   }
 });
 
-// TODO: db needs add "setPassword()"
 // Change user information in database after the form is submitted
 router.post('/changePassword/submit', function (request, response) {
+
   if (request.isAuthenticated()) {
     var password = request.body.password;
     var re_password = request.body.re_password;
@@ -72,22 +85,22 @@ router.post('/changePassword/submit', function (request, response) {
     // Check that the two passwords are the same
     if (password != re_password) {
         var error = "Passwords are not the same";
-        console.log(error);
+        perror(error);
         response.send({ message: error, html: '' });
     } else {
       // Check if password follows pattern schema
       var valid_pattern = schema.validate(password)
       if (valid_pattern != true) {
         var error = "Password must have at least 8 character, an uppercase letter, a lowercase leter, a digit, and no spaces.";
-        console.log(error);
+        perror(error);
         response.send({ message: error, html: '' });
       } else {
         // Salt and hash password before putting into redis database
         var hashedPassword = passwordHash.generate(password);
 
         db.setUserPassword(hashedPassword, userInfo.mailId).then(() => {
-          response.send({ message: 'success', html: '../settings' })
-        }).catch(err => console.log(err)); /* db.setUserPassword() */
+          response.send({ message: 'success', html: '../dashboard' })
+        }).catch(err => perror(err)); /* db.setUserPassword() */
       }
     }
   } else {

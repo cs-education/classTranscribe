@@ -10,11 +10,12 @@ const verifier = require('email-verify');
 const passwordHash = require('password-hash');
 const passwordValidator = require('password-validator');
 const crypto = require('crypto');
-
 // Variables that will be passed into the command line when running containers
 const nodemailer = require('nodemailer');
 const mailID = process.env.EMAIL_ID;
 const mailPass = process.env.EMAIL_PASS;
+
+
 
 if (!mailID) throw "Need a gmail address in environmental variables!";
 if (!mailPass) throw "Need a password in environmental variables!";
@@ -30,6 +31,10 @@ const transporter = nodemailer.createTransport({
 
 const client_api = require('../../db/db');
 const permission = require('./permission');
+const utils = require('../../utils/logging');
+const perror = utils.perror;
+const info = utils.info;
+const log = utils.log;
 
 // Get the mustache page that will be rendered for the signup route
 const signupMustache = fs.readFileSync(mustachePath + 'signup.mustache').toString();
@@ -65,29 +70,31 @@ router.post('/signup/submit', function (request, response) {
         .has().not().spaces()                           // Should not have spaces
 
     // Check if email address exists
-    verifier.verify(email, function(err, info) {
-      if ( err ) console.log(err);
-      else {
-        var isInvalid = info.info.includes("invalid");
-        if (isInvalid == true) {
+    verifier.verify(email, function(err, result) {
+      if ( err ) {
+        perror(err);
+      } else {
+        /* check if email is valid */
+        if ( result.success === false ) {
           var error = "Email does not exist";
-          console.log(error);
+          perror(error);
           response.send({ message: error, html: '' });
         } else {
           // Check that the two passwords are the same
           if (password != re_password) {
             var error = "Passwords are not the same";
-            console.log(error);
+            perror(error);
             response.send({ message: error, html: '' });
           } else {
             // Check if email is already in the database
             client_api.getUserByEmail(email).then(result => {
+
               if (!result) {
-                console.log('email not found in db');
+                log('email not found in db');
                 var valid_pattern = schema.validate(password);
                 if (valid_pattern != true) {
                   var error = "Password must have at least 8 character, an uppercase letter, a lowercase leter, a digit, and no spaces.";
-                  console.log(error);
+                  perror(error);
                   response.send({message: err, html: ''});
                 }
 
@@ -113,31 +120,37 @@ router.post('/signup/submit', function (request, response) {
                     firstName : first_name,
                     lastName : last_name,
                     password : hashedPassword,
+                    passwordToken : '',
                     university : getUniversity(email),
                     verifiedId : token,
                   };
 
                   client_api.createUser(userInfo).then(result => {
-                    permission.addUser(result[0].dataValues.id);
+                    /* add user in permission */
+                    permission.addUser(result.id);
 
+                    /* send e-mail */
                     transporter.sendMail(mailOptions, (err, response) => {
-                      if (err) console.log(err);
-                      console.log('response:', response);
+                      if (err) perror(err);
+                      info('response:' + response);
                     });
-                  })
-                  .catch(err => {
-                    console.log(err);
+
+                    response.send({ message: 'success', html: '../login' });
+                  }).catch(err => {
+                    perror(err);
                     response.send({message: err, html: ''});
                   }); /* end of catch for createUser() */
-                }) /* end of encryption */
+                }) /* end of crypto.randomBytes() */
               } else {
                 var err = 'Account already exists';
-                console.log(err);
+                perror(err);
                 response.send({message: err, html: ''});
               }
             })
-            .catch(err => { console.log(err) }); /* end of getUserByEmail() */
-            response.send({ message: 'success', html: '../login' });
+            .catch(err => {
+              perror(err);
+              response.send({message: err, html: ''});
+            }); /* end of getUserByEmail() */
           }
         }
       }/* end of else statement of verify */
@@ -157,22 +170,22 @@ router.get('/verify', function (request, response) {
       if (!result) {
         //TODO: ADD 404 PAGE
         var error = 'Account does not exist';
-        console.log(error);
+        perror(error);
         response.status(404).send({message : error});
       }
 
-      var userInfo = result.dataValues;
+      var userInfo = result;
       // User has been verified already
       if (userInfo.verified) {
         var error = 'Email is already verified';
-        console.log(error);
+        perror(error);
         response.send({message : error, html: '/login'});
       }
 
       // Display error if the generated unique link does not match the user
       if (userInfo.verifiedId !== request.query.id) {
         var error = 'verifyId is not matched';
-        console.log(error);
+        perror(error);
         response.sned({message : error, html: '/login'});
       }
 
@@ -185,13 +198,13 @@ router.get('/verify', function (request, response) {
         renderWithPartial(verifyMustache, request, response);
       })
       .catch(err => {
-        console.log(err);
+        perror(err);
         response.send({message : err, html: ''});
       })/* catch verifyUser() error */
 
     })
     .catch(err=> {
-      console.log(err);
+      perror(err);
       response.send({message :err, html : ''});
     })/* catch getUserByEmail() error */
 });

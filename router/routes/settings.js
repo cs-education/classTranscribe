@@ -8,6 +8,8 @@ const router = express.Router();
 const fs = require('fs');
 const db = require('../../db/db');
 const settingsMustache = fs.readFileSync(mustachePath + 'settings.mustache').toString();
+const utils = require('../../utils/logging');
+const perror = utils.perror;
 
 router.get('/settings', function(request, response) {
   if (request.isAuthenticated()) {
@@ -34,7 +36,7 @@ router.post('/settings/submit', function(request, response) {
   db.setUserName(name, mailId).then(()=>{
     response.send({ message : 'success', html: '../dashboard'});
   }).catch(err => {
-    console.log(err);
+    perror(err);
     response.send({ message : err, html : '../dashboard'});
   });
 });

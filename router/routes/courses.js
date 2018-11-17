@@ -1,6 +1,3 @@
-// TODO: create class consistency, create class permission, uid changes, more permission check, delete confirmation/adjustment, uuid, trash bin, public/private course displat
-// note: for classid see genNewClassUid() function
-
 // Potential problem with ajax spam
 // Also currently no instructor verification
 
@@ -10,13 +7,13 @@ const router = express.Router();
 const srchHelper = require("../../utility_scripts/searchContent.js");
 
 const client_api = require('../../db/db');
-const permission = require('./permission');
+const utils = require('../../utils/logging');
+const perror = utils.perror;
+const info = utils.info;
+const log = utils.log;
 
-//=======================Sample data for testing=====================================
-// create Uid for the class
-function genNewClassUid(){
-    return uuidv4();
-}
+const permission = require('./permission');
+/*************************** Create Dummy Data ********************************/
 
 var courseList = [
   {
@@ -75,9 +72,10 @@ var testInfo = {
   verifiedId : 'sample-verification-buffer',
 };
 
+
 client_api.createUser(testInfo).then(
   result => {
-    var userInfo = result[0].dataValues;
+    var userInfo = result;
     permission.addUser(userInfo.mailId);
     client_api.verifyUser('sample-verification-buffer', 'testing@testdomabbccc.edu').then(() => {
       // var promises = [];
@@ -90,7 +88,7 @@ client_api.createUser(testInfo).then(
       //   console.log('----------------------------------------');
       // }).catch(err => console.log(err));
       client_api.addCourse(userInfo, courseList[0]).then(result => {
-        permission.addCoursePermission(userInfo.mailId, result[0].dataValues.courseOfferingId, 'Modify');
+        permission.addCoursePermission(userInfo.mailId, result.courseOfferingId, 'Modify');
       })
       // .then(()=>
         // client_api.addCourse(userInfo, courseList[1]).then(()=>
@@ -102,18 +100,7 @@ client_api.createUser(testInfo).then(
       //   console.log('-------------------------------------------------')
       // });
     });
-  }).catch(err => { console.log(err);})
-
-/*
-* course = {
-*   courseName, courseNumber, courseDescription,
-*   term, section, *dept*
-*  }
-*
-* dept = {
-* deptName, acronym
-* }
-*/
+  }).catch(err => { perror(err);})
 
 // Loading sample data into database
 // Object.keys(courseList).forEach( function (t) {
@@ -145,38 +132,13 @@ client_api.createUser(testInfo).then(
 // /* couse = [subject, classNumber, sectionNumber, className, classDesc, university, instructor, classID] */
 // let dummyData = ["Computer Science", "CS 123", "BL2", "Data Structure", "No description", "N/A", "N/A", testclassid];
 
-
-
-//
-// client.hmset("ClassTranscribe::Users::" + 'testing@testdomabbccc.edu', [
-//     'first_name', 'First',
-//     'last_name', 'Sur',
-//     'password', passwordHash.generate("passtest"),
-//     'change_password_id', '',
-//     'university', "test uni",
-//     'verified', true,
-//     'verify_id', '',
-//     'courses_as_instructor','',
-//     'courses_as_TA','',
-//     'courses_as_student',''
-// ]);
-// client.set("ClassTranscribe::UserLookupTable::testing@testdomabbccc.edu","testing@testdomabbccc.edu");
-// ACL example usage (default)
-//acl.allow('UserRole', 'ResourceName', 'Action');
-//acl.addUserRoles('UserName', 'UserRole');
-// Example (per user)
-// acl.addUserRoles('testing@testdomabbccc.edu', 'testing@testdomabbccc.edu');
-// acl.allow('testing@testdomabbccc.edu', 'ClassTranscribe::Course::UIUC-Fall 2016-CS 446-D3', 'Modify');
-// acl.allow('testing@testdomabbccc.edu', "ClassTranscribe::Course::UIUC-Spring 2016-Chem 233-AL2", 'Drop');
-// acl.allow('testing@testdomabbccc.edu', "ClassTranscribe::Course::UIUC-Spring 2016-CS 225-AL1", 'Remove');
-
-// console.log("Sample data for class listings loaded...");
-//======================End of sample data==========================================================
+/************************* End Of Dummy Data **********************************/
 
 
 var allterms = [];
 var managementMustache = fs.readFileSync(mustachePath + 'courses.mustache').toString();
-// Main page
+
+// courses page, display all relative courses
 router.get('/courses/', function (request, response) {
     response.writeHead(200, {
         'Content-Type': 'text/html'
@@ -194,7 +156,8 @@ router.get('/courses/', function (request, response) {
         var userInfo = request.session.passport.user;
 
         client_api.getUniversityName(userInfo.universityId).then(result => {
-          userInfo.university = result.dataValues.universityName;
+
+          userInfo.university = result.universityName;
           // Add create-a-class section if user is authenticated
           if (request.isAuthenticated()) {
             form = getCreateClassForm(userInfo);
@@ -289,8 +252,8 @@ router.get('/courses/', function (request, response) {
                 var html = Mustache.render(managementMustache, view);
                 response.end(html);
               });
-            }).catch(err => console.log(err)); /* Promise.all() */
-          }).catch(err => console.log(err)); /* getUniversityName() */
+            }).catch(err => perror(err)); /* Promise.all() */
+          }).catch(err => perror(err)); /* getUniversityName() */
     });
   });
 });
@@ -303,7 +266,7 @@ router.post('/courses/newclass', function (request, response) {
     var course = request.body;
 
     if (!userInfo) {
-      console.log('Invalid userInfo');
+      perror('Invalid userInfo');
       response.end();
       return;
     }
@@ -316,9 +279,9 @@ router.post('/courses/newclass', function (request, response) {
     /* course creator should be enrolled as instructor */
     client_api.addCourse(userInfo, course)
     .then(result => {
-      permission.addCoursePermission(userInfo.mailId, result[0].dataValues.courseOfferingId, 'Modify');
+      permission.addCoursePermission(userInfo.mailId, result.courseOfferingId, 'Modify');
     })
-    .catch(err => { console.log(err); }) /* addCourse() */
+    .catch(err => perror(err)); /* addCourse() */
     response.end();
 });
 
@@ -337,7 +300,7 @@ router.get('/courses/search', function (request, response) {
         var userInfo = request.session.passport.user;
 
         if (!userInfo) {
-          console.log('Invalid userInfo');
+          perror('Invalid userInfo');
           response.end();
           return;
         }
@@ -382,7 +345,7 @@ router.get('/courses/search', function (request, response) {
                 client_api.getCoursesByIds(commands).then(values => {
                     var origlen =values.length;
                     values = values.filter(value => value != undefined);
-                    if(values.length!=origlen) { console.log("nil in search replies detected"); }
+                    if(values.length!=origlen) { perror("nil in search replies detected"); }
 
                     request.session['currentContent'] = values;
 
@@ -405,12 +368,11 @@ router.get('/courses/search', function (request, response) {
                         var html = Mustache.render(managementMustache, view);
                         response.end(html);
                     });
-                }).catch(err => console.log(err));
+                }).catch(err => perror(err));
             // });
         });
     });
 });
-
 
 
 // Handles class deletion,
@@ -594,61 +556,39 @@ function  generateListings(data, user, cb) {
         var debug = false;
         if (debug || (user != '' && user != undefined)) {
             var classid = e.courseOfferingId;
-            console.log(e);
-            console.log(user);
             permission.checkCoursePermission(user, classid, 'Modify', function(error, result) {
 
-              console.log('\x1b[33m' + 'checking permission of ' + classid + '!');
-              console.log('\x1b[35m' + 'result: ' + result + ' err: ' + error);
-              console.log('\x1b[0m')
+              info(classid);
+              log('result: ' + result + ' err: ' + error);
 
-            // acl.isAllowed(user, classid, 'Modify', function (err, res) {
                 if (result) {
-                    // Modify and remove functionalityies will be moved from this page
-                    // html +=
-                    //     '<a class="actionbtn modbtn" data-toggle="modal" data-target="#modpanel">' +
-                    //     '          <span class="glyphicon glyphicon-pencil"></span> Modify\n' +
-                    //     '        </a>';
-                    // permission.checkCoursePermission(user, classid, 'Remove', function (err, res) {
-                    // acl.isAllowed(user, classid, 'Remove', function (err, res) {
-                        // if (res) {
-                        //     html +=
-                        //         '<a class="actionbtn rmbtn">' +
-                        //         '          <span class="glyphicon glyphicon-remove"></span> Remove\n' +
-                        //         '        </a>' +
-                        //         '</td>';
-                        // }
-                        // html += '</tr>';
                         html +=
                             '<a class="actionbtn mnbtn">' +
                             '          <span class="glyphicon glyphicon-plus"></span> Manage\n' +
                             '        </a>';
                         fcb(null,html);
                     // });
-                }
-                else{
+                } else {
                   permission.checkCoursePermission(user, classid, 'Drop', function (err, res) {
-                    // acl.isAllowed(user, classid, 'Drop', function (err, res) {
-                        if (!res) {
-                            html +=
-                                '<a class="actionbtn erbtn">' +
-                                '          <span class="glyphicon glyphicon-plus"></span> Enroll\n' +
-                                '        </a>';
-                        }
-                        else {
-                            html +=
-                                '<a class="actionbtn dpbtn">' +
-                                '          <span class="glyphicon glyphicon-minus"></span> Drop\n' +
-                                '        </a>';
-                        }
-                        html += '</br>';
-                        fcb(null, html);
-                    });
+                    if (!res) {
+                      html +=
+                      '<a class="actionbtn erbtn">' +
+                      '          <span class="glyphicon glyphicon-plus"></span> Enroll\n' +
+                      '        </a>';
+                    } else {
+                      html +=
+                      '<a class="actionbtn dpbtn">' +
+                      '          <span class="glyphicon glyphicon-minus"></span> Drop\n' +
+                      '        </a>';
+                    }
+                    html += '</br>';
+                    fcb(null, html);
+                  }); /* permission.checkCoursePermission() [drop] */
                 }
-
-            });
+            }); /* permission.checkCoursePermission() [modify] */
+        } else {
+          fcb(null,html);
         }
-        else{fcb(null,html)}
     },function (err, res) {cb(res);});
 }
 
@@ -660,7 +600,7 @@ function getUserId(req) {
     try {
       id = req.session.passport.user.mailId;
     } catch(e) {
-      console.log("Invalid user id detected");
+      perror("Invalid user id detected");
     }
     return id;
 }
