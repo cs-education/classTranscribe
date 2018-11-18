@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Profile Management</title>
+
+    <!--<link rel="stylesheet" type="text/css" href="stylesheets/resetHome.css" />-->
+    <!--<link rel="stylesheet" type="text/css" href="stylesheets/home.css" />-->
+    <!--<link rel="stylesheet" type="text/css" href="stylesheets/style-responsive.css" />-->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <link rel="stylesheet"  type="text/css" href="/stylesheets/courseTable.css">
+</head>
+
+<body style="padding-top: 10rem">
+
+<nav class="navbar navbar-default navbar-fixed-top navmain" >
+    <div class="container" >
+        <a href="/" class="CTtitle"><h1>Class Transcribe</h1></a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <div class="row">
+        <div class="col-md-2">
+        </div>
+        <div class="col-md-10">
+            <!--Select a term:-->
+            <select id="school-term" value="All" hidden="yes">
+            <!--<select id="school-term" value="All">/-->
+            </select>
+
+            <form action="/courses/search" id="search-form" method="GET" class="pull-right">
+                <input type='input' id='search-input' name="q">
+                <input type='submit' id='search-button' value='Search' class="btn">
+            </form>
+            {{{createClassButton}}}
+        </div>
+    </div>
+
+
+    <div style="margin:3rem">
+    </div>
+
+
+    <div class="row">
+
+        <div class="col-lg-2  filterbox">
+            <div>
+                <h5>Filter By Terms</h5>
+                <div id="termFilterData">
+                    {{{termfilterdata}}}
+                </div>
+            </div>
+
+            <div>
+                <h5>Filter By Subject</h5>
+                <div id="subjectFilterData">
+                    {{{subjectfilterdata}}}
+                </div>
+            </div>
+
+        </div>
+        <div class="col-lg-10">
+            <table class="table table-sm" id="course-list">
+                <!--<tr id="#header">-->
+                    <!--<th>University</th>-->
+                    <!--<th>Subject</th>-->
+                    <!--<th>Course Number</th>-->
+                    <!--<th>Section Number</th>-->
+                    <!--<th>Course Name</th>-->
+                    <!--<th>Course Instructor</th>-->
+                    <!--<th>Course Descruption</th>-->
+                    <!--<th>Action</th>-->
+                <!--</tr>-->
+                {{{tabledata}}}
+            </table>
+
+            {{{createform}}}
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<!--modify panel-->
+<div id="modpanel" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Modify Course</h2>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id ='modform' class="" method="POST">
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <label>University</label> <input type="text" class="form-control" id="mfmin1"  name="University" readonly>
+
+                            <label>Subject</label> <input type="text" class="form-control" id="mfmin3" name="Subject" readonly>
+
+                            <label>Course Number</label> <input type="text" class="form-control" id="mfmin4" name="Course Number" readonly>
+                        </div>
+
+                        <div class="col-lg-3">
+                            <label>Instructor</label> <input type="text" class="form-control" id="mfmin2" name="Instructor" readonly>
+
+                            <label>Class Name</label> <input type="text" class="form-control" id="mfmin5" name="Class Name" >
+
+                            <label>Section Number</label> <input type="text" class="form-control" id="mfmin6" name="Section Number" readonly>
+
+                        </div>
+                        <div class="col-lg-6"><label>Course Description</label> <textarea type="text" class="form-control" id="mfmin7" name="Course Description" style="resize: vertical;"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="mfmapply" type="button" class="btn btn-default" form="#modform">Apply</button>
+                <button id='mfmcancel' type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<section class="footer">
+    <div class="margin">
+        <div class="menu-footer">
+            <a href="/">Home</a>
+            <a href="https://www.facebook.com/classtranscribe">Facebook</a>
+        </div>
+        <div class="copyright">© 2016. All Rights Reserved UIUC</div>
+    </div>
+</section>
+
+
+<!-- Scripts -->
+
+<script src="/javascripts/libraries/jquery.parallax.js"></script> <!-- jQuery Parallax -->
+<script src="/javascripts/libraries/jquery.nicescroll.js"></script> <!-- jQuery NiceScroll -->
+<script src="/javascripts/libraries/jquery.sticky.js"></script> <!-- jQuery Stick Menu -->
+
+
+<script>
+    // populate school term options
+    <!--var schoolTermsList="{{termlist}}".split(",");-->
+    <!--var termSelection = document.getElementById("school-term");-->
+    <!--schoolTermsList.forEach(function(element) {-->
+        <!--var option = document.createElement("option");-->
+        <!--option.text = element;-->
+        <!--option.value = element;-->
+        <!--termSelection.add(option);-->
+    <!--});-->
+
+
+
+    // Delete button, outdated and should be removed from this page
+    $(document).on('click',".actionbtn.rmbtn",function (e) {
+        e.preventDefault();
+        var retd = {};
+        for (var d in $(this).parent().parent()[0]){
+            retd[d] = d;
+        }
+        var row = $(this).closest("tr");
+        $.ajax({
+            url : "/courses/deleteclass/",
+            type: "DELETE",
+            data:'term='+$("#school-term").val()+'&classinfo='+$(this).closest("tr").find('td').map(function() {
+                return $(this).text();
+            }).get().join(',,'),
+            success: function (data) {
+                row.html("");
+                location.reload();
+            },
+            error: function (jXHR, textStatus, errorThrown) {
+                alert(errorThrown);
+            }
+        });
+    });
+
+    // needed for modify
+    termselected = '';
+    uniselected = '';
+
+    // Modify button, outdated and should be removed from this page
+    $(document).on('click',".actionbtn.modbtn",function (e) {
+        e.preventDefault();
+        var retd = {};
+        for (var d in $(this).parent().parent()[0]){
+            retd[d] = d;
+        }
+        var row = $(this).closest("tr");
+        var info = $(this).closest("tr").find('td').map(function() {
+            return $(this).text()});
+        termselected = info[0];
+        uniselected = info[1];
+        populateForm(info);
+    });
+    function populateForm(info) {
+        $('#mfmin1').val(info[1]);
+        $('#mfmin2').val(info[6]);
+        $('#mfmin3').val(info[2]);
+        $('#mfmin4').val(info[3]);
+        $('#mfmin5').val(info[5]);
+        $('#mfmin6').val(info[4]);
+        $('#mfmin7').val(info[7]);
+    }
+
+
+    $(document).on('click',"#mfmapply",function (e) {
+        e.preventDefault();
+        var row = $(this).closest("tr");
+        var info = $(this).closest("tr").find('td').map(function() {
+            return $(this).text()});
+        $.ajax({
+            url : "/courses/modifyclass/",
+            type: "POST",
+            data:$('#modform').serialize()+'&uni=' +uniselected+'&term='+termselected,
+            success: function (data) {
+                console.log(data)
+                $('#modpanel').modal('hide');
+                location.reload();
+            },
+            error: function (jXHR, textStatus, errorThrown) {
+                alert(errorThrown);
+            }
+        });
+    });
+
+    $(document).on('click',".form-check-input",function (e) {
+        var fterm=$("#termFilterData input:checked").map(function(i,e){return e.value;}).get().join(';;');
+        var fsubject=$("#subjectFilterData input:checked").map(function(i,e){return e.value;}).get().join(';;');
+        $.ajax({
+            url : "/courses/applyfilter",
+            type: "POST",
+            data:'termfilter='+fterm+'&subjectfilter='+fsubject,
+            success: function (data) {
+                $('#course-list').html(data);
+            },
+            error: function (jXHR, textStatus, errorThrown) {
+                alert(errorThrown);
+            }
+        });
+    });
+    // Manage
+    $(document).on('click',".actionbtn.mnbtn",function (e) {
+        e.preventDefault();
+        var retd = {};
+        for (var d in $(this).parent().parent()[0]){
+            retd[d] = d;
+        }
+        var row = $(this).closest("tr");
+        var attributes = $(this).closest("tr").find('td').map(function() {
+            return $(this).text();
+        })
+        console.log(attributes);
+        className = attributes.get(1)
+        className = className.replace(/\s/g, '')
+        console.log($.get(className))
+        // $.post('/'+className)
+        window.location = '/manage/' + className;
+
+    });
+    // Enroll
+    $(document).on('click',".actionbtn.erbtn",function (e) {
+        e.preventDefault();
+        var retd = {};
+        for (var d in $(this).parent().parent()[0]){
+            retd[d] = d;
+        }
+        var row = $(this).closest("tr");
+        $.ajax({
+            url : "/courses/enroll/",
+            type: "POST",
+            data:'cid='+$(this).closest("tr").attr('id')+'&classinfo='+$(this).closest("tr").find('td').map(function() {
+                return $(this).text();
+            }).get().join(',,'),
+            success: function (data) {
+                location.reload();
+            },
+            error: function (jXHR, textStatus, errorThrown) {
+                alert(errorThrown);
+            }
+        });
+    });
+    // Drop
+    $(document).on('click',".actionbtn.dpbtn",function (e) {
+        e.preventDefault();
+        var retd = {};
+        for (var d in $(this).parent().parent()[0]){
+            retd[d] = d;
+        }
+        var row = $(this).closest("tr");
+        $.ajax({
+            url : "/courses/drop/",
+            type: "POST",
+            data:'cid='+$(this).closest("tr").attr('id')+'&classinfo='+$(this).closest("tr").find('td').map(function() {
+                return $(this).text();
+            }).get().join(',,'),
+            success: function (data) {
+                location.reload();
+            },
+            error: function (jXHR, textStatus, errorThrown) {
+                alert(errorThrown);
+            }
+        });
+    });
+
+
+</script>
+
+</body>
+
+</html>

@@ -1,13 +1,17 @@
+/** Copyright 2015 Board of Trustees of University of Illinois
+ * All rights reserved.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 var fs = require('fs');
-var client = require('./../modules/redis');
+// var client = require('./../modules/redis');
 
 var path = process.argv[2];
-var className = process.argv[3];
-
-console.log(path);
+var className = process.argv[3].toUpperCase();
 
 var lectures = fs.readdirSync(path).filter(function (dir) {
-  return dir.indexOf("Lecture") > -1;
+  return dir.indexOf("Lecture") > -1 && fs.statSync(path+'/'+dir).isDirectory();
 });
 
 var tasks = [];
@@ -23,7 +27,10 @@ lectures.forEach(function (lecture) {
 });
 
 tasks.forEach(function (task) {
-  client.zadd("ClassTranscribe::Tasks::" + className, 1, task);
+  console.log("task: ", task);
+  // client.zadd("ClassTranscribe::Tasks::" + className, 1, task);
 });
 
-console.log(tasks)
+setTimeout((function() {
+    return process.exit(1);
+}), 5000);

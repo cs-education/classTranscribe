@@ -1,0 +1,296 @@
+/* Thomsoon.com - OnePage CSS Responsive
+-- version 1.0
+-- Copyright (c) 2014 Thomsoon.com
+-- licensed under the MIT
+--
+-- http://www.thomsoon.com/free-onepage-theme-html5.html
+--
+*/
+
+/* iPad (portrait) */
+@media (min-width: 320px) and (max-width: 579px) {
+
+.menu{
+  display:none;
+}
+
+.menu-media{
+  display:block;
+}
+
+.start-page .content {
+  width:300px;
+  height:500px;
+}
+
+.start-page, .start-page .opacity{
+  height:500px;
+}
+.start-page .content .text {
+  width:300px;
+}
+
+
+h1 {
+  font-size:36px;
+}
+
+.about-us h1 {
+  margin-top:0;
+}
+
+.about-us{
+  width:300px;
+}
+
+.about-us hr,.courses .courses-margin hr, .contact hr {
+  width:200px;
+}
+
+.about-us .column-one, .about-us .column-two{
+  width:300px;
+  margin-bottom:20px;
+}
+
+ .about-us .column-three{
+  width:300px;
+  margin-bottom:70px;
+ }
+
+.courses .courses-margin{
+  width:300px;
+}
+
+.partners .content{
+  width:300px;
+}
+
+.partners .logo {
+  width:300px;
+}
+
+.partners .logo img {
+  width:80px;
+}
+
+.contact, .contact .content, .contact .content .form{
+  width:300px;
+}
+
+.contact .content .contact-text{
+  padding-left:0px;
+  width:300px;
+  text-align:center;
+  margin-top:60px;
+}
+
+.footer .margin {
+  width:300px;
+}
+
+.footer .margin .copyright {
+  width:280px;
+  text-align:center;
+}
+
+.footer .margin .menu-footer{
+  width:300px;
+}
+
+.footer .margin .menu-footer a{
+  font-size:15px;
+  padding-right:10px;
+  text-align:center;
+}
+
+}
+
+
+
+
+
+
+
+/* iPad (portrait) */
+@media (min-width: 580px) and (max-width: 767px) {
+
+.menu{
+  display:none;
+}
+
+.menu-media{
+  display:block;
+}
+
+.menu-media .menu-content{
+  width:540px;
+}
+
+.start-page .content {
+  width:560px;
+  height:500px;
+}
+
+.start-page, .start-page .opacity{
+  height:500px;
+}
+.start-page .content .text {
+  width:560px;
+}
+
+
+h1 {
+  font-size:56px;
+}
+
+.about-us h1 {
+  margin-top:0;
+}
+
+.about-us{
+  width:300px;
+}
+
+.about-us hr,.courses .courses-margin hr, .contact hr {
+  width:200px;
+}
+
+.about-us .column-one, .about-us .column-two{
+  width:300px;
+  margin-bottom:20px;
+}
+
+ .about-us .column-three{
+  width:300px;
+  margin-bottom:70px;
+ }
+
+.courses .courses-margin{
+  width:300px;
+}
+
+.partners .content{
+  width:300px;
+}
+
+.partners .logo {
+  width:300px;
+}
+
+.partners .logo img {
+  width:80px;
+}
+
+.contact, .contact .content, .contact .content .form{
+  width:300px;
+}
+
+.contact .content .contact-text{
+  padding-left:0px;
+  width:300px;
+  text-align:center;
+  margin-top:60px;
+}
+
+.footer .margin {
+  width:300px;
+}
+
+.footer .margin .copyright {
+  width:300px;
+  text-align:center;
+}
+
+.footer .margin .menu-footer{
+  width:320px;
+}
+
+}
+
+
+
+
+
+
+
+
+
+
+
+/* iPad (portrait) */
+@media (min-width: 768px) and (max-width: 1023px) {
+
+
+
+.menu-content .logo{
+  width:200px;
+}
+
+.menu-content{
+  width:700px;
+}
+
+.about-us{
+  width:700px;
+}
+
+.about-us .column-one{
+  width:233px;
+}
+
+.about-us .column-two{
+  width:233px;
+}
+
+.about-us .column-three{
+  width:233px;
+}
+
+.courses .courses-margin {
+  width:600px;
+}
+
+.partners .content{
+  width:700px;
+}
+
+.partners .logo {
+  width:700px;
+}
+
+.footer .margin .menu-footer {
+  width:350px;
+}
+
+.footer .margin .copyright {
+  width:320px;
+}
+.footer .margin {
+  width:700px;
+}
+
+.contact {
+  width:700px
+}
+
+.contact .content {
+  width:700px;
+}
+
+.contact .content .form{
+  width:355px;
+}
+
+input{
+  width:320px;
+}
+
+textarea{
+  width:320px;
+}
+
+.contact .content .contact-text {
+  width:275px;
+}
+
+}

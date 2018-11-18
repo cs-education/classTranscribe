@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+	<link rel="stylesheet" type="text/css" href="/stylesheets/dashboard.css" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+	<div class="content">
+		<div class="home-container">
+            <button class="home" onclick="window.location='/';">Home</button>
+		</div>
+		<div class="container">
+			<button class="user" onclick="window.location='/settings';"><i class="fa fa-user-circle-o" aria-hidden="true"></i> {{user}}</button>
+			<button class="logout-home" onclick="window.location='/logout'">Log Out</button>
+		</div>
+	</div>
+	<div class="dashboard-container">
+		<h1>DASHBOARD</h1>
+		<div class="buttons">
+			<!--<button type="manage" class="manage" onclick="window.location='/manageCourse';"/>Manage Course</button>-->
+			<button type="add" class="add" onclick="window.location='/courses';"/> Courses </button>
+		</div>
+	</div>
+</body>

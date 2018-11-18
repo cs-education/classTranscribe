@@ -1,0 +1,71 @@
+.header-container {
+	text-align: center;
+	padding-left: 30%;
+	padding-right: 30%;
+	padding-top: 5%;
+}
+
+.manage-course {
+	font-size: 50px;
+}
+
+.line-separator-header {
+    height:2px;
+    background-color: #135F9C;
+}
+
+.search {
+	width: 85%;
+    border: 2px solid #ccc;
+    border-radius: 3px;
+    font-size: 14px;
+    padding: 12px;
+}
+
+.enroll-container {
+	padding-left: 10%;
+	padding-right: 10%;
+	padding-top: 5%;
+	padding-bottom: 5%;
+	font-size: 15px;
+	line-height: 40px;
+}
+
+.enroll-header, .upload-video-header {
+	padding-left: 5px;
+	padding-top: 15px;
+	font-size: 20px;
+}
+
+.line-separator {
+    height: 1px;
+    background-color: #135F9C;
+}
+
+.enroll-instructor-container, .enroll-student-container, .upload-video-container {
+	padding-left: 10px;
+	font-size: 15px;
+}
+
+.enroll-person, .upload {
+	padding: 5px;
+	width: 450px;
+	height: 75px;
+}
+
+.dropzone {
+	width: 450px;
+}
+
+.enroll-button, .upload-button {
+	padding: 5px;
+	font-size: 15px;
+	border: none;
+	border-radius: 5px;
+	background-color: #2c5d9d; 
+	color: #e4e7ea;
+}
+
+#upload-file, #upload-video {
+	display: none;
+}

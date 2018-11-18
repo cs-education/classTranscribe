@@ -1,0 +1,119 @@
+@import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:400&subset=latin,latin-ext);
+
+label {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size:15px;
+}
+
+input[type=text], input[type=password] {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size:15px;
+    width: 350px;
+    padding: 12px 20px;
+}
+
+h1 {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size:30px;
+    padding-bottom:30px;
+    margin:auto;
+    color:black
+}
+
+h2 {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size:15px;
+    padding-bottom:30px;
+    margin:auto;
+    color:black
+}
+
+.signup-home {
+    width:100px;
+    height:47px;
+    margin:50px auto;
+    border:1px solid black;
+    text-transform:uppercase;
+    color:black;
+    cursor:pointer;
+    font-size:15px;
+    background:none;
+}
+
+.signup-submit {
+    width:183px;
+    height:47px;
+    margin:50px 0px auto;
+    border:1px solid white;
+    text-transform:uppercase;
+    color:white;
+    cursor:pointer;
+    font-size:15px;
+    background:#00a5d7;
+}
+
+.signup-home:hover {
+    color:black;
+    background:white;
+}
+
+.container {
+    /* top:50%; */
+    padding-top:150px;
+    text-align:center;
+}
+
+.login-container {
+    padding-top: 25px;
+    text-align:center;
+}
+
+span.psw,
+span.login {
+    font-family: 'Source Sans Pro', sans-serif;
+    padding-top:16px;
+    font-style:normal;
+    font-size:15px;
+}
+
+span.login a{
+    text-decoration:none;
+    outline:none;
+    color:blue;
+}
+
+.signup-modal {
+    display:none;
+    position:absolute;
+    z-index:1;
+    width:600px;
+    height:300px;
+    left: 50%;
+    top: 50%;
+    margin-top:-150px;
+    margin-left:-300px;
+    overflow:hidden;
+    background-color:rgb(255,255,255);
+    padding-top:60px;
+}
+
+.signup-modal-content {
+    background-color: #fefefe;
+}
+
+.close {
+    position: absolute;
+    right: 25px;
+    top: 10px;
+    color: #000;
+    font-family: Sans-Serif;
+    font-style: normal;
+    font-size: 40px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: red;
+    cursor: pointer;
+}
