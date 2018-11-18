@@ -1,15 +1,14 @@
 'use strict';
-var db = require('../db/db');
+//var db = require('../db/db');
 const request = require('request');
 var Cookie = require('request-cookies').Cookie;
 var rp = require('request-promise');
 var path = require('path');
 var fs = require('fs');
+var conversion_utils = require('./conversion_utils')
 //var youtubedl = require('youtube-dl');
-var youtube_google_api_key = 'AIzaSyDKnpdznYOFxm_IRnrclGh4oSdQloZycOo';
-var azureSubscriptionKey = '926e97a14b9946b98175f9b740af6579';
-var azureRegion = 'westus';
-const _dirname = '../../Data/';
+var youtube_google_api_key = process.env.YOUTUBE_API_KEY;
+const _dirname = '/data/';
 
 const promiseSerial = funcs =>
     funcs.reduce((promise, func) =>
@@ -32,13 +31,14 @@ function youtube_scraper_channel(channel_id) {
                 }
                 output.push(item);
             }
-            return new Promise((resolve, reject) => {
-                resolve(output);
-            });
+            console.log(output);
+            return Promise.resolve(output);
         });
 }
+youtube_scraper_channel('UCcIXc5mJsHVYTZR1maL5l9w')
 
 function download_youtube_playlist(playlist_id) {
+    // TODO: Support more than 50 videos
     var url_playlist = 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&' +
         'playlistId=' + playlist_id + '&key=' + youtube_google_api_key + '&maxResults=' + 50;
     return rp({ url: url_playlist })
@@ -158,7 +158,7 @@ function echo_scraper(publicAccessUrl) {
 }
 
 function download_course_info_2(section_url) {
-    var jsonCookieString = require('../../cookieJson.json');
+    var jsonCookieString = require('../cookieJson.json');
     var Cookies = ['PLAY_SESSION', 'CloudFront-Key-Pair-Id', 'CloudFront-Policy', 'CloudFront-Signature'];
     var play_session_login = '';
     for (var j in jsonCookieString) {
@@ -259,50 +259,27 @@ function download_echo_lecture(task, media) {
         }));
 }
 
-function convertVideoToWav(taskId, callback) {
+function convertTaskVideoToWav(taskId) {
     console.log("convertVideoToWav");
     return db.getTask(taskId)
-        .then(task => {
-            var pathToFile = task.videoLocalLocation;
-            var outputFile = _dirname + pathToFile.substring(pathToFile.lastIndexOf('/') + 1, pathToFile.lastIndexOf('.')) + '.wav';
-            const { spawn } = require('child-process-promise');
-            const ffmpeg = spawn('ffmpeg', ['-nostdin', '-i', pathToFile, '-c:a', 'pcm_s16le', '-ac', '1', '-y', '-ar', '16000', outputFile]);
-
-            ffmpeg.childProcess.stdout.on('data', (data) => {
-                console.log(`stdout: ${data}`);
-            });
-
-            ffmpeg.childProcess.stderr.on('data', (data) => {
-                console.log(`stderr: ${data}`);
-            });
-
-            return ffmpeg.then(result => task.update({
-                wavAudioLocalFile: path.resolve(outputFile)
-            }));
-        });
+        .then(task => conversion_utils.convertTaskVideoToWav(task.videoLocalLocation))
+        .then(outputFile => task.update({
+            wavAudioLocalFile: path.resolve(outputFile)
+        }));
 }
 
+function convertTaskToSrt(taskId) {
+    console.log("convertTaskToSrt");
 
+}
 
-function wavToSrt(taskId, callback) {
+function wavToSrt(taskId) {
     console.log("wavToSrt");
-    return db.getTask(taskId).then(task => {
-        var pathToFile = task.wavAudioLocalFile;
-        var outputFile = _dirname + pathToFile.substring(pathToFile.lastIndexOf('/') + 1, pathToFile.lastIndexOf('.')) + '.srt';
-        const { spawn } = require('child-process-promise');
-        const dotnet = spawn('dotnet', ['MSCognitiveDotNetCore/MSCog.dll', azureSubscriptionKey, azureRegion, pathToFile]);
-        dotnet.childProcess.stdout.on('data', (data) => {
-            console.log(`stdout: ${data}`);
-        });
-
-        dotnet.childProcess.stderr.on('data', (data) => {
-            console.log(`stderr: ${data}`);
-        });
-
-        return dotnet.then(result => task.update({
+    return db.getTask(taskId)
+        .then(task => conversion_utils.convertWavFileToSrt(task.wavAudioLocalFile))
+        .then(outputFile => task.update({
             srtFileLocation: path.resolve(outputFile)
         }));
-    });
 }
 
 module.exports = {
