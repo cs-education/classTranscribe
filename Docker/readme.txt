@@ -38,18 +38,25 @@
 
 	(The dot at the end is important)
 
-5. Setup Production Image
+RUN EITHER THE PRODUCTION OR THE DEVELOPMENT IMAGE INSTRUCTIONS
+
+For Setup of Production Image
 
 	Build the image,
 	docker build -f Dockerfile.production -t cs-education/classtranscribe/production ..
 	Run the image,
+	(REPLACE THE {Absolute_path_to_data_directory} with a local directory where the data will be stored)
 	docker run -i -t -p 443:8000 -p 80:7000 --mount type=bind,source={Absolute_path_to_data_directory},target=/data --link CTdb:mssql --env-file env.list --name CT_Prod cs-education/classtranscribe/production /bin/bash -c "git pull; npm install; npm start"
 
-6. Setup Dev Image
+	OR
+
+For Setup of Development Image
 
 	Build the image,
 	docker build -f Dockerfile.dev -t cs-education/classtranscribe/dev ..
-	Run the image, (Make sure to replace the absolute path in the following command)
+	Run the image, 
+	(REPLACE THE {Absolute_path_to_local_classTranscribe_repository} with a local directory the git repositor is stored)
+	(REPLACE THE {Absolute_path_to_data_directory} with a local directory where the data will be stored)
 	docker run -i -t --mount type=bind,source={Absolute_path_to_local_classTranscribe_repository},target=/classTranscribe --mount type=bind,source={Absolute_path_to_data_directory},target=/data -p 443:8000 -p 80:7000 --link CTdb:mssql --env-file env.list --name CT_Dev cs-education/classtranscribe/dev /bin/bash -c "npm install; npm audit fix; npm start"
 
 	For example,
