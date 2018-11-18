@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 var fs = require('fs');
-var client = require('./../modules/redis');
+// var client = require('./../modules/redis');
 
 var path = process.argv[2];
 var className = process.argv[3].toUpperCase();
@@ -28,11 +28,9 @@ lectures.forEach(function (lecture) {
 
 tasks.forEach(function (task) {
   console.log("task: ", task);
-  client.zadd("ClassTranscribe::Tasks::" + className, 1, task);
+  // client.zadd("ClassTranscribe::Tasks::" + className, 1, task);
 });
 
-setTimeout((function() {  
+setTimeout((function() {
     return process.exit(1);
 }), 5000);
-
-

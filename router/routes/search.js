@@ -38,6 +38,8 @@ router.get('/search/:courseId/:offeringId', function (request, response) {
 
 
 /* Gets all the videos for a class and puts in an array with the path */
+/* RegExp.prototype.test() Reference:
+    https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test*/
 router.get('/getVideos', function(request, response) {
   var className = request.query.className.toUpperCase();
   console.log("getting list of videos: " + className);
@@ -46,8 +48,10 @@ router.get('/getVideos', function(request, response) {
   try {
     fs.readdirSync(path_videos).forEach(function(dir) {
       /* filters hidden directories/files */
+      /* dir should start with . preceeding any number of chracters */
       if(! /^\..*/.test(dir)) {
         fs.readdirSync(path_videos + "/" + dir).forEach(function(file) {
+          /* if not a .mp3/.wav/directory, replace .mp4 with "" */
           if(! /^\..*/.test(file) && !/.mp3/.test(file) && !/.wav/.test(file)) {
             lecture_video = file.replace(".mp4", "");
             path_video = "../../videos/" + className + "/" + dir + "/" + file

@@ -5,10 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-//var router = express.Router();
-
-//var mustachePath = 'templates/';
-
 const router = express.Router();
 const fs = require('fs');
 const mkdirp = require('mkdirp');
