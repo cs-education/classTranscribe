@@ -1,9 +1,15 @@
 0. Install docker
+
+	Make sure you have a docker account,
+	After installation login to docker,
+	The command is,
+	docker login
+
 1. Clone the repository,
     git clone https://github.com/cs-education/classTranscribe.git
    Checkout the fa18-demo branch
     git checkout fa18-demo
-2. Navigate to the github repository.
+2. Navigate to the "Docker" folder in the github repository.
 3. Setup SQL
 
 	Pull Docker Image for SQL,
@@ -37,22 +43,24 @@
 	Build the image,
 	docker build -f Dockerfile.base -t cs-education/classtranscribe/base .
 
+	(The dot at the end is important)
 
 6. Setup Production Image
 
 	Build the image,
 	docker build -f Dockerfile.production -t cs-education/classtranscribe/production ..
 	Run the image,
-	docker run -i -t -p 443:8000 -p 80:7000 --link redisdb:redis --link CTdb:mssql --env-file env.list --name CT_Prod cs-education/classtranscribe/production /bin/bash -c "git pull; npm install; npm start"
+	docker run -i -t -p 443:8000 -p 80:7000 --mount type=bind,source={Absolute_path_to_data_directory},target=/data --link redisdb:redis --link CTdb:mssql --env-file env.list --name CT_Prod cs-education/classtranscribe/production /bin/bash -c "git pull; npm install; npm start"
 
 7. Setup Dev Image
 
 	Build the image,
 	docker build -f Dockerfile.dev -t cs-education/classtranscribe/dev ..
-	docker run -i -t --mount type=bind,source={Absolute_path_to_local_classTranscribe_repository},target=/classTranscribe -p 443:8000 -p 80:7000 --link redisdb:redis --link CTdb:mssql --env-file env.list --name CT_Dev cs-education/classtranscribe/dev /bin/bash -c "npm install; npm audit fix; npm start"
+	Run the image, (Make sure to replace the absolute path in the following command)
+	docker run -i -t --mount type=bind,source={Absolute_path_to_local_classTranscribe_repository},target=/classTranscribe --mount type=bind,source={Absolute_path_to_data_directory},target=/data -p 443:8000 -p 80:7000 --link redisdb:redis --link CTdb:mssql --env-file env.list --name CT_Dev cs-education/classtranscribe/dev /bin/bash -c "npm install; npm audit fix; npm start"
 
 	For example,
-	docker run -i -t --mount type=bind,source=D:\CT\classTranscribe,target=/classTranscribe -p 443:8000 -p 80:7000 --link redisdb:redis --link CTdb:mssql --env-file env.list cs-education/classtranscribe/dev /bin/bash -c "npm install; npm audit fix; npm start "
+	docker run -i -t --mount type=bind,source=D:\CT\classTranscribe,target=/classTranscribe --mount type=bind,source=D:\CT\data,target=/data -p 443:8000 -p 80:7000 --link redisdb:redis --link CTdb:mssql --env-file env.list  --name CT_Dev cs-education/classtranscribe/dev /bin/bash -c "npm install; npm audit fix; npm start "
 
 8. You can access it via your browser on the address "https://127.0.0.1"
 
@@ -74,3 +82,11 @@ NOTE:
     https://gist.github.com/bastman/5b57ddb3c11942094f8d0a97d461b430
 4. If there are docker container name conflicts, instead of "docker run", try "docker start"
     docker start redisdb/CTdb
+
+To connect to the SQL Server for debug purposes,
+Use the following commands,
+	Step 1, Connect to SQL Container
+	sudo docker exec -it CTdb "bash"
+	Step 2, Login to the SQL Server 
+	Use the following command, (The SQL_PASS can be found in the file env.list)
+	/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P {SQL_PASS}

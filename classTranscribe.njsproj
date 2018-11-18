@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{5859d584-d3f8-41d6-bc69-031837518734}</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <ProjectView>ShowAllFiles</ProjectView>
+    <ProjectView>ProjectFiles</ProjectView>
     <StartupFile>server.js</StartupFile>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -326,6 +326,9 @@
     <Folder Include="utils" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="modules\conversion_utils.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="modules\scraper_utils.js" />
     <Compile Include="router\routes\scraper.js" />
   </ItemGroup>
