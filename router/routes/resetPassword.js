@@ -49,13 +49,13 @@ router.post('/resetPassword/submit', function (request, response) {
     var email = request.body.email;
 
     // Check if email address exists
-    verifier.verify(email, function(err, info) {
+    verifier.verify(email, function(err, result) {
         if ( err ) {
           perror(err);
         } else {
 
           // Display error when email is not valid
-          if ( info.success == false ) {
+          if ( result.success == false ) {
             var error = "Email does not exist";
             perror(error);
             response.send({ message: error, html: '' });
