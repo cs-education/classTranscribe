@@ -34,7 +34,7 @@ RUN apt-get install -y python-dev
 RUN apt-get install -y sox
 RUN apt-get install -y libsox-fmt-all
 RUN apt-get install -y libasound2-plugins
-
+RUN apt-get install -y nano
 
 #RUN sudo apt-get install -y python-software-properties
 RUN add-apt-repository ppa:ondrej/php
@@ -43,6 +43,7 @@ RUN apt-get install -y php7.0-cli
 
 #RUN add-apt-repository ppa:jonathonf/ffmpeg-3
 RUN apt-get install -y ffmpeg
+RUN wget https://yt-dl.org/latest/youtube-dl -O /usr/local/bin/youtube-dl; chmod a+x /usr/local/bin/youtube-dl; hash -r
 
 # RUN npm install -g yarn
 
@@ -57,6 +58,22 @@ RUN wget https://bootstrap.pypa.io/get-pip.py; python get-pip.py; pip install nu
 
 WORKDIR p2fa-vislab
 RUN pip install -r requirements.txt; git submodule init; git submodule update
+
+# START Install Dotnet things for MSCognitiveServices
+RUN apt-get install -y liblttng-ust0 libcurl3 libssl1.0.0 libkrb5-3 zlib1g libicu60
+RUN wget -q https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb; dpkg -i packages-microsoft-prod.deb
+RUN add-apt-repository universe
+RUN apt-get update
+RUN apt-get install -y apt-transport-https
+RUN apt-get install -y aspnetcore-runtime-2.1
+RUN apt-get install -y dotnet-sdk-2.1
+
+WORKDIR /
+RUN git clone https://github.com/chirantan31/MSTranscription.git
+WORKDIR MSTranscription
+
+RUN dotnet publish -c release -o /MSTranscription/Release/ -r linux-x64 -f netcoreapp2.1 --self-contained false
+# END 
 
 RUN npm cache clean -f
 RUN npm install -g n
