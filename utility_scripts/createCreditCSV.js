@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 var fs = require('fs')
-var client = require('../modules/redis');
 
 if (process.argv.length < 4) {
   console.log('Please run as: node createCreditCSV.js <class_name> <output_fname>');
@@ -61,5 +60,3 @@ fs.writeFileSync(outputFname, csvString.join(''));
 console.log('finished');
 
 process.exit(0);
-
-
