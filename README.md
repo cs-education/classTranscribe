@@ -67,7 +67,7 @@ Otherwise, setup your own gmail account, and do one of the following for redis:
 
 ## Structure
 ### [db.js](/db/db.js)
-A SQLite based API tool offering database-interaction functions.
+A MSSQL based API tool offering database-interaction functions.
 
 ### [models](/models)
 > models used to build sql tables

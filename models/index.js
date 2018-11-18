@@ -13,22 +13,6 @@ var sqlDb = process.env.SQL_DB;
 var sqlUser = process.env.SQL_USER;
 var sequelize;
 
-// /* sequelize = new Sequelize('database', 'username', 'password')*/
-// sequelize = new Sequelize('TestDb', 'TestAdmin', 'Test123!', {
-//     host: 'ct18.database.windows.net',
-//     dialect: 'mssql',
-//     port: 1433,
-//
-//     pool: {
-//         max: 5,
-//         min: 0,
-//         idle: 10000
-//     },
-//     dialectOptions: {
-//         encrypt: true
-//     }
-// });
-
 /* sequelize = new Sequelize('database', 'username', 'password')*/
 sequelize = new Sequelize(sqlDb, sqlUser, sqlPass, {
   /* uses docker container's name/ID for host */
