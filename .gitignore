@@ -9,3 +9,13 @@ dict.tmp
 node_modules
 *.m4v
 **/commands.txt
+.env
+/piwik
+/cert
+public/server.log
+/videos
+public/videos
+/.idea
+/bin
+/obj
+/testTedious.js

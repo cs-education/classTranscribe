@@ -1,0 +1,3 @@
+Acknowledgement
+---------------
+* world_universities_and_domains.json from https://github.com/Hipo/university-domains-list
