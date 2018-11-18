@@ -369,6 +369,7 @@ function addCourse(user, course) {
         let course_result = getCourseId(course);
         let offering_result = getOfferingId(id, course.section);
         return Promise.all([course_result, offering_result]).then(values => {
+
           id.courseId = values[0].id;
           id.offeringId = values[1].id;
           return addCourseHelper(id);
@@ -392,6 +393,7 @@ function getCoursesByUniversityId( universityId ) {
   return Offering.findAll({
     where : {universityId : universityId},
   }).then(values => {
+
     var offeringValues = values.map( value => value.dataValues);
     var offeringIds = offeringValues.map( offeringValue => offeringValue.id );
     return CourseOffering.findAll({
@@ -411,8 +413,9 @@ function getCoursesByUniversityId( universityId ) {
           id : { [Op.in] : courseList }
         }
       }).then(values => {
+
         var v = values.map((value, index) => {
-          value = value.dataValues;
+          value = value.dataValues
           value.offeringId = offeringIds[index];
           value.termId = offeringValues[index].termId;
           value.courseOfferingId = courseMap[value.id];

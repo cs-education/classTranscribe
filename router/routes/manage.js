@@ -171,7 +171,6 @@ router.post('/UploadStudentsFiles', function (request, response) {
     });
     interface.on('line', function (line) {
       db.addStudents(line, function(err) {
-      // client.sadd("students", line, function(err) {
         console.log("added student: " + line);
       })
     });
@@ -255,68 +254,6 @@ router.post('/uploadLectureVideos', function(request, response) {
         });
       });
     });
-
-    /**files = fs.readdirSync(path_videos);
-    files.forEach(function(file) {
-      path_file = path.join(path_videos, filename);
-      path_file_no_ext = path.join(path_videos, (file.split(/(?:.mp4|.avi|.flv|.wmv|.mov|.wav|.ogv|.mpg|.m4v)/))[0]);
-      console.log("filename: ", file);
-      console.log("path_file: ", path_file);
-      try {
-        var isDir = fs.lstatSync(path_file).isDirectory();
-        if(!isDir) {
-          console.log("About to execute ffmpeg mp4: ", file);
-          // next two execs are for converting the video to the proper format
-          exec("ffmpeg -i " + path_file + " -codec:v libx264 -strict -2 -profile:v high -preset slow -b:v 500k -maxrate 500k -bufsize 1000k -threads 0 " + path_file_no_ext + ".mp4", function(err, stdout, stderr) {
-            console.log("Inside ffmpeg mp4: ", file)
-            console.log("%s stdout: ", file, stdout);
-            console.log("%s stderr: ", file, stderr);
-            if (err !== null) {
-              console.log("%s exec ffmpeg mp4 error: ", file, err);
-            }
-            console.log("About to execute ffmpeg wav: ", file);
-            exec("ffmpeg -i " + path_file + " -f wav -ar 22050 " + path_file_no_ext + ".wav", function(err, stdout, stderr) {
-              console.log("Inside ffmpeg wav: ", file)
-              console.log("%s stdout: ", file, stdout);
-              console.log("%s stderr: ", file, stderr);
-              if (err !== null) {
-                console.log("%s exec ffmpeg wav error: ", file, err);
-              }
-              console.log("About to execute splitRunner: ", file)
-              // node utility_scripts/splitRunner.js <path_to_directory_with_videos> <class_name>
-              // splits the videos
-              exec("node " + path_splitRunner + " " + path_videos + " " + className, function(err, stdout, stderr) {
-                console.log("Inside splitRunner: ", file)
-                console.log("%s stdout: ", file, stdout);
-                console.log("%s stderr: ", file, stderr);
-                if (err !== null) {
-                  console.log("%s exec splitRunner error: ", file, err);
-                }
-                console.log("About to execute taskInitializer: ", file);
-                // node utility_scripts/taskInitializer.js <path_to_directory_with_videos> <class_name>
-                // adds the videos to the queue to be transcribed
-                exec("node " + path_taskInitializer + " " + path_videos + " " + className, function(err, stdout, stderr) {
-                  console.log("Inside taskInitializer: ", file);
-                  console.log("%s stdout: ", file, stdout);
-                  console.log("%s stderr: ", file, stderr);
-                  if (err !== null) {
-                    console.log("%s exec taskInitializer error: ", file, err);
-                  }
-                  console.log("Finished taskInitializer: ", file);
-                  fs.rename(path_file, path.join(path_splitted, file));
-                });
-              });
-            });
-          });
-        }
-        else {
-          console.log(file + " is a directory");
-        }
-      }
-      catch(err) {
-        console.log(err);
-      }
-    });**/
   });
   response.end();
 });
