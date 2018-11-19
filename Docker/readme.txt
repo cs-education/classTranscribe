@@ -7,8 +7,6 @@
 
 1. Clone the repository,
     git clone https://github.com/cs-education/classTranscribe.git
-   Checkout the fa18-demo branch
-    git checkout fa18-demo
 2. Navigate to the "Docker" folder in the github repository.
 3. Setup SQL
 
