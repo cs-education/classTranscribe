@@ -35,6 +35,7 @@
     "morgan": "^1.7.0",
     "multer": "^1.3.0",
     "mustache": "^2.1.2",
+    "node-webvtt": "^1.2.0",
     "node-wget": "^0.4.3",
     "node-wget-promise": "^0.1.6",
     "nodemailer": "^1.11.0",
