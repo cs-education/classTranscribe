@@ -3,7 +3,9 @@ var Sequelize = require('sequelize');
 var models = require('../models');
 const utils = require('../utils/logging');
 const uuid = require('uuid/v4');
-models.sequelize.sync();
+const sequelize = models.sequelize;
+
+sequelize.sync();
 
 const perror = utils.perror;
 const info = utils.info;
@@ -390,41 +392,27 @@ function getTerms() {
 
 /* Get All Courses */
 function getCoursesByUniversityId( universityId ) {
-  return Offering.findAll({
-    where : {universityId : universityId},
-  }).then(values => {
 
-    var offeringValues = values.map( value => value.dataValues);
-    var offeringIds = offeringValues.map( offeringValue => offeringValue.id );
-    return CourseOffering.findAll({
-      where : {
-        offeringId : { [Op.in] : offeringIds }
-      }
-    }).then(values => {
-      var courseMap = {};
-      var courseList = values.map( value => {
-        value = value.dataValues;
-        courseMap[value.courseId] = value.id;
-        return value.courseId;
-      });
+  return sequelize.query(
+    'SELECT oid.*, cid.*, coid.id\
+     FROM \
+     Offerings oid, CourseOfferings coid, Courses cid \
+     WHERE \
+     oid.id = coid.offeringId AND cid.id = coid.courseId AND universityId = ?',
+     { replacements: [ universityId ], type: sequelize.QueryTypes.SELECT })
+     .then(values => {
+       return values.map(value => {
 
-      return Course.findAll({
-        where : {
-          id : { [Op.in] : courseList }
-        }
-      }).then(values => {
+         /* move value.id to value.courseOfferingId */
+         value.courseOfferingId = value.id;
+         delete value.id;
 
-        var v = values.map((value, index) => {
-          value = value.dataValues
-          value.offeringId = offeringIds[index];
-          value.termId = offeringValues[index].termId;
-          value.courseOfferingId = courseMap[value.id];
-          return value;
-        });
-        return v;
-      }).catch(err => perror(err)); /* Course.findAll() */
-    }).catch(err => perror(err)); /* CourseOffering.findAll() */
-  }).catch(err => perror(err)) /* Offering.findAll() */
+         /* remove time attribute */
+         delete value.createdAt;
+         delete value.updatedAt;
+         return value;
+       })
+     }).catch(err => perror(err)); /* raw query */
 }
 
 function addStudent(studentId, courseOfferingId) {

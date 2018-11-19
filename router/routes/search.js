@@ -6,6 +6,8 @@
  */
 
 const fs = require('fs');
+const webvtt = require('node-webvtt');
+
 const db = require('../../db/db');
 
 const searchMustache = fs.readFileSync(mustachePath + 'search.mustache').toString();
@@ -90,7 +92,7 @@ router.get('/getCaptions', function(request, response) {
                 if(err) {
                   reject(err);
                 }
-                resolve(results);
+                resolve( parseWebVTT(results) );
               })
             }));
           }
@@ -121,5 +123,20 @@ router.get('/getCaptions', function(request, response) {
     console.log(err);
   });
 });
+
+function parseWebVTT(filename) {
+  const lastIndex = filename.lastIndexOf('/');
+  var file = {};
+
+  if (lastIndex != -1) {
+    file.filename = filename.substring(lastIndex);
+  } else {
+    file.filename = filename;
+  }
+
+  const captionFile = webvtt.parse(filename, 'utf8');
+  file.parsed = webvtt.parse(captionFile);
+  return file;
+}
 
 module.exports = router;
