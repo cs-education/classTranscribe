@@ -247,16 +247,6 @@ function download_echo_lecture(task, media) {
     console.log(url);
     var dest = _dirname + media.id + "_" + url.substring(url.lastIndexOf('/') + 1);
     return downloadFile(url, 'Cookie: ' + JSON.parse(media.siteSpecificJSON).download_header, dest);
-    // return wget(url, {
-    //     output: dest,
-    //     headers:
-    //     {
-    //         Cookie: JSON.parse(media.siteSpecificJSON).downloadHeader
-    //     },
-    // })
-    //     .then(result => task.update({
-    //         videoLocalLocation: path.resolve(dest)
-    //     }));
 }
 
 function convertTaskVideoToWav(taskId) {
@@ -296,8 +286,6 @@ function downloadFile(url, header, dest) {
 
     return curl.then(result => { return Promise.resolve(dest) }).catch(err => {console.log(err)});
 }
-
-download_lecture('01bf76dd-ac16-4048-8ee6-c500e314839d', {});
 
 module.exports = {
     youtube_scraper_channel: youtube_scraper_channel,
