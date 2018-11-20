@@ -72,6 +72,9 @@ router.get('/getVideos', function(request, response) {
 });
 
 
+// ClassName is courseofferingid
+// CourseOfferindMedia CourseOfferingId and MediaId
+// From MediaId get the respective srtfile paths found in MSTranscriptionTask
 
 /* Gets all the captions for a class */
 router.get('/getCaptions', function(request, response) {
@@ -134,7 +137,7 @@ function parseWebVTT(filename) {
     file.filename = filename;
   }
 
-  const captionFile = webvtt.parse(filename, 'utf8');
+  const captionFile = fs.readFileSync(filename, 'utf8');
   file.parsed = webvtt.parse(captionFile);
   return file;
 }

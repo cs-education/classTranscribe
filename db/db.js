@@ -26,6 +26,7 @@ const University = models.University;
 const User = models.User;
 const UserOffering = models.UserOffering;
 const YoutubeChannel = models.YoutubeChannel;
+const CourseOfferingMedia = models.CourseOfferingMedia;
 /* ----- end of defining ----- */
 
 function addYoutubeChannelPlaylist(playlistId, channelId) {
@@ -92,7 +93,7 @@ function getEchoSection(sectionId) {
  * This is not a suggested way according to the documentation,
  * though I haven't found a better and correct implementation.
  */
-function createUser(user) {
+function addUser(user) {
 
   return University.findOrCreate({
     where : { universityName : user.university }
@@ -390,7 +391,7 @@ function getTerms() {
   });
 }
 
-/* Get All Courses */
+/* Get All Courses by University */
 function getCoursesByUniversityId( universityId ) {
 
   return sequelize.query(
@@ -398,7 +399,7 @@ function getCoursesByUniversityId( universityId ) {
      FROM \
      Offerings oid, CourseOfferings coid, Courses cid \
      WHERE \
-     oid.id = coid.offeringId AND cid.id = coid.courseId AND universityId = ?',
+     oid.id = coid.offeringId AND cid.id = coid.courseId AND oid.universityId = ?',
      { replacements: [ universityId ], type: sequelize.QueryTypes.SELECT })
      .then(values => {
        return values.map(value => {
@@ -413,6 +414,44 @@ function getCoursesByUniversityId( universityId ) {
          return value;
        })
      }).catch(err => perror(err)); /* raw query */
+}
+
+/* Get All Courses by User info */
+function getCoursesByUserId( uid ) {
+
+  return UserOffering.findAll({
+    where : { userId : uid },
+  }).then(values => {
+
+    if(values.length === 0) {
+      return values;
+    }
+
+    const courseOfferingIds = values.map(value => value.dataValues.courseOfferingId);
+
+    return sequelize.query(
+      'SELECT oid.*, cid.*, coid.id\
+      FROM \
+      Offerings oid, CourseOfferings coid, Courses cid\
+      WHERE \
+      oid.id = coid.offeringId AND cid.id = coid.courseId AND coid.id IN (:coids)',
+      { replacements: { coids : courseOfferingIds }, type: sequelize.QueryTypes.SELECT })
+      .then(values => {
+        log('values:')
+
+        return values.map(value => {
+          /* move value.id to value.courseOfferingId */
+          value.courseOfferingId = value.id;
+          delete value.id;
+
+          /* remove time attribute */
+          delete value.createdAt;
+          delete value.updatedAt;
+          return value;
+        });
+
+      }).catch(err => perror(err)); /* rawquery */
+    }).catch(err => perror(err)); /* UserOffering.findAll() */
 }
 
 function addStudent(studentId, courseOfferingId) {
@@ -489,46 +528,31 @@ function getSectionsById (ids) {
 }
 
 function getInstructorsByCourseOfferingId (ids) {
+  /* empty input */
+  if (ids.length === 0) {
+    return ids;
+  }
+
   return Role.findOne({
-    where : {
-      roleName : 'Instructor',
-    },
+    /* find Instructor's uuid */
+    where : { roleName : 'Instructor', },
   }).then(result => {
-    var roleInfo = result.dataValues;
-    return UserOffering.findAll({
-      where : {
-        roleId : roleInfo.id,
-        courseOfferingId : { [Op.in]: ids }
-      }
-    }).then(values => {
-      var userOfferingList = values.map(value => value.dataValues);
-      var userIds = userOfferingList.map(value => value.userId);
-      return User.findAll({
-        where : {
-          id : { [Op.in] : userIds }
-        }
-      }).then(values => {
-        var instructors = [];
-        var users = values.map(value => value.dataValues);
-        /* match instructors with courses, there should be a clearer way to do so */
-        for (let i = 0; i < userOfferingList.length; i++) {
-          for (let j = 0; j < users.length; j++) {
-            if (userOfferingList[i].userId === users[j].id) {
-              var instructor = {
-                courseOfferingId : userOfferingList[i].courseOfferingId,
-                userId : users[j].id,
-                firstName : users[j].firstName,
-                lastName : users[j].lastName,
-                mailId : users[j].mailId,
-              };
-              instructors.push(instructor);
-            }
-          }
-        }
-        return instructors;
-      }).catch(err => perror(err)) /* User.findAll() */
-    }).catch(err => perror(err)); /* UserOffering.findAll() */
-  }).catch(err => perror(err)); /* Role.findOne() */
+    var instructorId = result.dataValues.id;
+
+    /*
+     * query to fetch informations based on courseOfferingIds and roleId
+     *
+     * only select relative information
+     */
+    return sequelize.query(
+      'SELECT uoid.courseOfferingId, uid.id, uid.firstName, uid.lastName, uid.mailId \
+      FROM \
+      UserOfferings uoid, Users uid \
+      WHERE \
+      uoid.courseOfferingId IN (:coids) AND uoid.roleId = :rid AND uoid.userId = uid.id',
+      { replacements: { coids : ids, rid : instructorId }, type: sequelize.QueryTypes.SELECT })
+      .catch(err => perror(err)); /* sequelize.query() */
+    }).catch(err => perror(err)); /* Role.findOne() */
 }
 
 function validateUserAccess( courseOfferingId, userId ) {
@@ -589,7 +613,7 @@ module.exports = {
     addPasswordToken : addPasswordToken,
     addStudent : addStudent,
     removeStudent : removeStudent,
-    createUser: createUser,
+    addUser: addUser,
     setUserName: setUserName,
     setUserPassword : setUserPassword,
     verifyUser: verifyUser,
@@ -603,6 +627,7 @@ module.exports = {
     getCoursesByTerms : getCoursesByTerms,
     getCoursesByIds : getCoursesByIds,
     getCoursesByUniversityId : getCoursesByUniversityId,
+    getCoursesByUserId : getCoursesByUserId,
     getCourseId : getCourseId,
     getCourseByOfferingId : getCourseByOfferingId,
     getRoleId : getRoleId,
