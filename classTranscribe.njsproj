@@ -36,7 +36,6 @@
     <Content Include="second_pass.js" />
     <Content Include="server.js" />
     <Content Include="db\db.js" />
-    <Content Include="db\util.js" />
     <Content Include="deprecated\old_editor.html" />
     <Content Include="documentation\instructor_faq.md" />
     <Content Include="documentation\student_faq.md" />
@@ -56,7 +55,6 @@
     <Content Include="models\user.js" />
     <Content Include="models\userOffering.js" />
     <Content Include="models\youtube-channel.js" />
-    <Content Include="modules\database.js" />
     <Content Include="modules\mailer.js" />
     <Content Include="modules\redis.js" />
     <Content Include="modules\validator.js" />
