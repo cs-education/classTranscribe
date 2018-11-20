@@ -1,3 +1,0 @@
-PRIVATE_KEY=/etc/letsencrypt/live/classtranscribe.ncsa.illinois.edu/privkey.pem
-CERTIFICATE=/etc/letsencrypt/live/classtranscribe.ncsa.illinois.edu/cert.pem
-CA=/etc/letsencrypt/live/classtranscribe.ncsa.illinois.edu/chain.pem
