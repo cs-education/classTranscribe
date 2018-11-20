@@ -9,7 +9,6 @@ router.get('/watchLectureVideos', function (request, response) {
   });
   var offeringId = getOfferingId();
   var videolist = getPlaylistByCourseOfferingId(offeringId)
-  var vttlist = getCaptionListByCourseOfferingId(offeringId);
   var playlist = [{
       name: 'Dog',
       sources: [
