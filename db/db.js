@@ -133,6 +133,23 @@ function getUserByEmail(email) {
   }).catch(err => perror(err));
 }
 
+/* SELECT * FROM User WHERE googleId=profileId LIMIT 1*/
+function getUserByGoogleId(profileId) {
+    /* Since the email should be unique,
+     * findOne() is sufficient
+     */
+    console.log(profileId);
+    return User.findOne({
+        where: { googleId: profileId }
+    }).then(result => {
+        if (result) {
+            return result.dataValues;
+        } else {
+            return null;
+        }
+    }).catch(err => perror(err));
+}
+
 /* UPDATE User SET verifiedId = verifiedId WHERE mailId = email */
 function verifyUser(verifiedId, email) {
   return User.update( {
@@ -610,6 +627,7 @@ module.exports = {
     getMediaByTask: getMediaByTask,
     getEchoSection: getEchoSection,
     getUserByEmail: getUserByEmail,
+    getUserByGoogleId: getUserByGoogleId,
     getUniversityId: getUniversityId,
     getUniversityName : getUniversityName,
     getCoursesByTerms : getCoursesByTerms,
