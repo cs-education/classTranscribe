@@ -40,11 +40,6 @@ function addCourseOfferingMedia(courseOfferingId, mediaId, description) {
 }
 
 function getPlaylistByCourseOfferingId(courseOfferingId) {
-  // 'SELECT mst.videoLocalLocation \
-  //  FROM MSTranscriptionTasks AS mst \
-  //  LEFT JOIN (SELECT com.mediaId FROM \
-  //    CourseOfferingMedias AS com \
-  //    WHERE com.courseOfferingId = ? ) AS selectedMedia ON selectedMedia.mediaId = mst.mediaId'
   return sequelize.query(
    'SELECT mst.videoLocalLocation, mst.srtFileLocation, M.siteSpecificJSON \
     FROM MSTranscriptionTasks AS mst \
@@ -53,27 +48,6 @@ function getPlaylistByCourseOfferingId(courseOfferingId) {
     WHERE com.courseOfferingId = ?',
    { replacements: [ courseOfferingId ], type: sequelize.QueryTypes.SELECT}).catch(err => perror(err)); /* raw query */
 }
-
-// function getVideoInfoByCourseOfferingId(courseOfferingId) {
-//   return sequelize.query(
-//   'SELECT mst.log \
-//    FROM MSTranscriptionTasks AS mst \
-//    LEFT JOIN (SELECT com.mediaId FROM \
-//      CourseOfferingMedias AS com \
-//      WHERE com.courseOfferingId = ? ) AS selectedMedia ON selectedMedia.mediaId = mst.mediaId',
-//    { replacements: [ courseOfferingId ], type: sequelize.QueryTypes.SELECT}).catch(err => perror(err)); /* raw query */
-//
-// }
-//
-// function getCaptionListByCourseOfferingId(courseOfferingId) {
-//   return sequelize.query(
-//   'SELECT mst.srtFileLocation \
-//    FROM MSTranscriptionTasks AS mst \
-//    LEFT JOIN (SELECT com.mediaId FROM \
-//      CourseOfferingMedias AS com \
-//      WHERE com.courseOfferingId = ? ) AS selectedMedia ON selectedMedia.mediaId = mst.mediaId',
-//    { replacements: [ courseOfferingId ], type: sequelize.QueryTypes.SELECT}).catch(err => perror(err)); /* raw query */
-// }
 
 function addYoutubeChannelPlaylist(playlistId, channelId) {
     return YoutubeChannel.findOrCreate({
@@ -644,7 +618,6 @@ module.exports = {
     models: models,
     addCourseOfferingMedia: addCourseOfferingMedia,
     getPlaylistByCourseOfferingId: getPlaylistByCourseOfferingId,
-    // getCaptionListByCourseOfferingId: getCaptionListByCourseOfferingId,
     addCourseAndSection: addCourseAndSection,
     addMedia: addMedia,
     addMSTranscriptionTask: addMSTranscriptionTask,
