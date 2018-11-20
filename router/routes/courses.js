@@ -73,7 +73,7 @@ var testInfo = {
 };
 
 
-client_api.createUser(testInfo).then(
+client_api.addUser(testInfo).then(
   result => {
     var userInfo = result;
     permission.addUser(userInfo.mailId);
@@ -130,7 +130,8 @@ router.get('/courses/', function (request, response) {
           "                    <th>Action</th>\n" +
           "                </tr>";
 
-          client_api.getCoursesByUniversityId( userInfo.universityId ).then( values => {
+          client_api.getCoursesByUserId(userInfo.id).then( values => {
+
             var termIds = [];
             var deptIds = [];
             var courses = [];
