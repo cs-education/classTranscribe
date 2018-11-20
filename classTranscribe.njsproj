@@ -268,6 +268,7 @@
     <Folder Include="cert\stunnel" />
     <Folder Include="classTranscribe" />
     <Folder Include="classTranscribe\classTranscribe" />
+    <Folder Include="config\" />
     <Folder Include="db" />
     <Folder Include="deprecated" />
     <Folder Include="Docker\" />
@@ -326,10 +327,14 @@
     <Folder Include="utils" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="config\auth.js" />
     <Compile Include="modules\conversion_utils.js">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="modules\scraper_utils.js" />
+    <Compile Include="router\routes\auth.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="router\routes\scraper.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
