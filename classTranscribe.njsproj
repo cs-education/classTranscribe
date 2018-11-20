@@ -327,7 +327,6 @@
     <Folder Include="utils" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="config\auth.js" />
     <Compile Include="modules\conversion_utils.js">
       <SubType>Code</SubType>
     </Compile>
