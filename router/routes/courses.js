@@ -79,7 +79,9 @@ client_api.createUser(testInfo).then(
     permission.addUser(userInfo.mailId);
     client_api.verifyUser('sample-verification-buffer', 'testing@testdomabbccc.edu').then(() => {
       client_api.addCourse(userInfo, courseList[0]).then(result => {
+        info(userInfo);
         permission.addCoursePermission(userInfo.mailId, result.courseOfferingId, 'Modify');
+        // client_api.
       })
     });
   }).catch(err => { perror(err);})
