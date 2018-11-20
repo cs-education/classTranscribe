@@ -1,16 +1,18 @@
-0. Install docker
+- Install docker
 
 	Make sure you have a docker account,
 	After installation login to docker,
 	The command is,
 	docker login
 
-1. Clone the repository,
+- Clone the repository,
     git clone https://github.com/cs-education/classTranscribe.git
-   Checkout the fa18-demo branch
-    git checkout fa18-demo
-2. Navigate to the "Docker" folder in the github repository.
-3. Setup SQL
+    cd classTranscribe
+- Download the zip "cert" from, https://uillinoisedu-my.sharepoint.com/:u:/g/personal/mahipal2_illinois_edu/EcNfPMRp3clFtJf2sNWkhgEBvF8ZZDH4O0T34f7ixIuY-A?e=MMUT5H	
+    It contains certificates for https.(You'll need to login with your @illinois.edu Id's)	
+   Unzip it into classTranscribe folder.
+- Navigate to the "Docker" folder in the github repository.
+- Setup SQL
 
 	Pull Docker Image for SQL,
 	docker pull mcr.microsoft.com/mssql/server:2017-latest
@@ -31,7 +33,7 @@
 	Step 4, exit the container,
 	exit
 
-4. Setup base Image
+- Setup base Image
 
 	Build the image,
 	sudo docker build -f Dockerfile.base -t cs-education/classtranscribe/base .
@@ -68,7 +70,7 @@ For Setup of Development Image
 	npm audit fix
 	npm start
 
-7. You can access it via your browser on the address "https://127.0.0.1"
+- You can access it via your browser on the address "https://127.0.0.1"
 
 
 A few useful articles
