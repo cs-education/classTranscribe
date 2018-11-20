@@ -1,5 +1,5 @@
 'use strict';
-//var db = require('../db/db');
+var db = require('../db/db');
 const request = require('request');
 var Cookie = require('request-cookies').Cookie;
 var rp = require('request-promise');
@@ -35,7 +35,6 @@ function youtube_scraper_channel(channel_id) {
             return Promise.resolve(output);
         });
 }
-youtube_scraper_channel('UCcIXc5mJsHVYTZR1maL5l9w')
 
 function download_youtube_playlist(playlist_id) {
     // TODO: Support more than 50 videos
@@ -247,16 +246,17 @@ function download_echo_lecture(task, media) {
     console.log(JSON.parse(media.siteSpecificJSON).download_header);
     console.log(url);
     var dest = _dirname + media.id + "_" + url.substring(url.lastIndexOf('/') + 1);
-    return wget(url, {
-        output: dest,
-        headers:
-        {
-            Cookie: JSON.parse(media.siteSpecificJSON).downloadHeader
-        },
-    })
-        .then(result => task.update({
-            videoLocalLocation: path.resolve(dest)
-        }));
+    return downloadFile(url, 'Cookie: ' + JSON.parse(media.siteSpecificJSON).download_header, dest);
+    // return wget(url, {
+    //     output: dest,
+    //     headers:
+    //     {
+    //         Cookie: JSON.parse(media.siteSpecificJSON).downloadHeader
+    //     },
+    // })
+    //     .then(result => task.update({
+    //         videoLocalLocation: path.resolve(dest)
+    //     }));
 }
 
 function convertTaskVideoToWav(taskId) {
@@ -281,6 +281,23 @@ function wavToSrt(taskId) {
             srtFileLocation: path.resolve(outputFile)
         }));
 }
+
+function downloadFile(url, header, dest) {
+    const { spawn } = require('child-process-promise');
+    const curl = spawn('curl', ['-o', dest, '-O', url, '-H', header, '--silent']);
+
+    curl.childProcess.stdout.on('data', (data) => {
+        console.log(`stdout: ${data}`);
+    });
+
+    curl.childProcess.stderr.on('data', (data) => {
+        console.log(`stderr: ${data}`);
+    });
+
+    return curl.then(result => { return Promise.resolve(dest) }).catch(err => {console.log(err)});
+}
+
+download_lecture('01bf76dd-ac16-4048-8ee6-c500e314839d', {});
 
 module.exports = {
     youtube_scraper_channel: youtube_scraper_channel,
