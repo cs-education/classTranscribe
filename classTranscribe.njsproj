@@ -19,9 +19,11 @@
   <ItemGroup>
     <Content Include="Acknowledgement.txt" />
     <Content Include="deployment_instructions.txt" />
+    <Content Include="Docker\dev-cert-env.list" />
     <Content Include="Docker\Dockerfile.base" />
     <Content Include="Docker\Dockerfile.dev" />
     <Content Include="Docker\Dockerfile.production" />
+    <Content Include="Docker\prod-cert-env.list" />
     <Content Include="Docker\env.list" />
     <Content Include="Docker\readme.txt" />
     <Content Include="readme.txt" />
