@@ -31,7 +31,6 @@ function youtube_scraper_channel(channel_id) {
                 }
                 output.push(item);
             }
-            console.log(output);
             return Promise.resolve(output);
         });
 }
@@ -59,8 +58,7 @@ function addVideoInfo(videoInfo) {
     var playlistId = videoInfo['snippet']['playlistId'];
     var videoId = videoInfo['snippet']['resourceId']['videoId'];
     var videoUrl = 'http://www.youtube.com/watch?v=' + videoId;
-    var i = 2;
-    return db.addMedia(videoUrl, 1, {
+    var media = {
         channelTitle: channelTitle,
         channelId: channelId,
         playlistId: playlistId,
@@ -68,20 +66,22 @@ function addVideoInfo(videoInfo) {
         description: description,
         publishedAt: publishedAt,
         videoUrl: videoUrl
-    })
+    };
+    var i = 2;
+    return db.addMedia(videoUrl, 1, media)
         .then(media => db.addMSTranscriptionTask(media[0].id))
         .then(task => {
             i--;
             if (i == 0) return null;
             return download_lecture(task[0].id)
-                .then(result => convertVideoToWav(task[0].id))
-                .then(result => wavToSrt(task[0].id))
+                .then(result => convertTaskVideoToWav(task[0].id))
+                .then(result => convertTaskToSrt(task[0].id))
                 .then(result => { console.log("Done!") });
             console.log("Youtube TaskId:" + task[0].id);
         });
 }
 
-function download_lecture(taskId, callback) {
+function download_lecture(taskId) {
     console.log("Download_lecture");
     return db.getTask(taskId)
         .then(task => {
@@ -89,10 +89,10 @@ function download_lecture(taskId, callback) {
                 .then(media => {
                     switch (media.sourceType) {
                         case 0:
-                            return download_echo_lecture(task, media, callback);
+                            return download_echo_lecture(task, media);
                             break;
                         case 1:
-                            return download_youtube_video(task, media, callback);
+                            return download_youtube_video(task, media);
                             break;
                         default:
                             console.log("Invalid sourceType");
@@ -156,7 +156,7 @@ function echo_scraper(publicAccessUrl) {
         });
 }
 
-function download_course_info_2(section_url) {
+function download_echo_course_info(section_url) {
     var jsonCookieString = require('../cookieJson.json');
     var Cookies = ['PLAY_SESSION', 'CloudFront-Key-Pair-Id', 'CloudFront-Policy', 'CloudFront-Signature'];
     var play_session_login = '';
@@ -241,18 +241,24 @@ function download_course_info_2(section_url) {
 
 function download_echo_lecture(task, media) {
     console.log("download_echo_lecture");
-    var wget = require('node-wget-promise');
     var url = media.videoURL;
-    console.log(JSON.parse(media.siteSpecificJSON).download_header);
     console.log(url);
+    console.log(JSON.parse(media.siteSpecificJSON).download_header);
     var dest = _dirname + media.id + "_" + url.substring(url.lastIndexOf('/') + 1);
-    return downloadFile(url, 'Cookie: ' + JSON.parse(media.siteSpecificJSON).download_header, dest);
+    return downloadFile(url, 'Cookie: ' + JSON.parse(media.siteSpecificJSON).download_header, dest)
+    .then(result => task.update({
+        videoLocalLocation: path.resolve(dest)
+    }));
 }
 
 function convertTaskVideoToWav(taskId) {
     console.log("convertVideoToWav");
+    var task;
     return db.getTask(taskId)
-        .then(task => conversion_utils.convertTaskVideoToWav(task.videoLocalLocation))
+        .then(t => {
+            task = t;
+            return conversion_utils.convertVideoToWav(task.videoLocalLocation);
+        })
         .then(outputFile => task.update({
             wavAudioLocalFile: path.resolve(outputFile)
         }));
@@ -260,13 +266,12 @@ function convertTaskVideoToWav(taskId) {
 
 function convertTaskToSrt(taskId) {
     console.log("convertTaskToSrt");
-
-}
-
-function wavToSrt(taskId) {
-    console.log("wavToSrt");
+    var task;
     return db.getTask(taskId)
-        .then(task => conversion_utils.convertWavFileToSrt(task.wavAudioLocalFile))
+        .then(t => {
+            task = t;
+            return conversion_utils.convertWavFileToSrt(task.wavAudioLocalFile);
+        })
         .then(outputFile => task.update({
             srtFileLocation: path.resolve(outputFile)
         }));
@@ -290,6 +295,6 @@ function downloadFile(url, header, dest) {
 module.exports = {
     youtube_scraper_channel: youtube_scraper_channel,
     download_youtube_playlist: download_youtube_playlist,
-    download_course_info_2: download_course_info_2,
+    download_echo_course_info: download_echo_course_info,
     download_lecture: download_lecture
 }

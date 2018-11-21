@@ -54,17 +54,27 @@ function addCourseAndSection(courseId, sectionId, downloadHeader) {
 }
 
 function addMedia(videoURL, sourceType, siteSpecificJSON) {
-    return Media.create({
+    return Media.findOrCreate({
+      where: {
+        videoURL: videoURL
+      },
+      defaults: {
         videoURL: videoURL,
         sourceType: sourceType,
-        siteSpecificJSON: siteSpecificJSON
+        siteSpecificJSON: JSON.stringify(siteSpecificJSON)
+    }
     });
 }
 
 function addMSTranscriptionTask(mediaId) {
-    return MSTranscriptionTask.create({
+    return MSTranscriptionTask.findOrCreate({
+      where: {
+        mediaId: mediaId
+      },
+      defaults: {
         id: uuid(),
         mediaId: mediaId
+      }
     });
 }
 
