@@ -112,7 +112,7 @@ passport.use(new GoogleStrategy({
                         })
                         .catch(err => {
                           perror(err);
-                          return done(null, result);
+                          return done(null, null);
                       });
                 } else {
                     var userInfo = result;
