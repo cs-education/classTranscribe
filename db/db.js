@@ -78,6 +78,13 @@ function addMSTranscriptionTask(mediaId) {
     });
 }
 
+// Return taskId
+function addToMediaAndMSTranscriptionTask(videoURL, sourceType, siteSpecificJSON) {
+    return addMedia(videoURL, sourceType, siteSpecificJSON)
+        .then(media => addMSTranscriptionTask(media[0].id))
+        .then(task => { return task[0].id });
+}
+
 function getTask(taskId) {
     return MSTranscriptionTask.findById(taskId);
 }
@@ -606,6 +613,7 @@ module.exports = {
     addCourseAndSection: addCourseAndSection,
     addMedia: addMedia,
     addMSTranscriptionTask: addMSTranscriptionTask,
+    addToMediaAndMSTranscriptionTask: addToMediaAndMSTranscriptionTask,
     addLecture : addLecture,
     addCourse : addCourse,
     addPasswordToken : addPasswordToken,
