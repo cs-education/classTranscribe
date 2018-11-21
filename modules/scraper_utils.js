@@ -67,37 +67,28 @@ function addVideoInfo(videoInfo) {
         publishedAt: publishedAt,
         videoUrl: videoUrl
     };
-    var i = 2;
-    return db.addMedia(videoUrl, 1, media)
-        .then(media => db.addMSTranscriptionTask(media[0].id))
-        .then(task => {
-            i--;
-            if (i == 0) return null;
-            return download_lecture(task[0].id)
-                .then(result => convertTaskVideoToWav(task[0].id))
-                .then(result => convertTaskToSrt(task[0].id))
-                .then(result => { console.log("Done!") });
-            console.log("Youtube TaskId:" + task[0].id);
+    return db.addToMediaAndMSTranscriptionTask(videoUrl, 1, media)
+        .then(taskId => downloadConvertAndSrt(taskId))
+        .then(result => {
+            console.log("Done!");
         });
 }
 
 function download_lecture(taskId) {
     console.log("Download_lecture");
     return db.getTask(taskId)
-        .then(task => {
-            return db.getMedia(task.mediaId)
-                .then(media => {
-                    switch (media.sourceType) {
-                        case 0:
-                            return download_echo_lecture(task, media);
-                            break;
-                        case 1:
-                            return download_youtube_video(task, media);
-                            break;
-                        default:
-                            console.log("Invalid sourceType");
-                    }
-                });
+        .then(task => db.getMedia(task.mediaId))
+        .then(media => {
+            switch (media.sourceType) {
+                case 0:
+                    return download_echo_lecture(task, media);
+                    break;
+                case 1:
+                    return download_youtube_video(task, media);
+                    break;
+                default:
+                    console.log("Invalid sourceType");
+            }
         });
 }
 
@@ -229,14 +220,19 @@ function download_echo_course_info(section_url) {
                         videoUrl: videoUrl,
                         download_header: download_header
                     };
-                    db.addMedia(mediaJson.videoUrl, 0, JSON.stringify(mediaJson))
-                        .then(media => db.addMSTranscriptionTask(media.id))
-                        .then(task => { console.log(task.id) });
+                    db.addToMediaAndMSTranscriptionTask(mediaJson.videoUrl, 0, JSON.stringify(mediaJson))
+                        .then(taskId => downloadConvertAndSrt(taskId));
                 } catch (err) {
                     console.log(err);
                 }
             }
-        });        
+        });
+}
+
+function downloadConvertAndSrt(taskId) {
+    return download_lecture(taskId)
+        .then(convertTaskVideoToWav(taskId))
+        .then(convertTaskToSrt(taskId));
 }
 
 function download_echo_lecture(task, media) {
@@ -246,9 +242,9 @@ function download_echo_lecture(task, media) {
     console.log(JSON.parse(media.siteSpecificJSON).download_header);
     var dest = _dirname + media.id + "_" + url.substring(url.lastIndexOf('/') + 1);
     return downloadFile(url, 'Cookie: ' + JSON.parse(media.siteSpecificJSON).download_header, dest)
-    .then(result => task.update({
-        videoLocalLocation: path.resolve(dest)
-    }));
+        .then(result => task.update({
+            videoLocalLocation: path.resolve(dest)
+        }));
 }
 
 function convertTaskVideoToWav(taskId) {
@@ -289,7 +285,7 @@ function downloadFile(url, header, dest) {
         console.log(`stderr: ${data}`);
     });
 
-    return curl.then(result => { return Promise.resolve(dest) }).catch(err => {console.log(err)});
+    return curl.then(result => { return Promise.resolve(dest) }).catch(err => { console.log(err) });
 }
 
 module.exports = {
