@@ -108,7 +108,6 @@ async function addMSTranscriptionTask(mediaId) {
 // Return taskId
 async function addToMediaAndMSTranscriptionTask(videoURL, sourceType, siteSpecificJSON, courseOfferingId) {
     var mediaId = await addMedia(videoURL, sourceType, siteSpecificJSON);
-    console.log(mediaId, courseOfferingId, siteSpecificJSON);
     await addCourseOfferingMedia(courseOfferingId, mediaId, siteSpecificJSON);
     var taskId = await addMSTranscriptionTask(mediaId);
     return taskId;
