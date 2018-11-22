@@ -34,7 +34,9 @@ function addCourseOfferingMedia(courseOfferingId, mediaId, description) {
         mediaId: mediaId
       },
       defaults: {
-        descpJSON: description
+          descpJSON: JSON.stringify(description),
+          mediaId: mediaId,
+          courseOfferingId: courseOfferingId
       }
     })
 }
@@ -76,19 +78,39 @@ function addCourseAndSection(courseId, sectionId, downloadHeader) {
     });
 }
 
-function addMedia(videoURL, sourceType, siteSpecificJSON) {
-    return Media.create({
-        videoURL: videoURL,
-        sourceType: sourceType,
-        siteSpecificJSON: siteSpecificJSON
+async function addMedia(videoURL, sourceType, siteSpecificJSON) {
+    var media = await Media.findOrCreate({
+        where: {
+            videoURL: videoURL
+        },
+        defaults: {
+            videoURL: videoURL,
+            sourceType: sourceType,
+            siteSpecificJSON: JSON.stringify(siteSpecificJSON)
+        }
     });
+    return media[0].id;
 }
 
-function addMSTranscriptionTask(mediaId) {
-    return MSTranscriptionTask.create({
+async function addMSTranscriptionTask(mediaId) {
+    var task = await MSTranscriptionTask.findOrCreate({
+        where: {
+        mediaId: mediaId
+        },
+        defaults: {
         id: uuid(),
         mediaId: mediaId
+        }
     });
+    return task[0].id;
+}
+
+// Return taskId
+async function addToMediaAndMSTranscriptionTask(videoURL, sourceType, siteSpecificJSON, courseOfferingId) {
+    var mediaId = await addMedia(videoURL, sourceType, siteSpecificJSON);
+    await addCourseOfferingMedia(courseOfferingId, mediaId, siteSpecificJSON);
+    var taskId = await addMSTranscriptionTask(mediaId);
+    return taskId;
 }
 
 function getTask(taskId) {
@@ -621,6 +643,7 @@ module.exports = {
     addCourseAndSection: addCourseAndSection,
     addMedia: addMedia,
     addMSTranscriptionTask: addMSTranscriptionTask,
+    addToMediaAndMSTranscriptionTask: addToMediaAndMSTranscriptionTask,
     addLecture : addLecture,
     addCourse : addCourse,
     addPasswordToken : addPasswordToken,
