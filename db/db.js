@@ -24,7 +24,30 @@ const University = models.University;
 const User = models.User;
 const UserOffering = models.UserOffering;
 const YoutubeChannel = models.YoutubeChannel;
+const CourseOfferingMedia = models.CourseOfferingMedia;
 /* ----- end of defining ----- */
+
+function addCourseOfferingMedia(courseOfferingId, mediaId, description) {
+    return CourseOfferingMedia.findOrCreate({
+      where: {
+        courseOfferingId: courseOfferingId,
+        mediaId: mediaId
+      },
+      defaults: {
+        descpJSON: description
+      }
+    })
+}
+
+function getPlaylistByCourseOfferingId(courseOfferingId) {
+  return sequelize.query(
+   'SELECT mst.videoLocalLocation, mst.srtFileLocation, M.siteSpecificJSON \
+    FROM MSTranscriptionTasks AS mst \
+    INNER JOIN Media as M on mst.mediaId = M.id \
+    INNER JOIN CourseOfferingMedia as com on com.mediaId = M.id \
+    WHERE com.courseOfferingId = ?',
+   { replacements: [ courseOfferingId ], type: sequelize.QueryTypes.SELECT}).catch(err => perror(err)); /* raw query */
+}
 
 function addYoutubeChannelPlaylist(playlistId, channelId) {
     return YoutubeChannel.findOrCreate({
@@ -610,6 +633,8 @@ function addPasswordToken(userInfo, token) {
 
 module.exports = {
     models: models,
+    addCourseOfferingMedia: addCourseOfferingMedia,
+    getPlaylistByCourseOfferingId: getPlaylistByCourseOfferingId,
     addCourseAndSection: addCourseAndSection,
     addMedia: addMedia,
     addMSTranscriptionTask: addMSTranscriptionTask,

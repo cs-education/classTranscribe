@@ -80,6 +80,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.set('view engine', 'ejs');
+app.use('/node_modules', express.static(path.join(__dirname,'/node_modules')));
+app.use('/vtt', express.static(path.join(__dirname,'/vtt')));
 
 /* I wasn't sure where to put these variables (that are used in various files */
 mustachePath = 'templates/';
