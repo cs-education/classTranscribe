@@ -34,7 +34,9 @@ function addCourseOfferingMedia(courseOfferingId, mediaId, description) {
         mediaId: mediaId
       },
       defaults: {
-        descpJSON: description
+          descpJSON: JSON.stringify(description),
+          mediaId: mediaId,
+          courseOfferingId: courseOfferingId
       }
     })
 }
@@ -76,36 +78,40 @@ function addCourseAndSection(courseId, sectionId, downloadHeader) {
     });
 }
 
-function addMedia(videoURL, sourceType, siteSpecificJSON) {
-    return Media.findOrCreate({
-      where: {
-        videoURL: videoURL
-      },
-      defaults: {
-        videoURL: videoURL,
-        sourceType: sourceType,
-        siteSpecificJSON: JSON.stringify(siteSpecificJSON)
-    }
+async function addMedia(videoURL, sourceType, siteSpecificJSON) {
+    var media = await Media.findOrCreate({
+        where: {
+            videoURL: videoURL
+        },
+        defaults: {
+            videoURL: videoURL,
+            sourceType: sourceType,
+            siteSpecificJSON: JSON.stringify(siteSpecificJSON)
+        }
     });
+    return media[0].id;
 }
 
-function addMSTranscriptionTask(mediaId) {
-    return MSTranscriptionTask.findOrCreate({
-      where: {
+async function addMSTranscriptionTask(mediaId) {
+    var task = await MSTranscriptionTask.findOrCreate({
+        where: {
         mediaId: mediaId
-      },
-      defaults: {
+        },
+        defaults: {
         id: uuid(),
         mediaId: mediaId
-      }
+        }
     });
+    return task[0].id;
 }
 
 // Return taskId
-function addToMediaAndMSTranscriptionTask(videoURL, sourceType, siteSpecificJSON) {
-    return addMedia(videoURL, sourceType, siteSpecificJSON)
-        .then(media => addMSTranscriptionTask(media[0].id))
-        .then(task => { return task[0].id });
+async function addToMediaAndMSTranscriptionTask(videoURL, sourceType, siteSpecificJSON, courseOfferingId) {
+    var mediaId = await addMedia(videoURL, sourceType, siteSpecificJSON);
+    console.log(mediaId, courseOfferingId, siteSpecificJSON);
+    await addCourseOfferingMedia(courseOfferingId, mediaId, siteSpecificJSON);
+    var taskId = await addMSTranscriptionTask(mediaId);
+    return taskId;
 }
 
 function getTask(taskId) {

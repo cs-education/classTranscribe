@@ -41,7 +41,7 @@ function youtube_scraper_channel(channel_id) {
         });
 }
 
-function download_youtube_playlist(playlist_id) {
+function download_youtube_playlist(playlist_id, courseOfferingId) {
     // TODO: Support more than 50 videos
     var url_playlist = 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&' +
         'playlistId=' + playlist_id + '&key=' + youtube_google_api_key + '&maxResults=' + 50;
@@ -49,12 +49,14 @@ function download_youtube_playlist(playlist_id) {
         .then(function (body) {
             var body_playlist_json = JSON.parse(body);
             var arr_videoInfo = body_playlist_json['items'];
-            var funcs = arr_videoInfo.map(videoInfo => () => add_youtube_video_info(videoInfo));
+            var funcs = arr_videoInfo.map(videoInfo => () => add_youtube_video_info(videoInfo, courseOfferingId));
             return promiseSerial(funcs);
         });
 }
 
-function add_youtube_video_info(videoInfo) {
+// download_youtube_playlist('PLkDaE6sCZn6Gl29AoE31iwdVwSG-KnDzF', 'replace_with_courseOfferingId');
+
+function add_youtube_video_info(videoInfo, courseOfferingId) {
     var publishedAt = videoInfo['snippet']['publishedAt'];
     var channelId = videoInfo['snippet']['channelId'];
     var title = videoInfo['snippet']['title'];
@@ -72,7 +74,7 @@ function add_youtube_video_info(videoInfo) {
         publishedAt: publishedAt,
         videoUrl: videoUrl
     };
-    return db.addToMediaAndMSTranscriptionTask(videoUrl, 1, media)
+    return db.addToMediaAndMSTranscriptionTask(videoUrl, 1, media, courseOfferingId)
         .then(taskId => downloadConvertAndSrt(taskId))
         .then(result => {
             console.log("Done!");
@@ -141,7 +143,7 @@ function echo_scraper(publicAccessUrl) {
         });
 }
 
-async function download_echo_course_info(section_url) {
+async function download_echo_course_info(section_url, courseOfferingId) {
     var jsonCookieString = require('../cookieJson.json');
     var Cookies = ['PLAY_SESSION', 'CloudFront-Key-Pair-Id', 'CloudFront-Policy', 'CloudFront-Signature'];
     var play_session_login = '';
@@ -203,7 +205,10 @@ async function download_echo_course_info(section_url) {
             var institutionId = media['institutionId'];
             var createdAt = media['createdAt'];
             var audioUrl = media['media']['current']['audioFiles'][0]['s3Url'];
-            var videoUrl = media['media']['current']['primaryFiles'][0]['s3Url'];
+            var videoUrl = media['media']['current']['primaryFiles'][1]['s3Url']; // 0 for SD, 1 for HD
+            var termName = audio_data['lesson']['video']['published']['termName'];
+            var lessonName = audio_data['lesson']['video']['published']['lessonName'];
+            var courseName = audio_data['lesson']['video']['published']['courseName'];
             var mediaJson = {
                 sectionId: sectionId,
                 mediaId: mediaId,
@@ -212,15 +217,20 @@ async function download_echo_course_info(section_url) {
                 createdAt: createdAt,
                 audioUrl: audioUrl,
                 videoUrl: videoUrl,
-                download_header: download_header
+                download_header: download_header,
+                termName: termName,
+                lessonName: lessonName,
+                courseName: courseName
             };
-            var taskId = await db.addToMediaAndMSTranscriptionTask(mediaJson.videoUrl, 0, mediaJson);
+            var taskId = await db.addToMediaAndMSTranscriptionTask(mediaJson.videoUrl, 0, mediaJson, courseOfferingId);
             await downloadConvertAndSrt(taskId);
         } catch (err) {
             console.log(err);
         }
     }
 }
+
+// download_echo_course_info('https://echo360.org/section/286c2340-3852-469d-ba1c-f2cb3f1e2636','cb3836f0-f9fc-45a3-aab1-2c30e3ae2ab9');
 
 async function downloadConvertAndSrt(taskId) {
     await download_lecture(taskId);

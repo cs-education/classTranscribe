@@ -39,7 +39,7 @@ async function convertVideoToWav(pathToFile) {
 }
 
 async function convertWavFileToSrt(pathToFile) {
-    var outputFile = _dirname + pathToFile.substring(pathToFile.lastIndexOf('/') + 1, pathToFile.lastIndexOf('.')) + '.srt';
+    var outputFile = _dirname + pathToFile.substring(pathToFile.lastIndexOf('/') + 1, pathToFile.lastIndexOf('.')) + '.vtt';
     const { spawn } = require('child-process-promise');
     const dotnet = spawn('dotnet', ['/MSTranscription/Release/MSTranscription.dll', azureSubscriptionKey, azureRegion, pathToFile]);
     dotnet.childProcess.stdout.on('data', (data) => {
