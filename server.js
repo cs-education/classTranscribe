@@ -19,8 +19,6 @@ LocalStrategy = require('passport-local').Strategy;
 router = express.Router();
 multer = require('multer');
 
-// client = require('./modules/redis');
-client = require('./db/db');
 mailer = require('./modules/mailer');
 /* moved into permission.js */
 // macl = require('acl');
