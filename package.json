@@ -69,7 +69,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "grunt & node proxyServer.js & node redirectServer.js & node server.js",
+    "start": "node proxyServer.js & node redirectServer.js & node server.js",
     "lint": "eslint ./"
   },
   "repository": {

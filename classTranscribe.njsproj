@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{5859d584-d3f8-41d6-bc69-031837518734}</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <ProjectView>ProjectFiles</ProjectView>
+    <ProjectView>ShowAllFiles</ProjectView>
     <StartupFile>server.js</StartupFile>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -36,7 +36,6 @@
     <Content Include="second_pass.js" />
     <Content Include="server.js" />
     <Content Include="db\db.js" />
-    <Content Include="db\util.js" />
     <Content Include="deprecated\old_editor.html" />
     <Content Include="documentation\instructor_faq.md" />
     <Content Include="documentation\student_faq.md" />
@@ -56,7 +55,6 @@
     <Content Include="models\user.js" />
     <Content Include="models\userOffering.js" />
     <Content Include="models\youtube-channel.js" />
-    <Content Include="modules\database.js" />
     <Content Include="modules\mailer.js" />
     <Content Include="modules\redis.js" />
     <Content Include="modules\validator.js" />
@@ -70,6 +68,31 @@
     <Content Include="router\index.js" />
     <Content Include="stylesheets\manageCourse.css" />
     <Content Include="stylesheets\resetPassword.css" />
+    <Content Include="templates\accountRecovery.mustache" />
+    <Content Include="templates\activated.mustache" />
+    <Content Include="templates\admin.mustache" />
+    <Content Include="templates\authenticated.mustache" />
+    <Content Include="templates\changePassword.mustache" />
+    <Content Include="templates\courses.mustache" />
+    <Content Include="templates\dashboard.mustache" />
+    <Content Include="templates\editor.mustache" />
+    <Content Include="templates\home.mustache" />
+    <Content Include="templates\index.mustache" />
+    <Content Include="templates\login.mustache" />
+    <Content Include="templates\manageCourse.mustache" />
+    <Content Include="templates\notAuthenticated.mustache" />
+    <Content Include="templates\progress.mustache" />
+    <Content Include="templates\progressDashboard.mustache" />
+    <Content Include="templates\queue.mustache" />
+    <Content Include="templates\resetPassword.mustache" />
+    <Content Include="templates\scraper.mustache" />
+    <Content Include="templates\search.mustache" />
+    <Content Include="templates\settings.mustache" />
+    <Content Include="templates\signup.mustache" />
+    <Content Include="templates\verify.mustache" />
+    <Content Include="templates\viewer.mustache" />
+    <Content Include="templates\watching.mustache" />
+    <Content Include="templates\watchLectureVideos.mustache" />
     <Content Include="utility_scripts\captionGenerator.js" />
     <Content Include="utility_scripts\createCreditCSV.js" />
     <Content Include="utility_scripts\getWidth.js" />
@@ -326,6 +349,7 @@
     <Folder Include="utils" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="models\courseOfferingMedia.js" />
     <Compile Include="modules\conversion_utils.js">
       <SubType>Code</SubType>
     </Compile>
