@@ -1,0 +1,29 @@
+How to free a port
+sudo fuser -k Port_Number/tcp
+
+How to generate certificates using letsencrypt
+
+Install some packages,
+sudo add-apt-repository ppa:certbot/certbot
+sudo apt-get update
+sudo apt-get install certbot
+
+sudo certbot certonly
+
+(Choose to spawn a temporary webserver when prompted, and give the domain names)
+
+If all done right,
+Should generate certificates, and should give the path to certificate files
+Note, the paths are to symbolic links.
+Resolve them using the command,
+readlink -f "$path"
+
+Copy the files chain.pem, fullchain.pem, privkey.pem, cert.pem to a folder cert.
+cert must be in the classtranscribe repository folder.
+
+
+Can use this article as reference,
+https://itnext.io/node-express-letsencrypt-generate-a-free-ssl-certificate-and-run-an-https-server-in-5-minutes-a730fbe528ca
+(We spawn a temporary server so we don't need to most of the steps mentioned.)
+
+

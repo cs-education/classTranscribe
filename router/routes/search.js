@@ -6,6 +6,8 @@
  */
 
 const fs = require('fs');
+const webvtt = require('node-webvtt');
+
 const db = require('../../db/db');
 
 const searchMustache = fs.readFileSync(mustachePath + 'search.mustache').toString();
@@ -70,6 +72,9 @@ router.get('/getVideos', function(request, response) {
 });
 
 
+// ClassName is courseofferingid
+// CourseOfferindMedia CourseOfferingId and MediaId
+// From MediaId get the respective srtfile paths found in MSTranscriptionTask
 
 /* Gets all the captions for a class */
 router.get('/getCaptions', function(request, response) {
@@ -90,7 +95,7 @@ router.get('/getCaptions', function(request, response) {
                 if(err) {
                   reject(err);
                 }
-                resolve(results);
+                resolve( parseWebVTT(results) );
               })
             }));
           }
@@ -121,5 +126,20 @@ router.get('/getCaptions', function(request, response) {
     console.log(err);
   });
 });
+
+function parseWebVTT(filename) {
+  const lastIndex = filename.lastIndexOf('/');
+  var file = {};
+
+  if (lastIndex != -1) {
+    file.filename = filename.substring(lastIndex);
+  } else {
+    file.filename = filename;
+  }
+
+  const captionFile = fs.readFileSync(filename, 'utf8');
+  file.parsed = webvtt.parse(captionFile);
+  return file;
+}
 
 module.exports = router;

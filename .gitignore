@@ -2,6 +2,7 @@
 oliver_scripts
 ct_credit
 *.csv
+*.suo
 tmp
 .vscode
 dict.tmp

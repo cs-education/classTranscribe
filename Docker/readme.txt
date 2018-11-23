@@ -1,14 +1,18 @@
-0. Install docker
+- Install docker
 
 	Make sure you have a docker account,
 	After installation login to docker,
 	The command is,
 	docker login
 
-1. Clone the repository,
+- Clone the repository,
     git clone https://github.com/cs-education/classTranscribe.git
-2. Navigate to the "Docker" folder in the github repository.
-3. Setup SQL
+    cd classTranscribe
+- Download the zip "cert" from, https://uillinoisedu-my.sharepoint.com/:u:/g/personal/mahipal2_illinois_edu/EcNfPMRp3clFtJf2sNWkhgEBvF8ZZDH4O0T34f7ixIuY-A?e=MMUT5H	
+    It contains certificates for https.(You'll need to login with your @illinois.edu Id's)	
+   Unzip it into classTranscribe folder.
+- Navigate to the "Docker" folder in the github repository.
+- Setup SQL
 
 	Pull Docker Image for SQL,
 	docker pull mcr.microsoft.com/mssql/server:2017-latest
@@ -29,10 +33,10 @@
 	Step 4, exit the container,
 	exit
 
-4. Setup base Image
+- Setup base Image
 
 	Build the image,
-	docker build -f Dockerfile.base -t cs-education/classtranscribe/base .
+	sudo docker build -f Dockerfile.base -t cs-education/classtranscribe/base .
 
 	(The dot at the end is important)
 
@@ -41,26 +45,32 @@ RUN EITHER THE PRODUCTION OR THE DEVELOPMENT IMAGE INSTRUCTIONS
 For Setup of Production Image
 
 	Build the image,
-	docker build -f Dockerfile.production -t cs-education/classtranscribe/production ..
+	sudo docker build -f Dockerfile.production -t cs-education/classtranscribe/production ..
 	Run the image,
 	(REPLACE THE {Absolute_path_to_data_directory} with a local directory where the data will be stored)
-	docker run -i -t -p 443:8000 -p 80:7000 --mount type=bind,source={Absolute_path_to_data_directory},target=/data --link CTdb:mssql --env-file env.list --name CT_Prod cs-education/classtranscribe/production /bin/bash -c "git pull; npm install; npm start"
+	sudo docker run -i -t -p 443:8000 -p 80:7000 --mount type=bind,source={Absolute_path_to_data_directory},target=/data --link CTdb:mssql --env-file env.list -e "MODE=PRODUCTION" --name CT_Prod cs-education/classtranscribe/production /bin/bash -c "git pull; npm install; npm start"
 
 	OR
 
 For Setup of Development Image
 
 	Build the image,
-	docker build -f Dockerfile.dev -t cs-education/classtranscribe/dev ..
+	sudo docker build -f Dockerfile.dev -t cs-education/classtranscribe/dev ..
 	Run the image, 
 	(REPLACE THE {Absolute_path_to_local_classTranscribe_repository} with a local directory the git repositor is stored)
 	(REPLACE THE {Absolute_path_to_data_directory} with a local directory where the data will be stored)
-	docker run -i -t --mount type=bind,source={Absolute_path_to_local_classTranscribe_repository},target=/classTranscribe --mount type=bind,source={Absolute_path_to_data_directory},target=/data -p 443:8000 -p 80:7000 --link CTdb:mssql --env-file env.list --name CT_Dev cs-education/classtranscribe/dev /bin/bash -c "npm install; npm audit fix; npm start"
+	sudo docker run -i -t --mount type=bind,source={Absolute_path_to_local_classTranscribe_repository},target=/classTranscribe --mount type=bind,source={Absolute_path_to_data_directory},target=/data -p 443:8000 -p 80:7000 --link CTdb:mssql --env-file env.list  -e "MODE=DEV" --name CT_Dev cs-education/classtranscribe/dev /bin/bash
 
 	For example,
-	docker run -i -t --mount type=bind,source=D:\CT\classTranscribe,target=/classTranscribe --mount type=bind,source=D:\CT\data,target=/data -p 443:8000 -p 80:7000 --link CTdb:mssql --env-file env.list  --name CT_Dev cs-education/classtranscribe/dev /bin/bash -c "npm install; npm audit fix; npm start "
+	sudo docker run -i -t --mount type=bind,source=D:\CT\classTranscribe,target=/classTranscribe --mount type=bind,source=D:\CT\data,target=/data -p 443:8000 -p 80:7000 --link CTdb:mssql --env-file env.list -e "MODE=DEV" --name CT_Dev cs-education/classtranscribe/dev /bin/bash
 
-7. You can access it via your browser on the address "https://127.0.0.1"
+	After the run instruction a shell within the container should start.
+	To start the node server you could do the following,
+	npm install
+	npm audit fix
+	npm start
+
+- You can access it via your browser on the address "https://127.0.0.1"
 
 
 A few useful articles
