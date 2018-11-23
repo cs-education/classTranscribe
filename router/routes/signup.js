@@ -39,6 +39,30 @@ const log = utils.log;
 // Get the mustache page that will be rendered for the signup route
 const signupMustache = fs.readFileSync(mustachePath + 'signup.mustache').toString();
 
+/* TODO: will be added when role of users is implemented */
+// const signupGoogleMustache = fs.readFileSync(mustachePath + 'signupGoogle.mustache').toString();
+
+/* TODO: will be added when role of users is implemented */
+// // Render the signup mustache page; if account is authenticated, just bring user to dashboard
+// router.get('/signup/google', function (request, response) {
+//     if (request.isAuthenticated()) {
+//         response.redirect('../dashboard');
+//     } else {
+//         response.writeHead(200, {
+//             'Content-Type': 'text.html'
+//         });
+//         renderWithPartial(signupGoogleMustache, request, response);
+//     }
+// });
+
+/* TODO: will be added when role of users is implemented */
+// // Render the signup mustache page; if account is authenticated, just bring user to dashboard
+// router.post('/signup/google/submit', function (request, response) {
+//
+//   console.log(request.body);
+//
+// });
+
 // Render the signup mustache page; if account is authenticated, just bring user to dashboard
 router.get('/signup', function (request, response) {
     if (request.isAuthenticated()) {

@@ -109,3 +109,12 @@ span.signup a{
     color: red;
     cursor: pointer;
 }
+
+.google-container {
+  background-color: #E84A27;
+}
+
+.google-login {
+  color: #13294b;
+  text-decoration: none;
+}

@@ -107,6 +107,7 @@ function createUser(user) {
         verified : false,
         verifiedId : user.verifiedId,
         universityId : universityInfo.id,
+        googleId : user.googleId,
       }
     }).then(result => {
       return result[0].dataValues;
@@ -138,7 +139,7 @@ function getUserByGoogleId(profileId) {
     /* Since the email should be unique,
      * findOne() is sufficient
      */
-    console.log(profileId);
+    info(profileId);
     return User.findOne({
         where: { googleId: profileId }
     }).then(result => {
@@ -606,6 +607,19 @@ function addPasswordToken(userInfo, token) {
       mailId : userInfo.mailId,
     }
   }).catch(err => perror(err));
+}
+
+function setUserRole(userId, role) {
+  return Role.findOrCreate({
+    where : { roleName : role },
+  }).then(result => {
+    const roleInfo = reuslt[0].dataValues;
+    return User.update({
+      roleId : roleInfo.id,
+    }, {
+      where : { id : userId },
+    }).catch(err => perror(err)); /* User.update() */
+  }).catch(err => perror(err)); /* Role.findOrCreate() */
 }
 
 module.exports = {
