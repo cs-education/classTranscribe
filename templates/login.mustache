@@ -3,7 +3,7 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Login</title>
 
@@ -18,10 +18,13 @@
             <h1>LOG IN</h1>
             <input type="text" placeholder="Email" pattern="^\w+@[a-z]+?\.edu$" name="username" required> <br>
             <input type="password" placeholder="Password" name="password" required> <br>
+            <span class="google-container">
+              <a href="/auth/google" role="button" class="google-login"> Login via Illinois ID </a>
+            </span><br>
             <button type="submit" class="login-submit">Submit</button> <br>
             <span class="psw"><a href="/resetPassword">Forgot your password?</a></span>
         </div>
-    </form> 
+    </form>
     <div class="signup-container">
         <span class="signup">Don't have an account? <a href="/signup">Signup</a></span>
     </div>

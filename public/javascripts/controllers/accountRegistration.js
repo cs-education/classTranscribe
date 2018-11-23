@@ -19,6 +19,26 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
+    $('#signup-google-form').submit(function(event) {
+        event.preventDefault();
+        $.ajax({
+            url: "/signup/google/submit",
+            type: "POST",
+            data: $('#signup-google-form').serialize(),
+            error: function() {
+            },
+            success: function(response) {
+                if (response.message == 'success') {
+                    window.location.href = response.html;
+                } else {
+                    alert(response.message);
+                }
+            }
+        });
+    });
+});
+
+$(document).ready(function () {
     $('#login-form').submit(function(event) {
         event.preventDefault();
         $.ajax({
