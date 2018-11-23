@@ -24,7 +24,32 @@ const University = models.University;
 const User = models.User;
 const UserOffering = models.UserOffering;
 const YoutubeChannel = models.YoutubeChannel;
+const CourseOfferingMedia = models.CourseOfferingMedia;
 /* ----- end of defining ----- */
+
+function addCourseOfferingMedia(courseOfferingId, mediaId, description) {
+    return CourseOfferingMedia.findOrCreate({
+      where: {
+        courseOfferingId: courseOfferingId,
+        mediaId: mediaId
+      },
+      defaults: {
+          descpJSON: JSON.stringify(description),
+          mediaId: mediaId,
+          courseOfferingId: courseOfferingId
+      }
+    })
+}
+
+function getPlaylistByCourseOfferingId(courseOfferingId) {
+  return sequelize.query(
+   'SELECT mst.videoLocalLocation, mst.srtFileLocation, M.siteSpecificJSON \
+    FROM MSTranscriptionTasks AS mst \
+    INNER JOIN Media as M on mst.mediaId = M.id \
+    INNER JOIN CourseOfferingMedia as com on com.mediaId = M.id \
+    WHERE com.courseOfferingId = ?',
+   { replacements: [ courseOfferingId ], type: sequelize.QueryTypes.SELECT}).catch(err => perror(err)); /* raw query */
+}
 
 function addYoutubeChannelPlaylist(playlistId, channelId) {
     return YoutubeChannel.findOrCreate({
@@ -53,19 +78,39 @@ function addCourseAndSection(courseId, sectionId, downloadHeader) {
     });
 }
 
-function addMedia(videoURL, sourceType, siteSpecificJSON) {
-    return Media.create({
-        videoURL: videoURL,
-        sourceType: sourceType,
-        siteSpecificJSON: siteSpecificJSON
+async function addMedia(videoURL, sourceType, siteSpecificJSON) {
+    var media = await Media.findOrCreate({
+        where: {
+            videoURL: videoURL
+        },
+        defaults: {
+            videoURL: videoURL,
+            sourceType: sourceType,
+            siteSpecificJSON: JSON.stringify(siteSpecificJSON)
+        }
     });
+    return media[0].id;
 }
 
-function addMSTranscriptionTask(mediaId) {
-    return MSTranscriptionTask.create({
+async function addMSTranscriptionTask(mediaId) {
+    var task = await MSTranscriptionTask.findOrCreate({
+        where: {
+        mediaId: mediaId
+        },
+        defaults: {
         id: uuid(),
         mediaId: mediaId
+        }
     });
+    return task[0].id;
+}
+
+// Return taskId
+async function addToMediaAndMSTranscriptionTask(videoURL, sourceType, siteSpecificJSON, courseOfferingId) {
+    var mediaId = await addMedia(videoURL, sourceType, siteSpecificJSON);
+    await addCourseOfferingMedia(courseOfferingId, mediaId, siteSpecificJSON);
+    var taskId = await addMSTranscriptionTask(mediaId);
+    return taskId;
 }
 
 function getTask(taskId) {
@@ -624,9 +669,12 @@ function setUserRole(userId, role) {
 
 module.exports = {
     models: models,
+    addCourseOfferingMedia: addCourseOfferingMedia,
+    getPlaylistByCourseOfferingId: getPlaylistByCourseOfferingId,
     addCourseAndSection: addCourseAndSection,
     addMedia: addMedia,
     addMSTranscriptionTask: addMSTranscriptionTask,
+    addToMediaAndMSTranscriptionTask: addToMediaAndMSTranscriptionTask,
     addLecture : addLecture,
     addCourse : addCourse,
     addPasswordToken : addPasswordToken,
