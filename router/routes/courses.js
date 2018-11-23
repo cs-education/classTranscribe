@@ -511,7 +511,7 @@ function  generateListings(data, user, cb) {
                             '<a class="actionbtn mnbtn">' +
                             '          <span class="glyphicon glyphicon-plus"></span> Manage\n' +
                             '        </a>' + '</td> <td>'+
-                            '<a class="actionbtn mnbtn">' +
+                            '<a class="actionbtn viewbtn">' +
                             '          <span class="glyphicon glyphicon-plus"></span> Watch\n' +
                             '        </a> </td>';
                         fcb(null,html);
@@ -520,7 +520,7 @@ function  generateListings(data, user, cb) {
                   permission.checkCoursePermission(user, classid, 'Drop', function (err, res) {
                     if (!res) {
                       html +=
-                      '<a class="actionbtn viewbtn" href="">' +
+                      '<a class="actionbtn viewbtn">' +
                       '          <span class="glyphicon glyphicon-plus"></span> Watch\n' +
                       '        </a>';
                     }
