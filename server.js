@@ -19,8 +19,6 @@ LocalStrategy = require('passport-local').Strategy;
 router = express.Router();
 multer = require('multer');
 
-// client = require('./modules/redis');
-client = require('./db/db');
 mailer = require('./modules/mailer');
 /* moved into permission.js */
 // macl = require('acl');
@@ -28,7 +26,6 @@ mailer = require('./modules/mailer');
 uuidv4 = require('uuid/v4');
 /* end global variables */
 
-const debug = require('debug');
 const favicon = require('serve-favicon');
 const logger = require('morgan');
 const db = require('./db/db');
@@ -52,12 +49,13 @@ const https = require('https');
 
 dotenv.load();
 piwik_port = process.env.PIWIK_PORT;
-
-if (process.env.DEV == "DEV") {
-    console.log("~~~~~~~~~~~");
-    console.log("~DEVELOPER~");
-    console.log("~~~~~~~~~~~");
+const mode = process.env.MODE;
+console.log("~~~~~~~~~~~");
+switch (mode) {
+    case "DEV": console.log("~DEVELOPER~"); break;
+    case "PRODUCTION": console.log("~PRODUCTION~"); break;
 }
+console.log("~~~~~~~~~~~");
 
 
 require("./authentication");
@@ -82,6 +80,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.set('view engine', 'ejs');
+app.use('/node_modules', express.static(path.join(__dirname,'/node_modules')));
+app.use('/vtt', express.static(path.join(__dirname,'/vtt')));
 
 /* I wasn't sure where to put these variables (that are used in various files */
 mustachePath = 'templates/';
@@ -128,13 +128,19 @@ require('./router')(app);
 
 var port = process.env.CT_PORT || 8000;
 
-var options = {
-	key: fs.readFileSync("./cert/cert/key.pem"),
-	cert: fs.readFileSync("./cert/cert/cert.pem")
+// Certificate
+
+const privateKey = fs.readFileSync('./cert/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('./cert/cert.pem', 'utf8');
+const ca = fs.readFileSync('./cert/chain.pem', 'utf8');
+
+const credentials = {
+    key: privateKey,
+    cert: certificate,
+    ca: ca
 };
 
-
-var httpsServer = https.createServer(options, app);
+var httpsServer = https.createServer(credentials, app);
 httpsServer.listen(port, function() {
 	console.log("Class Transcribe on: " + port);
 });
