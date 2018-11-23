@@ -3,7 +3,7 @@
 function perror(err) {
 
   /* change font to red, print err */
-  console.log('\x1b[31m' + err);
+  console.error('\x1b[31m' + err);
 
   /* print trace */
   console.trace();
