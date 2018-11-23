@@ -11,6 +11,8 @@ module.exports = (sequelize, DataTypes) => {
         passwordToken : DataTypes.TEXT,
         verified : DataTypes.BOOLEAN,
         verifiedId: DataTypes.TEXT,
+        google: DataTypes.TEXT,
+        googleId: DataTypes.TEXT
     });
 
     User.associate = function(models) {

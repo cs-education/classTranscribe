@@ -37,4 +37,14 @@ router.post('/login/submit', function(request, response, next) {
     })(request, response, next);
 });
 
+router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+// the callback after google has authenticated the user
+router.get('/auth/google/callback',
+    passport.authenticate('google', {
+        successRedirect: '/dashboard',
+        failureRedirect: '/'
+    }));
+
+
 module.exports = router;
