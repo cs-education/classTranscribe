@@ -54,7 +54,7 @@ function download_youtube_playlist(playlist_id, courseOfferingId) {
         });
 }
 
-// download_youtube_playlist('PLjgj6kdf_snaBCTJEi53DvRVgOuVbzyku', '64dfd191-4c51-436d-aa7a-b1edbf1a39fd');
+// download_youtube_playlist('PLjgj6kdf_snaBCTJEi53DvRVgOuVbzyku', '1526fd19-6aa4-4a25-9cbb-0e9bf45a3209');
 
 function add_youtube_video_info(videoInfo, courseOfferingId) {
     var publishedAt = videoInfo['snippet']['publishedAt'];

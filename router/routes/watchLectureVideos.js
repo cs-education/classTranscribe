@@ -1,5 +1,5 @@
 const fs = require('fs');
-const client_api = require('../../db/db');
+const db = require('../../db/db');
 
 const utils = require('../../utils/logging');
 const perror = utils.perror;
@@ -10,28 +10,36 @@ const watchLectureVideosPage = fs.readFileSync(mustachePath + 'watchLectureVideo
 
 router.get('/watchLectureVideos/:courseOfferingId', function (request, response) {
   if(request.isAuthenticated()) {
+
     response.writeHead(200, {
       'Content-Type': 'text/html'
     });
-    var courseOfferingId = request.params.courseOfferingId;
-    client_api.getPlaylistByCourseOfferingId(courseOfferingId).then(values => {
 
-      var playlist = values.map(result => {
-        let video = {};
-        let des = JSON.parse(JSON.stringify(result.siteSpecificJSON));
-        video['name'] = des['title'];
-        video['sources'] = [{src: result['videoLocalLocation'], type:'video/mp4'}];
-        video['textTracks'] = [{src: result['srtFileLocation'], srclang: 'eng', label: 'English'}];
-        video['thumbnail'] = false;
-        return video;
-      });
-      renderWithPartial(watchLectureVideosPage, request, response, {playlist : JSON.stringify(playlist)});
-    }).catch(err => perror(err)); /* client_api.getPlaylistByCourseOfferingId() */
+    var courseOfferingId = request.params.courseOfferingId;
+
+
+    db.getPlaylistByCourseOfferingId( courseOfferingId ).then(
+      values => {
+
+        var playlist = values.map(result => {
+          let video = {};
+          let des = JSON.parse(JSON.stringify(result.siteSpecificJSON));
+          video['name'] = des['title'];
+          video['sources'] = [{src: result['videoLocalLocation'], type:'video/mp4'}];
+          video['textTracks'] = [{src: result['srtFileLocation'], srclang: 'eng', label: 'English'}];
+          video['thumbnail'] = false;
+          return video;
+        });
+
+        renderWithPartial(watchLectureVideosPage, request, response, { playlist : JSON.stringify(playlist) });
+    }).catch(err => { perror(err); }); /* db.getPlaylistByCourseOfferingId() */
   } else {
     response.redirect('../../');
   }
 });
 
+
+/* not used */
 router.get('/getVideo', function(request, response) {
   var lectureNumber = "1";
   var file = path.join(__dirname, "../../videos/Lecture_" + lectureNumber + ".mp4");
