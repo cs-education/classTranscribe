@@ -9,6 +9,12 @@ const readline = require('readline');
 const sys = require('sys');
 const exec = require('child_process').exec;
 const db = require('../../db/db');
+
+const utils = require('../../utils/logging');
+const perror = utils.perror;
+const info = utils.info;
+const log = utils.log;
+
 const storage = multer.diskStorage({
   destination: function(req, file, callback) {
     callback(null, './videos');
@@ -21,10 +27,10 @@ const storage = multer.diskStorage({
 
 var manageCoursePage = fs.readFileSync(mustachePath + 'manageCourse.mustache').toString();
 
-router.get('/manage/:offeringId', function (request, response) {
+router.get('/manage/:courseOfferingId', function (request, response) {
 
   if (request.isAuthenticated()) {
-    var offeringId = request.params.offeringId;
+    var courseOfferingId = request.params.courseOfferingId;
     var className = '';
     var userInfo = request.user;
     var courses = request.session['currentContent'];
@@ -38,7 +44,7 @@ router.get('/manage/:offeringId', function (request, response) {
     /* check if the offeringId is in the stored in the cookie */
     for (let i = 0; i < courses.length; i++) {
       /* offeringId is found */
-      if (offeringId === courses[i].offeringId) {
+      if (courseOfferingId === courses[i].courseOfferingId) {
         className = courses[i].acronym + ' ' + courses[i].courseNumber;
         break;
       }
@@ -46,19 +52,19 @@ router.get('/manage/:offeringId', function (request, response) {
 
     /* relating offeringId is not found */
     if (className === '') {
-      db.validateUserAccess( offeringId, userInfo.id).then(result => {
+      db.validateUserAccess( courseOfferingId, userInfo.id).then(result => {
         response.writeHead(200, {
           'Content-Type': 'text/html'
         });
 
         if (!result) {
           var error = 'Course Not Found.'
-          console.log(error);
+          perror(error);
           response.send({ message : error, html : '/' });
         } else { /* TODO: check permission */
           renderWithPartial(manageCoursePage, request, response, { className : className} );
         }
-      }).catch(err => console.log(err)) /* db.validateUserAccess() */
+      }).catch(err => perror(err)) /* db.validateUserAccess() */
     } else {
       response.writeHead(200, {
         'Content-Type': 'text/html'
@@ -73,7 +79,7 @@ router.get('/manage/:offeringId', function (request, response) {
 var upload = multer({ dest: 'manage/' })
 
 /* similar to /uploadLectureVideos,  used for single upload*/
-router.post('/manage/:offeringId', upload.single('filename'), function(request, response) {
+router.post('/manage/:courseOfferingId', upload.single('filename'), function(request, response) {
   var className = request._parsedOriginalUrl.pathname.split("/")[2];
   var upload = multer({ storage : storage}).any();
   var path_videos = path.join(__dirname, "../../videos");
@@ -107,13 +113,13 @@ router.post('/manage/:offeringId', upload.single('filename'), function(request, 
         }
         /* node utility_scripts/splitRunner.js <path_to_directory_with_videos> <class_name> */
         /* splits the videos */
-        exec("node " + path_splitRunner + " " + path_class + " " + offeringId, function(err, stdout, stderr) {
+        exec("node " + path_splitRunner + " " + path_class + " " + courseOfferingId, function(err, stdout, stderr) {
           if (err !== null) {
             console.log("%s exec splitRunner error: ", filename, err);
           }
           /* node utility_scripts/taskInitializer.js <path_to_directory_with_videos> <class_name> */
           /* adds the videos to the queue to be transcribed */
-          exec("node " + path_taskInitializer + " " + path_class + " " + offeringId, function(err, stdout, stderr) {
+          exec("node " + path_taskInitializer + " " + path_class + " " + courseOfferingId, function(err, stdout, stderr) {
             if (err !== null) {
               console.log("%s exec taskInitializer error: ", filename, err);
             }

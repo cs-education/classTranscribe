@@ -7,7 +7,6 @@ const sequelize = models.sequelize;
 
 sequelize.sync();
 
-const sequelize = models.sequelize;
 const perror = utils.perror;
 const info = utils.info;
 const log = utils.log;
@@ -501,7 +500,6 @@ function getCoursesByUserId( uid ) {
       oid.id = coid.offeringId AND cid.id = coid.courseId AND coid.id IN (:coids)',
       { replacements: { coids : courseOfferingIds }, type: sequelize.QueryTypes.SELECT })
       .then(values => {
-        log('values:')
 
         return values.map(value => {
           /* move value.id to value.courseOfferingId */

@@ -346,7 +346,15 @@
         //         alert(errorThrown);
         //     }
         // });
-        window.location = '/watchLectureVideos';
+        var attributes = $(this).closest("tr").find('td').map(function() {
+            return $(this).text();
+        })
+        console.log(attributes);
+        className = attributes.get(1)
+        className = className.replace(/\s/g, '')
+        console.log($.get(className))
+
+        window.location = '/watchLectureVideos/' + className;
     });
 
 
