@@ -498,7 +498,7 @@ function  generateListings(data, user, cb) {
 
         html += '<tr id="'+ e.id +'">';
         html += '<td hidden="yes">' + e.termName + '</td>';
-        html += '<td hidden="yes">' + e.offeringId + '</td>';
+        html += '<td hidden="yes">' + e.courseOfferingId + '</td>';
         html += '<td>' + e.university + '</td>';
         html += '<td>' + e.acronym + '</td>';
         html += '<td>' + e.courseNumber + '</td>';
