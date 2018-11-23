@@ -613,7 +613,7 @@ module.exports = {
     addPasswordToken : addPasswordToken,
     addStudent : addStudent,
     removeStudent : removeStudent,
-    addUser: addUser,
+    createUser: addUser,
     setUserName: setUserName,
     setUserPassword : setUserPassword,
     verifyUser: verifyUser,
