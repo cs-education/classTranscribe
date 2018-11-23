@@ -60,6 +60,8 @@
     "unirest": "^0.5.1",
     "uuid": "3.3.2",
     "validator": "^9.2.0",
+    "videojs-playlist": "^4.2.6",
+    "videojs-playlist-ui": "^3.5.2",
     "youtube-dl": "^1.12.2"
   },
   "devDependencies": {
@@ -68,7 +70,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "grunt & node proxyServer.js & node redirectServer.js & node server.js",
+    "start": "node proxyServer.js & node redirectServer.js & node server.js",
     "lint": "eslint ./"
   },
   "repository": {
