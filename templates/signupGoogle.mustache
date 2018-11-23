@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Signup</title>
+
+    <link rel="stylesheet" type="text/css" href="../stylesheets/signup.css" />
+    <script language="JavaScript" type="text/javascript" src="/javascripts/libraries/jquery-1.11.2.min.js"></script>
+    <script src="/javascripts/controllers/accountRegistration.js"></script>
+</head>
+
+<body>
+    <form id="signup-google-form" method="POST" action="/signup/google/submit">
+        <div class="container">
+            <h1>You are almost done, please select your identity...</h1>
+            <select selected="--Select--Your--Role--" name="identity" required>
+              <option value="instructor"> Instructor </option>
+              <option value="student"> Student </option>
+            </select> <br>
+            <button type="submit" class="signup-submit">Submit</button>
+        </div>
+    </form>
+    <div class="login-container">
+        <span class="login">Already have an account? <a href="/login">Login</a></span>
+    </div>
+</body>
+
+</html>

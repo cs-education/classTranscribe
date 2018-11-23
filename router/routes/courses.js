@@ -131,8 +131,9 @@ router.get('/courses/', function (request, response) {
           "                    <th>Course Descruption</th>\n" +
           "                    <th>Action</th>\n" +
           "                </tr>";
-          info(userInfo);
-          client_api.getCoursesByUniversityId( userInfo.universityId ).then( values => {
+
+          client_api.getCoursesByUserId(userInfo.id).then( values => {
+
             var termIds = [];
             var deptIds = [];
             var courses = [];
@@ -142,23 +143,20 @@ router.get('/courses/', function (request, response) {
             for (let i = 0; i < values.length; i ++) {
               termIds.push(values[i].termId);
               deptIds.push(values[i].deptId);
-              offeringIds.push(values[i].offeringId);
               courseOfferingIds.push(values[i].courseOfferingId);
-              courses.push(values[i]);
               values[i].university = userInfo.university;
+              courses.push(values[i]);
             }
 
             var termFetches = client_api.getTermsById(termIds);
             var deptFetches = client_api.getDeptsById(deptIds);
-            var sectionFetches = client_api.getSectionsById(offeringIds);
             var instructorFetches = client_api.getInstructorsByCourseOfferingId(courseOfferingIds);
 
-            Promise.all([termFetches, deptFetches, sectionFetches, instructorFetches]).then(values => {
+            Promise.all([termFetches, deptFetches, instructorFetches]).then(values => {
               var filters = [];
               var terms = {};
               var depts = {};
               var acronyms = {};
-              var sections = {};
               var instructors = {};
 
               values[0].map(value => {
@@ -171,10 +169,6 @@ router.get('/courses/', function (request, response) {
               });
 
               values[2].map(value => {
-                sections[value.id] = value.section;
-              })
-
-              values[3].map(value => {
                 if ( !instructors[value.courseOfferingId] ) {
                   instructors[value.courseOfferingId] = [];
                 }
@@ -186,7 +180,6 @@ router.get('/courses/', function (request, response) {
                 courses[i].termName = terms[currentCourse.termId];
                 courses[i].deptName = depts[currentCourse.deptId];
                 courses[i].acronym = acronyms[currentCourse.deptId];
-                courses[i].section = sections[currentCourse.offeringId];
                 courses[i].instructor = instructors[currentCourse.courseOfferingId];
               }
 
@@ -499,7 +492,7 @@ function  generateListings(data, user, cb) {
 
         html += '<tr id="'+ e.id +'">';
         html += '<td hidden="yes">' + e.termName + '</td>';
-        html += '<td hidden="yes">' + e.offeringId + '</td>';
+        html += '<td hidden="yes">' + e.courseOfferingId + '</td>';
         html += '<td>' + e.university + '</td>';
         html += '<td>' + e.acronym + '</td>';
         html += '<td>' + e.courseNumber + '</td>';
@@ -512,9 +505,6 @@ function  generateListings(data, user, cb) {
         if (debug || (user != '' && user != undefined)) {
             var classid = e.courseOfferingId;
             permission.checkCoursePermission(user, classid, 'Modify', function(error, result) {
-
-              info(classid);
-              log('result: ' + result + ' err: ' + error);
 
                 if (result) {
                         html +=
