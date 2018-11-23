@@ -73,7 +73,7 @@ var testInfo = {
 };
 
 
-client_api.addUser(testInfo).then(
+client_api.createUser(testInfo).then(
   result => {
     var userInfo = result;
     permission.addUser(userInfo.mailId);
