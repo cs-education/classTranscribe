@@ -125,7 +125,7 @@ router.post('/signup/submit', function (request, response) {
                     verifiedId : token,
                   };
 
-                  client_api.addUser(userInfo).then(result => {
+                  client_api.createUser(userInfo).then(result => {
                     /* add user in permission */
                     permission.addUser(result.id);
 
