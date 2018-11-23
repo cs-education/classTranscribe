@@ -5,6 +5,7 @@ const utils = require('../utils/logging');
 const uuid = require('uuid/v4');
 models.sequelize.sync();
 
+const sequelize = models.sequelize;
 const perror = utils.perror;
 const info = utils.info;
 const log = utils.log;
@@ -34,6 +35,7 @@ function addCourseOfferingMedia(courseOfferingId, mediaId, description) {
         mediaId: mediaId
       },
       defaults: {
+          id: uuid(),
           descpJSON: JSON.stringify(description),
           mediaId: mediaId,
           courseOfferingId: courseOfferingId

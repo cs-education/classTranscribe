@@ -193,6 +193,7 @@ router.get('/courses/', function (request, response) {
               // Saving current content(courseId, termId) before applying filters
               request.session['currentContent'] = courses;
 
+
               generateListings(courses, userid, function (res) {
                 thtml += res;
                 filterdata = generateFilters(terms, depts);
@@ -519,22 +520,26 @@ function  generateListings(data, user, cb) {
                         html +=
                             '<a class="actionbtn mnbtn">' +
                             '          <span class="glyphicon glyphicon-plus"></span> Manage\n' +
-                            '        </a>';
+                            '        </a>' + '</td> <td>'+
+                            '<a class="actionbtn mnbtn">' +
+                            '          <span class="glyphicon glyphicon-plus"></span> Watch\n' +
+                            '        </a> </td>';
                         fcb(null,html);
                     // });
                 } else {
                   permission.checkCoursePermission(user, classid, 'Drop', function (err, res) {
                     if (!res) {
                       html +=
-                      '<a class="actionbtn erbtn">' +
-                      '          <span class="glyphicon glyphicon-plus"></span> Enroll\n' +
-                      '        </a>';
-                    } else {
-                      html +=
-                      '<a class="actionbtn dpbtn">' +
-                      '          <span class="glyphicon glyphicon-minus"></span> Drop\n' +
+                      '<a class="actionbtn viewbtn" href="">' +
+                      '          <span class="glyphicon glyphicon-plus"></span> Watch\n' +
                       '        </a>';
                     }
+                    // } else {
+                    //   html +=
+                    //   '<a class="actionbtn dpbtn">' +
+                    //   '          <span class="glyphicon glyphicon-minus"></span> Drop\n' +
+                    //   '        </a>';
+                    // }
                     html += '</br>';
                     fcb(null, html);
                   }); /* permission.checkCoursePermission() [drop] */

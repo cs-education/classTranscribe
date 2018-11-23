@@ -325,6 +325,29 @@
             }
         });
     });
+    // Watch
+    $(document).on('click',".actionbtn.viewbtn",function (e) {
+        e.preventDefault();
+        // var retd = {};
+        // for (var d in $(this).parent().parent()[0]){
+        //     retd[d] = d;
+        // }
+        // var row = $(this).closest("tr");
+        // $.ajax({
+        //     url : "/watchLectureVideos",
+        //     type: "POST",
+        //     data:'cid='+$(this).closest("tr").attr('id')+'&classinfo='+$(this).closest("tr").find('td').map(function() {
+        //         return $(this).text();
+        //     }).get().join(',,'),
+        //     success: function (data) {
+        //         location.reload();
+        //     },
+        //     error: function (jXHR, textStatus, errorThrown) {
+        //         alert(errorThrown);
+        //     }
+        // });
+        window.location = '/watchLectureVideos';
+    });
 
 
 </script>
