@@ -266,6 +266,54 @@ async function convertTaskToSrt(taskId) {
     await task.update({ srtFileLocation: path.resolve(outputFile) });
 }
 
+async function requestCookies(publicAccessUrl) {
+    console.log("requestCookies");
+    const { spawn } = require('child-process-promise');
+    const curl = spawn('curl', ['-D', _dirname + 'cookies.txt', publicAccessUrl]);
+    curl.childProcess.stdout.on('data', (data) => {
+        console.log(`stdout: ${data}`);
+    });
+
+    curl.childProcess.stderr.on('data', (data) => {
+        console.log(`stderr: ${data}`);
+    });
+    await curl;
+
+    var fs  = require('fs-promise');
+    return fs.readFile(_dirname + 'cookies.txt')
+        .then(f => {
+            var lines = f.toString().split('\n');
+            var Cookies = ['PLAY_SESSION', 'CloudFront-Key-Pair-Id', 'CloudFront-Policy', 'CloudFront-Signature'];
+            var value_Cookies = ['', '', '', ''];
+            for(var i in lines) {
+                let line = lines[i];
+                for(var j in Cookies) {
+                    let index = line.indexOf(Cookies[j]);
+                    if(index != -1) {
+                        value_Cookies[j] = line.substring(index + Cookies[j].length + 1, line.indexOf(';'));
+                        break;
+                    }
+                }
+            }
+            return Promise.resolve({
+                PLAY_SESSION: value_Cookies[0],
+                cloudFront_Key_Pair_Id: value_Cookies[1],
+                cloudFront_Policy: value_Cookies[2],
+                cloudFront_Signature: value_Cookies[3]
+            });
+        });
+}
+
+requestCookies('https://echo360.org/section/3b336c00-c80b-4f67-92fb-24115a5f5f3d/public')
+    .then(cookieJson => {
+        let download_header = 'Cookie: CloudFront-Key-Pair-Id=' + cookieJson.cloudFront_Key_Pair_Id;
+        download_header += "; CloudFront-Policy=" + cookieJson.cloudFront_Policy;
+        download_header += "; CloudFront-Signature=" + cookieJson.cloudFront_Signature;
+        console.log(download_header);
+        conversion_utils.downloadFile('https://content.echo360.org/c67b.d422df75-c848-4e5e-b375-e46893d4de8a/3db2abee-d994-4102-9718-855d495f35fb/sd1.mp4',
+            download_header, _dirname + '2040_sd1.mp4');
+    });
+
 module.exports = {
     youtube_scraper_channel: youtube_scraper_channel,
     download_youtube_playlist: download_youtube_playlist,
