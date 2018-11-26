@@ -54,7 +54,7 @@ function download_youtube_playlist(playlist_id, courseOfferingId) {
         });
 }
 
-// download_youtube_playlist('PLkDaE6sCZn6Gl29AoE31iwdVwSG-KnDzF', 'replace_with_courseOfferingId');
+// download_youtube_playlist('PLjgj6kdf_snaBCTJEi53DvRVgOuVbzyku', '1526fd19-6aa4-4a25-9cbb-0e9bf45a3209');
 
 function add_youtube_video_info(videoInfo, courseOfferingId) {
     var publishedAt = videoInfo['snippet']['publishedAt'];
@@ -192,7 +192,7 @@ async function download_echo_course_info(section_url, courseOfferingId) {
         download_header += "; " + cloudFront_Signature;
         console.log(download_header);
     }).then(function () { return rp(options_syllabus) });
-    
+
     var syllabus = JSON.parse(response_syllabus.body);
     var audio_data_arr = syllabus['data'];
     for (var j = 0; j < audio_data_arr.length; j++) {
@@ -241,7 +241,7 @@ async function downloadConvertAndSrt(taskId) {
 async function download_echo_lecture(task, media) {
     console.log("download_echo_lecture");
     var url = media.videoURL;
-    var siteSpecificJSON = JSON.parse(media.siteSpecificJSON);    
+    var siteSpecificJSON = JSON.parse(media.siteSpecificJSON);
     var dest = _dirname + media.id + "_" + url.substring(url.lastIndexOf('/') + 1);
     var outputFile = await conversion_utils.downloadFile(url, 'Cookie: ' + siteSpecificJSON.download_header, dest);
     console.log("Outputfile " + outputFile);

@@ -1,85 +1,45 @@
 const fs = require('fs');
+const db = require('../../db/db');
+
+const utils = require('../../utils/logging');
+const perror = utils.perror;
+const info = utils.info;
+const log = utils.log;
 
 const watchLectureVideosPage = fs.readFileSync(mustachePath + 'watchLectureVideos.mustache').toString();
 
-router.get('/watchLectureVideos', function (request, response) {
-  // console.log("Got ROUTE", watchLectureVideosPage)
-  response.writeHead(200, {
-    'Content-Type': 'text/html'
-  });
-  var offeringId = getOfferingId();
-  var videolist = getPlaylistByCourseOfferingId(offeringId)
-  var playlist = [{
-      name: 'Dog',
-      sources: [
-        { src: 'https://samplestoragect.blob.core.windows.net/samplestorage/sample1.mp4', type: 'video/mp4' }
-      ],
-      textTracks: [{
-        src: 'vtt/sample1.vtt',
-        srclang: 'fr',
-        label: 'France'
-      }],
-      thumbnail: false
-    }, {
-      name: 'Sample 2',
-      sources: [
-        { src: 'https://samplestoragect.blob.core.windows.net/samplestorage/sample2.mp4', type: 'video/mp4' }
-      ],
-      textTracks: [{
-        src: 'vtt/sample2.vtt',
-        srclang: 'fr',
-        label: 'France'
-      }],
-      thumbnail: false
-    }, {
-      name: 'Sample 1',
-      sources: [
-        { src: 'https://samplestoragect.blob.core.windows.net/samplestorage/sample1.mp4', type: 'video/mp4' }
-      ],
-      textTracks: [{
-        src: 'https://samplestoragect.blob.core.windows.net/samplestorage/sample1.vtt',
-        srclang: 'fr',
-        label: 'France'
-      }],
-      thumbnail: false
-    }, {
-      name: 'Sample 2',
-      sources: [
-        { src: 'https://samplestoragect.blob.core.windows.net/samplestorage/sample2.mp4', type: 'video/mp4' }
-      ],
-      textTracks: [{
-        src: 'https://samplestoragect.blob.core.windows.net/samplestorage/sample2.vtt',
-        srclang: 'fr',
-        label: 'France'
-      }],
-      thumbnail: false
-    }, {
-      name: 'Sample 1',
-      sources: [
-        { src: 'https://samplestoragect.blob.core.windows.net/samplestorage/sample1.mp4', type: 'video/mp4' }
-      ],
-      textTracks: [{
-        src: 'https://samplestoragect.blob.core.windows.net/samplestorage/sample1.vtt',
-        srclang: 'fr',
-        label: 'France'
-      }],
-      thumbnail: false
-    }, {
-      name: 'Sample 2',
-      sources: [
-        { src: 'https://samplestoragect.blob.core.windows.net/samplestorage/sample2.mp4', type: 'video/mp4' }
-      ],
-      textTracks: [{
-        src: 'https://samplestoragect.blob.core.windows.net/samplestorage/sample2.vtt',
-        srclang: 'fr',
-        label: 'France'
-      }],
-      thumbnail: false
-    }]
+router.get('/watchLectureVideos/:courseOfferingId', function (request, response) {
+  if(request.isAuthenticated()) {
 
-  renderWithPartial(watchLectureVideosPage, request, response, {playlist : JSON.stringify(playlist)});
+    response.writeHead(200, {
+      'Content-Type': 'text/html'
+    });
+
+    var courseOfferingId = request.params.courseOfferingId;
+
+
+    db.getPlaylistByCourseOfferingId( courseOfferingId ).then(
+      values => {
+
+        var playlist = values.map(result => {
+          let video = {};
+          let des = JSON.parse(JSON.stringify(result.siteSpecificJSON));
+          video['name'] = des['title'];
+          video['sources'] = [{src: result['videoLocalLocation'], type:'video/mp4'}];
+          video['textTracks'] = [{src: result['srtFileLocation'], srclang: 'eng', label: 'English'}];
+          video['thumbnail'] = false;
+          return video;
+        });
+
+        renderWithPartial(watchLectureVideosPage, request, response, { playlist : JSON.stringify(playlist) });
+    }).catch(err => { perror(err); }); /* db.getPlaylistByCourseOfferingId() */
+  } else {
+    response.redirect('../../');
+  }
 });
 
+
+/* not used */
 router.get('/getVideo', function(request, response) {
   var lectureNumber = "1";
   var file = path.join(__dirname, "../../videos/Lecture_" + lectureNumber + ".mp4");
