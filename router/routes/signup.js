@@ -119,7 +119,7 @@ router.post('/signup/submit', function (request, response) {
                 if (valid_pattern != true) {
                   var error = "Password must have at least 8 character, an uppercase letter, a lowercase leter, a digit, and no spaces.";
                   perror(error);
-                  response.send({message: err, html: ''});
+                  response.send({message: error, html: ''});
                 }
 
                 // Generate a unique link specific to the user
@@ -160,20 +160,20 @@ router.post('/signup/submit', function (request, response) {
                     });
 
                     response.send({ message: 'success', html: '../login' });
-                  }).catch(err => {
-                    perror(err);
-                    response.send({message: err, html: ''});
+                  }).catch(error => {
+                    perror(error);
+                    response.send({message: error, html: ''});
                   }); /* end of catch for createUser() */
                 }) /* end of crypto.randomBytes() */
               } else {
-                var err = 'Account already exists';
-                perror(err);
-                response.send({message: err, html: ''});
+                var error = 'Account already exists';
+                perror(error);
+                response.send({message: error, html: ''});
               }
             })
-            .catch(err => {
-              perror(err);
-              response.send({message: err, html: ''});
+            .catch(error => {
+              perror(error);
+              response.send({message: error, html: ''});
             }); /* end of getUserByEmail() */
           }
         }
@@ -221,15 +221,15 @@ router.get('/verify', function (request, response) {
         });
         renderWithPartial(verifyMustache, request, response);
       })
-      .catch(err => {
-        perror(err);
-        response.send({message : err, html: ''});
+      .catch(error => {
+        perror(error);
+        response.send({message : error, html: ''});
       })/* catch verifyUser() error */
 
     })
-    .catch(err=> {
-      perror(err);
-      response.send({message :err, html : ''});
+    .catch(error => {
+      perror(error);
+      response.send({message :error, html : ''});
     })/* catch getUserByEmail() error */
 });
 
