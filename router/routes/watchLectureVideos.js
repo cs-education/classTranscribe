@@ -23,11 +23,11 @@ router.get('/watchLectureVideos/:courseOfferingId', function (request, response)
 
         var playlist = values.map(result => {
           let video = {};
-          let des = JSON.parse(JSON.stringify(result.siteSpecificJSON));
-          video['name'] = des['title'];
+            let des = JSON.parse(result.siteSpecificJSON);
+            video['name'] = des.title;
           video['sources'] = [{src: result['videoLocalLocation'], type:'video/mp4'}];
           video['textTracks'] = [{src: result['srtFileLocation'], srclang: 'eng', label: 'English'}];
-          video['thumbnail'] = false;
+            video['thumbnail'] = false;
           return video;
         });
 
