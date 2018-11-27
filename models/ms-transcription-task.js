@@ -18,3 +18,13 @@ module.exports = (sequelize, DataTypes) => {
     };
     return MSTranscriptionTask;
 };
+
+
+//******************************************************************
+// var tempId = {termId: courses[0].termName,
+//               deptId: courses[0].deptName,
+//               }
+// var offeringId = getOfferingId(tempId, courses[0].section);
+
+
+//******************************************************************
