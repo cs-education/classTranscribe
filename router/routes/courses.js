@@ -274,7 +274,7 @@ router.get('/courses/search', function (request, response) {
                        "                    <th>Section Number</th>\n" +
                        "                    <th>Course Name</th>\n" +
                        "                    <th>Course Instructor</th>\n" +
-                       "                    <th>Course Descruption</th>\n" +
+                       "                    <th>Course Description</th>\n" +
                        "                    <th>Action</th>\n" +
                        "                </tr>";
           var commands=line.trim().split(/\r\n|\n/);
