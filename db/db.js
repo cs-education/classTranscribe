@@ -36,6 +36,7 @@ function addCourseOfferingMedia(courseOfferingId, mediaId, description) {
         mediaId: mediaId
       },
       defaults: {
+          id: uuid(),
           descpJSON: JSON.stringify(description),
           mediaId: mediaId,
           courseOfferingId: courseOfferingId
@@ -499,7 +500,6 @@ function getCoursesByUserId( uid ) {
       oid.id = coid.offeringId AND cid.id = coid.courseId AND coid.id IN (:coids)',
       { replacements: { coids : courseOfferingIds }, type: sequelize.QueryTypes.SELECT })
       .then(values => {
-        log('values:')
 
         return values.map(value => {
           /* move value.id to value.courseOfferingId */
