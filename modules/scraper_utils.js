@@ -54,8 +54,6 @@ function download_youtube_playlist(playlist_id, courseOfferingId) {
         });
 }
 
-// download_youtube_playlist('PLjgj6kdf_snaBCTJEi53DvRVgOuVbzyku', '1526fd19-6aa4-4a25-9cbb-0e9bf45a3209');
-
 function add_youtube_video_info(videoInfo, courseOfferingId) {
     var publishedAt = videoInfo['snippet']['publishedAt'];
     var channelId = videoInfo['snippet']['channelId'];
@@ -106,41 +104,6 @@ async function download_youtube_video(task, media) {
     var outputFile = _dirname + media.id + '.mp4';
     outputFile = await conversion_utils.download_from_youtube_url(videoUrl, outputFile);
     await task.update({ videoLocalLocation: path.resolve(outputFile) });
-}
-
-function echo_scraper(publicAccessUrl) {
-    request({ url: publicAccessUrl, resolveWithFullResponse: true, followAllRedirects: true }, function (error_directLogin, response_directLogin, body_directLogin) {
-        console.log(response_directLogin.headers)
-    });
-    return rp({ url: publicAccessUrl, resolveWithFullResponse: true, followAllRedirects: true })
-        .then(function (response_directLogin) {
-            console.log(response_directLogin.headers['set-cookie']);
-            var cookie_directLogin = response_directLogin.headers['set-cookie'][0];
-            var play_session_directLogin = new Cookie(cookie_directLogin);
-            var csrf_token = play_session_directLogin.value.substring(play_session_directLogin.value.indexOf('csrf') + 10)
-
-            var options_login = {
-                method: 'POST',
-                url: url_login,
-                qs: { csrfToken: csrf_token },
-                headers:
-                {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    Cookie: play_session_directLogin.key + "=" + play_session_directLogin.value
-                },
-                form:
-                {
-                    email: email,
-                    password: password,
-                    action: 'Save'
-                },
-                resolveWithFullResponse: true
-            };
-
-            return new Promise((resolve, reject) => {
-                resolve(options_login);
-            });
-        });
 }
 
 async function download_echo_course_info(section_url, courseOfferingId) {
@@ -194,6 +157,119 @@ async function download_echo_course_info(section_url, courseOfferingId) {
     }).then(function () { return rp(options_syllabus) });
 
     var syllabus = JSON.parse(response_syllabus.body);
+    await extractSyllabusAndDownload(syllabus, download_header, courseOfferingId);
+}
+
+async function downloadConvertAndSrt(taskId) {
+    await download_lecture(taskId);
+    await convertTaskVideoToWav(taskId);
+    await convertTaskToSrt(taskId);
+}
+
+async function download_echo_lecture(task, media) {
+    console.log("download_echo_lecture");
+    var url = media.videoURL;
+    var siteSpecificJSON = JSON.parse(media.siteSpecificJSON);
+    var dest = _dirname + media.id + "_" + url.substring(url.lastIndexOf('/') + 1);
+    var outputFile = await conversion_utils.downloadFile(url, siteSpecificJSON.download_header, dest);
+    console.log("Outputfile " + outputFile);
+    await task.update({ videoLocalLocation: path.resolve(outputFile) });
+}
+
+async function convertTaskVideoToWav(taskId) {
+    console.log("convertVideoToWav");
+    var task = await db.getTask(taskId);
+    //console.log(task);
+    console.log(task.id, task.videoLocalLocation);
+    var outputFile = await conversion_utils.convertVideoToWav(task.videoLocalLocation);
+    await task.update({
+        wavAudioLocalFile: path.resolve(outputFile)
+    });
+}
+
+async function convertTaskToSrt(taskId) {
+    console.log("convertTaskToSrt");
+    var task = await db.getTask(taskId);
+    var outputFile = await conversion_utils.convertWavFileToSrt(task.wavAudioLocalFile);
+    await task.update({ srtFileLocation: path.resolve(outputFile) });
+}
+
+async function requestCookies(publicAccessUrl) {
+    console.log("requestCookies");
+    const { spawn } = require('child-process-promise');
+    const curl = spawn('curl', ['-D', 'cookies.txt', publicAccessUrl]);
+    curl.childProcess.stdout.on('data', (data) => {
+        console.log(`stdout: ${data}`);
+    });
+
+    curl.childProcess.stderr.on('data', (data) => {
+        console.log(`stderr: ${data}`);
+    });
+    await curl;
+
+    var fs  = require('fs-promise');
+    return fs.readFile('cookies.txt')
+        .then(f => {
+            var lines = f.toString().split('\n');
+            var Cookies = ['PLAY_SESSION', 'CloudFront-Key-Pair-Id', 'CloudFront-Policy', 'CloudFront-Signature'];
+            var value_Cookies = ['', '', '', ''];
+            for(var i in lines) {
+                let line = lines[i];
+                for(var j in Cookies) {
+                    let index = line.indexOf(Cookies[j]);
+                    if(index != -1) {
+                        value_Cookies[j] = line.substring(index + Cookies[j].length + 1, line.indexOf(';'));
+                        break;
+                    }
+                }
+            }
+            var fullText = f.toString();
+            var sectionId = fullText.substring(fullText.indexOf('section') + 'section'.length + 1, fullText.indexOf('home') - 1);
+
+            return Promise.resolve({
+                PLAY_SESSION: value_Cookies[0],
+                cloudFront_Key_Pair_Id: value_Cookies[1],
+                cloudFront_Policy: value_Cookies[2],
+                cloudFront_Signature: value_Cookies[3],
+                sectionId: sectionId
+            });
+        });
+}
+
+async function download_public_echo_course(publicAccessUrl, courseOfferingId) {
+    var cookiesAndHeader = await requestCookies(publicAccessUrl)
+        .then(cookieJson => {
+            let download_header = 'Cookie: CloudFront-Key-Pair-Id=' + cookieJson.cloudFront_Key_Pair_Id;
+            download_header += "; CloudFront-Policy=" + cookieJson.cloudFront_Policy;
+            download_header += "; CloudFront-Signature=" + cookieJson.cloudFront_Signature;
+            return Promise.resolve({
+                cookieJson: cookieJson,
+                download_header: download_header
+            });
+        });
+    var syllabus = await get_syllabus(cookiesAndHeader);
+    await extractSyllabusAndDownload(syllabus, cookiesAndHeader.download_header, courseOfferingId);    
+}
+
+async function get_syllabus(cookiesAndHeader) {
+    var play_session_login = 'PLAY_SESSION' + "=" + cookiesAndHeader.cookieJson['PLAY_SESSION'];
+    var sectionId = cookiesAndHeader.cookieJson.sectionId;
+    var options_syllabus = {
+        method: 'GET',
+        url: 'https://echo360.org/section/' + sectionId + '/syllabus',
+        resolveWithFullResponse: true,
+        headers:
+        {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            Cookie: play_session_login
+        }
+    };
+    var response_syllabus = await rp(options_syllabus);
+    var syllabus = JSON.parse(response_syllabus.body);
+    return Promise.resolve(syllabus);
+}
+
+async function extractSyllabusAndDownload(syllabus, download_header, courseOfferingId) {
     var audio_data_arr = syllabus['data'];
     for (var j = 0; j < audio_data_arr.length; j++) {
         var audio_data = audio_data_arr[j];
@@ -220,7 +296,8 @@ async function download_echo_course_info(section_url, courseOfferingId) {
                 download_header: download_header,
                 termName: termName,
                 lessonName: lessonName,
-                courseName: courseName
+                courseName: courseName,
+                title: courseName + ":" + lessonName
             };
             var taskId = await db.addToMediaAndMSTranscriptionTask(mediaJson.videoUrl, 0, mediaJson, courseOfferingId);
             await downloadConvertAndSrt(taskId);
@@ -230,93 +307,10 @@ async function download_echo_course_info(section_url, courseOfferingId) {
     }
 }
 
-// download_echo_course_info('https://echo360.org/section/286c2340-3852-469d-ba1c-f2cb3f1e2636','cb3836f0-f9fc-45a3-aab1-2c30e3ae2ab9');
-
-async function downloadConvertAndSrt(taskId) {
-    await download_lecture(taskId);
-    await convertTaskVideoToWav(taskId);
-    await convertTaskToSrt(taskId);
-}
-
-async function download_echo_lecture(task, media) {
-    console.log("download_echo_lecture");
-    var url = media.videoURL;
-    var siteSpecificJSON = JSON.parse(media.siteSpecificJSON);
-    var dest = _dirname + media.id + "_" + url.substring(url.lastIndexOf('/') + 1);
-    var outputFile = await conversion_utils.downloadFile(url, 'Cookie: ' + siteSpecificJSON.download_header, dest);
-    console.log("Outputfile " + outputFile);
-    await task.update({ videoLocalLocation: path.resolve(outputFile) });
-}
-
-async function convertTaskVideoToWav(taskId) {
-    console.log("convertVideoToWav");
-    var task = await db.getTask(taskId);
-    //console.log(task);
-    console.log(task.id, task.videoLocalLocation);
-    var outputFile = await conversion_utils.convertVideoToWav(task.videoLocalLocation);
-    await task.update({
-        wavAudioLocalFile: path.resolve(outputFile)
-    });
-}
-
-async function convertTaskToSrt(taskId) {
-    console.log("convertTaskToSrt");
-    var task = await db.getTask(taskId);
-    var outputFile = await conversion_utils.convertWavFileToSrt(task.wavAudioLocalFile);
-    await task.update({ srtFileLocation: path.resolve(outputFile) });
-}
-
-async function requestCookies(publicAccessUrl) {
-    console.log("requestCookies");
-    const { spawn } = require('child-process-promise');
-    const curl = spawn('curl', ['-D', _dirname + 'cookies.txt', publicAccessUrl]);
-    curl.childProcess.stdout.on('data', (data) => {
-        console.log(`stdout: ${data}`);
-    });
-
-    curl.childProcess.stderr.on('data', (data) => {
-        console.log(`stderr: ${data}`);
-    });
-    await curl;
-
-    var fs  = require('fs-promise');
-    return fs.readFile(_dirname + 'cookies.txt')
-        .then(f => {
-            var lines = f.toString().split('\n');
-            var Cookies = ['PLAY_SESSION', 'CloudFront-Key-Pair-Id', 'CloudFront-Policy', 'CloudFront-Signature'];
-            var value_Cookies = ['', '', '', ''];
-            for(var i in lines) {
-                let line = lines[i];
-                for(var j in Cookies) {
-                    let index = line.indexOf(Cookies[j]);
-                    if(index != -1) {
-                        value_Cookies[j] = line.substring(index + Cookies[j].length + 1, line.indexOf(';'));
-                        break;
-                    }
-                }
-            }
-            return Promise.resolve({
-                PLAY_SESSION: value_Cookies[0],
-                cloudFront_Key_Pair_Id: value_Cookies[1],
-                cloudFront_Policy: value_Cookies[2],
-                cloudFront_Signature: value_Cookies[3]
-            });
-        });
-}
-
-requestCookies('https://echo360.org/section/3b336c00-c80b-4f67-92fb-24115a5f5f3d/public')
-    .then(cookieJson => {
-        let download_header = 'Cookie: CloudFront-Key-Pair-Id=' + cookieJson.cloudFront_Key_Pair_Id;
-        download_header += "; CloudFront-Policy=" + cookieJson.cloudFront_Policy;
-        download_header += "; CloudFront-Signature=" + cookieJson.cloudFront_Signature;
-        console.log(download_header);
-        conversion_utils.downloadFile('https://content.echo360.org/c67b.d422df75-c848-4e5e-b375-e46893d4de8a/3db2abee-d994-4102-9718-855d495f35fb/sd1.mp4',
-            download_header, _dirname + '2040_sd1.mp4');
-    });
-
 module.exports = {
     youtube_scraper_channel: youtube_scraper_channel,
     download_youtube_playlist: download_youtube_playlist,
     download_echo_course_info: download_echo_course_info,
-    download_lecture: download_lecture
+    download_lecture: download_lecture,
+    download_public_echo_course: download_public_echo_course
 }
