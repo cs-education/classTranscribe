@@ -154,6 +154,7 @@ function addUser(user) {
         verified : false,
         verifiedId : user.verifiedId,
         universityId : universityInfo.id,
+        googleId : user.googleId,
       }
     }).then(result => {
       return result[0].dataValues;
@@ -178,6 +179,23 @@ function getUserByEmail(email) {
     }
 
   }).catch(err => perror(err));
+}
+
+/* SELECT * FROM User WHERE googleId=profileId LIMIT 1*/
+function getUserByGoogleId(profileId) {
+    /* Since the email should be unique,
+     * findOne() is sufficient
+     */
+    info(profileId);
+    return User.findOne({
+        where: { googleId: profileId }
+    }).then(result => {
+        if (result) {
+            return result.dataValues;
+        } else {
+            return null;
+        }
+    }).catch(err => perror(err));
 }
 
 /* UPDATE User SET verifiedId = verifiedId WHERE mailId = email */
@@ -647,6 +665,19 @@ function addPasswordToken(userInfo, token) {
   }).catch(err => perror(err));
 }
 
+function setUserRole(userId, role) {
+  return Role.findOrCreate({
+    where : { roleName : role },
+  }).then(result => {
+    const roleInfo = reuslt[0].dataValues;
+    return User.update({
+      roleId : roleInfo.id,
+    }, {
+      where : { id : userId },
+    }).catch(err => perror(err)); /* User.update() */
+  }).catch(err => perror(err)); /* Role.findOrCreate() */
+}
+
 module.exports = {
     models: models,
     addCourseOfferingMedia: addCourseOfferingMedia,
@@ -669,6 +700,7 @@ module.exports = {
     getMediaByTask: getMediaByTask,
     getEchoSection: getEchoSection,
     getUserByEmail: getUserByEmail,
+    getUserByGoogleId: getUserByGoogleId,
     getUniversityId: getUniversityId,
     getUniversityName : getUniversityName,
     getCoursesByTerms : getCoursesByTerms,
