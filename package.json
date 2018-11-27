@@ -20,6 +20,7 @@
     "email-verify": "^0.2.1",
     "express": "^4.14.0",
     "express-session": "^1.15.6",
+    "fs-promise": "^2.0.3",
     "glob": "^5.0.5",
     "grunt": "^1.0.3",
     "grunt-contrib-uglify": "2.1.0",
@@ -58,6 +59,7 @@
     "tedious": "^3.0.1",
     "uuid": "3.3.2",
     "validator": "^9.2.0",
+    "video.js": "^7.3.0",
     "videojs-playlist": "^4.2.6",
     "videojs-playlist-ui": "^3.5.2",
     "youtube-dl": "^1.12.2"
