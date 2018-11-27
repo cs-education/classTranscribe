@@ -21,11 +21,25 @@ router.get('/scraper', function (request, response) {
     renderWithPartial(scraperMustache, request, response);
 });
 
-router.get('/scraperEchoSection', function (request, response) {
+router.get('/scrapeEchoSection', function (request, response) {
     response.writeHead(200, {
         'Content-Type': 'text.html'
     });
-    scraper.download_course_info_2('https://echo360.org/section/286c2340-3852-469d-ba1c-f2cb3f1e2636')
+    var url = request.query.publicUrl;
+    var courseOfferingId = request.query.courseOfferingId;
+    console.log(url, courseOfferingId);
+    scraper.download_public_echo_course(url)
+    renderWithPartial(scraperMustache, request, response);
+});
+
+router.get('/scrapeYoutubePlaylist', function (request, response) {
+    response.writeHead(200, {
+        'Content-Type': 'text.html'
+    });
+    var playlistId = request.query.playlistId;
+    var courseOfferingId = request.query.courseOfferingId;
+    console.log(playlistId, courseOfferingId);
+    scraper.download_youtube_playlist(playlistId, courseOfferingId);
     renderWithPartial(scraperMustache, request, response);
 });
 
