@@ -15,76 +15,76 @@ const log = utils.log;
 const permission = require('./permission');
 /*************************** Create Dummy Data ********************************/
 
-var courseList = [
-  {
-    courseName : "Elementary Organic Chem Lab I",
-    courseNumber : "233",
-    courseDescription : "Basic laboratory techniques in organic chemistry "+
-    "are presented with emphasis on the separation, isolation, and purification" +
-    "of organic compounds. For students in agricultural science, dairy technology,"+
-    "food technology, nutrition, dietetics, premedical, predental, and"+
-    "preveterinary programs.",
-    section : "AL2",
-    term : "Spring 2016",
-    dept : {
-      name : "Chemistry",
-      acronym : "Chem",
-    }
-  } ,
-  {
-    courseName : "Data Structures",
-    courseNumber : "225",
-    courseDescription : "Data abstractions: elementary data structures (lists, " +
-    "stacks, queues, and trees) and their implementation using an object-oriented programming language. Solutions " +
-    "to a variety of computational problems such as search on graphs and trees. Elementary analysis of " +
-    "algorithms",
-    section : "AL1",
-    term : "Spring 2016",
-    dept : {
-      name : "Computer Science",
-      acronym : "CS",
-    }
-  },
-  {
-    courseName : "Machine Learning",
-    courseNumber : "446",
-    courseDescription : "Theory and basic techniques in machine learning. Major" +
-    " theoretical paradigms and key concepts developed in machine learning in the context of applications such as natural" +
-    " language and text processing, computer vision, data mining, adaptive computer systems and others. Review of several" +
-    " supervised and unsupervised learning approaches: methods for learning linear representations; on-line learning," +
-    " Bayesian methods; decision-trees; features and kernels; clustering and dimensionality reduction.",
-    section : "D3",
-    term : "Fall 2016",
-    dept : {
-      name : "Computer Science",
-      acronym : "CS",
-    }
-  }]
-
-var passwordHash = require('password-hash');
-// test user profile
-var testInfo = {
-  mailId : 'testing@testdomabbccc.edu',
-  firstName : 'First',
-  lastName :'Sur',
-  password: passwordHash.generate("passtest"),
-  university : 'test uni',
-  verifiedId : 'sample-verification-buffer',
-};
-
-
-client_api.createUser(testInfo).then(
-  result => {
-    var userInfo = result;
-    permission.addUser(userInfo.mailId);
-    client_api.verifyUser('sample-verification-buffer', 'testing@testdomabbccc.edu').then(() => {
-      client_api.addCourse(userInfo, courseList[0]).then(result => {
-        info(userInfo);
-        permission.addCoursePermission(userInfo.mailId, result.courseOfferingId, 'Modify');
-        // client_api.
-      })
-    });
-  }).catch(err => { perror(err);})
+// var courseList = [
+//   {
+//     courseName : "Elementary Organic Chem Lab I",
+//     courseNumber : "233",
+//     courseDescription : "Basic laboratory techniques in organic chemistry "+
+//     "are presented with emphasis on the separation, isolation, and purification" +
+//     "of organic compounds. For students in agricultural science, dairy technology,"+
+//     "food technology, nutrition, dietetics, premedical, predental, and"+
+//     "preveterinary programs.",
+//     section : "AL2",
+//     term : "Spring 2016",
+//     dept : {
+//       name : "Chemistry",
+//       acronym : "Chem",
+//     }
+//   } ,
+//   {
+//     courseName : "Data Structures",
+//     courseNumber : "225",
+//     courseDescription : "Data abstractions: elementary data structures (lists, " +
+//     "stacks, queues, and trees) and their implementation using an object-oriented programming language. Solutions " +
+//     "to a variety of computational problems such as search on graphs and trees. Elementary analysis of " +
+//     "algorithms",
+//     section : "AL1",
+//     term : "Spring 2016",
+//     dept : {
+//       name : "Computer Science",
+//       acronym : "CS",
+//     }
+//   },
+//   {
+//     courseName : "Machine Learning",
+//     courseNumber : "446",
+//     courseDescription : "Theory and basic techniques in machine learning. Major" +
+//     " theoretical paradigms and key concepts developed in machine learning in the context of applications such as natural" +
+//     " language and text processing, computer vision, data mining, adaptive computer systems and others. Review of several" +
+//     " supervised and unsupervised learning approaches: methods for learning linear representations; on-line learning," +
+//     " Bayesian methods; decision-trees; features and kernels; clustering and dimensionality reduction.",
+//     section : "D3",
+//     term : "Fall 2016",
+//     dept : {
+//       name : "Computer Science",
+//       acronym : "CS",
+//     }
+//   }]
+//
+// var passwordHash = require('password-hash');
+// // test user profile
+// var testInfo = {
+//   mailId : 'testing@testdomabbccc.edu',
+//   firstName : 'First',
+//   lastName :'Sur',
+//   password: passwordHash.generate("passtest"),
+//   university : 'test uni',
+//   verifiedId : 'sample-verification-buffer',
+// };
+//
+//
+// client_api.createUser(testInfo).then(
+//   result => {
+//     var userInfo = result;
+//     permission.addUser(userInfo.mailId);
+//     client_api.verifyUser('sample-verification-buffer', 'testing@testdomabbccc.edu').then(() => {
+//       client_api.addCourse(userInfo, courseList[0]).then(result => {
+//         info(userInfo);
+//         permission.addCoursePermission(userInfo.mailId, result.courseOfferingId, 'Modify');
+//         // client_api.
+//       })
+//     });
+//   }).catch(err => { perror(err);})
 
 /************************* End Of Dummy Data **********************************/
 
@@ -114,10 +114,10 @@ router.get('/courses/', function (request, response) {
           userInfo.university = result.universityName;
           // Add create-a-class section if user is authenticated
           if (request.isAuthenticated()) {
-            form = getCreateClassForm(userInfo);
-            createClassBtn =
-            '<button class="btn" data-toggle="modal" data-target="#createPanel">' +
-            '          Create a New Class</button>';
+            // form = getCreateClassForm(userInfo);
+            // createClassBtn =
+            // '<button class="btn" data-toggle="modal" data-target="#createPanel">' +
+            // '          Create a New Class</button>';
           }
           // Table header
           var thtml = "<tr id=\"#header\">\n" +
@@ -132,7 +132,8 @@ router.get('/courses/', function (request, response) {
           "                    <th>Action</th>\n" +
           "                </tr>";
 
-          client_api.getCoursesByUserId(userInfo.id).then( values => {
+          client_api.getCoursesByUniversityId(userInfo.universityId).then(values=> {
+          // client_api.getCoursesByUserId(userInfo.id).then( values => {
 
             var termIds = [];
             var deptIds = [];
