@@ -15,9 +15,8 @@ dotenv.load();
 
 var app = express();
 
-var hostname = "192.17.96.13:" + process.env.CT_PORT;
-app.get('*', function(req, res) {
-    res.redirect("https://" + hostname + req.url);
+app.get('*', function (req, res) {
+    res.redirect('https://' + req.headers.host + req.url);
 });
 
 var port = process.env.REDIRECT_PORT || 7000;
