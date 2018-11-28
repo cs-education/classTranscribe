@@ -16,10 +16,12 @@ router.get('/login', function(request, response) {
     if (request.isAuthenticated()) {
         response.redirect('../dashboard');
     } else {
-        response.writeHead(200, {
-            'Content-Type': 'text.html'
-        });
-        renderWithPartial(loginMustache, request, response);
+      response.redirect('../auth/google');
+
+        // response.writeHead(200, {
+        //     'Content-Type': 'text.html'
+        // });
+        // renderWithPartial(loginMustache, request, response);
     }
 });
 
