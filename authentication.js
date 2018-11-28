@@ -79,11 +79,10 @@ passport.use(new GoogleStrategy({
         // make the code asynchronous
         // User.findOne won't fire until we have all our data back from Google
         process.nextTick(function () {
-          console.log(profile)
             client.getUserByGoogleId(profile.id).then(result => {
+
                 // Display error if the account does not exist
                 if (!result) {
-
                     // if the user isnt in our database, create a new user
                     // set all of the relevant information
                     var googleInfo = {
@@ -102,7 +101,7 @@ passport.use(new GoogleStrategy({
                             client.verifyUser(userInfo.verifiedId, userInfo.mailId).then(
                               result => {
 
-                                return done(null, result);
+                                return done(null, userInfo);
                               })
                               .catch(err => {
                                 perror(err);
@@ -143,6 +142,7 @@ passport.deserializeUser(function(id, done) {
 });
 
 function findUser(id,cb){
+  info(id);
   client.getUserByEmail(id.mailId).then( result => {
     if(!result) {
       return cb(false,null);
