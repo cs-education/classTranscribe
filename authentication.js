@@ -142,7 +142,6 @@ passport.deserializeUser(function(id, done) {
 });
 
 function findUser(id,cb){
-  info(id);
   client.getUserByEmail(id.mailId).then( result => {
     if(!result) {
       return cb(false,null);

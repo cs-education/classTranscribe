@@ -187,7 +187,6 @@ function getUserByGoogleId(profileId) {
     /* Since the email should be unique,
      * findOne() is sufficient
      */
-    info(profileId);
     return User.findOne({
         where: { googleId: profileId }
     }).then(result => {
