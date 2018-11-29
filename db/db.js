@@ -29,6 +29,10 @@ const YoutubeChannel = models.YoutubeChannel;
 const CourseOfferingMedia = models.CourseOfferingMedia;
 /* ----- end of defining ----- */
 
+function getAllCourses() {
+  return Course.findAll({limit: 8})
+}
+
 function addCourseOfferingMedia(courseOfferingId, mediaId, description) {
     return CourseOfferingMedia.findOrCreate({
       where: {
@@ -679,6 +683,7 @@ function setUserRole(userId, role) {
 
 module.exports = {
     models: models,
+    getAllCourses: getAllCourses,
     addCourseOfferingMedia: addCourseOfferingMedia,
     getPlaylistByCourseOfferingId: getPlaylistByCourseOfferingId,
     addCourseAndSection: addCourseAndSection,
