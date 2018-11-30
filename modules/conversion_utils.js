@@ -70,6 +70,17 @@ async function download_from_youtube_url(videoUrl, outputFile) {
     return outputFile;
 }
 
+async function hash_file(filename, algo) {
+    const hasha = require('hasha');
+ 
+    return await hasha.fromFile(filename, {algorithm: algo}).then(hash => {
+        return Promise.resolve(hash);
+    });
+}
+
+hash_file(_dirname + 'cookies.txt', 'md5').then(hash => { console.log(hash); });
+hash_file(_dirname + 'cookies.txt', 'sha256').then(hash => { console.log(hash); });
+
 module.exports = {
     convertVideoToWav: convertVideoToWav,
     convertWavFileToSrt: convertWavFileToSrt,
