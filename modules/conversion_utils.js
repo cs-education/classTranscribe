@@ -72,10 +72,9 @@ async function download_from_youtube_url(videoUrl, outputFile) {
 
 async function hash_file(filename, algo) {
     const hasha = require('hasha');
- 
-    return await hasha.fromFile(filename, {algorithm: algo}).then(hash => {
-        return Promise.resolve(hash);
-    });
+
+    var hash = await hasha.fromFile(filename, { algorithm: algo });
+    return hash;
 }
 
 hash_file(_dirname + 'cookies.txt', 'md5').then(hash => { console.log(hash); });
@@ -104,7 +103,8 @@ async function get_thumbnails_from_video(pathToFile) {
         console.log(`stderr: ${data}`);
     });
 
-    return await ffmpeg.then(result => { return Promise.resolve(outputFile) });
+    await ffmpeg;
+    return outputFile;
 }
 
 module.exports = {
