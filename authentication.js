@@ -94,6 +94,11 @@ passport.use(new GoogleStrategy({
                         university : getUniversity(profile.emails[0].value)
                     };
 
+                    /* restrict illinois user only */
+                    if (googleInfo.mailId.replace(/.*@/, '') != 'illinois.edu') {
+                      return done(null, null);
+                    }
+
                     client.createUser( googleInfo ).then(
                         result => {
                             var userInfo = result;
