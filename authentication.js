@@ -75,7 +75,6 @@ passport.use(new GoogleStrategy({
 
 },
     function (token, refreshToken, profile, done) {
-
         // make the code asynchronous
         // User.findOne won't fire until we have all our data back from Google
         process.nextTick(function () {
@@ -96,7 +95,7 @@ passport.use(new GoogleStrategy({
 
                     /* restrict illinois user only */
                     if (googleInfo.mailId.replace(/.*@/, '') != 'illinois.edu') {
-                      return done(null, null);
+                      return done(null, false, {message: 'Please Login via Your Illinois Account'});
                     }
 
                     client.createUser( googleInfo ).then(
@@ -111,17 +110,17 @@ passport.use(new GoogleStrategy({
                               .catch(err => {
                                 perror(err);
                                 /* error occur */
-                                return done(null,null);
+                                return done(null,false, {message: 'Something went wrong, please try again'});
                               });
                         })
                         .catch(err => {
                           perror(err);
-                          return done(null, null);
+                          return done(null,false, {message: 'Something went wrong, please try again'});
                       });
                 } else {
                     var userInfo = result;
                     // Return the user if the login value matches the database
-                    return done(null, userInfo);
+                    return done(null, userInfo, {message: 'User is found'});
                 }
             });
         });
@@ -141,7 +140,7 @@ passport.deserializeUser(function(id, done) {
           return done(null,res)
       }
       else{
-          return done(null,false,'no user found')
+          return done(null,false,{message: 'no user found'})
       }
   })
 });

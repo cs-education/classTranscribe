@@ -152,6 +152,7 @@ function addUser(user) {
     return User.findOrCreate({
       where : { mailId : user.mailId },
       defaults : {
+        id: uuid(),
         firstName : user.firstName,
         lastName : user.lastName,
         password : user.password,
@@ -245,6 +246,8 @@ function getUniversityId(universityName) {
   return University.findOrCreate({
     where: {
       universityName : universityName,
+    }, defaults: {
+      id: uuid(),
     }
   }).then(result => {
     return result[0].dataValues;
@@ -306,6 +309,7 @@ function addLecture(courseId, mediaId, date) {
       mediaId : mediaId,
     } ,
     defaults : {
+      id: uuid(),
       date : date,
     },
   }).then(result => {
@@ -331,7 +335,9 @@ function addCourseHelper(id) {
         userId : id.userId,
         courseOfferingId : courseOfferingInfo.id,
         roleId : id.roleId,
-      },
+      }, defaults: {
+        id: uuid(),
+      }
     }).then(result => {
       return result[0].dataValues;
     }).catch(err => perror(err)); /* UserOffering.findOrCreate() */
@@ -354,6 +360,7 @@ function getCourseId(courseInfo) {
         deptId : deptInfo.id,
       },
       defaults : {
+        id: uuid(),
         courseDescription : courseInfo.courseDescription,
       }
     }).then(result => {
@@ -366,6 +373,7 @@ function getCourseId(courseInfo) {
 function getRoleId(role) {
   return Role.findOrCreate({
     where : { roleName : role },
+    defaults : { id: uuid() }
   }).then(result => {
     return result[0].dataValues;
   }).catch(err => perror(err));
@@ -374,7 +382,8 @@ function getRoleId(role) {
 /* findOrCreate term, and return termId */
 function getTermId(term) {
   return Term.findOrCreate({
-    where : { termName : term }
+    where : { termName : term },
+    defaults : { id: uuid() }
   }).then( result => {
     return result[0].dataValues;
   }).catch( err => perror(err));
@@ -383,7 +392,10 @@ function getTermId(term) {
 function getDeptId(dept) {
   return Dept.findOrCreate({
     where : { deptName : dept.name },
-    defaults : { acronym : dept.acronym }
+    defaults : {
+      id: uuid(),
+      acronym : dept.acronym
+    }
   }).then(result => {
     return result[0].dataValues;
   }).catch(err => perror(err));
@@ -397,7 +409,9 @@ function getOfferingId(id, sectionName) {
       deptId : id.deptId,
       universityId : id.universityId,
       section : sectionName,
-    },
+    }, defaults : {
+      id: uuid()
+    }
   }).then(result => {
     return result[0].dataValues;
   }).catch(err => perror(err));
@@ -521,7 +535,8 @@ function getCoursesByUserId( uid ) {
 
 function addStudent(studentId, courseOfferingId) {
   return Role.findOrCreate({
-    where : { roleName : 'Student', }
+    where : { roleName : 'Student', },
+    defaults: { id: uuid() }
   }).then(result => {
     var roleInfo = result[0].dataValues;
 
@@ -530,7 +545,10 @@ function addStudent(studentId, courseOfferingId) {
         courseOfferingId : courseOfferingId,
         userId : studentId,
       },
-      defaults : { roleId : roleInfo.id, }
+      defaults : {
+        id: uuid(),
+        roleId : roleInfo.id
+      }
     }).then((result, created) => {
       if (created === false) {
         log('YOU HAVE REGISTER ALREADY');
@@ -671,6 +689,7 @@ function addPasswordToken(userInfo, token) {
 function setUserRole(userId, role) {
   return Role.findOrCreate({
     where : { roleName : role },
+    defaults : { id: uuid() }
   }).then(result => {
     const roleInfo = reuslt[0].dataValues;
     return User.update({
