@@ -7,7 +7,8 @@
 
 // captions
 const fs = require('fs');
-
+/* TODO: rework this part, captionMapping is hardcoded in server.js */
+captionsMapping = [];
 router.get('/captions/:offeringId/:index', function (request, response) {
   var offeringId = request.params.offeringId;
   var captions = captionsMapping[offeringId];
