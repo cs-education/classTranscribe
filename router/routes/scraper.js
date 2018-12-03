@@ -10,6 +10,7 @@ var scraper = require('../../modules/scraper_utils');
 var scraperMustache = fs.readFileSync(mustachePath + 'scraper.mustache').toString();
 
 router.get('/scraper', function (request, response) {
+  if(request.isAuthenticated()) {
     response.writeHead(200, {
         'Content-Type': 'text.html'
     });
@@ -19,9 +20,13 @@ router.get('/scraper', function (request, response) {
             console.log(playlists);
         });
     renderWithPartial(scraperMustache, request, response);
+  } else {
+    response.redirect('/');
+  }
 });
 
 router.get('/scrapeEchoSection', function (request, response) {
+  if(request.isAuthenticated()) {
     response.writeHead(200, {
         'Content-Type': 'text.html'
     });
@@ -30,9 +35,13 @@ router.get('/scrapeEchoSection', function (request, response) {
     console.log(url, courseOfferingId);
     scraper.download_public_echo_course(url)
     renderWithPartial(scraperMustache, request, response);
+  } else {
+    response.redirect('/');
+  }
 });
 
 router.get('/scrapeYoutubePlaylist', function (request, response) {
+  if(request.isAuthenticated()) {
     response.writeHead(200, {
         'Content-Type': 'text.html'
     });
@@ -41,14 +50,21 @@ router.get('/scrapeYoutubePlaylist', function (request, response) {
     console.log(playlistId, courseOfferingId);
     scraper.download_youtube_playlist(playlistId, courseOfferingId);
     renderWithPartial(scraperMustache, request, response);
+  } else {
+    response.redirect('/');
+  }
 });
 
 router.get('/downloadLecture', function (request, response) {
+  if(request.isAuthenticated()) {
     response.writeHead(200, {
         'Content-Type': 'text.html'
     });
     scraper.download_lecture(request.query.taskId)
     renderWithPartial(scraperMustache, request, response);
+  } else {
+    response.redirect('/');
+  }
 });
 
 module.exports = router;

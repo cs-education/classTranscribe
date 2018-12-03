@@ -14,6 +14,7 @@ const searchMustache = fs.readFileSync(mustachePath + 'search.mustache').toStrin
 const invalidClassHTML = "<p>Could not find the requested page.<\p> <a href=\"/\">Click here to return to the home page.</a>";
 
 router.get('/search/:courseId/:offeringId', function (request, response) {
+  if(request.isAuthenticated()) {
     var offeringId = request.params.offeringId;
     var courseId = request.params.courseId;
 
@@ -35,6 +36,9 @@ router.get('/search/:courseId/:offeringId', function (request, response) {
       }).catch(err => console.log(err)); /* db.getDept() */
     }).catch(err => console.log(err)); /* db.getCourseByOfferingId() */
     response.end(invalidClassHTML);
+  } else {
+    response.redirect('/');  
+    }
   });
 
 
@@ -43,6 +47,7 @@ router.get('/search/:courseId/:offeringId', function (request, response) {
 /* RegExp.prototype.test() Reference:
     https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test*/
 router.get('/getVideos', function(request, response) {
+  if(request.isAuthenticated()) {
   var className = request.query.className.toUpperCase();
   console.log("getting list of videos: " + className);
   var path_videos = path.join(__dirname, "../../videos/" + className);
@@ -69,6 +74,9 @@ router.get('/getVideos', function(request, response) {
     response.end();
   }
   response.send(videos);
+} else {
+  response.redirect('/');
+}
 });
 
 
@@ -78,6 +86,7 @@ router.get('/getVideos', function(request, response) {
 
 /* Gets all the captions for a class */
 router.get('/getCaptions', function(request, response) {
+  if(request.isAuthenticated()) {
   var className = request.query.className.toUpperCase();
   console.log("getting captions: " + className);
   var path_videos = path.join(__dirname, "../../videos/" + className);
@@ -125,6 +134,9 @@ router.get('/getCaptions', function(request, response) {
   }).catch(function(err) {
     console.log(err);
   });
+} else {
+  response.redirect('/');
+}
 });
 
 function parseWebVTT(filename) {

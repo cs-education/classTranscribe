@@ -10,6 +10,7 @@ const client_api = require('./db');
 
 var progressMustache = fs.readFileSync(mustachePath + 'progress.mustache').toString();
 router.get('/progress/:className', function (request, response) {
+  if(request.isAuthenticated()) {
   var className = request.params.className.toUpperCase();
 
   var view = {
@@ -18,6 +19,9 @@ router.get('/progress/:className', function (request, response) {
   var html = Mustache.render(progressMustache, view);
 
   response.end(html);
+} else {
+  response.redirect('/');
+}
 });
 
 router.post('/progress/:className/:netId', function (request, response) {

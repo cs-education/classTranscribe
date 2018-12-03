@@ -94,6 +94,7 @@ var managementMustache = fs.readFileSync(mustachePath + 'courses.mustache').toSt
 
 // courses page, display all relative courses
 router.get('/courses/', function (request, response) {
+  if(request.isAuthenticated()) {
     response.writeHead(200, {
         'Content-Type': 'text/html'
     });
@@ -206,6 +207,9 @@ router.get('/courses/', function (request, response) {
           }).catch(err => perror(err)); /* getUniversityName() */
     });
   });
+} else {
+  response.redirect('/');
+}
 });
 
 // Create new class
@@ -238,6 +242,8 @@ router.post('/courses/newclass', function (request, response) {
 /* TODO: THERE SHOULD BE A BETTER WAY OF DOING SO */
 // Handles search and renders the whole page
 router.get('/courses/search', function (request, response) {
+
+  if(request.isAuthenticated()) {
     //console.log("start processing search...");
     response.writeHead(200, {
         'Content-Type': 'text/html'
@@ -321,6 +327,9 @@ router.get('/courses/search', function (request, response) {
           }).catch(err => perror(err)); /* getCoursesByIds() */
         });
     }).catch(err => perror(err)); /* getTerms() */
+  } else {
+    response.redirect('/');
+  }
 });
 
 

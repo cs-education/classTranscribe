@@ -11,6 +11,7 @@ const db = require('../../db/db');
 const queueMustache = fs.readFileSync(mustachePath + 'queue.mustache').toString();
 
 router.get('/queue/:className', function (request, response) {
+  if(request.isAuthenticated()) {
   var className = request.params.className.toUpperCase();
 
   var view = {
@@ -19,9 +20,14 @@ router.get('/queue/:className', function (request, response) {
 
   var html = Mustache.render(queueMustache, view);
   response.end(html);
+} else {
+  response.redirect('/');
+}
 });
 
 router.get('/queue/:className/:netId', function (request, response) {
+  if(request.isAuthenticated()) {
+
   var className = request.params.className.toUpperCase();
   var netId = request.params.netId.toLowerCase();
 
@@ -45,6 +51,9 @@ router.get('/queue/:className/:netId', function (request, response) {
 
     response.end(taskName);
   });
+} else {
+  response.redirect('/');
+}
 });
 
 module.exports = router;
