@@ -10,6 +10,7 @@ const fs = require('fs');
 /* TODO: rework this part, captionMapping is hardcoded in server.js */
 captionsMapping = [];
 router.get('/captions/:offeringId/:index', function (request, response) {
+  if(request.isAuthenticated()) {
   var offeringId = request.params.offeringId;
   var captions = captionsMapping[offeringId];
 
@@ -19,6 +20,9 @@ router.get('/captions/:offeringId/:index', function (request, response) {
 
   var index = parseInt(request.params.index);
   response.end(JSON.stringify({ captions: captions[index] }));
+} else {
+  response.redirect('/');
+}
 });
 
 module.exports = router;

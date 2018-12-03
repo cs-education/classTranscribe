@@ -21,6 +21,7 @@ router.post('/download', function (request, response) {
 });
 
 router.get('/download/webvtt/:fileNumber', function (request, response) {
+  if(request.isAuthenticated()) {
   var file = "public/Downloads/" + request.params.fileNumber + ".webvtt";
 
   fs.stat(file, function handle(err, stats) {
@@ -43,6 +44,9 @@ router.get('/download/webvtt/:fileNumber', function (request, response) {
       filestream.pipe(response);
     }
   })
+} else {
+  response.redirect('/');
+}
 });
 
 module.exports = router;

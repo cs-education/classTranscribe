@@ -15,6 +15,7 @@ var client_api = require('../../db/db');
 
 var firstPassMustache = fs.readFileSync(mustachePath + 'index.mustache').toString();
 router.get('/first/:className/:id', function (request, response) {
+  if(request.isAuthenticated()) {
   var className = request.params.className.toUpperCase();
   response.writeHead(200, {
     'Content-Type': 'text/html',
@@ -28,6 +29,9 @@ router.get('/first/:className/:id', function (request, response) {
   };
   var html = Mustache.render(firstPassMustache, view);
   response.end(html);
+} else {
+  response.redirect('/');
+}
 });
 
 

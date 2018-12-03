@@ -8,11 +8,14 @@ var router = express.Router();
 var fs = require('fs');
 var adminMustache = fs.readFileSync(mustachePath + 'admin.mustache').toString();
 
+/* hide admin page */
 router.get('/admin', function (request, response) {
+  response.redirect('/');
+  /*
     response.writeHead(200, {
         'Content-Type': 'text.html'
     });
-    renderWithPartial(adminMustache, request, response);
+    renderWithPartial(adminMustache, request, response);*/
 });
 
 module.exports = router;
