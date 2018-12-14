@@ -13,6 +13,9 @@ dotenv.load();
 module.exports = function (grunt) {
 
     require('load-grunt-tasks')(grunt);
+    const privateKey = fs.readFileSync('./cert/privkey.pem', 'utf8');
+    const certificate = fs.readFileSync('./cert/cert.pem', 'utf8');
+    const ca = fs.readFileSync('./cert/chain.pem', 'utf8');
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
@@ -24,9 +27,9 @@ module.exports = function (grunt) {
         php: {
             dist: {
                 options: {
-                    key: grunt.file.read("cert/cert/key.pem").toString(),
-                    cert: grunt.file.read("cert/cert/cert.pem").toString(),
-                    ca: grunt.file.read("cert/cert/cert.pem").toString(),
+                    key: privateKey,
+                    cert: certificate,
+                    ca: ca,
                     hostname: "0.0.0.0", //allows external networks to access
                     port: process.env.PIWIK_PORT,
                     keepalive: true,
