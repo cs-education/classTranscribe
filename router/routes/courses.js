@@ -160,6 +160,8 @@ router.get('/courses/', function (request, response) {
               var acronyms = {};
               var instructors = {};
 
+
+
               values[0].map(value => {
                 terms[value.id] = value.termName;
               });
