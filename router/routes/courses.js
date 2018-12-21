@@ -203,8 +203,8 @@ router.get('/courses/', function (request, response) {
                 var html = Mustache.render(managementMustache, view);
                 response.end(html);
               });
-            }).catch(err => perror(err)); /* Promise.all() */
-          }).catch(err => perror(err)); /* getUniversityName() */
+            }).catch(err => perror(userInfo, err)); /* Promise.all() */
+          }).catch(err => perror(userInfo, err)); /* getUniversityName() */
     });
   });
 } else {
@@ -220,7 +220,7 @@ router.post('/courses/newclass', function (request, response) {
     var course = request.body;
 
     if (!userInfo) {
-      perror('Invalid userInfo');
+      perror({user : undefined}, 'Invalid userInfo');
       response.end();
       return;
     }
@@ -235,7 +235,7 @@ router.post('/courses/newclass', function (request, response) {
     .then(result => {
       permission.addCoursePermission(userInfo.mailId, result.courseOfferingId, 'Modify');
     })
-    .catch(err => perror(err)); /* addCourse() */
+    .catch(err => perror(userInfo, err)); /* addCourse() */
     response.end();
 });
 
@@ -257,7 +257,7 @@ router.get('/courses/search', function (request, response) {
         var userInfo = request.session.passport.user;
 
         if (!userInfo) {
-          perror('Invalid userInfo');
+          perror({user : undefined}, 'Invalid userInfo');
           response.end();
           return;
         }
@@ -297,7 +297,7 @@ router.get('/courses/search', function (request, response) {
             var origlen =values.length;
             values = values.filter(value => value != undefined);
 
-            if(values.length!=origlen) { perror("nil in search replies detected"); }
+            if(values.length!=origlen) { perror(userInfo, "nil in search replies detected"); }
 
             request.session['currentContent'] = values;
 
@@ -324,9 +324,9 @@ router.get('/courses/search', function (request, response) {
 
               response.end(html);
             });
-          }).catch(err => perror(err)); /* getCoursesByIds() */
+          }).catch(err => perror(userInfo, err)); /* getCoursesByIds() */
         });
-    }).catch(err => perror(err)); /* getTerms() */
+    }).catch(err => perror(userInfo, err)); /* getTerms() */
   } else {
     response.redirect('/');
   }
@@ -559,7 +559,7 @@ function getUserId(req) {
     try {
       id = req.session.passport.user.mailId;
     } catch(e) {
-      perror("Invalid user id detected");
+      perror({user : undefined}, "Invalid user id detected");
     }
     return id;
 }

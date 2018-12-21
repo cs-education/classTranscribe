@@ -16,7 +16,7 @@ router.get('/watchLectureVideos/:courseOfferingId', function (request, response)
     });
 
     var courseOfferingId = request.params.courseOfferingId;
-
+    var userInfo = request.user || {user : undefined};
 
     db.getPlaylistByCourseOfferingId( courseOfferingId ).then(
       values => {
@@ -32,7 +32,7 @@ router.get('/watchLectureVideos/:courseOfferingId', function (request, response)
         });
 
         renderWithPartial(watchLectureVideosPage, request, response, { playlist : JSON.stringify(playlist) });
-    }).catch(err => { perror(err); }); /* db.getPlaylistByCourseOfferingId() */
+    }).catch(err => { perror(userInfo, err); }); /* db.getPlaylistByCourseOfferingId() */
   } else {
     response.redirect('../../');
   }

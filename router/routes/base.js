@@ -21,8 +21,9 @@ router.get('/', async function (request, response) {
       'Content-Type': 'text/html'
     });
 
-    let courseGrid = "<h1>COURSES</h1> <ul class=\"grid\"> \n";
-    let courses = await db.getAllCourses().then(
+    var userInfo = request.session.passport.user;
+    var courseGrid = "<h1>COURSES</h1> <ul class=\"grid\"> \n";
+    var courses = await db.getAllCourses().then(
       async function(values) {
 
         for (let i = 0; i < values.length; i++) {
@@ -31,7 +32,7 @@ router.get('/', async function (request, response) {
           let depId = course.deptId
           let depName = await db.getDept(depId).then(result => {
             return result.acronym;
-          }).catch(err => { perror(err); }); /* db.getDept() */
+          }).catch(err => { perror(userInfo, err); }); /* db.getDept() */
 
           /* TODO: for now, redirect user to /courses */
           courseGrid += "<li> \n" +
@@ -44,7 +45,7 @@ router.get('/', async function (request, response) {
                         "  </a> \n" +
                         "</li> \n";
         }
-      }).catch(err => { perror(err); }) /* db.getAllCourses() */
+      }).catch(err => { perror(userInfo, err); }) /* db.getAllCourses() */
       courseGrid += "</ul>"
       renderWithPartial(homeMustache, request, response, {courseGrid: courseGrid});
     } else {
