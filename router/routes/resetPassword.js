@@ -47,17 +47,18 @@ router.get('/resetPassword', function (request, response) {
 router.post('/resetPassword/submit', function (request, response) {
     // Get the current user's data to access information in database
     var email = request.body.email;
+    var userInfo = {user : undefined};
 
     // Check if email address exists
     verifier.verify(email, function(err, result) {
         if ( err ) {
-          perror(err);
+          perror(userInfo, err);
         } else {
 
           // Display error when email is not valid
           if ( result.success == false ) {
             var error = "Email does not exist";
-            perror(error);
+            perror(userInfo, error);
             response.send({ message: error, html: '' });
 
           } else {
@@ -68,7 +69,7 @@ router.post('/resetPassword/submit', function (request, response) {
               // Display error when account does not exist in the database
               if (!result) {
                 var error = "Account does not exist";
-                perror(error);
+                perror(userInfo, error);
                 response.send({ message: error, html: '' });
               } else {
                 info(result);
@@ -95,13 +96,13 @@ router.post('/resetPassword/submit', function (request, response) {
                     // Send the custom email to the user
                     transporter.sendMail(mailOptions, (error, response) => {
                       if (err) {
-                        perror(err);
+                        perror(userInfo, err);
                       } else {
                         log("Send mail status: " + response);
                       }
                     });
                   })
-                  .catch(err => perror(err));/* db.addPasswordToken() */
+                  .catch(err => perror(userInfo, err));/* db.addPasswordToken() */
                 });
 
                 response.end();

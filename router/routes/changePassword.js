@@ -26,25 +26,27 @@ router.get('/changePassword', function (request, response) {
     renderWithPartial(changePasswordMustache, request, response);
   } else {
     var email = request.query.email;
-
+    var userInfo = {user : undefined};
     // Check if email is already in the database
     db.getUserByEmail(email).then(result => {
       // Display error if the account does not exist
       if (!result) {
         //TODO: ADD 404 PAGE
         var error = 'Account does not exist';
-        perror(error);
+        perror(userInfo, error);
         response.status(404).send({message : error});
       } else {
-        var userInfo = result;
+
+        userInfo = result;
+
         if (!userInfo.verified) {
           var error = 'Account is not verified';
-          perror(error);
+          perror(userInfo, error);
           response.send({message : error});
           /* passwordToken does not match */
         } else if ((request.query.id != '') && (userInfo.passwordToken != request.query.id)) {
           var error = "Incorrect reset password link.";
-          perror(error);
+          perror(userInfo, error);
           response.send({message : error});
         } else {
           response.writeHead(200, {
@@ -54,14 +56,14 @@ router.get('/changePassword', function (request, response) {
           /* login first for user who forgot password */
           if (request.query.id) {
             request.logIn(userInfo, function(err) {
-            perror(err);
+              perror(userInfo, err);
             });
           }
 
           renderWithPartial(changePasswordMustache, request, response);
         }
       }
-    }).catch(err => perror(err)); /* db.getUserByEmail() */
+    }).catch(err => perror(userInfo, err)); /* db.getUserByEmail() */
   }
 });
 
@@ -85,14 +87,14 @@ router.post('/changePassword/submit', function (request, response) {
     // Check that the two passwords are the same
     if (password != re_password) {
         var error = "Passwords are not the same";
-        perror(error);
+        perror(userInfo, error);
         response.send({ message: error, html: '' });
     } else {
       // Check if password follows pattern schema
       var valid_pattern = schema.validate(password)
       if (valid_pattern != true) {
         var error = "Password must have at least 8 character, an uppercase letter, a lowercase leter, a digit, and no spaces.";
-        perror(error);
+        perror(userInfo, error);
         response.send({ message: error, html: '' });
       } else {
         // Salt and hash password before putting into redis database
@@ -100,7 +102,7 @@ router.post('/changePassword/submit', function (request, response) {
 
         db.setUserPassword(hashedPassword, userInfo.mailId).then(() => {
           response.send({ message: 'success', html: '../dashboard' })
-        }).catch(err => perror(err)); /* db.setUserPassword() */
+        }).catch(err => perror(userInfo, err)); /* db.setUserPassword() */
       }
     }
   } else {

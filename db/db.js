@@ -4,6 +4,7 @@ var models = require('../models');
 const utils = require('../utils/logging');
 const uuid = require('uuid/v4');
 const sequelize = models.sequelize;
+const getter = require('./db_getter');
 
 sequelize.sync();
 
@@ -29,9 +30,9 @@ const YoutubeChannel = models.YoutubeChannel;
 const CourseOfferingMedia = models.CourseOfferingMedia;
 /* ----- end of defining ----- */
 
-function getAllCourses() {
-  return Course.findAll({limit: 8})
-}
+// function getAllCourses() {
+//   return Course.findAll({limit: 8})
+// }
 
 function addCourseOfferingMedia(courseOfferingId, mediaId, description) {
     return CourseOfferingMedia.findOrCreate({
@@ -48,15 +49,15 @@ function addCourseOfferingMedia(courseOfferingId, mediaId, description) {
     })
 }
 
-function getPlaylistByCourseOfferingId(courseOfferingId) {
-  return sequelize.query(
-   'SELECT mst.videoLocalLocation, mst.srtFileLocation, M.siteSpecificJSON \
-    FROM MSTranscriptionTasks AS mst \
-    INNER JOIN Media as M on mst.mediaId = M.id \
-    INNER JOIN CourseOfferingMedia as com on com.mediaId = M.id \
-    WHERE com.courseOfferingId = ?',
-   { replacements: [ courseOfferingId ], type: sequelize.QueryTypes.SELECT}).catch(err => perror(err)); /* raw query */
-}
+// function getPlaylistByCourseOfferingId(courseOfferingId) {
+//   return sequelize.query(
+//    'SELECT mst.videoLocalLocation, mst.srtFileLocation, M.siteSpecificJSON \
+//     FROM MSTranscriptionTasks AS mst \
+//     INNER JOIN Media as M on mst.mediaId = M.id \
+//     INNER JOIN CourseOfferingMedia as com on com.mediaId = M.id \
+//     WHERE com.courseOfferingId = ?',
+//    { replacements: [ courseOfferingId ], type: sequelize.QueryTypes.SELECT}).catch(err => perror(err)); /* raw query */
+// }
 
 function addYoutubeChannelPlaylist(playlistId, channelId) {
     return YoutubeChannel.findOrCreate({
@@ -120,21 +121,21 @@ async function addToMediaAndMSTranscriptionTask(videoURL, sourceType, siteSpecif
     return taskId;
 }
 
-function getTask(taskId) {
-    return MSTranscriptionTask.findById(taskId);
-}
-
-function getMedia(mediaId) {
-    return Media.findById(mediaId);
-}
-
-function getMediaByTask(taskId) {
-    return getTask(taskId).then(task => getMedia(task.mediaId));
-}
-
-function getEchoSection(sectionId) {
-    return EchoSection.findById(sectionId);
-}
+// function getTask(taskId) {
+//     return MSTranscriptionTask.findById(taskId);
+// }
+//
+// function getMedia(mediaId) {
+//     return Media.findById(mediaId);
+// }
+//
+// function getMediaByTask(taskId) {
+//     return getTask(taskId).then(task => getMedia(task.mediaId));
+// }
+//
+// function getEchoSection(sectionId) {
+//     return EchoSection.findById(sectionId);
+// }
 
 /* findOrCreate University first,
  * then findOrCreate user, and append universityId
@@ -164,44 +165,44 @@ function addUser(user) {
       }
     }).then(result => {
       return result[0].dataValues;
-    }).catch(err => perror(err)); /* User.findOrCreate() */
-  }).catch(err => perror(err)); /* University.findOrCreate() */
+    }).catch(err => perror(user, err)); /* User.findOrCreate() */
+  }).catch(err => perror(user, err)); /* University.findOrCreate() */
 }
 
 /* SELECT * FROM User WHERE mailId=email LIMIT 1*/
-function getUserByEmail(email) {
-  /* Since the email should be unique,
-   * findOne() is sufficient
-   */
-  return User.findOne({
-    where : { mailId : email }
-  }).then(result => {
-
-    try {
-      return result.dataValues;
-    } catch (err) {
-      perror(err);
-      return null;
-    }
-
-  }).catch(err => perror(err));
-}
-
-/* SELECT * FROM User WHERE googleId=profileId LIMIT 1*/
-function getUserByGoogleId(profileId) {
-    /* Since the email should be unique,
-     * findOne() is sufficient
-     */
-    return User.findOne({
-        where: { googleId: profileId }
-    }).then(result => {
-        if (result) {
-            return result.dataValues;
-        } else {
-            return null;
-        }
-    }).catch(err => perror(err));
-}
+// function getUserByEmail(email) {
+//   /* Since the email should be unique,
+//    * findOne() is sufficient
+//    */
+//   return User.findOne({
+//     where : { mailId : email }
+//   }).then(result => {
+//
+//     try {
+//       return result.dataValues;
+//     } catch (err) {
+//       perror(err);
+//       return null;
+//     }
+//
+//   }).catch(err => perror(err));
+// }
+//
+// /* SELECT * FROM User WHERE googleId=profileId LIMIT 1*/
+// function getUserByGoogleId(profileId) {
+//     /* Since the email should be unique,
+//      * findOne() is sufficient
+//      */
+//     return User.findOne({
+//         where: { googleId: profileId }
+//     }).then(result => {
+//         if (result) {
+//             return result.dataValues;
+//         } else {
+//             return null;
+//         }
+//     }).catch(err => perror(err));
+// }
 
 /* UPDATE User SET verifiedId = verifiedId WHERE mailId = email */
 function verifyUser(verifiedId, email) {
@@ -212,7 +213,7 @@ function verifyUser(verifiedId, email) {
       mailId : email,
       verifiedId : verifiedId,
     }
-  }).catch(err => perror(err));
+  }).catch(err => perror({verifiedId : verifiedId, mailId : email}, err));
 }
 
 function setUserName(name, email) {
@@ -223,7 +224,7 @@ function setUserName(name, email) {
     where : {
       mailId : email,
     }
-  }).catch(err => perror(err));
+  }).catch(err => perror({mailId : email, firstName : name.firstName, lastName : name.lastName}, err));
 }
 
 function setUserPassword(newPassword, email) {
@@ -234,73 +235,73 @@ function setUserPassword(newPassword, email) {
     where : {
       mailId : email,
     }
-  }).catch(err => perror(err));
+  }).catch(err => perror({mailId : email}, err));
 }
 
 /* findOrCreate university to Table Universities,
  * Shouldn't be used since we
  * currently only support UIUC
  */
-function getUniversityId(universityName) {
-
-  return University.findOrCreate({
-    where: {
-      universityName : universityName,
-    }, defaults: {
-      id: uuid(),
-    }
-  }).then(result => {
-    return result[0].dataValues;
-  }).catch(err => perror(err));
-}
-
-/* Assuming input is an array */
-function getCoursesByTerms(term) {
-  var termId_list = []
-  var offeringId_list = [];
-  var courseId_list = [];
-
-  return Term.findAll({ // fetch termId
-    where : {
-      termName : { [Op.in] : term } // SELECT * FROM Term WHERE termName IN term
-    }
-  }).then((result) => { // fetch offeringId
-    for (let i = 0; i < result.length; i++) {
-      termId_list[i] = result[i].dataValues.id;
-    }
-    return Offering.findAll({
-      where : {
-        termId: { [Op.in] : termId_list } // SELECT * FROM Offering WHERE termId == result:  (list)
-      }
-    });
-  }).then((result) => { // fetch courseId
-    for (let i = 0; i < result.length; i++) {
-      offeringId_list[i] = result[i].dataValues.id;
-    }
-    return CourseOffering.findAll({
-      where : {
-        offeringId : { [Op.in] : offeringId_list} // SELECT * FROM CourseOffering WHERE offeringId IN result
-      }
-    });
-  }).then((result) => { // fetch Courses
-    for (let i = 0; i < result.length; i++) {
-      courseId_list[i] = result[i].dataValues.courseId;
-    }
-    return getCoursesByIds(courseId_list);
-  });
-}
-
-/* SELECT * FROM Course WHERE id IN courseId */
-function getCoursesByIds(courseId) {
-  return Course.findAll({
-    where : {
-      id : {[Op.in] : courseId}
-    }
-  }).then(values => {
-    var jsonList = values.map(value => value.dataValues);
-    return jsonList;
-  }).catch(err => perror(err));
-}
+// function getUniversityId(universityName) {
+//
+//   return University.findOrCreate({
+//     where: {
+//       universityName : universityName,
+//     }, defaults: {
+//       id: uuid(),
+//     }
+//   }).then(result => {
+//     return result[0].dataValues;
+//   }).catch(err => perror(err));
+// }
+//
+// /* Assuming input is an array */
+// function getCoursesByTerms(term) {
+//   var termId_list = []
+//   var offeringId_list = [];
+//   var courseId_list = [];
+//
+//   return Term.findAll({ // fetch termId
+//     where : {
+//       termName : { [Op.in] : term } // SELECT * FROM Term WHERE termName IN term
+//     }
+//   }).then((result) => { // fetch offeringId
+//     for (let i = 0; i < result.length; i++) {
+//       termId_list[i] = result[i].dataValues.id;
+//     }
+//     return Offering.findAll({
+//       where : {
+//         termId: { [Op.in] : termId_list } // SELECT * FROM Offering WHERE termId == result:  (list)
+//       }
+//     });
+//   }).then((result) => { // fetch courseId
+//     for (let i = 0; i < result.length; i++) {
+//       offeringId_list[i] = result[i].dataValues.id;
+//     }
+//     return CourseOffering.findAll({
+//       where : {
+//         offeringId : { [Op.in] : offeringId_list} // SELECT * FROM CourseOffering WHERE offeringId IN result
+//       }
+//     });
+//   }).then((result) => { // fetch Courses
+//     for (let i = 0; i < result.length; i++) {
+//       courseId_list[i] = result[i].dataValues.courseId;
+//     }
+//     return getCoursesByIds(courseId_list);
+//   });
+// }
+//
+// /* SELECT * FROM Course WHERE id IN courseId */
+// function getCoursesByIds(courseId) {
+//   return Course.findAll({
+//     where : {
+//       id : {[Op.in] : courseId}
+//     }
+//   }).then(values => {
+//     var jsonList = values.map(value => value.dataValues);
+//     return jsonList;
+//   }).catch(err => perror(err));
+// }
 
 function addLecture(courseId, mediaId, date) {
   return Lecture.findOrCreate({
@@ -314,7 +315,7 @@ function addLecture(courseId, mediaId, date) {
     },
   }).then(result => {
     return result[0].dataValues;
-  }).catch(err => perror(err));
+  }).catch(err => perror({user : undefined}, err));
 }
 
 /* findOrCreate the course,
@@ -340,82 +341,82 @@ function addCourseHelper(id) {
       }
     }).then(result => {
       return result[0].dataValues;
-    }).catch(err => perror(err)); /* UserOffering.findOrCreate() */
-  }).catch(err => perror(err)); /*  CourseOffering.findOrCreate() */
+    }).catch(err => perror(id, err)); /* UserOffering.findOrCreate() */
+  }).catch(err => perror(id, err)); /*  CourseOffering.findOrCreate() */
 }
 
-function getCourseId(courseInfo) {
-  var dept = courseInfo.dept;
-  return Dept.findOne({
-    where : {
-      deptName : dept.name,
-      acronym : dept.acronym,
-    }
-  }).then(result => {
-    var deptInfo = result.dataValues;
-    return Course.findOrCreate({
-      where : {
-        courseName : courseInfo.courseName,
-        courseNumber : courseInfo.courseNumber,
-        deptId : deptInfo.id,
-      },
-      defaults : {
-        id: uuid(),
-        courseDescription : courseInfo.courseDescription,
-      }
-    }).then(result => {
-      return result[0].dataValues;
-    }).catch(err => perror(err)); /* Course.findOrCreate() */
-  }).catch(err => perror(err)); /* Dept.findOne() */
-}
-
-/* getRole() findOrCreate a role */
-function getRoleId(role) {
-  return Role.findOrCreate({
-    where : { roleName : role },
-    defaults : { id: uuid() }
-  }).then(result => {
-    return result[0].dataValues;
-  }).catch(err => perror(err));
-}
-
-/* findOrCreate term, and return termId */
-function getTermId(term) {
-  return Term.findOrCreate({
-    where : { termName : term },
-    defaults : { id: uuid() }
-  }).then( result => {
-    return result[0].dataValues;
-  }).catch( err => perror(err));
-}
-
-function getDeptId(dept) {
-  return Dept.findOrCreate({
-    where : { deptName : dept.name },
-    defaults : {
-      id: uuid(),
-      acronym : dept.acronym
-    }
-  }).then(result => {
-    return result[0].dataValues;
-  }).catch(err => perror(err));
-}
-
-/* getOfferingId() findOrCreate an offeringId */
-function getOfferingId(id, sectionName) {
-  return Offering.findOrCreate({
-    where : {
-      termId : id.termId,
-      deptId : id.deptId,
-      universityId : id.universityId,
-      section : sectionName,
-    }, defaults : {
-      id: uuid()
-    }
-  }).then(result => {
-    return result[0].dataValues;
-  }).catch(err => perror(err));
-}
+// function getCourseId(courseInfo) {
+//   var dept = courseInfo.dept;
+//   return Dept.findOne({
+//     where : {
+//       deptName : dept.name,
+//       acronym : dept.acronym,
+//     }
+//   }).then(result => {
+//     var deptInfo = result.dataValues;
+//     return Course.findOrCreate({
+//       where : {
+//         courseName : courseInfo.courseName,
+//         courseNumber : courseInfo.courseNumber,
+//         deptId : deptInfo.id,
+//       },
+//       defaults : {
+//         id: uuid(),
+//         courseDescription : courseInfo.courseDescription,
+//       }
+//     }).then(result => {
+//       return result[0].dataValues;
+//     }).catch(err => perror(err)); /* Course.findOrCreate() */
+//   }).catch(err => perror(err)); /* Dept.findOne() */
+// }
+//
+// /* getRole() findOrCreate a role */
+// function getRoleId(role) {
+//   return Role.findOrCreate({
+//     where : { roleName : role },
+//     defaults : { id: uuid() }
+//   }).then(result => {
+//     return result[0].dataValues;
+//   }).catch(err => perror(err));
+// }
+//
+// /* findOrCreate term, and return termId */
+// function getTermId(term) {
+//   return Term.findOrCreate({
+//     where : { termName : term },
+//     defaults : { id: uuid() }
+//   }).then( result => {
+//     return result[0].dataValues;
+//   }).catch( err => perror(err));
+// }
+//
+// function getDeptId(dept) {
+//   return Dept.findOrCreate({
+//     where : { deptName : dept.name },
+//     defaults : {
+//       id: uuid(),
+//       acronym : dept.acronym
+//     }
+//   }).then(result => {
+//     return result[0].dataValues;
+//   }).catch(err => perror(err));
+// }
+//
+// /* getOfferingId() findOrCreate an offeringId */
+// function getOfferingId(id, sectionName) {
+//   return Offering.findOrCreate({
+//     where : {
+//       termId : id.termId,
+//       deptId : id.deptId,
+//       universityId : id.universityId,
+//       section : sectionName,
+//     }, defaults : {
+//       id: uuid()
+//     }
+//   }).then(result => {
+//     return result[0].dataValues;
+//   }).catch(err => perror(err));
+// }
 
 /*
  * course = {
@@ -456,82 +457,82 @@ function addCourse(user, course) {
           id.courseId = values[0].id;
           id.offeringId = values[1].id;
           return addCourseHelper(id);
-        }).catch(err => { perror(err) }); /* end of getOfferingId() */
-      }).catch(err => { perror(err) }); /* end of Promise.all */
-    }).catch(err => { perror(err) }); /* end of Promise.all */
+        }).catch(err => { perror(user, err) }); /* end of getOfferingId() */
+      }).catch(err => { perror(user, err) }); /* end of Promise.all */
+    }).catch(err => { perror(user, err) }); /* end of Promise.all */
   }
   throw Error('User Info or Course List is empty');
 }
-
-/* Get All Terms */
-function getTerms() {
-  return Term.findAll().then(values => {
-    var result = values.map(value => value.dataValues);
-    return result;
-  });
-}
-
-/* Get All Courses by University */
-function getCoursesByUniversityId( universityId ) {
-
-  return sequelize.query(
-    'SELECT oid.*, cid.*, coid.id\
-     FROM \
-     Offerings oid, CourseOfferings coid, Courses cid \
-     WHERE \
-     oid.id = coid.offeringId AND cid.id = coid.courseId AND oid.universityId = ?',
-     { replacements: [ universityId ], type: sequelize.QueryTypes.SELECT })
-     .then(values => {
-       return values.map(value => {
-
-         /* move value.id to value.courseOfferingId */
-         value.courseOfferingId = value.id;
-         delete value.id;
-
-         /* remove time attribute */
-         delete value.createdAt;
-         delete value.updatedAt;
-         return value;
-       })
-     }).catch(err => perror(err)); /* raw query */
-}
-
-/* Get All Courses by User info */
-function getCoursesByUserId( uid ) {
-
-  return UserOffering.findAll({
-    where : { userId : uid },
-  }).then(values => {
-
-    if(values.length === 0) {
-      return values;
-    }
-
-    const courseOfferingIds = values.map(value => value.dataValues.courseOfferingId);
-
-    return sequelize.query(
-      'SELECT oid.*, cid.*, coid.id\
-      FROM \
-      Offerings oid, CourseOfferings coid, Courses cid\
-      WHERE \
-      oid.id = coid.offeringId AND cid.id = coid.courseId AND coid.id IN (:coids)',
-      { replacements: { coids : courseOfferingIds }, type: sequelize.QueryTypes.SELECT })
-      .then(values => {
-
-        return values.map(value => {
-          /* move value.id to value.courseOfferingId */
-          value.courseOfferingId = value.id;
-          delete value.id;
-
-          /* remove time attribute */
-          delete value.createdAt;
-          delete value.updatedAt;
-          return value;
-        });
-
-      }).catch(err => perror(err)); /* rawquery */
-    }).catch(err => perror(err)); /* UserOffering.findAll() */
-}
+//
+// /* Get All Terms */
+// function getTerms() {
+//   return Term.findAll().then(values => {
+//     var result = values.map(value => value.dataValues);
+//     return result;
+//   });
+// }
+//
+// /* Get All Courses by University */
+// function getCoursesByUniversityId( universityId ) {
+//
+//   return sequelize.query(
+//     'SELECT oid.*, cid.*, coid.id\
+//      FROM \
+//      Offerings oid, CourseOfferings coid, Courses cid \
+//      WHERE \
+//      oid.id = coid.offeringId AND cid.id = coid.courseId AND oid.universityId = ?',
+//      { replacements: [ universityId ], type: sequelize.QueryTypes.SELECT })
+//      .then(values => {
+//        return values.map(value => {
+//
+//          /* move value.id to value.courseOfferingId */
+//          value.courseOfferingId = value.id;
+//          delete value.id;
+//
+//          /* remove time attribute */
+//          delete value.createdAt;
+//          delete value.updatedAt;
+//          return value;
+//        })
+//      }).catch(err => perror(err)); /* raw query */
+// }
+//
+// /* Get All Courses by User info */
+// function getCoursesByUserId( uid ) {
+//
+//   return UserOffering.findAll({
+//     where : { userId : uid },
+//   }).then(values => {
+//
+//     if(values.length === 0) {
+//       return values;
+//     }
+//
+//     const courseOfferingIds = values.map(value => value.dataValues.courseOfferingId);
+//
+//     return sequelize.query(
+//       'SELECT oid.*, cid.*, coid.id\
+//       FROM \
+//       Offerings oid, CourseOfferings coid, Courses cid\
+//       WHERE \
+//       oid.id = coid.offeringId AND cid.id = coid.courseId AND coid.id IN (:coids)',
+//       { replacements: { coids : courseOfferingIds }, type: sequelize.QueryTypes.SELECT })
+//       .then(values => {
+//
+//         return values.map(value => {
+//           /* move value.id to value.courseOfferingId */
+//           value.courseOfferingId = value.id;
+//           delete value.id;
+//
+//           /* remove time attribute */
+//           delete value.createdAt;
+//           delete value.updatedAt;
+//           return value;
+//         });
+//
+//       }).catch(err => perror(err)); /* rawquery */
+//     }).catch(err => perror(err)); /* UserOffering.findAll() */
+// }
 
 function addStudent(studentId, courseOfferingId) {
   return Role.findOrCreate({
@@ -554,8 +555,8 @@ function addStudent(studentId, courseOfferingId) {
         log('YOU HAVE REGISTER ALREADY');
       }
       return result[0].dataValues;
-    }).catch(err => perror(err)); /* UserOffering.findOrCreate() */
-  }).catch(err => perror(err));/* Role.findOrCreate() */
+    }).catch(err => perror({userId : studentId, courseOfferingId : courseOfferingId}, err)); /* UserOffering.findOrCreate() */
+  }).catch(err => perror({userId : studentId, courseOfferingId : courseOfferingId}, err));/* Role.findOrCreate() */
 }
 
 function removeStudent (studentId, offeringId) {
@@ -572,71 +573,71 @@ function removeStudent (studentId, offeringId) {
       }
     }).then(result => {
       log('Student has been removed.');
-    }).catch(err => perror(err)); /* UserOffering.destroy() */
-  }).catch(err => perror(err)); /* Role.findOne() */
+    }).catch(err => perror({userId : studentId, courseOfferingId : courseOfferingId}, err)); /* UserOffering.destroy() */
+  }).catch(err => perror({userId : studentId, courseOfferingId : courseOfferingId}, err)); /* Role.findOne() */
 }
 
-function getUniversityName (universityId) {
-  return University.findById(universityId);
-}
-
-function getTermsById (ids) {
-  return Term.findAll({
-    where : {
-      id : { [Op.in] : ids }
-    }
-  }).then(values => {
-    return values.map(value => value.dataValues);
-  }).catch(err => perror(err))
-}
-
-function getDeptsById (ids) {
-  return Dept.findAll({
-    where : {
-      id : { [Op.in] : ids }
-    }
-  }).then(values => {
-    return values.map(value => value.dataValues);
-  }).catch(err => perror(err))
-}
-
-function getSectionsById (ids) {
-  return Offering.findAll({
-    where : {
-      id : { [Op.in] : ids }
-    },
-  }).then(values => {
-    return values.map(value => value.dataValues);
-  }).catch(err => perror(err))
-}
-
-function getInstructorsByCourseOfferingId (ids) {
-  /* empty input */
-  if (ids.length === 0) {
-    return ids;
-  }
-
-  return Role.findOne({
-    /* find Instructor's uuid */
-    where : { roleName : 'Instructor', },
-  }).then(result => {
-    var instructorId = result.dataValues.id;
-
-    /*
-     * query to fetch informations based on courseOfferingIds and roleId
-     *
-     * only select relative information
-     */
-    return sequelize.query(
-      'SELECT uoid.courseOfferingId, uid.id, uid.firstName, uid.lastName, uid.mailId \
-      FROM \
-      UserOfferings uoid, Users uid \
-      WHERE \
-      uoid.courseOfferingId IN (:coids) AND uoid.roleId = :rid AND uoid.userId = uid.id',
-      { replacements: { coids : ids, rid : instructorId }, type: sequelize.QueryTypes.SELECT })
-      .catch(err => perror(err)); /* sequelize.query() */
-    }).catch(err => perror(err)); /* Role.findOne() */
-}
+// function getUniversityName (universityId) {
+//   return University.findById(universityId);
+// }
+//
+// function getTermsById (ids) {
+//   return Term.findAll({
+//     where : {
+//       id : { [Op.in] : ids }
+//     }
+//   }).then(values => {
+//     return values.map(value => value.dataValues);
+//   }).catch(err => perror(err))
+// }
+//
+// function getDeptsById (ids) {
+//   return Dept.findAll({
+//     where : {
+//       id : { [Op.in] : ids }
+//     }
+//   }).then(values => {
+//     return values.map(value => value.dataValues);
+//   }).catch(err => perror(err))
+// }
+//
+// function getSectionsById (ids) {
+//   return Offering.findAll({
+//     where : {
+//       id : { [Op.in] : ids }
+//     },
+//   }).then(values => {
+//     return values.map(value => value.dataValues);
+//   }).catch(err => perror(err))
+// }
+//
+// function getInstructorsByCourseOfferingId (ids) {
+//   /* empty input */
+//   if (ids.length === 0) {
+//     return ids;
+//   }
+//
+//   return Role.findOne({
+//     /* find Instructor's uuid */
+//     where : { roleName : 'Instructor', },
+//   }).then(result => {
+//     var instructorId = result.dataValues.id;
+//
+//     /*
+//      * query to fetch informations based on courseOfferingIds and roleId
+//      *
+//      * only select relative information
+//      */
+//     return sequelize.query(
+//       'SELECT uoid.courseOfferingId, uid.id, uid.firstName, uid.lastName, uid.mailId \
+//       FROM \
+//       UserOfferings uoid, Users uid \
+//       WHERE \
+//       uoid.courseOfferingId IN (:coids) AND uoid.roleId = :rid AND uoid.userId = uid.id',
+//       { replacements: { coids : ids, rid : instructorId }, type: sequelize.QueryTypes.SELECT })
+//       .catch(err => perror(err)); /* sequelize.query() */
+//     }).catch(err => perror(err)); /* Role.findOne() */
+// }
 
 function validateUserAccess( courseOfferingId, userId ) {
   return UserOffering.findOne({
@@ -646,7 +647,7 @@ function validateUserAccess( courseOfferingId, userId ) {
     }
   }).then(result => {
     return result.dataValues;
-  }).catch(err => perror(err));
+  }).catch(err => perror({userId : studentId, courseOfferingId : courseOfferingId}, err));
 }
 
 function getCourseByOfferingId(offeringId) {
@@ -661,19 +662,19 @@ function getCourseByOfferingId(offeringId) {
       }
     }).then(values => {
       return values.map(value => value.dataValues);
-    }).catch(err => perror(err)); /* Course.findAll() */
-  }).catch(err => perror(err)); /* CourseOffering.findAll() */
+    }).catch(err => perror({offeringId : offeringId}, err)); /* Course.findAll() */
+  }).catch(err => perror({offeringId : offeringId}, err)); /* CourseOffering.findAll() */
 }
 
-function getDept(deptId) {
-  return Dept.findOne({
-    where : {
-      id : deptId,
-    }
-  }).then(result => {
-    return result.dataValues;
-  }).catch(err => perror(err));
-}
+// function getDept(deptId) {
+//   return Dept.findOne({
+//     where : {
+//       id : deptId,
+//     }
+//   }).then(result => {
+//     return result.dataValues;
+//   }).catch(err => perror(err));
+// }
 
 function addPasswordToken(userInfo, token) {
   return User.update({
@@ -683,7 +684,7 @@ function addPasswordToken(userInfo, token) {
       id : userInfo.id,
       mailId : userInfo.mailId,
     }
-  }).catch(err => perror(err));
+  }).catch(err => perror(userInfo, err));
 }
 
 function setUserRole(userId, role) {
@@ -696,15 +697,15 @@ function setUserRole(userId, role) {
       roleId : roleInfo.id,
     }, {
       where : { id : userId },
-    }).catch(err => perror(err)); /* User.update() */
-  }).catch(err => perror(err)); /* Role.findOrCreate() */
+    }).catch(err => perror({userId : userId}, err)); /* User.update() */
+  }).catch(err => perror({userId : userId}, err)); /* Role.findOrCreate() */
 }
 
 module.exports = {
     models: models,
-    getAllCourses: getAllCourses,
+    getAllCourses: getter.getAllCourses,
     addCourseOfferingMedia: addCourseOfferingMedia,
-    getPlaylistByCourseOfferingId: getPlaylistByCourseOfferingId,
+    getPlaylistByCourseOfferingId: getter.getPlaylistByCourseOfferingId,
     addCourseAndSection: addCourseAndSection,
     addMedia: addMedia,
     addMSTranscriptionTask: addMSTranscriptionTask,
@@ -718,29 +719,29 @@ module.exports = {
     setUserName: setUserName,
     setUserPassword : setUserPassword,
     verifyUser: verifyUser,
-    getTask: getTask,
-    getMedia: getMedia,
-    getMediaByTask: getMediaByTask,
-    getEchoSection: getEchoSection,
-    getUserByEmail: getUserByEmail,
-    getUserByGoogleId: getUserByGoogleId,
-    getUniversityId: getUniversityId,
-    getUniversityName : getUniversityName,
-    getCoursesByTerms : getCoursesByTerms,
-    getCoursesByIds : getCoursesByIds,
-    getCoursesByUniversityId : getCoursesByUniversityId,
-    getCoursesByUserId : getCoursesByUserId,
-    getCourseId : getCourseId,
-    getCourseByOfferingId : getCourseByOfferingId,
-    getRoleId : getRoleId,
-    getTermId : getTermId,
-    getTermsById : getTermsById,
-    getTerms : getTerms,
-    getDeptId : getDeptId,
-    getDept : getDept,
-    getOfferingId : getOfferingId,
-    getDeptsById : getDeptsById,
-    getSectionsById : getSectionsById,
-    getInstructorsByCourseOfferingId : getInstructorsByCourseOfferingId,
+    getTask: getter.getTask,
+    getMedia: getter.getMedia,
+    getMediaByTask: getter.getMediaByTask,
+    getEchoSection: getter.getEchoSection,
+    getUserByEmail: getter.getUserByEmail,
+    getUserByGoogleId: getter.getUserByGoogleId,
+    getUniversityId: getter.getUniversityId,
+    getUniversityName : getter.getUniversityName,
+    getCoursesByTerms : getter.getCoursesByTerms,
+    getCoursesByIds : getter.getCoursesByIds,
+    getCoursesByUniversityId : getter.getCoursesByUniversityId,
+    getCoursesByUserId : getter.getCoursesByUserId,
+    getCourseId : getter.getCourseId,
+    getCourseByOfferingId : getter.getCourseByOfferingId,
+    getRoleId : getter.getRoleId,
+    getTermId : getter.getTermId,
+    getTermsById : getter.getTermsById,
+    getTerms : getter.getTerms,
+    getDeptId : getter.getDeptId,
+    getDept : getter.getDept,
+    getOfferingId : getter.getOfferingId,
+    getDeptsById : getter.getDeptsById,
+    getSectionsById : getter.getSectionsById,
+    getInstructorsByCourseOfferingId : getter.getInstructorsByCourseOfferingId,
     validateUserAccess : validateUserAccess,
 }

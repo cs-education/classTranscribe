@@ -59,12 +59,12 @@ router.get('/manage/:courseOfferingId', function (request, response) {
 
         if (!result) {
           var error = 'Course Not Found.'
-          perror(error);
+          perror(userInfo, error);
           response.send({ message : error, html : '/' });
         } else { /* TODO: check permission */
           renderWithPartial(manageCoursePage, request, response, { className : className} );
         }
-      }).catch(err => perror(err)) /* db.validateUserAccess() */
+      }).catch(err => perror(userInfo, err)) /* db.validateUserAccess() */
     } else {
       response.writeHead(200, {
         'Content-Type': 'text/html'
