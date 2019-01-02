@@ -1,15 +1,8 @@
 'use strict';
 var Sequelize = require('sequelize');
 var models = require('../models');
-const utils = require('../utils/logging');
 const uuid = require('uuid/v4');
 const sequelize = models.sequelize;
-
-// sequelize.sync();
-
-const perror = utils.perror;
-const info = utils.info;
-const log = utils.log;
 
 const Op = Sequelize.Op;
 const CourseOffering = models.CourseOffering;
@@ -40,7 +33,8 @@ function getPlaylistByCourseOfferingId(courseOfferingId) {
     INNER JOIN Media as M on mst.mediaId = M.id \
     INNER JOIN CourseOfferingMedia as com on com.mediaId = M.id \
     WHERE com.courseOfferingId = ?',
-   { replacements: [ courseOfferingId ], type: sequelize.QueryTypes.SELECT}).catch(err => perror(err)); /* raw query */
+   { replacements: [ courseOfferingId ], type: sequelize.QueryTypes.SELECT}
+ ).catch(err => {throw new Error('getPlaylistByCourseOfferingId() Failed' + err.message)}); /* raw query */
 }
 
 function getTask(taskId) {
@@ -70,11 +64,11 @@ function getUserByEmail(email) {
     try {
       return result.dataValues;
     } catch (err) {
-      perror({mailId : email}, err);
+      console.error('User not found');
       return null;
     }
 
-  }).catch(err => perror({mailId : email}, err));
+  }).catch(err => {throw new Error('getUserByEmail() Failed' + err.message)});
 }
 
 /* SELECT * FROM User WHERE googleId=profileId LIMIT 1*/
@@ -90,7 +84,7 @@ function getUserByGoogleId(profileId) {
         } else {
             return null;
         }
-    }).catch(err => perror({ googleId: profileId }, err));
+    }).catch(err => {throw new Error('getUserByGoogleId()' + err.message);});
 }
 
 /* findOrCreate university to Table Universities,
@@ -107,7 +101,7 @@ function getUniversityId(universityName) {
     }
   }).then(result => {
     return result[0].dataValues;
-  }).catch(err => perror({universityName : universityName},err));
+  }).catch(err => {throw new Error('getUniversityId()' + err.message)});
 }
 
 /* Assuming input is an array */
@@ -155,7 +149,7 @@ function getCoursesByIds(courseId) {
   }).then(values => {
     var jsonList = values.map(value => value.dataValues);
     return jsonList;
-  }).catch(err => perror({courseId : courseId}, err));
+  }).catch(err => {throw new Error('getCoursesByIds() Failed' + err.message);});
 }
 
 function getCourseId(courseInfo) {
@@ -179,8 +173,8 @@ function getCourseId(courseInfo) {
       }
     }).then(result => {
       return result[0].dataValues;
-    }).catch(err => perror({courseInfo : courseInfo}, err)); /* Course.findOrCreate() */
-  }).catch(err => perror({courseInfo : courseInfo}, err)); /* Dept.findOne() */
+    }).catch(err => {throw new Error('getCourseId() Failed' + err.message);}); /* Course.findOrCreate() */
+  }).catch(err => {throw new Error('getCourseId() Failed' + err.message);}); /* Dept.findOne() */
 }
 
 /* getRole() findOrCreate a role */
@@ -190,7 +184,7 @@ function getRoleId(role) {
     defaults : { id: uuid() }
   }).then(result => {
     return result[0].dataValues;
-  }).catch(err => perror({role : role}, err));
+  }).catch(err => {throw new Error('getRoleId() Failed' + err.message)});
 }
 
 /* findOrCreate term, and return termId */
@@ -200,7 +194,7 @@ function getTermId(term) {
     defaults : { id: uuid() }
   }).then( result => {
     return result[0].dataValues;
-  }).catch( err => perror({termName : term}, err));
+  }).catch( err => {throw new Error('getTermId() Failed' + err.message);});
 }
 
 function getDeptId(dept) {
@@ -212,7 +206,7 @@ function getDeptId(dept) {
     }
   }).then(result => {
     return result[0].dataValues;
-  }).catch(err => perror({deptName : dept}, err));
+  }).catch(err => {throw new Error('getDeptId() Failed' + err.message);});
 }
 
 /* getOfferingId() findOrCreate an offeringId */
@@ -228,7 +222,9 @@ function getOfferingId(id, sectionName) {
     }
   }).then(result => {
     return result[0].dataValues;
-  }).catch(err => perror(id, err));
+  }).catch(err => {
+    throw new Error('getOfferingId() Failed' + err.message);
+  });
 }
 
 /* Get All Terms */
@@ -261,7 +257,9 @@ function getCoursesByUniversityId( universityId ) {
          delete value.updatedAt;
          return value;
        })
-     }).catch(err => perror({universityId : universityId}, err)); /* raw query */
+     }).catch(err => {
+       throw new Error('getCoursesByUniversityId() Failed' + err.message);
+     }); /* raw query */
 }
 
 /* Get All Courses by User info */
@@ -297,8 +295,12 @@ function getCoursesByUserId( uid ) {
           return value;
         });
 
-      }).catch(err => perror({userId : uid}, err)); /* rawquery */
-    }).catch(err => perror({userId : uid}, err)); /* UserOffering.findAll() */
+      }).catch(err => {
+        throw new Error('getCoursesByUserId() Failed' + err.message);
+      }); /* rawquery */
+    }).catch(err => {
+      throw new Error('getCoursesByUserId() Failed' + err.message);
+    }); /* UserOffering.findAll() */
 }
 
 function getUniversityName (universityId) {
@@ -312,7 +314,7 @@ function getTermsById (ids) {
     }
   }).then(values => {
     return values.map(value => value.dataValues);
-  }).catch(err => perror({termId : ids}, err))
+  }).catch(err => {throw new Error('getTermsById() Failed' + err.message);})
 }
 
 function getDeptsById (ids) {
@@ -322,7 +324,9 @@ function getDeptsById (ids) {
     }
   }).then(values => {
     return values.map(value => value.dataValues);
-  }).catch(err => perror({deptId : ids}, err))
+  }).catch(err => {
+    throw new Error('getDeptsById() Failed' + err.message);
+  })
 }
 
 function getSectionsById (ids) {
@@ -332,7 +336,9 @@ function getSectionsById (ids) {
     },
   }).then(values => {
     return values.map(value => value.dataValues);
-  }).catch(err => perror({offeringId : ids}, err))
+  }).catch(err => {
+    throw new Error('getSectionsById() Failed' + err.message);
+  })
 }
 
 function getInstructorsByCourseOfferingId (ids) {
@@ -359,8 +365,12 @@ function getInstructorsByCourseOfferingId (ids) {
       WHERE \
       uoid.courseOfferingId IN (:coids) AND uoid.roleId = :rid AND uoid.userId = uid.id',
       { replacements: { coids : ids, rid : instructorId }, type: sequelize.QueryTypes.SELECT })
-      .catch(err => perror({courseOfferingId : ids, userIf : instructorId}, err)); /* sequelize.query() */
-    }).catch(err => perror({courseOfferingId : ids}, err)); /* Role.findOne() */
+      .catch(err => {
+        throw new Error('getInstructorsByCourseOfferingId() Failed' + err.message);
+      }); /* sequelize.query() */
+    }).catch(err => {
+      throw new Error('getInstructorsByCourseOfferingId() Failed' + err.message);
+    }); /* Role.findOne() */
 }
 
 function getCourseByOfferingId(offeringId) {
@@ -375,8 +385,12 @@ function getCourseByOfferingId(offeringId) {
       }
     }).then(values => {
       return values.map(value => value.dataValues);
-    }).catch(err => perror({offeringId : offeringId}, err)); /* Course.findAll() */
-  }).catch(err => perror({offeringId : offeringId}, err)); /* CourseOffering.findAll() */
+    }).catch(err => {
+      throw new Error('getCourseByOfferingId() Failed' + err.message);
+    }); /* Course.findAll() */
+  }).catch(err => {
+    throw new Error('getCourseByOfferingId() Failed' + err.message);
+  }); /* CourseOffering.findAll() */
 }
 
 function getDept(deptId) {
@@ -386,7 +400,9 @@ function getDept(deptId) {
     }
   }).then(result => {
     return result.dataValues;
-  }).catch(err => perror({deptId : deptId}, err));
+  }).catch(err => {
+    throw new Error('getDept() Failed' + err.message);
+  });
 }
 
 module.exports = {
