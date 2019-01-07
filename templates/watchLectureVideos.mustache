@@ -24,10 +24,7 @@
   </div> -->
 
   <div class="player-container">
-    <video
-      id="video"
-      class="video-js"
-      controls>
+    <video id="video" class="video-js" controls>
       <!-- <source src="http://vjs.zencdn.net/v/oceans.mp4" type="video/mp4">
       <source src="http://vjs.zencdn.net/v/oceans.webm" type="video/webm"> -->
     </video>
@@ -43,6 +40,7 @@
   <script src="/node_modules/video.js/dist/video.js"></script>
   <script src="/node_modules/videojs-playlist/dist/videojs-playlist.js"></script>
   <script src="/node_modules/videojs-playlist-ui/dist/videojs-playlist-ui.js"></script>
+  <script src="//cdn.sc.gl/videojs-hotkeys/latest/videojs.hotkeys.min.js"></script>
   <script>
     var player = videojs('video');
     var playlist = {{{playlist}}}
@@ -51,6 +49,18 @@
     // Initialize the playlist-ui plugin with no option (i.e. the defaults).
     player.playlistUi({
       nextButton: true
+    });
+
+    // plugin function
+    player.ready(function() {
+      this.hotkeys({                          // press F to full screen
+        volumeStep: 0.1,                      // increase and decrease the volume with Up and Down
+        seekStep: 5,                          // seek forward and backwards 5s of video with Left and Right
+        enableModifiersForNumbers: false
+                                              // scrolling the mouse wheel to decrease or increase volumn
+                                              // press M to mute
+                                              // press number button to jump to the section piece of the video
+      });
     });
   </script>
 </body>

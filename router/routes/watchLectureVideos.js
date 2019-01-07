@@ -38,6 +38,25 @@ router.get('/watchLectureVideos/:courseOfferingId', function (request, response)
   }
 });
 
+router.get('/watchVideosTest', function (request, response) {
+    console.log("~~~~~~~~~~~~~~");
+    console.log("Reach Here");
+    console.log("~~~~~~~~~~~~~~");
+    response.writeHead(200, {
+      'Content-Type': 'text/html'
+    });
+
+    // var courseOfferingId = request.params.courseOfferingId;
+    playlist = []
+    playlist.push({'name': 'test_video_1','sources': [{src: '../data/17.mp4', type:'video/mp4'}],
+                   'textTracks': [{src: '../data/17.vtt', srclang: 'eng', label: 'English'}],
+                   'thumbnail': false})
+    playlist.push({'name': 'test_video_2','sources': [{src: '../data/18.mp4', type:'video/mp4'}],
+                  'textTracks': [{src: '../data/18.vtt', srclang: 'eng', label: 'English'}],
+                  'thumbnail': false})
+    console.log(playlist);
+    renderWithPartial(watchLectureVideosPage, request, response, { playlist : JSON.stringify(playlist) });
+});
 
 /* not used */
 router.get('/getVideo', function(request, response) {
