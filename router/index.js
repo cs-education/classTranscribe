@@ -38,6 +38,7 @@ module.exports = function(app) {
     app.use(require('./routes/watchLectureVideos'));
     app.use(require('./routes/courses'));
     app.use(require('./routes/scraper'));
+    app.use(require('./routes/search_new'));
 }
 
 const authenticatedPartial = fs.readFileSync(mustachePath + 'authenticated.mustache').toString();
