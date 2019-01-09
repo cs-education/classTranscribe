@@ -1,0 +1,32 @@
+#TIME BASED:
+
+DUMP FILE USING BASH SCRIPT:
+add to startup and set interval:
+{ https://raspberrypi.stackexchange.com/questions/15475/run-bash-script-on-startup }
+{ https://www.cyberciti.biz/faq/bash-infinite-loop/ }
+OR
+use watch to set interval:
+{ https://askubuntu.com/questions/430382/repeat-a-command-every-x-interval-of-time-in-terminal }
+
+run query:
+{ https://stackoverflow.com/questions/22664515/using-bash-script-to-connect-to-remote-sql-server }
+OR
+{ https://stackoverflow.com/questions/1467846/how-do-you-execute-sql-from-within-a-bash-script }
+
+
+USE SQL SERVER TO EXECUTE QUERY:
+use SQL internal process:
+[Note: this reference of this solution is deprecated]
+{ https://stackoverflow.com/questions/4079363/can-i-get-sql-server-to-call-a-stored-proc-every-n-seconds }
+
+use SQL scheduler:
+{ https://www.mssqltips.com/sqlservertip/3052/simple-way-to-create-a-sql-server-job-using-tsql/ }
+
+
+
+
+
+
+
+#AMOUNT BASED:
+count the amount of rows in database, dump few rows when the counter exceeds the threshold
