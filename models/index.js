@@ -4,10 +4,14 @@ var fs = require('fs');
 var path = require('path');
 var Sequelize = require('sequelize');
 var basename = path.basename(__filename);
-var env = process.env.NODE_ENV || 'development';
+var argv = require('minimist')(process.argv.slice(2));
+var env = argv["e"] || 'production';
 // var config = require(__dirname + '/../config/config.js')[env];
 var db = {};
 var sqlHost = process.env.MSSQL_PORT_1433_TCP_ADDR;
+if (env === 'dev') {
+    sqlHost = "host.docker.internal";
+}
 var sqlPass = process.env.SQL_PASS;
 var sqlDb = process.env.SQL_DB;
 var sqlUser = process.env.SQL_USER;
@@ -15,7 +19,7 @@ var sequelize;
 
 /* sequelize = new Sequelize('database', 'username', 'password')*/
 sequelize = new Sequelize(sqlDb, sqlUser, sqlPass, {
-  /* uses docker container's name/ID for host */
+    /* uses docker container's name/ID for host */
     host: sqlHost,
     dialect: 'mssql',
     port: 1433,
