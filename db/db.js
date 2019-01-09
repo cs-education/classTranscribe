@@ -50,7 +50,7 @@ function addCourseOfferingMedia(courseOfferingId, mediaId, description) {
 
 function getPlaylistByCourseOfferingId(courseOfferingId) {
   return sequelize.query(
-   'SELECT mst.videoLocalLocation, mst.srtFileLocation, M.siteSpecificJSON \
+   'SELECT mst.videoLocalLocation, mst.srtFileLocation, M.siteSpecificJSON, mst.mediaId \
     FROM MSTranscriptionTasks AS mst \
     INNER JOIN Media as M on mst.mediaId = M.id \
     INNER JOIN CourseOfferingMedia as com on com.mediaId = M.id \

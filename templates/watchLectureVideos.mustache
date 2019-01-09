@@ -1,58 +1,51 @@
-<!doctype html>
+﻿<!doctype html>
 <html>
 
 <head>
-  <meta charset="utf-8">
-  <title>Video.js Playlist UI - Default Implementation</title>
-  <link href="/node_modules/video.js/dist/video-js.css" rel="stylesheet">
-  <link href="/node_modules/videojs-playlist-ui/dist/videojs-playlist-ui.css" rel="stylesheet">
-  <link href="/stylesheets/videojs-playlist-ui-demo.css" type="text/css" rel="stylesheet">
-
+    <meta charset="utf-8">
+    <title>Video.js Playlist UI - Default Implementation</title>
+    <link href="/node_modules/video.js/dist/video-js.css" type="text/css" rel="stylesheet">
+    <link href="/node_modules/videojs-playlist-ui/dist/videojs-playlist-ui.css" type="text/css" rel="stylesheet">
+    <link href="/public/stylesheets/videojs-playlist-ui-demo.css" type="text/css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="/browserify/search_bundle.js"></script>
 </head>
 
 <body>
-  <!-- <div class="info">
-    <h1>Video.js Playlist UI - Default Implementation</h1>
-    <p>
-      You can see the Video.js Playlist UI plugin in action below. Look at the
-      source of this page to see how to use it with your videos.
-    </p>
-    <p>
-      In the default configuration, the plugin looks for the first element that
-      has the class "vjs-playlist" and uses that as a container for the list.
-    </p>
-  </div> -->
-
-  <div class="player-container">
-    <video
-      id="video"
-      class="video-js"
-      controls>
-      <!-- <source src="http://vjs.zencdn.net/v/oceans.mp4" type="video/mp4">
-      <source src="http://vjs.zencdn.net/v/oceans.webm" type="video/webm"> -->
-    </video>
-
-    <div class="vjs-playlist">
-      <!--
-        The contents of this element will be filled based on the
-        currently loaded playlist
-      -->
+    <!-- <div class="info">
+      <h1>Video.js Playlist UI - Default Implementation</h1>
+      <p>
+        You can see the Video.js Playlist UI plugin in action below. Look at the
+        source of this page to see how to use it with your videos.
+      </p>
+      <p>
+        In the default configuration, the plugin looks for the first element that
+        has the class "vjs-playlist" and uses that as a container for the list.
+      </p>
+    </div> -->
+    <div class="player-container">
+        <video id="video"
+               class="video-js"
+               controls>
+            <!-- <source src="http://vjs.zencdn.net/v/oceans.mp4" type="video/mp4">
+            <source src="http://vjs.zencdn.net/v/oceans.webm" type="video/webm"> -->
+        </video>
+        <div class="vjs-playlist">
+            <!--
+              The contents of this element will be filled based on the
+              currently loaded playlist
+            -->
+        </div>
     </div>
-  </div>
-
-  <script src="/node_modules/video.js/dist/video.js"></script>
-  <script src="/node_modules/videojs-playlist/dist/videojs-playlist.js"></script>
-  <script src="/node_modules/videojs-playlist-ui/dist/videojs-playlist-ui.js"></script>
-  <script>
-    var player = videojs('video');
-    var playlist = {{{playlist}}}
-    // player.src()
-    player.playlist(playlist);
-    // Initialize the playlist-ui plugin with no option (i.e. the defaults).
-    player.playlistUi({
-      nextButton: true
-    });
-  </script>
+    <div>
+        <input type="text" id="search" />
+        <ul id="search_results">
+        </ul>
+    </div>
+    <script src="/node_modules/video.js/dist/video.js"></script>
+    <script src="/node_modules/videojs-playlist/dist/videojs-playlist.js"></script>
+    <script src="/node_modules/videojs-playlist-ui/dist/videojs-playlist-ui.js"></script>
+    <script src="/public/javascripts/controllers/watchLectureVideos.js"></script>    
 </body>
 
 </html>
