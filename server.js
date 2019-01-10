@@ -78,14 +78,11 @@ app.use('/data', express.static(path.join(__dirname,'/../data')))
 /* I wasn't sure where to put these variables (that are used in various files */
 mustachePath = 'templates/';
 
-
-var thirtyMinsInMilliSecs = 30 * 60 * 1000;
-
-// setInterval(clearInactiveTranscriptions, thirtyMinsInMilliSecs);
-
 require('./router')(app);
 
 var port = process.env.CT_PORT || 8000;
+var argv = require('minimist')(process.argv.slice(2));
+var env = argv["e"] || 'production';
 
 // Certificate
 

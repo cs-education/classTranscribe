@@ -356,14 +356,12 @@
   <ItemGroup>
     <Compile Include="browserify\search.js" />
     <Compile Include="browserify\search_bundle.js" />
+    <Compile Include="config\auth.js" />
     <Compile Include="models\courseOfferingMedia.js" />
     <Compile Include="modules\conversion_utils.js">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="modules\scraper_utils.js" />
-    <Compile Include="public\javascripts\controllers\search_new.js">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="public\javascripts\controllers\watchLectureVideos.js" />
     <Compile Include="router\routes\auth.js">
       <SubType>Code</SubType>
