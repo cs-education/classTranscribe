@@ -12,6 +12,7 @@
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.0",
     "data-action": "1.0.1",
+    "dateformat": "^3.0.3",
     "dotenv": "0.5.1",
     "ejs": "2.5.5",
     "email-check": "^1.1.0",
