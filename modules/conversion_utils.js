@@ -70,6 +70,16 @@ async function download_from_youtube_url(videoUrl, outputFile) {
     return outputFile;
 }
 
+async function copy_file(source_file, outputFile) {
+    const fs = require('fs');
+
+    // destination.txt will be created or overwritten by default.
+    fs.copyFile(source_file, outputFile, (err) => {
+        if (err) throw err;
+    });
+    return outputFile
+}
+
 async function hash_file(filename, algo) {
     const hasha = require('hasha');
 
@@ -111,5 +121,6 @@ module.exports = {
     convertVideoToWav: convertVideoToWav,
     convertWavFileToSrt: convertWavFileToSrt,
     downloadFile: downloadFile,
+    copy_file: copy_file,
     download_from_youtube_url: download_from_youtube_url
 }
