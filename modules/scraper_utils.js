@@ -356,7 +356,7 @@ async function addLocalVideosToCourse(jsonFile, courseOfferingId) {
                 lessonName: obj.lessonName,
                 title: (i + 1) + ":" + dateFormat(obj.createdAt, "yyyy-mm-dd") + ":" + obj.lessonName
             };
-            var taskId = await db.addToMediaAndMSTranscriptionTask(mediaJson.videoUrl, 0, mediaJson, courseOfferingId);
+            var taskId = await db.addToMediaAndMSTranscriptionTask(mediaJson.videoUrl, 2, mediaJson, courseOfferingId);
             taskIds.push(taskId);
         } catch (err) {
             console.log(err);
