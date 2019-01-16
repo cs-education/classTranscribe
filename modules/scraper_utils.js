@@ -340,7 +340,7 @@ async function extractSyllabusAndDownload(syllabus, download_header, courseOffer
     await processTasks(taskIds);
 }
 
-function addLocalVideosToCourse(jsonFile, courseOfferingId) {
+async function addLocalVideosToCourse(jsonFile, courseOfferingId) {
     console.log(jsonFile, courseOfferingId);
     var fs = require('fs');
     var json = JSON.parse(fs.readFileSync(jsonFile, 'utf8'));

@@ -42,14 +42,14 @@ router.get('/scrapeYoutubePlaylist', function (request, response) {
     renderWithPartial(scraperMustache, request, response);
 });
 
-router.get('/addLocalVideosToCourse', function (request, response) {
+router.get('/addLocalVideosToCourse',async function (request, response) {
     response.writeHead(200, {
         'Content-Type': 'text.html'
     });
     var jsonFile = request.query.jsonFile;
     var courseOfferingId = request.query.courseOfferingId;
     console.log(jsonFile, courseOfferingId);
-    scraper.addLocalVideosToCourse(jsonFile, courseOfferingId);
+    await scraper.addLocalVideosToCourse(jsonFile, courseOfferingId);
     renderWithPartial(scraperMustache, request, response);
 });
 
