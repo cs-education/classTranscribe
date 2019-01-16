@@ -340,7 +340,8 @@ async function extractSyllabusAndDownload(syllabus, download_header, courseOffer
     await processTasks(taskIds);
 }
 
-async function addLocalVideosToCourse(jsonFile, courseOfferingId) {
+function addLocalVideosToCourse(jsonFile, courseOfferingId) {
+    console.log(jsonFile, courseOfferingId);
     var fs = require('fs');
     var json = JSON.parse(fs.readFileSync(jsonFile, 'utf8'));
     var taskIds = [];
@@ -353,23 +354,22 @@ async function addLocalVideosToCourse(jsonFile, courseOfferingId) {
                 createdAt: obj.createdAt,
                 videoUrl: obj.videoUrl,
                 lessonName: obj.lessonName,
-                title: (i + 1) + ":" + dateFormat(createdAt, "yyyy-mm-dd") + ":" + lessonName
+                title: (i + 1) + ":" + dateFormat(obj.createdAt, "yyyy-mm-dd") + ":" + obj.lessonName
             };
-            console.log(mediaJson);
-            //var taskId = await db.addToMediaAndMSTranscriptionTask(mediaJson.videoUrl, 0, mediaJson, courseOfferingId);
-            //taskIds.push(taskId);
+            var taskId = await db.addToMediaAndMSTranscriptionTask(mediaJson.videoUrl, 0, mediaJson, courseOfferingId);
+            taskIds.push(taskId);
         } catch (err) {
             console.log(err);
         }
     }
-    // await processTasks(taskIds);
+    await processTasks(taskIds);
 }
-addLocalVideosToCourse('/home/mahipal2/sp19_cs241/sp19_cs241_lec02.json', '');
 
 module.exports = {
     youtube_scraper_channel: youtube_scraper_channel,
     download_youtube_playlist: download_youtube_playlist,
     download_echo_course_info: download_echo_course_info,
     download_lecture: download_lecture,
-    download_public_echo_course: download_public_echo_course
+    download_public_echo_course: download_public_echo_course,
+    addLocalVideosToCourse: addLocalVideosToCourse
 }
