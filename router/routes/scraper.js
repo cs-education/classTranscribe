@@ -28,7 +28,7 @@ router.get('/scrapeEchoSection', function (request, response) {
     var url = request.query.publicUrl;
     var courseOfferingId = request.query.courseOfferingId;
     console.log(url, courseOfferingId);
-    scraper.download_public_echo_course(url)
+    scraper.download_public_echo_course(url, courseOfferingId)
     renderWithPartial(scraperMustache, request, response);
 });
 
