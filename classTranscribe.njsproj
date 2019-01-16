@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{5859d584-d3f8-41d6-bc69-031837518734}</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <ProjectView>ProjectFiles</ProjectView>
+    <ProjectView>ShowAllFiles</ProjectView>
     <StartupFile>server.js</StartupFile>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -350,6 +350,7 @@
     <Folder Include="utils" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="config\auth.js" />
     <Compile Include="models\courseOfferingMedia.js" />
     <Compile Include="modules\conversion_utils.js">
       <SubType>Code</SubType>
