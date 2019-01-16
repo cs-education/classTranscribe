@@ -54,7 +54,9 @@ function getPlaylistByCourseOfferingId(courseOfferingId) {
     FROM MSTranscriptionTasks AS mst \
     INNER JOIN Media as M on mst.mediaId = M.id \
     INNER JOIN CourseOfferingMedia as com on com.mediaId = M.id \
-    WHERE com.courseOfferingId = ?',
+    WHERE com.courseOfferingId = ? \
+    ORDER BY M.id',
+
    { replacements: [ courseOfferingId ], type: sequelize.QueryTypes.SELECT}).catch(err => perror(err)); /* raw query */
 }
 

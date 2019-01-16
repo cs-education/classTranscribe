@@ -28,10 +28,9 @@ router.get('/scrapeEchoSection', function (request, response) {
     var url = request.query.publicUrl;
     var courseOfferingId = request.query.courseOfferingId;
     console.log(url, courseOfferingId);
-    scraper.download_public_echo_course(url)
+    scraper.download_public_echo_course(url, courseOfferingId)
     renderWithPartial(scraperMustache, request, response);
 });
-
 router.get('/scrapeYoutubePlaylist', function (request, response) {
     response.writeHead(200, {
         'Content-Type': 'text.html'
@@ -40,6 +39,17 @@ router.get('/scrapeYoutubePlaylist', function (request, response) {
     var courseOfferingId = request.query.courseOfferingId;
     console.log(playlistId, courseOfferingId);
     scraper.download_youtube_playlist(playlistId, courseOfferingId);
+    renderWithPartial(scraperMustache, request, response);
+});
+
+router.get('/addLocalVideosToCourse',async function (request, response) {
+    response.writeHead(200, {
+        'Content-Type': 'text.html'
+    });
+    var jsonFile = request.query.jsonFile;
+    var courseOfferingId = request.query.courseOfferingId;
+    console.log(jsonFile, courseOfferingId);
+    await scraper.addLocalVideosToCourse(jsonFile, courseOfferingId);
     renderWithPartial(scraperMustache, request, response);
 });
 

@@ -114,10 +114,10 @@ router.get('/courses/', function (request, response) {
           userInfo.university = result.universityName;
           // Add create-a-class section if user is authenticated
           if (request.isAuthenticated()) {
-            // form = getCreateClassForm(userInfo);
-            // createClassBtn =
-            // '<button class="btn" data-toggle="modal" data-target="#createPanel">' +
-            // '          Create a New Class</button>';
+             // form = getCreateClassForm(userInfo);
+             // createClassBtn =
+             // '<button class="btn" data-toggle="modal" data-target="#createPanel">' +
+             // '          Create a New Class</button>';
           }
           // Table header
           var thtml = "<tr id=\"#header\">\n" +
@@ -128,7 +128,7 @@ router.get('/courses/', function (request, response) {
           "                    <th>Section Number</th>\n" +
           "                    <th>Course Name</th>\n" +
           "                    <th>Course Instructor</th>\n" +
-          "                    <th>Course Descruption</th>\n" +
+          "                    <th>Course Description</th>\n" +
           "                    <th>Action</th>\n" +
           "                </tr>";
 
@@ -159,6 +159,8 @@ router.get('/courses/', function (request, response) {
               var depts = {};
               var acronyms = {};
               var instructors = {};
+
+
 
               values[0].map(value => {
                 terms[value.id] = value.termName;
@@ -420,7 +422,7 @@ router.post('/courses/applyfilter', function (request, response) {
         "                    <th>Section Number</th>\n" +
         "                    <th>Course Name</th>\n" +
         "                    <th>Course Instructor</th>\n" +
-        "                    <th>Course Descruption</th>\n" +
+        "                    <th>Course Description</th>\n" +
         "                    <th>Action</th>\n" +
         "                </tr>";
     var result = [];
@@ -484,12 +486,15 @@ function  generateListings(data, user, cb) {
       let instructorName = '';
 
       /* concatenate each instructor's name */
-      instructors.map(instructor => {
-        instructorName = instructorName + ', ' + instructor.firstName + ' ' + instructor.lastName;
-      })
-
-      /* remove first comma */
-      instructorName = instructorName.substring(1);
+        try {
+            instructors.map(instructor => {
+                instructorName = instructorName + ', ' + instructor.firstName + ' ' + instructor.lastName;
+            });
+            /* remove first comma */
+            instructorName = instructorName.substring(1);
+        } catch (err) {
+            instructorName = "";
+        }
 
         html += '<tr id="'+ e.id +'">';
         html += '<td hidden="yes">' + e.termName + '</td>';
