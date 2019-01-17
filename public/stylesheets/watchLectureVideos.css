@@ -1,0 +1,23 @@
+#live_transcriptions {
+    height: 440px;
+    /* background-color:#CCC; */
+    overflow-y: auto;
+    position: relative;
+    margin-left: -5px;
+}
+.list-group-item {
+    min-height: 35px;
+}
+.row {
+    background: #f8f9fa;
+    margin-top: 20px;
+}
+
+.col {
+    padding: 10px;
+    min-height: 50px;
+    max-height: 50px;
+}
+#full_course_search_div {
+    max-height: 45px;
+}
