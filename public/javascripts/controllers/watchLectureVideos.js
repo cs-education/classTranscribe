@@ -85,7 +85,7 @@ function addAllTranscriptionsToList() {
 function scrollToListItem(listItemId) {
     $("#live_transcriptions").children().removeClass('active');
     $("#" + (listItemId)).addClass('active');
-    if (autoScroll && listItemId > 0) {
+    if (autoScroll) {
         $("#live_transcriptions").scrollTo("#" + (listItemId - 1));
     }
 }
