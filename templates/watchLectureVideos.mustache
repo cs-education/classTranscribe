@@ -44,9 +44,17 @@
                 <input type="text" id="search" class="form-control" placeholder="Search here..." />
             </div>
             <div class="col" id="full_course_search_div">
-                <label>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="full_course_search">
+                    <label class="form-check-label">Search Entire Course</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="auto_scroll" checked>
+                    <label class="form-check-label">Auto Scroll</label>
+                </div>
+                <!--<label>
                     <input type="checkbox" data-toggle="toggle" id="full_course_search" data-off="Search full course?" data-on="Search current lecture?" data-onstyle="success" data-offstyle="warning" data-height="45px" data-width="220px">
-                </label>
+                </label>-->
             </div>
         </div>
     </div>

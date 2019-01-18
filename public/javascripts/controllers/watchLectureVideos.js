@@ -8,6 +8,7 @@ var jslinqData;
 var currentVideoTranscriptions;
 var timeUpdateLastEnd = 0;
 var fullCourseSearch = false;
+var autoScroll = true;
 var live_transcriptions_div = $('#live_transcriptions');
 
 function navigateToVideo(startTime, video) {
@@ -20,6 +21,25 @@ function navigateToVideo(startTime, video) {
         player.currentTime(startTime / 1000);
     });
 }
+
+function msToTime(s) {
+
+    // Pad to 2 or 3 digits, default is 2
+    function pad(n, z) {
+        z = z || 2;
+        return ('00' + n).slice(-z);
+    }
+
+    var ms = s % 1000;
+    s = (s - ms) / 1000;
+    var secs = s % 60;
+    s = (s - secs) / 60;
+    var mins = s % 60;
+    var hrs = (s - mins) / 60;
+
+    return pad(hrs) + ':' + pad(mins) + ':' + pad(secs);
+}
+
 function updateCurrentVideoTranscriptions(video) {
     currentVideoTranscriptions = jslinqData.where(function (item) {
         // filter out results to currentVideo
@@ -51,8 +71,11 @@ function addAllTranscriptionsToList() {
         // Show results
         live_transcriptions_div.empty();
         for (var item in currentList) {
+            if (currentList[item].part === '') {
+                continue;
+            }
             var searchitem = '<button type="button" class="list-group-item" style="display:none;" onclick=navigateToVideo(' +
-                currentList[item].start + ",'" + currentList[item].video + "') id=" + currentList[item].id + ">" + currentList[item].part + "</button>";
+                currentList[item].start + ",'" + currentList[item].video + "') id=" + currentList[item].id + ">" + msToTime(currentList[item].start) + "-->" + currentList[item].part + "</button>";
             live_transcriptions_div.append(searchitem);
         }
         live_transcriptions_div.show();
@@ -62,7 +85,9 @@ function addAllTranscriptionsToList() {
 function scrollToListItem(listItemId) {
     $("#live_transcriptions").children().removeClass('active');
     $("#" + (listItemId)).addClass('active');
-    $("#live_transcriptions").scrollTo("#" + (listItemId - 1));
+    if (autoScroll && listItemId > 0) {
+        $("#live_transcriptions").scrollTo("#" + (listItemId - 1));
+    }
 }
 
 (async () => {
@@ -133,6 +158,16 @@ function scrollToListItem(listItemId) {
 
             } else {
                 fullCourseSearch = false;
+            }
+            update_search_results();
+        });
+
+        $('#auto_scroll').change(function () {
+            if (this.checked) {
+                autoScroll = true;
+
+            } else {
+                autoScroll = false;
             }
             update_search_results();
         });

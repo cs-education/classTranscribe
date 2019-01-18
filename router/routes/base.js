@@ -36,7 +36,7 @@ router.get('/', async function (request, response) {
         return result.acronym;
       })
       courseGrid += "<li> \n" +
-                    //"  <a href=\"/courses\"> \n" +
+                    "  <a href=\"/login\"> \n" +
                     "     <div class=\"text\"> \n" +
                     "        <p>" + depName + " " + course.courseNumber + "</p> \n" +
                     "        <p class=\"description\">Fall 2018</p> \n" +
