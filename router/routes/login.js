@@ -51,7 +51,6 @@ router.get('/auth/google',
 
 router.get('/auth/google/callback', function (req, res, next) {
     passport.authenticate('google', function (err, user, info) {
-        console.log(req.query.state);
         if (err) { return next(err) }
         if (!user) {
             return res.send({ message: info.message, html: '/' })

@@ -99,7 +99,7 @@ router.get('/courses/', function (request, response) {
         // createClassBtn =
         // '<button class="btn" data-toggle="modal" data-target="#createPanel">' +
         // '          Create a New Class</button>';
-        response.redirect('/auth/google?redirectPath=' + request.originalUrl);
+        response.redirect('/auth/google?redirectPath=' + encodeURIComponent(request.originalUrl));
     }
     else {
         response.writeHead(200, {
