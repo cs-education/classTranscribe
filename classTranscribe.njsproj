@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{5859d584-d3f8-41d6-bc69-031837518734}</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <ProjectView>ShowAllFiles</ProjectView>
+    <ProjectView>ProjectFiles</ProjectView>
     <StartupFile>server.js</StartupFile>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -24,6 +24,8 @@
     <Content Include="Docker\Dockerfile.production" />
     <Content Include="Docker\env.list" />
     <Content Include="Docker\readme.txt" />
+    <Content Include="libman.json" />
+    <Content Include="public\stylesheets\videojs-playlist-ui-demo.css" />
     <Content Include="readme.txt" />
     <Content Include="package-lock.json" />
     <Content Include="package.json" />
@@ -105,6 +107,7 @@
     <Content Include="utility_scripts\test.js" />
     <Content Include="utility_scripts\videoGenerator.js" />
     <Content Include="utility_scripts\videos.js" />
+    <Content Include="utils\utils.js" />
     <Content Include="utils\world_universities_and_domains.json" />
     <Content Include="utils\ttoc.js" />
     <Content Include="cert\root\ca\index.txt" />
@@ -301,6 +304,7 @@
     <Folder Include="manage" />
     <Folder Include="models" />
     <Folder Include="modules" />
+    <Folder Include="browserify\" />
     <Folder Include="p2fa-vislab-master" />
     <Folder Include="p2fa-vislab-master\alignment-schemas" />
     <Folder Include="p2fa-vislab-master\examples" />
@@ -350,16 +354,23 @@
     <Folder Include="utils" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="browserify\search.js" />
+    <Compile Include="browserify\search_bundle.js" />
     <Compile Include="config\auth.js" />
     <Compile Include="models\courseOfferingMedia.js" />
     <Compile Include="modules\conversion_utils.js">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="modules\scraper_utils.js" />
+    <Compile Include="public\javascripts\controllers\watchLectureVideos.js" />
     <Compile Include="router\routes\auth.js">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="router\routes\scraper.js" />
+    <Compile Include="templates\search_template.mustache">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="utils\logging.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <!--Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them.-->
