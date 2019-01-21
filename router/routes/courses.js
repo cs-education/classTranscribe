@@ -93,121 +93,124 @@ var allterms = [];
 var managementMustache = fs.readFileSync(mustachePath + 'courses.mustache').toString();
 
 // courses page, display all relative courses
-router.get('/courses/', function (request, response) {
-    response.writeHead(200, {
-        'Content-Type': 'text/html'
-    });
-    var userid = getUserId(request);
-    // Get all terms data from the database
-    client_api.getTerms().then(reply => {
-      if(reply) {
-        // reply is null if the key is missing
-        allterms= reply.map( term => term.termName );
-      }
-
-        var form = '';
-        var createClassBtn = '';
-        var userInfo = request.session.passport.user;
-
-        client_api.getUniversityName(userInfo.universityId).then(result => {
-
-          userInfo.university = result.universityName;
-          // Add create-a-class section if user is authenticated
-          if (request.isAuthenticated()) {
-             // form = getCreateClassForm(userInfo);
-             // createClassBtn =
-             // '<button class="btn" data-toggle="modal" data-target="#createPanel">' +
-             // '          Create a New Class</button>';
-          }
-          // Table header
-          var thtml = "<tr id=\"#header\">\n" +
-          '<th hidden="yes">Term</th>' +
-          "                    <th>University</th>\n" +
-          "                    <th>Subject</th>\n" +
-          "                    <th>Course Number</th>\n" +
-          "                    <th>Section Number</th>\n" +
-          "                    <th>Course Name</th>\n" +
-          "                    <th>Course Instructor</th>\n" +
-          "                    <th>Course Description</th>\n" +
-          "                    <th>Action</th>\n" +
-          "                </tr>";
-
-          client_api.getCoursesByUniversityId(userInfo.universityId).then(values=> {
-          // client_api.getCoursesByUserId(userInfo.id).then( values => {
-
-            var termIds = [];
-            var deptIds = [];
-            var courses = [];
-            var offeringIds = [];
-            var courseOfferingIds = [];
-
-            for (let i = 0; i < values.length; i ++) {
-              termIds.push(values[i].termId);
-              deptIds.push(values[i].deptId);
-              courseOfferingIds.push(values[i].courseOfferingId);
-              values[i].university = userInfo.university;
-              courses.push(values[i]);
+router.get('/courses/', function (request, response) {   
+    if (!request.isAuthenticated()) {
+        // form = getCreateClassForm(userInfo);
+        // createClassBtn =
+        // '<button class="btn" data-toggle="modal" data-target="#createPanel">' +
+        // '          Create a New Class</button>';
+        response.redirect('/auth/google?redirectPath=' + request.originalUrl);
+    }
+    else {
+        response.writeHead(200, {
+            'Content-Type': 'text/html'
+        });
+        var userid = getUserId(request);
+        // Get all terms data from the database
+        client_api.getTerms().then(reply => {
+            if (reply) {
+                // reply is null if the key is missing
+                allterms = reply.map(term => term.termName);
             }
 
-            var termFetches = client_api.getTermsById(termIds);
-            var deptFetches = client_api.getDeptsById(deptIds);
-            var instructorFetches = client_api.getInstructorsByCourseOfferingId(courseOfferingIds);
+            var form = '';
+            var createClassBtn = '';
+            var userInfo = request.session.passport.user;
 
-            Promise.all([termFetches, deptFetches, instructorFetches]).then(values => {
-              var filters = [];
-              var terms = {};
-              var depts = {};
-              var acronyms = {};
-              var instructors = {};
+            client_api.getUniversityName(userInfo.universityId).then(result => {
+
+                userInfo.university = result.universityName;
+                // Add create-a-class section if user is authenticated
+                // Table header
+                var thtml = "<tr id=\"#header\">\n" +
+                    '<th hidden="yes">Term</th>' +
+                    "                    <th>University</th>\n" +
+                    "                    <th>Subject</th>\n" +
+                    "                    <th>Course Number</th>\n" +
+                    "                    <th>Section Number</th>\n" +
+                    "                    <th>Course Name</th>\n" +
+                    "                    <th>Course Instructor</th>\n" +
+                    "                    <th>Course Description</th>\n" +
+                    "                    <th>Action</th>\n" +
+                    "                </tr>";
+
+                client_api.getCoursesByUniversityId(userInfo.universityId).then(values => {
+                    // client_api.getCoursesByUserId(userInfo.id).then( values => {
+
+                    var termIds = [];
+                    var deptIds = [];
+                    var courses = [];
+                    var offeringIds = [];
+                    var courseOfferingIds = [];
+
+                    for (let i = 0; i < values.length; i++) {
+                        termIds.push(values[i].termId);
+                        deptIds.push(values[i].deptId);
+                        courseOfferingIds.push(values[i].courseOfferingId);
+                        values[i].university = userInfo.university;
+                        courses.push(values[i]);
+                    }
+
+                    var termFetches = client_api.getTermsById(termIds);
+                    var deptFetches = client_api.getDeptsById(deptIds);
+                    var instructorFetches = client_api.getInstructorsByCourseOfferingId(courseOfferingIds);
+
+                    Promise.all([termFetches, deptFetches, instructorFetches]).then(values => {
+                        var filters = [];
+                        var terms = {};
+                        var depts = {};
+                        var acronyms = {};
+                        var instructors = {};
 
 
 
-              values[0].map(value => {
-                terms[value.id] = value.termName;
-              });
+                        values[0].map(value => {
+                            terms[value.id] = value.termName;
+                        });
 
-              values[1].map(value => {
-                depts[value.id] = value.deptName;
-                acronyms[value.id] = value.acronym;
-              });
+                        values[1].map(value => {
+                            depts[value.id] = value.deptName;
+                            acronyms[value.id] = value.acronym;
+                        });
 
-              values[2].map(value => {
-                if ( !instructors[value.courseOfferingId] ) {
-                  instructors[value.courseOfferingId] = [];
-                }
-                instructors[value.courseOfferingId].push(value);
-              })
+                        values[2].map(value => {
+                            if (!instructors[value.courseOfferingId]) {
+                                instructors[value.courseOfferingId] = [];
+                            }
+                            instructors[value.courseOfferingId].push(value);
+                        })
 
-              for (let i = 0; i < courses.length; i++) {
-                let currentCourse = courses[i];
-                courses[i].termName = terms[currentCourse.termId];
-                courses[i].deptName = depts[currentCourse.deptId];
-                courses[i].acronym = acronyms[currentCourse.deptId];
-                courses[i].instructor = instructors[currentCourse.courseOfferingId];
-              }
+                        for (let i = 0; i < courses.length; i++) {
+                            let currentCourse = courses[i];
+                            courses[i].termName = terms[currentCourse.termId];
+                            courses[i].deptName = depts[currentCourse.deptId];
+                            courses[i].acronym = acronyms[currentCourse.deptId];
+                            courses[i].instructor = instructors[currentCourse.courseOfferingId];
+                        }
 
-              // Saving current content(courseId, termId) before applying filters
-              request.session['currentContent'] = courses;
+                        // Saving current content(courseId, termId) before applying filters
+                        request.session['currentContent'] = courses;
 
 
-              generateListings(courses, userid, function (res) {
-                thtml += res;
-                filterdata = generateFilters(terms, depts);
-                var view = {
-                  termlist: allterms,
-                  createform: form,
-                  tabledata: thtml,
-                  termfilterdata: filterdata[0],
-                  subjectfilterdata: filterdata[1],
-                  createClassButton: createClassBtn
-                };
-                var html = Mustache.render(managementMustache, view);
-                response.end(html);
-              });
-            }).catch(err => perror(err)); /* Promise.all() */
-          }).catch(err => perror(err)); /* getUniversityName() */
-    });
-  });
+                        generateListings(courses, userid, function (res) {
+                            thtml += res;
+                            filterdata = generateFilters(terms, depts);
+                            var view = {
+                                termlist: allterms,
+                                createform: form,
+                                tabledata: thtml,
+                                termfilterdata: filterdata[0],
+                                subjectfilterdata: filterdata[1],
+                                createClassButton: createClassBtn
+                            };
+                            var html = Mustache.render(managementMustache, view);
+                            response.end(html);
+                        });
+                    }).catch(err => perror(err)); /* Promise.all() */
+                }).catch(err => perror(err)); /* getUniversityName() */
+            });
+        });
+    }
 });
 
 // Create new class

@@ -19,7 +19,7 @@ router.get('/watchLectureVideos/:courseOfferingId', function (request, response)
 
     renderWithPartial(watchLectureVideosPage, request, response);
   } else {
-    response.redirect('../../');
+      response.redirect('/auth/google?redirectPath=' + request.originalUrl);
   }
 });
 
