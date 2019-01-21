@@ -25,18 +25,6 @@ mailer = require('./modules/mailer');
 // acl = new macl(new macl.redisBackend(client,"ClassTranscribe::acl::"));
 uuidv4 = require('uuid/v4');
 /* end global variables */
-
-const favicon = require('serve-favicon');
-const logger = require('morgan');
-const db = require('./db/db');
-
-
-const webvtt = require('./modules/webvtt');
-const validator = require('./modules/validator');
-const http = require('http');
-const zlib = require('zlib');
-const spawn = require('child_process').spawn;
-const mkdirp = require('mkdirp');
 const bodyParser = require('body-parser');
 
 const cookieParser = require('cookie-parser');
@@ -67,7 +55,6 @@ app.use(bodyParser.json());         // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   	extended: true
 }));
-app.use(express.static('public'));
 app.use(cookieParser());
 app.use(session({
 	secret: "secret",
@@ -80,44 +67,22 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.set('view engine', 'ejs');
-app.use('/node_modules', express.static(path.join(__dirname,'/node_modules')));
+app.use('/node_modules', express.static(path.join(__dirname, '/node_modules')));
+app.use('/browserify', express.static(path.join(__dirname, '/browserify')));
+app.use('/public', express.static(path.join(__dirname, '/public')));
+app.use('/stylesheets', express.static(path.join(__dirname, '/public/stylesheets')));
+app.use('/javascripts', express.static(path.join(__dirname, '/public/javascripts')));
 app.use('/vtt', express.static(path.join(__dirname,'/vtt')));
 app.use('/data', express.static(path.join(__dirname,'/../data')))
 
 /* I wasn't sure where to put these variables (that are used in various files */
 mustachePath = 'templates/';
 
-//
-// captionsMapping = {
-//   "cs241": require('./public/javascripts/data/captions/cs241.js'),
-//   "cs225": require('./public/javascripts/data/captions/cs225.js'),
-//   "cs225-sp16": require('./public/javascripts/data/captions/cs225-sp16.js'),
-//   "chem233-sp16": require('./public/javascripts/data/captions/chem233-sp16.js'),
-//   "adv582": require('./public/javascripts/data/captions/adv582.js'),
-//   "ece210": require('./public/javascripts/data/captions/ece210.js'),
-//   "cs446-fa16": require('./public/javascripts/data/captions/cs446-fa16.js'),
-// }
-
-/*
-    Uncomment this and visit this route to create and show the Metadata
-    needed for registering with a Shibboleth Identity Provider
-
-
-app.get('/Metadata',
-  function (req, res) {
-    res.type('application/xml');
-    res.status(200).send(samlStrategy.generateServiceProviderMetadata(fs.readFileSync("./cert/cert/cert.pem", "utf8")));
-  }
-);
-*/
-
-var thirtyMinsInMilliSecs = 30 * 60 * 1000;
-
-// setInterval(clearInactiveTranscriptions, thirtyMinsInMilliSecs);
-
 require('./router')(app);
 
 var port = process.env.CT_PORT || 8000;
+var argv = require('minimist')(process.argv.slice(2));
+var env = argv["e"] || 'production';
 
 // Certificate
 
