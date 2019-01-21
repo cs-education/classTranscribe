@@ -21,3 +21,7 @@
 #full_course_search_div {
     max-height: 45px;
 }
+
+.transcription-item {
+    text-align: left;
+}
