@@ -72,7 +72,7 @@ router.get('/manage/:courseOfferingId', function (request, response) {
       renderWithPartial(manageCoursePage, request, response, { className : className} );
     }
   } else  {
-    response.redirect('../../');
+      response.redirect('/auth/google?redirectPath=' + request.originalUrl);
   }
 });
 
