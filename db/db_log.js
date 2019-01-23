@@ -40,8 +40,8 @@ async function dumpLog() {
   const currentDate = new Date().toISOString().slice(0, 19).replace('T', ' ');
   const file = csvWriter({
       header: [
-        {id: id, title: 'ID'}
-        {id: info, title:'DETAIL'}
+        {id: id, title: 'ID'},
+        {id: info, title:'DETAIL'},
         {id: logType, title:'TYPE'}
       ],
       path: '/data/log/' + currentDate.replace(' ', '_')

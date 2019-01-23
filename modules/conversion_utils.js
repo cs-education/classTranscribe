@@ -70,9 +70,57 @@ async function download_from_youtube_url(videoUrl, outputFile) {
     return outputFile;
 }
 
+async function copy_file(source_file, outputFile) {
+    const fs = require('fs');
+
+    // destination.txt will be created or overwritten by default.
+    fs.copyFile(source_file, outputFile, (err) => {
+        if (err) throw err;
+    });
+    return outputFile
+}
+
+async function hash_file(filename, algo) {
+    const hasha = require('hasha');
+
+    var hash = await hasha.fromFile(filename, { algorithm: algo });
+    return hash;
+}
+
+hash_file(_dirname + 'cookies.txt', 'md5').then(hash => { console.log(hash); });
+hash_file(_dirname + 'cookies.txt', 'sha256').then(hash => { console.log(hash); });
+
+async function get_thumbnails_from_video(pathToFile) {
+    const { getVideoDurationInSeconds } = require('get-video-duration')
+ 
+    var duration_one_fifth = await getVideoDurationInSeconds(pathToFile).then(duration => {
+        duration = Math.round(duration / 5);
+        let hours = Math.floor(duration / 3600);
+        let minutes = Math.floor(duration / 60);
+        let seconds = duration % 60;
+        return Promise.resolve(hours + ':' + minutes + ':' + seconds);
+    });
+
+    var outputFile = _dirname + pathToFile.substring(pathToFile.lastIndexOf('/') + 1, pathToFile.lastIndexOf('.')) + '.jpg';
+    const { spawn } = require('child-process-promise');
+    const ffmpeg = spawn('ffmpeg', ['-ss', duration_one_fifth, '-i', pathToFile, '-vframes', '1', '-q:v', '2', outputFile]);
+    
+    ffmpeg.childProcess.stdout.on('data', (data) => {
+        console.log(`stdout: ${data}`);
+    });
+
+    ffmpeg.childProcess.stderr.on('data', (data) => {
+        console.log(`stderr: ${data}`);
+    });
+
+    await ffmpeg;
+    return outputFile;
+}
+
 module.exports = {
     convertVideoToWav: convertVideoToWav,
     convertWavFileToSrt: convertWavFileToSrt,
     downloadFile: downloadFile,
+    copy_file: copy_file,
     download_from_youtube_url: download_from_youtube_url
 }

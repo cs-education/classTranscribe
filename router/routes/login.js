@@ -42,19 +42,6 @@ router.post('/login/submit', function(request, response, next) {
 router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 
-// router.get('/auth/google/callback', function(req, res, next) {
-//   passport.authenticate('google', function(err, user, info) {
-//     if (err) { return next(err) }
-//     if (!user) {
-//       return res.send({message : info.message, html : '/'})
-//     }
-//     req.logIn(user, function(err) {
-//       if (err) { return next(err); }
-//       return res.redirect('/dashboard');
-//     });
-//   })(req, res, next);
-// });
-
 // the callback after google has authenticated the user
 router.get('/auth/google/callback',
      passport.authenticate('google', {

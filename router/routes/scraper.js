@@ -33,13 +33,12 @@ router.get('/scrapeEchoSection', function (request, response) {
     var url = request.query.publicUrl;
     var courseOfferingId = request.query.courseOfferingId;
     console.log(url, courseOfferingId);
-    scraper.download_public_echo_course(url)
+    scraper.download_public_echo_course(url, courseOfferingId)
     renderWithPartial(scraperMustache, request, response);
   } else {
     response.redirect('/');
   }
 });
-
 router.get('/scrapeYoutubePlaylist', function (request, response) {
   if(request.isAuthenticated()) {
     response.writeHead(200, {
@@ -53,6 +52,17 @@ router.get('/scrapeYoutubePlaylist', function (request, response) {
   } else {
     response.redirect('/');
   }
+});
+
+router.get('/addLocalVideosToCourse',async function (request, response) {
+    response.writeHead(200, {
+        'Content-Type': 'text.html'
+    });
+    var jsonFile = request.query.jsonFile;
+    var courseOfferingId = request.query.courseOfferingId;
+    console.log(jsonFile, courseOfferingId);
+    await scraper.addLocalVideosToCourse(jsonFile, courseOfferingId);
+    renderWithPartial(scraperMustache, request, response);
 });
 
 router.get('/downloadLecture', function (request, response) {

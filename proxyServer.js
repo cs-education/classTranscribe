@@ -17,14 +17,19 @@ var httpsPort =  process.env.PROXY_PORT || 7443;
 var piwikPort =  process.env.PIWIK_PORT || 7001;
 var piwikHost = "192.17.96.13";
 
+const privateKey = fs.readFileSync('./cert/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('./cert/cert.pem', 'utf8');
+const ca = fs.readFileSync('./cert/chain.pem', 'utf8');
+
 var options = {
     target: {
         host: piwikHost,
         port: piwikPort
     },
     ssl: {
-        key: fs.readFileSync("./cert/key.pem"),
-        cert: fs.readFileSync("./cert/cert.pem")
+        key: privateKey,
+        cert: certificate,
+        ca: ca
     }
 }
 

@@ -1,58 +1,74 @@
-<!doctype html>
+﻿<!doctype html>
 <html>
 
 <head>
-  <meta charset="utf-8">
-  <title>Video.js Playlist UI - Default Implementation</title>
-  <link href="/node_modules/video.js/dist/video-js.css" rel="stylesheet">
-  <link href="/node_modules/videojs-playlist-ui/dist/videojs-playlist-ui.css" rel="stylesheet">
-  <link href="/stylesheets/videojs-playlist-ui-demo.css" type="text/css" rel="stylesheet">
-
+    <meta charset="utf-8">
+    <title>Watch Video</title>
+    <link href="/node_modules/video.js/dist/video-js.css" type="text/css" rel="stylesheet">
+    <link href="/node_modules/videojs-playlist-ui/dist/videojs-playlist-ui.css" type="text/css" rel="stylesheet">
+    <link href="/public/stylesheets/videojs-playlist-ui-demo.css" type="text/css" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/public/stylesheets/watchLectureVideos.css" type="text/css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="/browserify/search_bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery.scrollto@2.1.2/jquery.scrollTo.min.js"></script>
 </head>
 
 <body>
-  <!-- <div class="info">
-    <h1>Video.js Playlist UI - Default Implementation</h1>
-    <p>
-      You can see the Video.js Playlist UI plugin in action below. Look at the
-      source of this page to see how to use it with your videos.
-    </p>
-    <p>
-      In the default configuration, the plugin looks for the first element that
-      has the class "vjs-playlist" and uses that as a container for the list.
-    </p>
-  </div> -->
-
-  <div class="player-container">
-    <video
-      id="video"
-      class="video-js"
-      controls>
-      <!-- <source src="http://vjs.zencdn.net/v/oceans.mp4" type="video/mp4">
-      <source src="http://vjs.zencdn.net/v/oceans.webm" type="video/webm"> -->
-    </video>
-
-    <div class="vjs-playlist">
-      <!--
-        The contents of this element will be filled based on the
-        currently loaded playlist
-      -->
+    <!-- <div class="info">
+      <h1>Video.js Playlist UI - Default Implementation</h1>
+      <p>
+        You can see the Video.js Playlist UI plugin in action below. Look at the
+        source of this page to see how to use it with your videos.
+      </p>
+      <p>
+        In the default configuration, the plugin looks for the first element that
+        has the class "vjs-playlist" and uses that as a container for the list.
+      </p>
+    </div> -->
+    <div class="player-container">
+        <video id="video"
+               class="video-js"
+               controls data-setup='{ "playbackRates": [0.5, 1, 1.25, 1.5, 1.75, 2] }'></video>
+        <div class="vjs-playlist">
+            <!--
+              The contents of this element will be filled based on the
+              currently loaded playlist
+            -->
+        </div>
     </div>
-  </div>
-
-  <script src="/node_modules/video.js/dist/video.js"></script>
-  <script src="/node_modules/videojs-playlist/dist/videojs-playlist.js"></script>
-  <script src="/node_modules/videojs-playlist-ui/dist/videojs-playlist-ui.js"></script>
-  <script>
-    var player = videojs('video');
-    var playlist = {{{playlist}}}
-    // player.src()
-    player.playlist(playlist);
-    // Initialize the playlist-ui plugin with no option (i.e. the defaults).
-    player.playlistUi({
-      nextButton: true
-    });
-  </script>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <input type="text" id="search" class="form-control" placeholder="Search here..." />
+            </div>
+            <div class="col" id="full_course_search_div">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="full_course_search">
+                    <label class="form-check-label">Search Entire Course</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="auto_scroll" checked>
+                    <label class="form-check-label">Auto Scroll</label>
+                </div>
+                <!--<label>
+                    <input type="checkbox" data-toggle="toggle" id="full_course_search" data-off="Search full course?" data-on="Search current lecture?" data-onstyle="success" data-offstyle="warning" data-height="45px" data-width="220px">
+                </label>-->
+            </div>
+        </div>
+    </div>
+    <div>
+        <div id="live_transcriptions" class="list-group"></div>
+    </div>
+    <script src="/node_modules/video.js/dist/video.js"></script>
+    <script src="/node_modules/videojs-playlist/dist/videojs-playlist.js"></script>
+    <script src="/node_modules/videojs-playlist-ui/dist/videojs-playlist-ui.js"></script>
+    <script src="https://cdn.sc.gl/videojs-hotkeys/latest/videojs.hotkeys.min.js"></script>
+    <script src="/public/javascripts/controllers/watchLectureVideos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+    <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 </body>
 
 </html>
