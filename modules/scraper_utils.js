@@ -1,6 +1,5 @@
 'use strict';
 var db = require('../db/db');
-const request = require('request');
 var Cookie = require('request-cookies').Cookie;
 var rp = require('request-promise');
 var path = require('path');
@@ -12,6 +11,12 @@ const promiseSerial = funcs =>
     funcs.reduce((promise, func) =>
         promise.then(result => func().then(Array.prototype.concat.bind(result))),
         Promise.resolve([]))
+
+async function asyncForEach(array, callback) {
+    for (let index = 0; index < array.length; index++) {
+        await callback(array[index], index, array);
+    }
+}
 
 function youtube_complete_flow(channel_id) {
     youtube_scraper_channel(channel_id)
@@ -46,18 +51,22 @@ function download_youtube_playlist(playlist_id, courseOfferingId) {
     var url_playlist = 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&' +
         'playlistId=' + playlist_id + '&key=' + youtube_google_api_key + '&maxResults=' + 50;
     return rp({ url: url_playlist })
-        .then(function (body) {
+        .then(async function (body) {
             var body_playlist_json = JSON.parse(body);
             var arr_videoInfo = body_playlist_json['items'];
-            var funcs = arr_videoInfo.map(videoInfo => () => add_youtube_video_info(videoInfo, courseOfferingId));
-            return promiseSerial(funcs);
+            var taskIds = [];
+            await asyncForEach(arr_videoInfo, async function (videoInfo) {
+                var taskId = await add_youtube_video_info(videoInfo, courseOfferingId);
+                taskIds.push(taskId);
+            });
+            await processTasks(taskIds);
         });
 }
 
-function add_youtube_video_info(videoInfo, courseOfferingId) {
+async function add_youtube_video_info(videoInfo, courseOfferingId) {
     var publishedAt = videoInfo['snippet']['publishedAt'];
     var channelId = videoInfo['snippet']['channelId'];
-    var title = videoInfo['snippet']['title'];
+    var title = videoInfo['snippet']['title']
     var description = videoInfo['snippet']['description'];
     var channelTitle = videoInfo['snippet']['channelTitle'];
     var playlistId = videoInfo['snippet']['playlistId'];
@@ -72,11 +81,8 @@ function add_youtube_video_info(videoInfo, courseOfferingId) {
         publishedAt: publishedAt,
         videoUrl: videoUrl
     };
-    return db.addToMediaAndMSTranscriptionTask(videoUrl, 1, media, courseOfferingId)
-        .then(taskId => downloadConvertAndSrt(taskId))
-        .then(result => {
-            console.log("Done!");
-        });
+    var taskId = await db.addToMediaAndMSTranscriptionTask(videoUrl, 1, media, courseOfferingId)
+    return taskId;
 }
 
 async function download_lecture(taskId) {
@@ -92,6 +98,9 @@ async function download_lecture(taskId) {
         case 1:
             return await download_youtube_video(task, media);
             break;
+        case 2:
+            return await download_local_video(task, media);
+            break;
         default:
             console.log("Invalid sourceType");
             return null;
@@ -103,6 +112,14 @@ async function download_youtube_video(task, media) {
     var videoUrl = JSON.parse(media.siteSpecificJSON).videoUrl;
     var outputFile = _dirname + media.id + '.mp4';
     outputFile = await conversion_utils.download_from_youtube_url(videoUrl, outputFile);
+    await task.update({ videoLocalLocation: path.resolve(outputFile) });
+}
+
+async function download_local_video(task, media) {
+    console.log("download_local_video");
+    var videoUrl = JSON.parse(media.siteSpecificJSON).videoUrl;
+    var outputFile = _dirname + media.id + '.mp4';
+    outputFile = await conversion_utils.copy_file(videoUrl, outputFile);
     await task.update({ videoLocalLocation: path.resolve(outputFile) });
 }
 
@@ -160,10 +177,23 @@ async function download_echo_course_info(section_url, courseOfferingId) {
     await extractSyllabusAndDownload(syllabus, download_header, courseOfferingId);
 }
 
-async function downloadConvertAndSrt(taskId) {
+async function processTasks(taskIds) {
+    console.log("processing all tasks");
+    await asyncForEach(taskIds, async function (taskId) {
+        await downloadConvertAndThumbnail(taskId);
+    });
+    console.log("downloaded all");
+    await asyncForEach(taskIds, async function (taskId) {
+        await convertTaskToSrt(taskId);
+        console.log("ConvertTaskToSrt:" + taskId);
+    });
+}
+
+async function downloadConvertAndThumbnail(taskId) {
     await download_lecture(taskId);
+    console.log("Downloaded:" + taskId);
     await convertTaskVideoToWav(taskId);
-    await convertTaskToSrt(taskId);
+    console.log("ConvertVideoToWav:" + taskId);
 }
 
 async function download_echo_lecture(task, media) {
@@ -271,6 +301,8 @@ async function get_syllabus(cookiesAndHeader) {
 
 async function extractSyllabusAndDownload(syllabus, download_header, courseOfferingId) {
     var audio_data_arr = syllabus['data'];
+    var taskIds = [];
+    var dateFormat = require('dateformat');
     for (var j = 0; j < audio_data_arr.length; j++) {
         var audio_data = audio_data_arr[j];
         try {
@@ -297,14 +329,40 @@ async function extractSyllabusAndDownload(syllabus, download_header, courseOffer
                 termName: termName,
                 lessonName: lessonName,
                 courseName: courseName,
-                title: courseName + ":" + lessonName
+                title: (j + 1) + ":" + dateFormat(createdAt, "yyyy-mm-dd")
             };
             var taskId = await db.addToMediaAndMSTranscriptionTask(mediaJson.videoUrl, 0, mediaJson, courseOfferingId);
-            await downloadConvertAndSrt(taskId);
+            taskIds.push(taskId);
         } catch (err) {
             console.log(err);
         }
     }
+    await processTasks(taskIds);
+}
+
+async function addLocalVideosToCourse(jsonFile, courseOfferingId) {
+    console.log(jsonFile, courseOfferingId);
+    var fs = require('fs');
+    var json = JSON.parse(fs.readFileSync(jsonFile, 'utf8'));
+    var taskIds = [];
+    var dateFormat = require('dateformat');
+    for (var i = 0; i < json.length; i++) {
+        var obj = json[i];
+        console.log(obj.id);
+        try {
+            var mediaJson = {
+                createdAt: obj.createdAt,
+                videoUrl: obj.videoUrl,
+                lessonName: obj.lessonName,
+                title: (i + 1) + ":" + dateFormat(obj.createdAt, "yyyy-mm-dd") + ":" + obj.lessonName
+            };
+            var taskId = await db.addToMediaAndMSTranscriptionTask(mediaJson.videoUrl, 2, mediaJson, courseOfferingId);
+            taskIds.push(taskId);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+    await processTasks(taskIds);
 }
 
 module.exports = {
@@ -312,5 +370,6 @@ module.exports = {
     download_youtube_playlist: download_youtube_playlist,
     download_echo_course_info: download_echo_course_info,
     download_lecture: download_lecture,
-    download_public_echo_course: download_public_echo_course
+    download_public_echo_course: download_public_echo_course,
+    addLocalVideosToCourse: addLocalVideosToCourse
 }

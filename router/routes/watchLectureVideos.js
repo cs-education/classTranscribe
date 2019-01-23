@@ -1,10 +1,12 @@
 const fs = require('fs');
 const db = require('../../db/db');
 
-const utils = require('../../utils/logging');
-const perror = utils.perror;
-const info = utils.info;
-const log = utils.log;
+const logging = require('../../utils/logging');
+const utils = require('../../utils/utils');
+const vttToJson = require('vtt-json');
+const perror = logging.perror;
+const info = logging.info;
+const log = logging.log;
 
 const watchLectureVideosPage = fs.readFileSync(mustachePath + 'watchLectureVideos.mustache').toString();
 
@@ -15,71 +17,53 @@ router.get('/watchLectureVideos/:courseOfferingId', function (request, response)
       'Content-Type': 'text/html'
     });
 
-    var courseOfferingId = request.params.courseOfferingId;
-    var userInfo = request.user || {user : undefined};
-
-    db.getPlaylistByCourseOfferingId( courseOfferingId ).then(
-      values => {
-
-        var playlist = values.map(result => {
-          let video = {};
-            let des = JSON.parse(result.siteSpecificJSON);
-            video['name'] = des.title;
-          video['sources'] = [{src: result['videoLocalLocation'], type:'video/mp4'}];
-          video['textTracks'] = [{src: result['srtFileLocation'], srclang: 'eng', label: 'English'}];
-            video['thumbnail'] = false;
-          return video;
-        });
-
-        renderWithPartial(watchLectureVideosPage, request, response, { playlist : JSON.stringify(playlist) });
-    }).catch(err => { perror(userInfo, err); }); /* db.getPlaylistByCourseOfferingId() */
+    renderWithPartial(watchLectureVideosPage, request, response);
   } else {
     response.redirect('../../');
   }
 });
 
-
-/* not used */
-router.get('/getVideo', function(request, response) {
-  var lectureNumber = "1";
-  var file = path.join(__dirname, "../../videos/Lecture_" + lectureNumber + ".mp4");
-  console.log(file);
-
-  fs.stat(file, function handle(err, stats) {
-    if (err) {
-      if (err.code === "ENOENT") {
-        response.send("File doesn't exist");
-      }
-      else {
-        response.send("Something unfathomable happened");
-      }
-    }
-    else {
-      var range = request.headers.range;
-      var positions = range.replace(/bytes=/, "").split("-");
-      var start = parseInt(positions[0], 10);
-
-      fs.stat(file, function (err, stats) {
-        var total = stats.size;
-        var end = positions[1] ? parseInt(positions[1], 10) : total - 1;
-        var chunksize = (end - start) + 1;
-
-        response.writeHead(206, {
-          "Content-Range": "bytes " + start + "-" + end + "/" + total,
-          "Accept-Ranges": "bytes",
-          "Content-Length": chunksize,
-          "Content-Type": "video/mp4"
+router.get('/getPlaylist/:courseOfferingId', function (request, response) {
+    var courseOfferingId = request.params.courseOfferingId;
+    db.getPlaylistByCourseOfferingId(courseOfferingId).then(
+        values => {
+            var playlist = values.map(result => {
+                let video = {};
+                let des = JSON.parse(result.siteSpecificJSON);
+                video['name'] = des.title;
+                video['sources'] = [{ src: result['videoLocalLocation'], type: 'video/mp4' }];
+                video['textTracks'] = [{ src: result['srtFileLocation'], srclang: 'eng', label: 'English' }];
+                video['thumbnail'] = false;
+                return video;
+            });
+            response.json(playlist);
         });
+});
 
-        var stream = fs.createReadStream(file, { start: start, end: end })
-          .on("open", function () {
-            stream.pipe(response);
-          }).on("error", function (err) {
-            response.end(err);
-          });
-      });
-    }
-  });
+router.get('/getSrts/:courseOfferingId', async function (request, response) {
+
+    var courseOfferingId = request.params.courseOfferingId;
+
+    counter = 0;
+    var allSubs = await db.getPlaylistByCourseOfferingId(courseOfferingId).then(
+        async function (values) {
+            var allSubs = [];
+            await utils.asyncForEach(values, async function (value) {
+                var subFile = value['srtFileLocation'];
+                var videoFile = value['videoLocalLocation'];
+                vtt = fs.readFileSync(subFile).toString();
+                await vttToJson(vtt).then(results => utils.asyncForEach(results, function (result) {
+                    result.part = result.part.substring(0, result.part.lastIndexOf(' '));
+                    result.subFile = subFile;
+                    result.video = videoFile;
+                    result.id = counter++;
+                    allSubs.push(result);
+                }));
+            });
+            return allSubs;
+        }).catch(err => { perror(err); });
+
+    response.json(allSubs);
 });
 
 module.exports = router;

@@ -3,19 +3,26 @@
  *     https://www.npmjs.com/package/acl
  */
 
-
-
-// const client = require('./../../modules/redis');
+const roles = ['Admin', 'Student', 'Instructor'];
 const macl = require('acl');
 const aclSeq = require('acl-sequelize');
 const db = require('../../models/index');
 const acl = new macl(new aclSeq(db.sequelize, { prefix : 'acl_'}));
 
-// acl = new macl(new macl.redisBackend(client, "ClassTranscribe::acl::"));
-// var client_api = require('../../db/db');
+function addRole(userID, role) {
+  if (roles.indexOf(role) > -1) {
+    acl.addUserRoles(userID, role);
+  }
+}
 
-function addUser(userID) {
-  acl.addUserRoles(userID, userID);
+async function getRoles(userID, cb) {
+  return acl.userRoles(userID, cb);
+}
+
+function removeRole(userID, role) {
+  if (roles.indexOf(role) > -1) {
+    acl.removeUserRoles(userID, role);
+  }
 }
 
 function addCoursePermission(userID, classID, permission) {
@@ -31,7 +38,9 @@ function removeCoursePermission(userID, classID, permission) {
 }
 
 module.exports = {
-  addUser : addUser,
+  addRole : addRole,
+  getRoles : getRoles,
+  removeRole : removeRole,
   addCoursePermission : addCoursePermission,
   checkCoursePermission : checkCoursePermission,
   removeCoursePermission : removeCoursePermission

@@ -83,8 +83,6 @@ router.post('/signup/submit', function (request, response) {
     var password = request.body.password;
     var re_password = request.body.re_password;
 
-    var userInfo = {user : undefined};
-
     // Pattern schema for valid password
     var schema = new passwordValidator();
     schema
@@ -98,18 +96,18 @@ router.post('/signup/submit', function (request, response) {
     // Check if email address exists
     verifier.verify(email, function(err, result) {
       if ( err ) {
-        perror(userInfo, err);
+        perror(err);
       } else {
         /* check if email is valid */
         if ( result.success === false ) {
           var error = "Email does not exist";
-          perror(userInfo, error);
+          perror(error);
           response.send({ message: error, html: '' });
         } else {
           // Check that the two passwords are the same
           if (password != re_password) {
             var error = "Passwords are not the same";
-            perror(userInfo, error);
+            perror(error);
             response.send({ message: error, html: '' });
           } else {
             // Check if email is already in the database
@@ -120,7 +118,7 @@ router.post('/signup/submit', function (request, response) {
                 var valid_pattern = schema.validate(password);
                 if (valid_pattern != true) {
                   var error = "Password must have at least 8 character, an uppercase letter, a lowercase leter, a digit, and no spaces.";
-                  perror(userInfo, error);
+                  perror(error);
                   response.send({message: error, html: ''});
                 }
 
@@ -153,28 +151,28 @@ router.post('/signup/submit', function (request, response) {
 
                   client_api.createUser(userInfo).then(result => {
                     /* add user in permission */
-                    permission.addUser(result.id);
+                    permission.addRole(result.id, 'Student');
 
                     /* send e-mail */
                     transporter.sendMail(mailOptions, (err, response) => {
-                      if (err) perror(userInfo, err);
+                      if (err) perror(err);
                       info('response:' + response);
                     });
 
                     response.send({ message: 'success', html: '../login' });
                   }).catch(error => {
-                    perror(userInfo, error);
+                    perror(error);
                     response.send({message: error, html: ''});
                   }); /* end of catch for createUser() */
                 }) /* end of crypto.randomBytes() */
               } else {
                 var error = 'Account already exists';
-                perror(userInfo, error);
+                perror(error);
                 response.send({message: error, html: ''});
               }
             })
             .catch(error => {
-              perror(userInfo, error);
+              perror(error);
               response.send({message: error, html: ''});
             }); /* end of getUserByEmail() */
           }
@@ -189,29 +187,29 @@ var verifyMustache = fs.readFileSync(mustachePath + 'verify.mustache').toString(
 router.get('/verify', function (request, response) {
     // Get the current user's data to access information in database
     var email = request.query.email;
-    var userInfo = {user : undefined};
+
     client_api.getUserByEmail(email).then(result => {
 
       // User is not found in db
       if (!result) {
         //TODO: ADD 404 PAGE
         var error = 'Account does not exist';
-        perror(userInfo, error);
+        perror(error);
         response.status(404).send({message : error});
       }
 
-      userInfo = result;
+      var userInfo = result;
       // User has been verified already
       if (userInfo.verified) {
         var error = 'Email is already verified';
-        perror(userInfo, error);
+        perror(error);
         response.send({message : error, html: '/login'});
       }
 
       // Display error if the generated unique link does not match the user
       if (userInfo.verifiedId !== request.query.id) {
         var error = 'verifyId is not matched';
-        perror(userInfo, error);
+        perror(error);
         response.sned({message : error, html: '/login'});
       }
 
@@ -224,13 +222,13 @@ router.get('/verify', function (request, response) {
         renderWithPartial(verifyMustache, request, response);
       })
       .catch(error => {
-        perror(userInfo, error);
+        perror(error);
         response.send({message : error, html: ''});
       })/* catch verifyUser() error */
 
     })
     .catch(error => {
-      perror(userInfo, error);
+      perror(error);
       response.send({message :error, html : ''});
     })/* catch getUserByEmail() error */
 });
