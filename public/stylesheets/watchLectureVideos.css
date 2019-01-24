@@ -6,9 +6,9 @@
     margin-left: -5px;
 }
 .list-group-item {
-    min-height: 35px;
+    min-height: 40px;
 }
-.row {
+/*.row {
     background: #f8f9fa;
     margin-top: 20px;
 }
@@ -17,7 +17,7 @@
     padding: 10px;
     min-height: 50px;
     max-height: 50px;
-}
+}*/
 #full_course_search_div {
     max-height: 45px;
 }
@@ -25,3 +25,13 @@
 .transcription-item {
     text-align: left;
 }
+
+.edit-box {
+    height: 25px;
+    margin: 0px 0px 0px 0px;
+}
+
+.btn-sm {
+    height: 25px;
+}
+

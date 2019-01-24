@@ -10,18 +10,8 @@ var timeUpdateLastEnd = 0;
 var fullCourseSearch = false;
 var autoScroll = true;
 var live_transcriptions_div = $('#live_transcriptions');
-
-// Read a page's GET URL variables and return them as an associative array.
-function getUrlVars() {
-    var vars = [], hash;
-    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-    for (var i = 0; i < hashes.length; i++) {
-        hash = hashes[i].split('=');
-        vars.push(hash[0]);
-        vars[hash[0]] = hash[1];
-    }
-    return vars;
-}
+var idx;
+var data;
 
 function navigateToVideo(video, startTime) {
     console.log(startTime, video);
@@ -32,33 +22,16 @@ function navigateToVideo(video, startTime) {
             startTime = parseInt(startTime);
         }        
     }
-    updateCurrentVideoTranscriptions(player.currentSrc());
+    updateCurrentVideoTranscriptions();
     $('#search').val('');
     var videoId = player.playlist.indexOf(video);
     player.playlist.currentItem(videoId);
-    player.play();
     player.currentTime(Math.floor(startTime / 1000));
+    player.play();
 }
 
-function msToTime(s) {
-
-    // Pad to 2 or 3 digits, default is 2
-    function pad(n, z) {
-        z = z || 2;
-        return ('00' + n).slice(-z);
-    }
-
-    var ms = s % 1000;
-    s = (s - ms) / 1000;
-    var secs = s % 60;
-    s = (s - secs) / 60;
-    var mins = s % 60;
-    var hrs = (s - mins) / 60;
-
-    return pad(hrs) + ':' + pad(mins) + ':' + pad(secs);
-}
-
-function updateCurrentVideoTranscriptions(video) {
+function updateCurrentVideoTranscriptions() {
+    var video = player.currentSrc();
     currentVideoTranscriptions = jslinqData.where(function (item) {
         // filter out results to currentVideo
         return video === item.video;
@@ -79,46 +52,50 @@ function updateCurrentVideoTranscriptions(video) {
     }
 }
 
-function fallbackCopyTextToClipboard(text) {
-    var textArea = document.createElement("textarea");
-    textArea.value = text;
-    document.body.appendChild(textArea);
-    textArea.focus();
-    textArea.select();
+function attachTranscriptionItemListeners() {
+    $(".edit-button").click(function () {
+        var id = this.id.substring(this.id.lastIndexOf('-') + 1);
+        if ($("#text-view-" + id).css('display') === 'block') {
+            $("#text-view-" + id).css('display', 'none');
+            $("#text-edit-" + id).css('display', 'block');
+        }
+    });
 
-    try {
-        var successful = document.execCommand('copy');
-        var msg = successful ? 'successful' : 'unsuccessful';
-        console.log('Fallback: Copying text command was ' + msg);
-        if (successful) {
-            alert("Copied link to Clipboard!");
-        }        
-    } catch (err) {
-        console.error('Fallback: Oops, unable to copy', err);
-    }
+    $(".cancel-edit").click(function () {
+        var id = this.id.substring(this.id.lastIndexOf('-') + 1);
+        if ($("#text-view-" + id).css('display') === 'none') {
+            $("#text-view-" + id).css('display', 'block');
+            $("#text-edit-" + id).css('display', 'none');
+        }
+    })
 
-    document.body.removeChild(textArea);
-}
+    $(".submit-edit").click(async function () {
+        var id = this.id.substring(this.id.lastIndexOf('-') + 1);
+        var editedText = $("#edit-box-" + id).val();
+        var subFile = data[id].subFile;
+        data[id].part = editedText;
+        updateTranscriptionsData(data);
+        updateCurrentVideoTranscriptions();
+        var editedSubsJson = jslinqData.where(function (item) {
+            return item.subFile === subFile;
+        }).select(function (item) {
+            return {
+                start: item.start,
+                end: item.end,
+                part: item.part
+            };
+        }).toList();
 
-function copyTextToClipboard(text) {
-    console.log(window.location.href);
-    console.log(window.location.hostname);
-    console.log(window.location.href);
-    if (!navigator.clipboard) {
-        fallbackCopyTextToClipboard(text);
-        return;
-    }
-    navigator.clipboard.writeText(text).then(function () {
-        console.log('Async: Copying to clipboard was successful!');
-        alert("Copied link to Clipboard!");
-    }, function (err) {
-        console.error('Async: Could not copy text: ', err);
+        var result = await $.when($.post('/submitEdit', {
+            sub: editedSubsJson,
+            subFile: subFile
+        }));
     });
 }
 
 function generateShareLink(video, startTime) {
     var shareLink = "https://" + window.location.hostname + "/watchLectureVideos/" + courseOfferingId + "?video=" + video + "&startTime=" + startTime;
-    copyTextToClipboard(shareLink);
+    utils.copyTextToClipboard(shareLink);
 }
 
 function addAllTranscriptionsToList() {
@@ -134,14 +111,41 @@ function addAllTranscriptionsToList() {
             if (currentList[item].part === '') {
                 continue;
             }
-            var searchitem = "<div class='list-group-item transcription-item' style='display:none;' id='" + currentList[item].id + "'>" + msToTime(currentList[item].start) +
-                "&emsp;" + "<a href='#' onclick=generateShareLink('" + currentList[item].video + "'," + currentList[item].start + ")> Share </a>" +
-                "&emsp;" + "<a onclick=navigateToVideo('" +currentList[item].video + "'," + currentList[item].start + ") >" + currentList[item].part + "</a> </div>";
+            var searchitem = generateItemHTML(currentList[item].id, currentList[item].start, currentList[item].video, currentList[item].part);
             live_transcriptions_div.append(searchitem);
         }
         live_transcriptions_div.show();
     }
+    attachTranscriptionItemListeners();
 }
+
+function generateItemHTML(id, start, video, part) {
+    return "<div class='list-group-item transcription-item' style='display:none;' id='" + id + "'>" +
+        "<div class= 'row'>" + 
+        "<div class='col-sm-3'>" +
+        utils.msToTime(start) + 
+        "<a href='#' onclick=generateShareLink('" + video + "'," + start + ")> Share </a>" +
+        "<div class='form-check form-check-inline'>" +
+        "<input class='btn btn-outline-primary btn-sm edit-button' type='button' id='edit-button-" + id +"' value= 'Edit'>" +
+        "</div>" +
+        "</div>" +
+        "<div class='col-sm-9 text-view' style = 'display:initial;' id='text-view-" + id +"'>" +
+        "<a onclick=navigateToVideo('" + video + "'," + start + ") >" + part + "</a>" +
+        "</div>" +
+        "<div class='col-sm-9 text-edit' style = 'display:none;' id='text-edit-" + id +"'>" +
+        "<div class= 'row'>" + 
+        "<div class='col-sm-9'>" +
+        "<input class='form-control input-sm edit-box' type='text' value='" + part + "' id='edit-box-" + id +"'>" +
+        "</div>" +
+        "<div class='col-sm-3'>" +
+        "<button type='button' class='btn btn-outline-success btn-sm submit-edit' id='submit-edit-" + id +"'>Submit</button>" +
+        "<button type='button' class='btn btn-outline-danger btn-sm cancel-edit' id='cancel-edit-" + id +"'>Cancel</button>" +
+        "</div>" +
+        "</div>" +
+        "</div>" +
+        "</div>";
+}
+
 
 function scrollToListItem(listItemId) {
     $("#live_transcriptions").children().removeClass('active');
@@ -149,6 +153,12 @@ function scrollToListItem(listItemId) {
     if (autoScroll) {
         $("#live_transcriptions").scrollTo("#" + (listItemId - 1));
     }
+}
+
+function updateTranscriptionsData(data) {
+    idx = getLunrObj(data);
+    jslinqData = jslinq(data);
+    addAllTranscriptionsToList();
 }
 
 (async () => {
@@ -171,14 +181,11 @@ function scrollToListItem(listItemId) {
             nextButton: true
         });
 
-        var data = await $.when($.getJSON(getSrtUrl))
-        var allSubs = data;
-        var idx = getLunrObj(data);
-        jslinqData = jslinq(data);
-        addAllTranscriptionsToList();
-        updateCurrentVideoTranscriptions(player.currentSrc());
+        data = await $.when($.getJSON(getSrtUrl));
+        updateTranscriptionsData(data);
+        updateCurrentVideoTranscriptions();
 
-        var queryParams = getUrlVars();
+        var queryParams = utils.getUrlVars();
         if (queryParams.hasOwnProperty('video')) {
             if (queryParams.hasOwnProperty('startTime')) {
                 navigateToVideo(queryParams['video'], queryParams['startTime']);
@@ -195,7 +202,7 @@ function scrollToListItem(listItemId) {
             filteredSubs = []
             results.forEach(function (result) {
                 index = parseInt(result.ref);
-                filteredSubs.push(allSubs[index]);
+                filteredSubs.push(data[index]);
             });
             var queryObj = jslinq(filteredSubs);
             var res;
@@ -244,7 +251,7 @@ function scrollToListItem(listItemId) {
         });
 
         player.on('playlistitem', function () {
-            updateCurrentVideoTranscriptions(player.currentSrc());
+            updateCurrentVideoTranscriptions();
         });
         player.on('timeupdate', function () {
             var currentTimeinMillis = player.currentTime() * 1000;
@@ -263,7 +270,7 @@ function scrollToListItem(listItemId) {
                 }
             }
         });
+
+        
     });
 })();
-
-

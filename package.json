@@ -28,6 +28,7 @@
     "grunt-contrib-watch": "^1.1.0",
     "grunt-express-server": "0.5.3",
     "grunt-php": "1.5.1",
+    "hasha": "^3.0.0",
     "http-proxy": "1.16.2",
     "jsclass": "^4.0.5",
     "jslinq": "^1.0.21",
