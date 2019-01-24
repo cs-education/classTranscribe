@@ -66,4 +66,13 @@ router.get('/getSrts/:courseOfferingId', async function (request, response) {
     response.json(allSubs);
 });
 
+router.post('/submitEdit', async function (request, response) {
+    console.log(request.body);
+    utils.transferJsonToVtt(request.body.sub, request.body.subFile + ".2");
+    response.json({
+        success: true
+    });
+});
+
+
 module.exports = router;
