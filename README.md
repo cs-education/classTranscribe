@@ -6,7 +6,7 @@ existing lecture recordings and enable enhanced educational features including c
 
 ## How to run your own instance of ClassTranscribe
 
-Refer to Docker/readme.txt
+Refer to [Docker/readme.txt](/Docker/readme.txt)
 
 ## Structure
 ### [db.js](/db/db.js)
