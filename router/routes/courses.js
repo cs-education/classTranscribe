@@ -120,9 +120,6 @@ router.get('/courses/', function (request, response) {
                 createClassBtn =
                 '<button class="btn" data-toggle="modal" data-target="#createPanel">' +
                 '          Create a New Class</button>';
-
-              } else {
-                permission.addRole(userid, 'Admin');
               }
             })
           }

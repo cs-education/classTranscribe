@@ -421,13 +421,11 @@ function addCourseHelper(id) {
         courseOfferingId : courseOfferingInfo.id,
         roleId : id.roleId,
       }, defaults: {
-        id: uuid()
+        id: uuid(),
       }
     }).then(result => {
       return result[0].dataValues;
-    }).catch(err => {
-    console.trace(err);
-    throw new Error(err.message)}); /* UserOffering.findOrCreate() */
+    }).catch(err => {throw new Error(err.message)}); /* UserOffering.findOrCreate() */
   }).catch(err => {throw new Error(err.message)}); /*  CourseOffering.findOrCreate() */
 }
 
@@ -539,6 +537,7 @@ function addCourse(user, course) {
         let course_result = getCourseId(course);
         let offering_result = getOfferingId(id, course.section);
         return Promise.all([course_result, offering_result]).then(values => {
+
           id.courseId = values[0].id;
           id.offeringId = values[1].id;
           id.viewer = parseInt(course.viewer);
