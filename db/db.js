@@ -408,7 +408,10 @@ function addCourseHelper(id) {
     where : {
       courseId : id.courseId,
       offeringId : id.offeringId,
-    },
+    }, defaults : {
+      id : uuid(),
+      role : id.viewer
+    }
   }).then(result => {
     var courseOfferingInfo = result[0].dataValues;
 
@@ -418,11 +421,13 @@ function addCourseHelper(id) {
         courseOfferingId : courseOfferingInfo.id,
         roleId : id.roleId,
       }, defaults: {
-        id: uuid(),
+        id: uuid()
       }
     }).then(result => {
       return result[0].dataValues;
-    }).catch(err => {throw new Error(err.message)}); /* UserOffering.findOrCreate() */
+    }).catch(err => {
+    console.trace(err);
+    throw new Error(err.message)}); /* UserOffering.findOrCreate() */
   }).catch(err => {throw new Error(err.message)}); /*  CourseOffering.findOrCreate() */
 }
 
@@ -506,6 +511,7 @@ function getOfferingId(id, sectionName) {
  *  }
  */
 function addCourse(user, course) {
+
   /* if user and courseList are not empty */
   if(user && course) {
     var id = { universityId : user.universityId };
@@ -528,21 +534,21 @@ function addCourse(user, course) {
       let term_result = getTermId( course.term );
       let dept_result = getDeptId( course.dept );
       return Promise.all([term_result, dept_result]).then(values => {
-
         id.termId = values[0].id;
         id.deptId = values[1].id;
         let course_result = getCourseId(course);
         let offering_result = getOfferingId(id, course.section);
         return Promise.all([course_result, offering_result]).then(values => {
-
           id.courseId = values[0].id;
           id.offeringId = values[1].id;
+          id.viewer = parseInt(course.viewer);
           return addCourseHelper(id);
         }).catch(err => { throw new Error(err.message) }); /* end of getOfferingId() */
       }).catch(err => { throw new Error(err.message) }); /* end of Promise.all */
-    }).catch(err => { throw new Error(err.message) }); /* end of Promise.all */
+    }).catch(err => {throw new Error(err.message) }); /* end of Promise.all */
+  } else { /* user OR course is empty */
+    throw Error('User Info or Course List is empty');
   }
-  throw Error('User Info or Course List is empty');
 }
 
 /* Get All Terms */

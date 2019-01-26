@@ -120,6 +120,9 @@ router.get('/courses/', function (request, response) {
                 createClassBtn =
                 '<button class="btn" data-toggle="modal" data-target="#createPanel">' +
                 '          Create a New Class</button>';
+
+              } else {
+                permission.addRole(userid, 'Admin');
               }
             })
           }
@@ -239,9 +242,13 @@ router.post('/courses/newclass', function (request, response) {
     client_api.addCourse(userInfo, course)
     .then(result => {
       permission.addCoursePermission(userInfo.mailId, result.courseOfferingId, 'Modify');
+      response.end();
     })
-    .catch(err => perror(userInfo, err)); /* addCourse() */
-    response.end();
+    .catch(err => {
+      perror(userInfo, err);
+      response.end();
+    }); /* addCourse() */
+
 });
 
 /* TODO: THERE SHOULD BE A BETTER WAY OF DOING SO */
@@ -628,7 +635,16 @@ function getCreateClassForm(rep){
                                 "<label>Section Number</label> <input type=\"text\" class=\"form-control\" id=\"fminput5\" placeholder=\"\" name=\"section\"> " +
                                 "<label>University</label> <input type=\"text\" class=\"form-control\" id=\"fminput6\" value=\""+rep.university+"\" name=\"university\" readonly> </div> </div> " +
                         "<div class=\"row\"> <div class=\"col-md-12\"> " +
-                            "<label>Course Description</label> <input type=\"text\" class=\"form-control\" id=\"fminput7\" placeholder=\"\" name=\"courseDescription\"> </div> </div> " +
+                            "<label>Course Description</label> <input type=\"text\" class=\"form-control\" id=\"fminput7\" placeholder=\"\" name=\"courseDescription\"> </div>" +
+                             "<div class=\"col-md-12\"> " +
+                                "<label>Viewer Identity</label>" +
+                                "<select class=\"form-control\" id=\"fminput8\" placeholder=\"\" name=\"viewer\"> " +
+                                "<option value=0> Public </option>" +
+                                "<option value=1> Instructor Allowed </option>" +
+                                "<option value=2> User Allowed </option>" +
+                                "<option value=3> University Allowed </option>" +
+                                "</select> </div>" +
+                             "</div> " +
                     '<div class="modal-footer">'+
                         '<input id="cfmCreate" type="submit" class="btn btn-default" value="Create"></input>'+
                         '<button id="cfmCancel" type="button" class="btn btn-default" data-dismiss="modal">Close</button>'+
