@@ -8,7 +8,9 @@ const db = require('../../db/db');
 const utils = require('../../utils/logging');
 const perror = utils.perror;
 
-const viewerMustache = fs.readFileSync(mustachePath + 'viewer.mustache').toString();
+//const viewerMustache = fs.readFileSync(mustachePath + 'viewer.mustache').toString();
+
+
 router.get('/viewer/:offeringId', ensureAuthenticated, function (request, response) {
     var className = request.params.className.toLowerCase();
     /* TODO: don't think this is the correct function */
@@ -30,7 +32,7 @@ router.get('/viewer/:offeringId', ensureAuthenticated, function (request, respon
     var view = {
         className: className
     };
-    renderWithPartial(viewerMustache, request, response, view);
+    renderWithPartial(Mustache.getMustacheTemplate('viewer.mustache'), request, response, view);
   });
 
   module.exports = router;

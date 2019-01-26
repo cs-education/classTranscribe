@@ -6,7 +6,7 @@
  */
 const client_api = require('./db');
 
-const progressDashboardMustache = fs.readFileSync(mustachePath + 'progressDashboard.mustache').toString();
+//const progressDashboardMustache = fs.readFileSync(mustachePath + 'progressDashboard.mustache').toString();
 
 router.get('/viewProgress/:className/:uuid', function (request, response) {
   var className = request.params.className;
@@ -61,7 +61,7 @@ router.get('/viewProgress/:className/:uuid', function (request, response) {
             className: className,
             studentProgress: studentProgress
           };
-          var html = Mustache.render(progressDashboardMustache, view);
+          var html = Mustache.render(Mustache.getMustacheTemplate('progressDashboard.mustache'), view);
           response.end(html);
         });
       });

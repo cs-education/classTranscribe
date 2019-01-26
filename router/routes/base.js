@@ -8,7 +8,7 @@ const router = express.Router();
 const fs = require('fs');
 const client_api = require('../../db/db');
 
-const homeMustache = fs.readFileSync(mustachePath + 'home.mustache').toString();
+//const homeMustache = fs.readFileSync(mustachePath + 'home.mustache').toString();
 router.get('/', async function (request, response) {
   response.writeHead(200, {
     'Content-Type': 'text/html'
@@ -48,7 +48,7 @@ router.get('/', async function (request, response) {
   });
   courseGrid += "</ul>"
   // console.log(courseGrid)
-  await renderWithPartial(homeMustache, request, response, {courseGrid: courseGrid});
+  await renderWithPartial(Mustache.getMustacheTemplate('home.mustache'), request, response, {courseGrid: courseGrid});
 });
 
 module.exports = router;
