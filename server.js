@@ -86,9 +86,13 @@ var env = argv["e"] || 'production';
 
 // Certificate
 
-const privateKey = fs.readFileSync('./cert/privkey.pem', 'utf8');
-const certificate = fs.readFileSync('./cert/cert.pem', 'utf8');
-const ca = fs.readFileSync('./cert/chain.pem', 'utf8');
+var privateKey = fs.readFileSync('./cert/privkey.pem', 'utf8');
+var certificate = fs.readFileSync('./cert/cert.pem', 'utf8');
+var ca = "";
+
+if (env !== "dev") {
+    ca = fs.readFileSync('./cert/chain.pem', 'utf8');
+}
 
 const credentials = {
     key: privateKey,

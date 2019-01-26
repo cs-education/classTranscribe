@@ -59,6 +59,16 @@ function getPlaylistByCourseOfferingId(courseOfferingId) {
    { replacements: [ courseOfferingId ], type: sequelize.QueryTypes.SELECT}).catch(err => perror(err)); /* raw query */
 }
 
+async function doesEchoMediaExist(mediaId) {
+    var query = await sequelize.query("SELECT TOP 1 count(1) as count \
+        FROM Media \
+        WHERE ? in \
+        (Select JSON_VALUE(siteSpecificJSON, '$.mediaId') as mediaId FROM Media); ",
+        { replacements: [mediaId], type: sequelize.QueryTypes.SELECT }).catch(err => perror(err)); /* raw query */
+    var count = query[0].count;
+    return count > 0 ? true : false;
+}
+
 function addYoutubeChannelPlaylist(playlistId, channelId) {
     return YoutubeChannel.findOrCreate({
         where: {
@@ -111,6 +121,34 @@ async function addMSTranscriptionTask(mediaId) {
         }
     });
     return task[0].id;
+}
+
+async function isHashsumUniqueElseCopy(task) {
+    var result = await MSTranscriptionTask.findAndCountAll({ where: { videoHashsum: task.videoHashsum } });
+    var emptyTask, fullTask;
+    if (result.count > 1) {
+        // If task already encountered, copy the values, else return False
+        result.rows.each(function (task) {
+            if (task.srtFileLocation.length > 0) {
+                fullTask = task;
+            } else {
+                emptyTask = task;
+            }
+        });
+
+        await emptyTask.update({
+            videoLocalLocation: fullTask.videoLocalLocation,
+            audioLocalLocation: fullTask.audioLocalLocation,
+            audioHashsum: fullTask.audioHashsum,
+            wavAudioLocalFile: fullTask.wavAudioLocalFile,
+            wavHashsum: fullTask.wavHashsum,
+            srtFileLocation: fullTask.srtFileLocation,
+            log: fullTask.log
+        });
+        return false;
+    } else {
+        return true;
+    }
 }
 
 // Return taskId
@@ -743,5 +781,7 @@ module.exports = {
     getDeptsById : getDeptsById,
     getSectionsById : getSectionsById,
     getInstructorsByCourseOfferingId : getInstructorsByCourseOfferingId,
-    validateUserAccess : validateUserAccess,
+    validateUserAccess: validateUserAccess,
+    isHashsumUniqueElseCopy: isHashsumUniqueElseCopy,
+    doesEchoMediaExist: doesEchoMediaExist
 }
