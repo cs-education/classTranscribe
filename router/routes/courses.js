@@ -90,7 +90,8 @@ const permission = require('./permission');
 
 
 var allterms = [];
-var managementMustache = fs.readFileSync(mustachePath + 'courses.mustache').toString();
+//var  = fs.readFileSync(mustachePath + 'courses.mustache').toString();
+
 
 // courses page, display all relative courses
 router.get('/courses/', function (request, response) {   
@@ -203,7 +204,7 @@ router.get('/courses/', function (request, response) {
                                 subjectfilterdata: filterdata[1],
                                 createClassButton: createClassBtn
                             };
-                            var html = Mustache.render(managementMustache, view);
+                            var html = Mustache.render(Mustache.getMustacheTemplate('courses.mustache'), view);
                             response.end(html);
                         });
                     }).catch(err => perror(err)); /* Promise.all() */
@@ -319,7 +320,7 @@ router.get('/courses/search', function (request, response) {
                 subjectfilterdata:filterdata[1]
               };
 
-              var html = Mustache.render(managementMustache, view);
+              var html = Mustache.render(Mustache.getMustacheTemplate('courses.mustache'), view);
 
               response.end(html);
             });

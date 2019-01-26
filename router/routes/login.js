@@ -9,7 +9,7 @@ const fs = require('fs');
 const passport = require('passport')
 
 // Get the mustache page that will be rendered for the login route
-const loginMustache = fs.readFileSync(mustachePath + 'login.mustache').toString();
+//const loginMustache = fs.readFileSync(mustachePath + 'login.mustache').toString();
 
 // Render the login mustache page; if account is authenticated, just bring user to dashboard
 router.get('/login', function(request, response) {
@@ -21,7 +21,7 @@ router.get('/login', function(request, response) {
         // response.writeHead(200, {
         //     'Content-Type': 'text.html'
         // });
-        // renderWithPartial(loginMustache, request, response);
+        // renderWithPartial(Mustache.getMustacheTemplate('login.mustache'), request, response);
     }
 });
 
