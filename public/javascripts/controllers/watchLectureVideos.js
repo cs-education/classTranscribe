@@ -271,6 +271,13 @@ function updateTranscriptionsData(data) {
             }
         });
 
+        // Enables the autoplay functionality
+        player.on('ended', function () {
+            // autoplays if duration < 90 mins (in unit of seconds)
+            if(player.duration() < 5400 && $('.vjs-up-next').length) {
+                $('.vjs-up-next').click();
+            }
+        })
         
     });
 })();
