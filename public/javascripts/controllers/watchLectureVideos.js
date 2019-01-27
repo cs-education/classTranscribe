@@ -125,9 +125,9 @@ function generateItemHTML(id, start, video, part) {
         "<div class='col-sm-3'><tt>" +
         utils.msToTime(start) + 
         
-        " </tt><button type='button' class='btn btn-outline-primary btn-sm align-top' onclick=generateShareLink('" + video + "'," + start + ")> Share </button>" +
+        " </tt><button type='button' class='btn btn-outline-secondary btn-sm align-top' onclick=generateShareLink('" + video + "'," + start + ")> Share </button>" +
         "<div class='form-check form-check-inline'>" +
-        "<input class='btn btn-outline-primary btn-sm edit-button' type='button' id='edit-button-" + id +"' value= 'Edit'>" +
+        "<input class='btn btn-outline-secondary btn-sm edit-button' type='button' id='edit-button-" + id +"' value= 'Edit'>" +
         "</div>" +
         "</div>" +
         "<div class='col-sm-9 text-view' style = 'display:initial;' id='text-view-" + id +"'>" +
@@ -149,8 +149,8 @@ function generateItemHTML(id, start, video, part) {
 
 
 function scrollToListItem(listItemId) {
-    $("#live_transcriptions").children().removeClass('active');
-    $("#" + (listItemId)).addClass('active');
+    $("#live_transcriptions").children().removeClass('active_line');
+    $("#" + (listItemId)).addClass('active_line');
     if (autoScroll) {
         $("#live_transcriptions").scrollTo("#" + (listItemId - 1));
     }
