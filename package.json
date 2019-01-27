@@ -83,8 +83,8 @@
     "type": "git",
     "url": "https://github.com/cs-education/classTranscribe.git"
   },
-  "author": "Oliver Melvin",
-  "license": "",
+  "author": "Copyright 2015-2019 Board of Trustees of University of Illinois and university, faculty staff and students where listed",
+  "license": "MIT Open Source License",
   "bugs": {
     "url": "https://github.com/cs-education/classTranscribe/issues"
   },
