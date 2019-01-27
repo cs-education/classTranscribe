@@ -1,7 +1,7 @@
 {
   "name": "classTranscribe",
   "version": "1.0.0",
-  "description": "Enables efficient crowdsourcing of lecture material to power search and closed-captioning.",
+  "description": "Searchable Accessible video player designed for university classes with automatic and crowd-sourced captioning and text searching.",
   "main": "server.js",
   "dependencies": {
     "acl": "^0.4.11",
