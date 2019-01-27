@@ -48,7 +48,6 @@ function updateLiveTranscriptionsDiv(list) {
         }
     }
 }
-
 function updateCurrentVideoTranscriptions() {
     var video = player.currentSrc();
     currentVideoTranscriptions = jslinqData.where(function (item) {
