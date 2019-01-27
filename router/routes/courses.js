@@ -499,8 +499,8 @@ function  generateListings(data, user, cb) {
         } catch (err) {
             instructorName = "";
         }
-
-        html += '<tr id="'+ e.id +'">';
+        
+        html += '<tr id="'+ e.id +'" >';
         html += '<td hidden="yes">' + e.termName + '</td>';
         html += '<td hidden="yes">' + e.courseOfferingId + '</td>';
         html += '<td>' + e.university + '</td>';
@@ -509,7 +509,7 @@ function  generateListings(data, user, cb) {
         html += '<td>' + e.section + '</td>';
         html += '<td>' + e.courseName + '</td>';
         html += '<td>' + instructorName + '</td>';
-        html += '<td class="tddesc">' + e.courseDescription + '</td>';
+        html += '<td>' + e.courseDescription + '</td>';
         html += '<td class="col-md-2">';
         var debug = false;
         if (debug || (user != '' && user != undefined)) {
@@ -518,10 +518,10 @@ function  generateListings(data, user, cb) {
 
                 if (result) {
                         html +=
-                            '<a class="actionbtn mnbtn">' +
+                            '<a class="actionbtn mnbtn" href="#">' +
                             '          <span class="glyphicon glyphicon-plus"></span> Manage\n' +
                             '        </a>' + '</td> <td>'+
-                            '<a class="actionbtn viewbtn">' +
+                            '<a class="actionbtn viewbtn" href="#">' +
                             '          <span class="glyphicon glyphicon-plus"></span> Watch\n' +
                             '        </a> </td>';
                         fcb(null,html);
@@ -530,7 +530,7 @@ function  generateListings(data, user, cb) {
                   permission.checkCoursePermission(user, classid, 'Drop', function (err, res) {
                     if (!res) {
                       html +=
-                      '<a class="actionbtn viewbtn">' +
+                      '<a class="actionbtn viewbtn" href="#">' +
                       '          <span class="glyphicon glyphicon-plus"></span> Watch\n' +
                       '        </a>';
                     }

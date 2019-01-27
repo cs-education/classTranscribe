@@ -14,7 +14,7 @@ const passport = require('passport')
 // Render the login mustache page; if account is authenticated, just bring user to dashboard
 router.get('/login', function(request, response) {
     if (request.isAuthenticated()) {
-        response.redirect('../dashboard');
+        response.redirect('../courses');
     } else {
         response.redirect('../auth/google');
 
@@ -33,7 +33,7 @@ router.post('/login/submit', function(request, response, next) {
         response.send({ message: info.message, html: '../login'});
       } else {
         request.logIn(user, function(err) {
-          response.send({ message: 'success', html: '../dashboard' });
+          response.send({ message: 'success', html: '../courses' });
         });
       }
     })(request, response, next);
@@ -60,7 +60,7 @@ router.get('/auth/google/callback', function (req, res, next) {
             if (typeof req.query.state != "undefined" && req.query.state.length > 0) {
                 return res.redirect(req.query.state);
             }
-            return res.redirect('/dashboard');
+            return res.redirect('/courses');
         });
     })(req, res, next);
 });

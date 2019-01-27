@@ -1,5 +1,7 @@
-.table-striped>tr:nth-child(odd){
-    background-color:red;
+
+.table-striped>tbody>tr:nth-child(even)>td,
+.table-striped>tbody>tr:nth-child(even)>th {
+    background-color:#ddd;
 }
 
 .navmain{
@@ -46,8 +48,8 @@ td.tddesc{
 }
 
 .checkboxlabel{
-    color: #999999;
-    font-weight: lighter;
+    color: #555;
+    font-weight: normal;
 }
 
 .filterbox{
@@ -209,4 +211,3 @@ strong{
     padding-right:25px;
     color:#5f666e;
 }
-
