@@ -122,6 +122,7 @@ router.get('/courses/', function (request, response) {
           // Table header
           var thtml = "<tr id=\"#header\">\n" +
           '<th hidden="yes">Term</th>' +
+          '<th hidden="yes">Id</th>' +
           "                    <th>University</th>\n" +
           "                    <th>Subject</th>\n" +
           "                    <th>Course Number</th>\n" +
@@ -271,6 +272,7 @@ router.get('/courses/search', function (request, response) {
         search.search(function (line) {
           var rethtml= "<tr id=\"#header\">\n" +
                        '<th hidden="yes">Term</th>'+
+                       '<th hidden="yes">Id</th>' +
                        "                    <th>University</th>\n" +
                        "                    <th>Subject</th>\n" +
                        "                    <th>Course Number</th>\n" +
@@ -416,6 +418,7 @@ router.post('/courses/applyfilter', function (request, response) {
     var subjectf = request.body.subjectfilter.split(';;');
     var rethtml="<tr id=\"#header\">\n" +
         '<th hidden="yes">Term</th>'+
+        '<th hidden="yes">Id</th>' +
         "                    <th>University</th>\n" +
         "                    <th>Subject</th>\n" +
         "                    <th>Course Number</th>\n" +

@@ -22,7 +22,7 @@ html, body{
 
 a{
   text-decoration:none;
-  outline:none;
+  /*outline:none;*/
 }
 
 h1{
@@ -565,7 +565,7 @@ h1 span{
 }
 
 .grid li:nth-child(2n+1){
-  background: #2fa68e;
+  background: #288F7B;
 }
 
 
