@@ -272,7 +272,10 @@ router.get('/courses/search', function (request, response) {
         search.search(function (line) {
           var rethtml= "<tr id=\"#header\">\n" +
                        '<th hidden="yes">Term</th>'+
+<<<<<<< HEAD
                        '<th hidden="yes">Id</th>' +
+=======
+>>>>>>> 758e19046524669f4a6be98d825f07c197199cb1
                        "                    <th>University</th>\n" +
                        "                    <th>Subject</th>\n" +
                        "                    <th>Course Number</th>\n" +
