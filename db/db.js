@@ -64,7 +64,8 @@ function getPlaylistByCourseOfferingId(courseOfferingId) {
 async function doesEchoMediaExist(echoMediaId) {
     var query = await sequelize.query("SELECT count(*) as count, id as mediaId\
                 FROM(Select JSON_VALUE(siteSpecificJSON, '$.mediaId') as echoMediaId, id FROM Media) a \
-                WHERE echoMediaId = ?; ",
+                WHERE echoMediaId = ? \
+                GROUP BY id; ",
         { replacements: [echoMediaId], type: sequelize.QueryTypes.SELECT }).catch(err => perror(err)); /* raw query */
     var count = query[0].count;
     return count > 0 ? true : false;
@@ -73,7 +74,8 @@ async function doesEchoMediaExist(echoMediaId) {
 async function doesYoutubeMediaExist(playlistId, title) {
     var query = await sequelize.query("Select count(*)  as count, id as mediaId\
         FROM(Select JSON_VALUE(siteSpecificJSON, '$.playlistId') as playlistId, JSON_VALUE(siteSpecificJSON, '$.title') as title, id FROM Media) a \
-        WHERE playlistId = ? and title = ?",
+        WHERE playlistId = ? and title = ? \
+        GROUP BY id",
         { replacements: [playlistId, title], type: sequelize.QueryTypes.SELECT }).catch(err => perror(err)); /* raw query */
     var count = query[0].count;
     return count > 0 ? true : false;
