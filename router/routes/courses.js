@@ -95,13 +95,9 @@ var managementMustache = fs.readFileSync(mustachePath + 'courses.mustache').toSt
 // courses page, display all relative courses
 router.get('/courses/', function (request, response) {   
     if (!request.isAuthenticated()) {
-        // form = getCreateClassForm(userInfo);
-        // createClassBtn =
-        // '<button class="btn" data-toggle="modal" data-target="#createPanel">' +
-        // '          Create a New Class</button>';
         response.redirect('/auth/google?redirectPath=' + encodeURIComponent(request.originalUrl));
     }
-    else {
+    else {        
         response.writeHead(200, {
             'Content-Type': 'text/html'
         });
@@ -116,7 +112,13 @@ router.get('/courses/', function (request, response) {
             var form = '';
             var createClassBtn = '';
             var userInfo = request.session.passport.user;
-
+            // Super user hack
+            if (userInfo.mailId === 'mahipal2@illinois.edu') {
+                form = getCreateClassForm(userInfo);
+                createClassBtn =
+                    '<button class="btn" data-toggle="modal" data-target="#createPanel">' +
+                    '          Create a New Class</button>';
+            }            
             client_api.getUniversityName(userInfo.universityId).then(result => {
 
                 userInfo.university = result.universityName;
