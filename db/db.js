@@ -67,7 +67,9 @@ async function doesEchoMediaExist(echoMediaId) {
                 WHERE echoMediaId = ? \
                 GROUP BY id; ",
         { replacements: [echoMediaId], type: sequelize.QueryTypes.SELECT }).catch(err => perror(err)); /* raw query */
-    var count = query[0].count;
+    var count = query.count;
+    console.log(query);
+    console.log(count);
     return count > 0 ? true : false;
 }
 
@@ -87,7 +89,7 @@ async function doesYoutubeMediaExist(playlistId, title) {
         WHERE playlistId = ? and title = ? \
         GROUP BY id",
         { replacements: [playlistId, title], type: sequelize.QueryTypes.SELECT }).catch(err => perror(err)); /* raw query */
-    var count = query[0].count;
+    var count = query.count;
     return count > 0 ? true : false;
 }
 
