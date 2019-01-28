@@ -71,6 +71,16 @@ async function doesEchoMediaExist(echoMediaId) {
     return count > 0 ? true : false;
 }
 
+async function getIncompleteTasks() {
+    var tasks = await MSTranscriptionTask.findAll({
+        where: {
+            videoHashsum: { [Op.ne]: null },
+            srtFileLocation: { [Op.eq]: null }
+        }
+    });
+    return tasks;
+}
+
 async function doesYoutubeMediaExist(playlistId, title) {
     var query = await sequelize.query("Select count(*)  as count, id as mediaId\
         FROM(Select JSON_VALUE(siteSpecificJSON, '$.playlistId') as playlistId, JSON_VALUE(siteSpecificJSON, '$.title') as title, id FROM Media) a \
@@ -777,5 +787,6 @@ module.exports = {
     validateUserAccess: validateUserAccess,
     getTaskIfNotUnique: getTaskIfNotUnique,
     doesEchoMediaExist: doesEchoMediaExist,
-    doesYoutubeMediaExist: doesYoutubeMediaExist
+    doesYoutubeMediaExist: doesYoutubeMediaExist,
+    getIncompleteTasks: getIncompleteTasks
 }

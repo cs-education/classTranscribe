@@ -62,4 +62,8 @@ router.get('/downloadLecture', function (request, response) {
     renderWithPartial(Mustache.getMustacheTemplate('scraper.mustache'), request, response);
 });
 
+router.get('/reprocessIncompleteTasks', async function (request, response) {
+    await scraper.reprocessIncompleteTasks();
+});
+
 module.exports = router;

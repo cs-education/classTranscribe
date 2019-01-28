@@ -159,7 +159,10 @@ async function processTasks(mediaIds) {
         var task = await db.addMSTranscriptionTask(mediaId, task, videoHashsum, path.resolve(outputFile));
         tasks.push(task);
     });
+    await wavAndSrt(tasks);
+}
 
+async function wavAndSrt(tasks) {
     await asyncForEach(tasks, async function (task) {
         await convertTaskVideoToWav(task);
         console.log("ConvertVideoToWav:" + task.id);
@@ -169,6 +172,11 @@ async function processTasks(mediaIds) {
         await convertTaskToSrt(task);
         console.log("ConvertTaskToSrt:" + task.id);
     });
+}
+
+async function reprocessIncompleteTasks() {
+    var tasks = await db.getIncompleteTasks();
+    await wavAndSrt(tasks);
 }
 
 async function convertTaskVideoToWav(task) {
@@ -344,5 +352,6 @@ module.exports = {
     download_youtube_playlist: download_youtube_playlist,
     download_lecture: download_lecture,
     download_public_echo_course: download_public_echo_course,
-    addLocalVideosToCourse: addLocalVideosToCourse
+    addLocalVideosToCourse: addLocalVideosToCourse,
+    reprocessIncompleteTasks: reprocessIncompleteTasks
 }
