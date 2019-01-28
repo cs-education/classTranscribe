@@ -189,7 +189,7 @@ strong{
 .footer .margin .menu-footer a{
     line-height:90px;
     padding-right:25px;
-    color:#5f666e;
+    color:#C0C0C0;
     -webkit-transition: all 0.2s ease-in;
     -moz-transition: all 0.2s ease-in;
     -ms-transition: all 0.2s ease-in;
@@ -202,12 +202,4 @@ strong{
 }
 
 
-.footer .margin .copyright{
-    width:420px;
-    margin:0 auto;
-    text-align:right;
-    float:left;
-    line-height:90px;
-    padding-right:25px;
-    color:#5f666e;
-}
+
