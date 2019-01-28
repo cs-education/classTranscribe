@@ -179,8 +179,12 @@ async function reprocessIncompleteMedias(courseOfferingId) {
     await processTasks(mediaIds);
 }
 
-async function reprocessIncompleteTasks() {
-    var tasks = await db.getIncompleteTasks();
+async function reprocessIncompleteTaskIdsForCourseOfferingId(courseOfferingId) {
+    var taskIds = await db.getIncompleteTaskIdsForCourseOfferingId(courseOfferingId);
+    var tasks = [];
+    for (var taskId in taskIds) {
+        tasks.push(db.getTask(taskIds[taskId]));
+    }    
     await wavAndSrt(tasks);
 }
 
@@ -359,6 +363,6 @@ module.exports = {
     download_lecture: download_lecture,
     download_public_echo_course: download_public_echo_course,
     addLocalVideosToCourse: addLocalVideosToCourse,
-    reprocessIncompleteTasks: reprocessIncompleteTasks,
+    reprocessIncompleteTaskIdsForCourseOfferingId: reprocessIncompleteTaskIdsForCourseOfferingId,
     reprocessIncompleteMedias: reprocessIncompleteMedias
 }

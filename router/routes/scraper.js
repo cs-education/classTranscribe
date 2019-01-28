@@ -63,7 +63,8 @@ router.get('/downloadLecture', function (request, response) {
 });
 
 router.get('/reprocessIncompleteTasks', async function (request, response) {
-    await scraper.reprocessIncompleteTasks();
+    var courseOfferingId = request.query.courseOfferingId;
+    await scraper.reprocessIncompleteTaskIdsForCourseOfferingId(courseOfferingId);
 });
 
 router.get('/reprocessIncompleteMedias', async function (request, response) {

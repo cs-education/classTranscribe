@@ -82,14 +82,18 @@ async function doesEchoMediaExist(echoMediaId) {
     return count > 0 ? true : false;
 }
 
-async function getIncompleteTasks() {
-    var tasks = await MSTranscriptionTask.findAll({
-        where: {
-            videoHashsum: { [Op.ne]: null },
-            srtFileLocation: { [Op.eq]: null }
-        }
-    });
-    return tasks;
+async function getIncompleteTaskIdsForCourseOfferingId(courseOfferingId) {
+    var taskIds = await sequelize.query("	SELECT T.id \
+    FROM Media as M, CourseOfferingMedia, MSTranscriptionTasks as T, TaskMedia as TM \
+    WHERE M.id = CourseOfferingMedia.mediaId \
+	and TM.mediaId = M.id \
+	and T.id = TM.taskId \
+	and CourseOfferingMedia.courseOfferingId = ? \
+    and T.srtFileLocation is NULL \
+    and T.videoHashsum is not NULL",
+        { replacements: [courseOfferingId], type: sequelize.QueryTypes.SELECT }).catch(err => perror(err)); /* raw query */
+    taskIds = taskIds.map(a => a.id);
+    return taskIds;
 }
 
 async function doesYoutubeMediaExist(playlistId, title) {
@@ -799,6 +803,6 @@ module.exports = {
     getTaskIfNotUnique: getTaskIfNotUnique,
     doesEchoMediaExist: doesEchoMediaExist,
     doesYoutubeMediaExist: doesYoutubeMediaExist,
-    getIncompleteTasks: getIncompleteTasks,
+    getIncompleteTaskIdsForCourseOfferingId: getIncompleteTaskIdsForCourseOfferingId,
     getMediaIdsByCourseOfferingId: getMediaIdsByCourseOfferingId
 }
