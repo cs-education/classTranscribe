@@ -49,6 +49,15 @@ function addCourseOfferingMedia(courseOfferingId, mediaId, description) {
     })
 }
 
+async function getMediaIdsByCourseOfferingId(courseOfferingId) {
+    var mediaIds = await sequelize.query("SELECT M.id \
+        FROM Media as M, CourseOfferingMedia  \
+        WHERE M.id = CourseOfferingMedia.mediaId and CourseOfferingMedia.courseOfferingId = ? ",
+        { replacements: [courseOfferingId], type: sequelize.QueryTypes.SELECT }).catch(err => perror(err)); /* raw query */
+    mediaIds = mediaIds.map(a => a.id);
+    return mediaIds;
+}
+
 function getPlaylistByCourseOfferingId(courseOfferingId) {
   return sequelize.query(
    'SELECT mst.videoLocalLocation, mst.srtFileLocation, M.siteSpecificJSON, mst.mediaId \
@@ -790,5 +799,6 @@ module.exports = {
     getTaskIfNotUnique: getTaskIfNotUnique,
     doesEchoMediaExist: doesEchoMediaExist,
     doesYoutubeMediaExist: doesYoutubeMediaExist,
-    getIncompleteTasks: getIncompleteTasks
+    getIncompleteTasks: getIncompleteTasks,
+    getMediaIdsByCourseOfferingId: getMediaIdsByCourseOfferingId
 }

@@ -159,7 +159,7 @@ async function processTasks(mediaIds) {
         var task = await db.addMSTranscriptionTask(mediaId, task, videoHashsum, path.resolve(outputFile));
         tasks.push(task);
     });
-    await wavAndSrt(tasks);
+    // await wavAndSrt(tasks);
 }
 
 async function wavAndSrt(tasks) {
@@ -172,6 +172,11 @@ async function wavAndSrt(tasks) {
         await convertTaskToSrt(task);
         console.log("ConvertTaskToSrt:" + task.id);
     });
+}
+
+async function reprocessIncompleteMedias(courseOfferingId) {
+    var mediaIds = await db.getMediaIdsByCourseOfferingId(courseOfferingId);
+    await processTasks(mediaIds);
 }
 
 async function reprocessIncompleteTasks() {
@@ -289,7 +294,7 @@ async function extractSyllabusAndDownload(syllabus, download_header, courseOffer
             var institutionId = media['institutionId'];
             var createdAt = media['createdAt'];
             var audioUrl = media['media']['current']['audioFiles'][0]['s3Url'];
-            var videoUrl = media['media']['current']['primaryFiles'][1]['s3Url']; // 0 for SD, 1 for HD
+            var videoUrl = media['media']['current']['secondaryFiles'][1]['s3Url']; // 0 for SD, 1 for HD
             var termName = audio_data['lesson']['video']['published']['termName'];
             var lessonName = audio_data['lesson']['video']['published']['lessonName'];
             var courseName = audio_data['lesson']['video']['published']['courseName'];
@@ -354,5 +359,6 @@ module.exports = {
     download_lecture: download_lecture,
     download_public_echo_course: download_public_echo_course,
     addLocalVideosToCourse: addLocalVideosToCourse,
-    reprocessIncompleteTasks: reprocessIncompleteTasks
+    reprocessIncompleteTasks: reprocessIncompleteTasks,
+    reprocessIncompleteMedias: reprocessIncompleteMedias
 }

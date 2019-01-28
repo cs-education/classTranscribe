@@ -66,4 +66,10 @@ router.get('/reprocessIncompleteTasks', async function (request, response) {
     await scraper.reprocessIncompleteTasks();
 });
 
+router.get('/reprocessIncompleteMedias', async function (request, response) {
+    var courseOfferingId = request.query.courseOfferingId;
+    await scraper.reprocessIncompleteMedias(courseOfferingId);
+});
+
+
 module.exports = router;
