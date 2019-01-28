@@ -159,7 +159,7 @@ async function processTasks(mediaIds) {
         var task = await db.addMSTranscriptionTask(mediaId, task, videoHashsum, path.resolve(outputFile));
         tasks.push(task);
     });
-    // await wavAndSrt(tasks);
+    await wavAndSrt(tasks);
 }
 
 async function wavAndSrt(tasks) {
