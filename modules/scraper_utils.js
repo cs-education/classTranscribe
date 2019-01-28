@@ -193,6 +193,7 @@ async function convertTaskToSrt(task) {
     console.log("convertTaskToSrt");
     var outputFile = await conversion_utils.convertWavFileToSrt(task.wavAudioLocalFile);
     await task.update({ srtFileLocation: path.resolve(outputFile) });
+    fs.copyFileSync(path.resolve(outputFile), path.resolve(outputFile) + ".copy");
 }
 
 async function requestCookies(publicAccessUrl) {
