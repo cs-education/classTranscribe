@@ -61,11 +61,11 @@ function getPlaylistByCourseOfferingId(courseOfferingId) {
    { replacements: [ courseOfferingId ], type: sequelize.QueryTypes.SELECT}).catch(err => perror(err)); /* raw query */
 }
 
-async function doesEchoMediaExist(mediaId) {
+async function doesEchoMediaExist(echoMediaId) {
     var query = await sequelize.query("SELECT count(*) as count, id as mediaId\
-                FROM(Select JSON_VALUE(siteSpecificJSON, '$.mediaId') as mediaId FROM Media) a \
-                WHERE mediaId = ?; ",
-        { replacements: [mediaId], type: sequelize.QueryTypes.SELECT }).catch(err => perror(err)); /* raw query */
+                FROM(Select JSON_VALUE(siteSpecificJSON, '$.mediaId') as echoMediaId, id FROM Media) a \
+                WHERE echoMediaId = ?; ",
+        { replacements: [echoMediaId], type: sequelize.QueryTypes.SELECT }).catch(err => perror(err)); /* raw query */
     var count = query[0].count;
     return count > 0 ? true : false;
 }
