@@ -1,5 +1,7 @@
-.table-striped>tr:nth-child(odd){
-    background-color:red;
+
+.table-striped>tbody>tr:nth-child(even)>td,
+.table-striped>tbody>tr:nth-child(even)>th {
+    background-color:#ddd;
 }
 
 .navmain{
@@ -46,8 +48,8 @@ td.tddesc{
 }
 
 .checkboxlabel{
-    color: #999999;
-    font-weight: lighter;
+    color: #555;
+    font-weight: normal;
 }
 
 .filterbox{
@@ -187,7 +189,7 @@ strong{
 .footer .margin .menu-footer a{
     line-height:90px;
     padding-right:25px;
-    color:#5f666e;
+    color:#C0C0C0;
     -webkit-transition: all 0.2s ease-in;
     -moz-transition: all 0.2s ease-in;
     -ms-transition: all 0.2s ease-in;
@@ -200,13 +202,4 @@ strong{
 }
 
 
-.footer .margin .copyright{
-    width:420px;
-    margin:0 auto;
-    text-align:right;
-    float:left;
-    line-height:90px;
-    padding-right:25px;
-    color:#5f666e;
-}
 

@@ -27,6 +27,7 @@ const User = models.User;
 const UserOffering = models.UserOffering;
 const YoutubeChannel = models.YoutubeChannel;
 const CourseOfferingMedia = models.CourseOfferingMedia;
+const TaskMedia = models.TaskMedia;
 /* ----- end of defining ----- */
 
 function getAllCourses() {
@@ -52,11 +53,30 @@ function getPlaylistByCourseOfferingId(courseOfferingId) {
   return sequelize.query(
    'SELECT mst.videoLocalLocation, mst.srtFileLocation, M.siteSpecificJSON, mst.mediaId \
     FROM MSTranscriptionTasks AS mst \
-    INNER JOIN Media as M on mst.mediaId = M.id \
+    INNER JOIN TaskMedia as tm on tm.taskId = mst.id \
+    INNER JOIN Media as M on tm.mediaId = M.id \
     INNER JOIN CourseOfferingMedia as com on com.mediaId = M.id \
     WHERE com.courseOfferingId = ? \
     ORDER BY M.id',
    { replacements: [ courseOfferingId ], type: sequelize.QueryTypes.SELECT}).catch(err => perror(err)); /* raw query */
+}
+
+async function doesEchoMediaExist(mediaId) {
+    var query = await sequelize.query("SELECT count(*) as count, id as mediaId\
+                FROM(Select JSON_VALUE(siteSpecificJSON, '$.mediaId') as mediaId FROM Media) a \
+                WHERE mediaId = ?; ",
+        { replacements: [mediaId], type: sequelize.QueryTypes.SELECT }).catch(err => perror(err)); /* raw query */
+    var count = query[0].count;
+    return count > 0 ? true : false;
+}
+
+async function doesYoutubeMediaExist(playlistId, title) {
+    var query = await sequelize.query("Select count(*)  as count, id as mediaId\
+        FROM(Select JSON_VALUE(siteSpecificJSON, '$.playlistId') as playlistId, JSON_VALUE(siteSpecificJSON, '$.title') as title, id FROM Media) a \
+        WHERE playlistId = ? and title = ?",
+        { replacements: [playlistId, title], type: sequelize.QueryTypes.SELECT }).catch(err => perror(err)); /* raw query */
+    var count = query[0].count;
+    return count > 0 ? true : false;
 }
 
 function addYoutubeChannelPlaylist(playlistId, channelId) {
@@ -100,25 +120,34 @@ async function addMedia(videoURL, sourceType, siteSpecificJSON) {
     return media[0].id;
 }
 
-async function addMSTranscriptionTask(mediaId) {
-    var task = await MSTranscriptionTask.findOrCreate({
-        where: {
-        mediaId: mediaId
-        },
-        defaults: {
-        id: uuid(),
-        mediaId: mediaId
+async function addMSTranscriptionTask(mediaId, task, videoHashsum, videoLocalLocation) {
+    if (task == null) {
+        task = await MSTranscriptionTask.create({ id: uuid(), videoHashsum: videoHashsum, videoLocalLocation: videoLocalLocation });    
+    }
+    await TaskMedia.create({ taskId: task.id, mediaId: mediaId });    
+    return task;
+}
+
+async function getTaskIfNotUnique(videoHashsum) {
+    var result = await MSTranscriptionTask.findAndCountAll({ where: { videoHashsum: videoHashsum } });
+    if (result.count != 0) {
+        // Ensure file exists
+        if (fs.existsSync(result.rows[0].dataValues.videoLocalLocation)) {
+            return result.rows[0].dataValues;
+        } else {
+            await MSTranscriptionTask.destroy({ where: { videoHashsum: videoHashsum } });
+            return null;
         }
-    });
-    return task[0].id;
+    } else {
+        return null;
+    }
 }
 
 // Return taskId
-async function addToMediaAndMSTranscriptionTask(videoURL, sourceType, siteSpecificJSON, courseOfferingId) {
+async function addToMediaAndCourseOfferingMedia(videoURL, sourceType, siteSpecificJSON, courseOfferingId) {
     var mediaId = await addMedia(videoURL, sourceType, siteSpecificJSON);
-    await addCourseOfferingMedia(courseOfferingId, mediaId, siteSpecificJSON);
-    var taskId = await addMSTranscriptionTask(mediaId);
-    return taskId;
+    await addCourseOfferingMedia(courseOfferingId, mediaId, siteSpecificJSON);    
+    return mediaId;
 }
 
 function getTask(taskId) {
@@ -709,7 +738,7 @@ module.exports = {
     addCourseAndSection: addCourseAndSection,
     addMedia: addMedia,
     addMSTranscriptionTask: addMSTranscriptionTask,
-    addToMediaAndMSTranscriptionTask: addToMediaAndMSTranscriptionTask,
+    addToMediaAndCourseOfferingMedia: addToMediaAndCourseOfferingMedia,
     addLecture : addLecture,
     addCourse : addCourse,
     addPasswordToken : addPasswordToken,
@@ -743,5 +772,8 @@ module.exports = {
     getDeptsById : getDeptsById,
     getSectionsById : getSectionsById,
     getInstructorsByCourseOfferingId : getInstructorsByCourseOfferingId,
-    validateUserAccess : validateUserAccess,
+    validateUserAccess: validateUserAccess,
+    getTaskIfNotUnique: getTaskIfNotUnique,
+    doesEchoMediaExist: doesEchoMediaExist,
+    doesYoutubeMediaExist: doesYoutubeMediaExist
 }

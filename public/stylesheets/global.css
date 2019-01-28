@@ -1,0 +1,13 @@
+.footer .margin .copyright{
+    width:420px;
+    margin:0 auto;
+    text-align:right;
+    float:left;
+    line-height:90px;
+    padding-right:25px;
+    color:#CCCCCC;
+}
+
+.active_line {
+    background-color : #E0DCE0
+}

@@ -363,6 +363,7 @@
     </Compile>
     <Compile Include="modules\scraper_utils.js" />
     <Compile Include="public\javascripts\controllers\watchLectureVideos.js" />
+    <Compile Include="public\javascripts\utils.js" />
     <Compile Include="router\routes\auth.js">
       <SubType>Code</SubType>
     </Compile>

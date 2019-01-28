@@ -15,7 +15,7 @@ const info = utils.info;
 const log = utils.log;
 
 // Get the mustache page that will be rendered for the changePassword route
-var changePasswordMustache = fs.readFileSync(mustachePath + 'changePassword.mustache').toString();
+//var changePasswordMustache = fs.readFileSync(mustachePath + 'changePassword.mustache').toString();
 
 // Render the changePassword mustache page; if account is authenticated just password in settings page
 router.get('/changePassword', function (request, response) {
@@ -23,7 +23,7 @@ router.get('/changePassword', function (request, response) {
     response.writeHead(200, {
       'Content-Type': 'text.html'
     });
-    renderWithPartial(changePasswordMustache, request, response);
+    renderWithPartial(Mustache.getMustacheTemplate('changePassword.mustache'), request, response);
   } else {
     var email = request.query.email;
 
@@ -58,7 +58,7 @@ router.get('/changePassword', function (request, response) {
             });
           }
 
-          renderWithPartial(changePasswordMustache, request, response);
+          renderWithPartial(Mustache.getMustacheTemplate('changePassword.mustache'), request, response);
         }
       }
     }).catch(err => perror(err)); /* db.getUserByEmail() */

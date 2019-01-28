@@ -117,10 +117,19 @@ async function get_thumbnails_from_video(pathToFile) {
     return outputFile;
 }
 
+async function hash_file(filename, algo='sha256') {
+    const hasha = require('hasha');
+
+    return await hasha.fromFile(filename, { algorithm: algo }).then(hash => {
+        return Promise.resolve(hash);
+    });
+}
+
 module.exports = {
     convertVideoToWav: convertVideoToWav,
     convertWavFileToSrt: convertWavFileToSrt,
     downloadFile: downloadFile,
     copy_file: copy_file,
-    download_from_youtube_url: download_from_youtube_url
+    download_from_youtube_url: download_from_youtube_url,
+    hash_file: hash_file
 }

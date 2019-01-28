@@ -40,14 +40,17 @@ module.exports = function(app) {
     app.use(require('./routes/scraper'));
 }
 
-const authenticatedPartial = fs.readFileSync(mustachePath + 'authenticated.mustache').toString();
-const notAuthenticatedPartial = fs.readFileSync(mustachePath + 'notAuthenticated.mustache').toString();
-const adminPartial = fs.readFileSync(mustachePath + 'admin.mustache').toString();
+//const authenticatedPartial = fs.readFileSync(mustachePath + 'authenticated.mustache').toString();
+//const notAuthenticatedPartial = fs.readFileSync(mustachePath + 'notAuthenticated.mustache').toString();
+//const adminPartial = fs.readFileSync(mustachePath + 'admin.mustache').toString();
 const invalidClassHTML = "<p>Could not find the requested page.<\p> <a href=\"/\">Click here to return to the home page.</a>";
 
 const piwikServer = "192.17.96.13:" + process.env.PROXY_PORT;
 
 renderWithPartial = function(mustacheFile, request, response, params) {
+  //console.log('getMustacheTemplate 1= ' + Mustache.getMustacheTemplate('authenticated.mustache'));
+  //console.log('getMustacheTemplate 2= ' + Mustache.getMustacheTemplate('notAuthenticated.mustache'));
+  
   var html;
   var options = {};
   options["piwikServer"] = piwikServer;
@@ -58,14 +61,14 @@ renderWithPartial = function(mustacheFile, request, response, params) {
     options["user"] = request.user["urn:oid:0.9.2342.19200300.100.1.1"];
 
     html = Mustache.render(mustacheFile, options, {
-        loginPartial: authenticatedPartial
+        loginPartial: Mustache.getMustacheTemplate('authenticated.mustache')
       })
   }
   else {
     options["user"] = null;
     html = Mustache.render(mustacheFile, options,  {
         list: {},
-        loginPartial: notAuthenticatedPartial
+        loginPartial: Mustache.getMustacheTemplate('notAuthenticated.mustache')
       })
   }
   response.end(html);

@@ -10,37 +10,28 @@ var timeUpdateLastEnd = 0;
 var fullCourseSearch = false;
 var autoScroll = true;
 var live_transcriptions_div = $('#live_transcriptions');
+var idx;
+var data;
 
-function navigateToVideo(startTime, video) {
-    updateCurrentVideoTranscriptions(player.currentSrc());
+function navigateToVideo(video, startTime) {
+    console.log(startTime, video);
+    if (typeof startTime === 'string') {
+        if (startTime.indexOf('#') > -1) {
+            startTime = parseInt(startTime.substring(0, startTime.indexOf('#')))
+        } else {
+            startTime = parseInt(startTime);
+        }        
+    }
+    updateCurrentVideoTranscriptions();
     $('#search').val('');
     var videoId = player.playlist.indexOf(video);
     player.playlist.currentItem(videoId);
-    player.ready(function () {
-        player.play();
-        player.currentTime(startTime / 1000);
-    });
+    player.currentTime(Math.floor(startTime / 1000));
+    player.play();
 }
 
-function msToTime(s) {
-
-    // Pad to 2 or 3 digits, default is 2
-    function pad(n, z) {
-        z = z || 2;
-        return ('00' + n).slice(-z);
-    }
-
-    var ms = s % 1000;
-    s = (s - ms) / 1000;
-    var secs = s % 60;
-    s = (s - secs) / 60;
-    var mins = s % 60;
-    var hrs = (s - mins) / 60;
-
-    return pad(hrs) + ':' + pad(mins) + ':' + pad(secs);
-}
-
-function updateCurrentVideoTranscriptions(video) {
+function updateCurrentVideoTranscriptions() {
+    var video = player.currentSrc();
     currentVideoTranscriptions = jslinqData.where(function (item) {
         // filter out results to currentVideo
         return video === item.video;
@@ -61,6 +52,52 @@ function updateCurrentVideoTranscriptions(video) {
     }
 }
 
+function attachTranscriptionItemListeners() {
+    $(".edit-button").click(function () {
+        var id = this.id.substring(this.id.lastIndexOf('-') + 1);
+        if ($("#text-view-" + id).css('display') === 'block') {
+            $("#text-view-" + id).css('display', 'none');
+            $("#text-edit-" + id).css('display', 'block');
+        }
+    });
+
+    $(".cancel-edit").click(function () {
+        var id = this.id.substring(this.id.lastIndexOf('-') + 1);
+        if ($("#text-view-" + id).css('display') === 'none') {
+            $("#text-view-" + id).css('display', 'block');
+            $("#text-edit-" + id).css('display', 'none');
+        }
+    })
+
+    $(".submit-edit").click(async function () {
+        var id = this.id.substring(this.id.lastIndexOf('-') + 1);
+        var editedText = $("#edit-box-" + id).val();
+        var subFile = data[id].subFile;
+        data[id].part = editedText;
+        updateTranscriptionsData(data);
+        updateCurrentVideoTranscriptions();
+        var editedSubsJson = jslinqData.where(function (item) {
+            return item.subFile === subFile;
+        }).select(function (item) {
+            return {
+                start: item.start,
+                end: item.end,
+                part: item.part
+            };
+        }).toList();
+
+        var result = await $.when($.post('/submitEdit', {
+            sub: editedSubsJson,
+            subFile: subFile
+        }));
+    });
+}
+
+function generateShareLink(video, startTime) {
+    var shareLink = "https://" + window.location.hostname + "/watchLectureVideos/" + courseOfferingId + "?video=" + video + "&startTime=" + startTime;
+    utils.copyTextToClipboard(shareLink);
+}
+
 function addAllTranscriptionsToList() {
     var currentList = jslinqData.toList();
     // Output it
@@ -74,20 +111,55 @@ function addAllTranscriptionsToList() {
             if (currentList[item].part === '') {
                 continue;
             }
-            var searchitem = '<button type="button" class="list-group-item" style="display:none;" onclick=navigateToVideo(' +
-                currentList[item].start + ",'" + currentList[item].video + "') id=" + currentList[item].id + ">" + msToTime(currentList[item].start) + "-->" + currentList[item].part + "</button>";
+            var searchitem = generateItemHTML(currentList[item].id, currentList[item].start, currentList[item].video, currentList[item].part);
             live_transcriptions_div.append(searchitem);
         }
         live_transcriptions_div.show();
     }
+    attachTranscriptionItemListeners();
 }
 
+function generateItemHTML(id, start, video, part) {
+    return "<div class='list-group-item transcription-item' style='display:none;' id='" + id + "'>" +
+        "<div class= 'row'>" + 
+        "<div class='col-sm-3'><tt>" +
+        utils.msToTime(start) + 
+        
+        " </tt><button type='button' class='btn btn-outline-secondary btn-sm align-top' onclick=generateShareLink('" + video + "'," + start + ")> Share </button>" +
+        "<div class='form-check form-check-inline'>" +
+        "<input class='btn btn-outline-secondary btn-sm edit-button' type='button' id='edit-button-" + id +"' value= 'Edit'>" +
+        "</div>" +
+        "</div>" +
+        "<div class='col-sm-9 text-view' style = 'display:initial;' id='text-view-" + id +"'>" +
+        "<a onclick=navigateToVideo('" + video + "'," + start + ") >" + part + "</a>" +
+        "</div>" +
+        "<div class='col-sm-9 text-edit' style = 'display:none;' id='text-edit-" + id +"'>" +
+        "<div class= 'row'>" + 
+        "<div class='col-sm-9'>" +
+        "<input class='form-control input-sm edit-box' type='text' value='" + part + "' id='edit-box-" + id +"'>" +
+        "</div>" +
+        "<div class='col-sm-3'>" +
+        "<button type='button' class='btn btn-outline-success btn-sm submit-edit' id='submit-edit-" + id +"'>Submit</button>" +
+        "<button type='button' class='btn btn-outline-danger btn-sm cancel-edit' id='cancel-edit-" + id +"'>Cancel</button>" +
+        "</div>" +
+        "</div>" +
+        "</div>" +
+        "</div>";
+}
+
+
 function scrollToListItem(listItemId) {
-    $("#live_transcriptions").children().removeClass('active');
-    $("#" + (listItemId)).addClass('active');
+    $("#live_transcriptions").children().removeClass('active_line');
+    $("#" + (listItemId)).addClass('active_line');
     if (autoScroll) {
         $("#live_transcriptions").scrollTo("#" + (listItemId - 1));
     }
+}
+
+function updateTranscriptionsData(data) {
+    idx = getLunrObj(data);
+    jslinqData = jslinq(data);
+    addAllTranscriptionsToList();
 }
 
 (async () => {
@@ -110,12 +182,19 @@ function scrollToListItem(listItemId) {
             nextButton: true
         });
 
-        var data = await $.when($.getJSON(getSrtUrl))
-        var allSubs = data;
-        var idx = getLunrObj(data);
-        jslinqData = jslinq(data);
-        addAllTranscriptionsToList();
-        updateCurrentVideoTranscriptions(player.currentSrc());
+        data = await $.when($.getJSON(getSrtUrl));
+        updateTranscriptionsData(data);
+        updateCurrentVideoTranscriptions();
+
+        var queryParams = utils.getUrlVars();
+        if (queryParams.hasOwnProperty('video')) {
+            if (queryParams.hasOwnProperty('startTime')) {
+                navigateToVideo(queryParams['video'], queryParams['startTime']);
+            } else {
+                navigateToVideo(queryParams['video'], 0);
+            }
+        }
+        
 
         function update_search_results() {
             // Get query
@@ -124,7 +203,7 @@ function scrollToListItem(listItemId) {
             filteredSubs = []
             results.forEach(function (result) {
                 index = parseInt(result.ref);
-                filteredSubs.push(allSubs[index]);
+                filteredSubs.push(data[index]);
             });
             var queryObj = jslinq(filteredSubs);
             var res;
@@ -173,7 +252,7 @@ function scrollToListItem(listItemId) {
         });
 
         player.on('playlistitem', function () {
-            updateCurrentVideoTranscriptions(player.currentSrc());
+            updateCurrentVideoTranscriptions();
         });
         player.on('timeupdate', function () {
             var currentTimeinMillis = player.currentTime() * 1000;
@@ -192,7 +271,7 @@ function scrollToListItem(listItemId) {
                 }
             }
         });
+
+        
     });
 })();
-
-
