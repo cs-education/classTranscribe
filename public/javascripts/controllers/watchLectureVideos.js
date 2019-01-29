@@ -1,4 +1,3 @@
-
 var url = window.location.pathname;
 var courseOfferingId = url.substring(url.lastIndexOf('/') + 1);
 var getPlaylistUrl = '/getPlaylist/' + courseOfferingId;
@@ -10,8 +9,11 @@ var timeUpdateLastEnd = 0;
 var fullCourseSearch = false;
 var autoScroll = true;
 var live_transcriptions_div = $('#live_transcriptions');
+var download_transcriptions_div = $('#dwnld-vtt-div')
+var search_all_box = $('#full_course_search')
 var idx;
 var data;
+var srctoTitle = {};
 
 function navigateToVideo(video, startTime) {
     console.log(startTime, video);
@@ -20,7 +22,7 @@ function navigateToVideo(video, startTime) {
             startTime = parseInt(startTime.substring(0, startTime.indexOf('#')))
         } else {
             startTime = parseInt(startTime);
-        }        
+        }
     }
     updateCurrentVideoTranscriptions();
     $('#search').val('');
@@ -120,32 +122,54 @@ function addAllTranscriptionsToList() {
 }
 
 function generateItemHTML(id, start, video, part) {
-    return "<div class='list-group-item transcription-item' style='display:none;' id='" + id + "'>" +
-        "<div class= 'row'>" + 
-        "<div class='col-sm-3'>" +
-        utils.msToTime(start) + 
-        "<a href='#' onclick=generateShareLink('" + video + "'," + start + ")> Share </a>" +
-        "<div class='form-check form-check-inline'>" +
-        "<input class='btn btn-outline-primary btn-sm edit-button' type='button' id='edit-button-" + id +"' value= 'Edit'>" +
-        "</div>" +
-        "</div>" +
-        "<div class='col-sm-9 text-view' style = 'display:initial;' id='text-view-" + id +"'>" +
-        "<a onclick=navigateToVideo('" + video + "'," + start + ") >" + part + "</a>" +
-        "</div>" +
-        "<div class='col-sm-9 text-edit' style = 'display:none;' id='text-edit-" + id +"'>" +
-        "<div class= 'row'>" + 
-        "<div class='col-sm-9'>" +
-        "<input class='form-control input-sm edit-box' type='text' value='" + part + "' id='edit-box-" + id +"'>" +
-        "</div>" +
-        "<div class='col-sm-3'>" +
-        "<button type='button' class='btn btn-outline-success btn-sm submit-edit' id='submit-edit-" + id +"'>Submit</button>" +
-        "<button type='button' class='btn btn-outline-danger btn-sm cancel-edit' id='cancel-edit-" + id +"'>Cancel</button>" +
-        "</div>" +
-        "</div>" +
-        "</div>" +
-        "</div>";
+    return  "<div class='list-group-item transcription-item' style='display:none;' id='" + id + "'>" +
+              "<div class= 'row'>" +
+                "<div class='col-sm-3'>" +
+                  utils.msToTime(start) +
+                  "<a href='#' onclick=generateShareLink('" + video + "'," + start + ")> Share </a>" +
+                  "<div class='form-check form-check-inline'>" +
+                    "<input class='btn btn-outline-primary btn-sm edit-button' type='button' id='edit-button-" + id +"' value= 'Edit'>" +
+                  "</div>" +
+                "</div>" +
+                "<div class='col-sm-9 text-view' style = 'display:initial;' id='text-view-" + id +"'>" +
+                  "<a onclick=navigateToVideo('" + video + "'," + start + ") >" + part + "</a>" +
+                  "<div class='video-name-for-vtt' style='display:None;'>" +
+                    "<a>" + srctoTitle[video] + "</a>" +
+                  "</div>" +
+                "</div>" +
+                "<div class='col-sm-9 text-edit' style = 'display:none;' id='text-edit-" + id +"'>" +
+                  "<div class= 'row'>" +
+                    "<div class='col-sm-9'>" +
+                      "<input class='form-control input-sm edit-box' type='text' value='" + part + "' id='edit-box-" + id +"'>" +
+                    "</div>" +
+                    "<div class='col-sm-3'>" +
+                      "<button type='button' class='btn btn-outline-success btn-sm submit-edit' id='submit-edit-" + id +"'>Submit</button>" +
+                      "<button type='button' class='btn btn-outline-danger btn-sm cancel-edit' id='cancel-edit-" + id +"'>Cancel</button>" +
+                    "</div>" +
+                  "</div>" +
+                "</div>" +
+              "</div>" +
+            "</div>";
+
 }
 
+function updateDownloadVttButton(srcid) {
+  currentVideoTranscriptions = jslinqData.where(function (item) {
+      // filter out results to currentVideo
+      return srcid === item.video;
+  });
+  var currentList = currentVideoTranscriptions.toList();
+  var filePath = currentList[0].subFile;
+  var buttonItem = generateDownloadVttButtonHTML(filePath);
+  download_transcriptions_div.append(buttonItem);
+  live_transcriptions_div.show();
+}
+
+function generateDownloadVttButtonHTML(srcid) {
+  return "<a class='btn download-button' href=\""+ srcid +"\") download>" +
+         "Down The Vtt File" +
+         "</a>"
+}
 
 function scrollToListItem(listItemId) {
     $("#live_transcriptions").children().removeClass('active');
@@ -161,8 +185,15 @@ function updateTranscriptionsData(data) {
     addAllTranscriptionsToList();
 }
 
+function linkSrcAndTitle(playlist) {
+  for (var i = 0; i < playlist.length; i++){
+    srctoTitle[playlist[i].sources[0].src] = playlist[i].name;
+  }
+}
+
 (async () => {
     var playlist = await $.when($.getJSON(getPlaylistUrl))
+    linkSrcAndTitle(playlist)
     videojs('video').ready(async function () {
         player = this;
         player.hotkeys({                          // press F to full screen
@@ -174,16 +205,17 @@ function updateTranscriptionsData(data) {
             // press number button to jump to the section piece of the video
         });
 
-        // player.src()    
+        // player.src()
         player.playlist(playlist);
         // Initialize the playlist-ui plugin with no option (i.e. the defaults).
         player.playlistUi({
             nextButton: true
         });
-
         data = await $.when($.getJSON(getSrtUrl));
+        var srcid = player.currentSrc()
         updateTranscriptionsData(data);
         updateCurrentVideoTranscriptions();
+        updateDownloadVttButton(srcid);
 
         var queryParams = utils.getUrlVars();
         if (queryParams.hasOwnProperty('video')) {
@@ -193,7 +225,7 @@ function updateTranscriptionsData(data) {
                 navigateToVideo(queryParams['video'], 0);
             }
         }
-        
+
 
         function update_search_results() {
             // Get query
@@ -219,6 +251,12 @@ function updateTranscriptionsData(data) {
                 live_transcriptions_div.children().css('display', 'initial');
             } else {
                 // Show results
+                if (fullCourseSearch) {
+                  if ($("#search").val())
+                    $('.video-name-for-vtt').css('display', 'initial');
+                } else {
+                  $('.video-name-for-vtt').css('display', 'none');
+                }
                 live_transcriptions_div.children().css('display', 'none');
                 for (var item in res) {
                     var listItemId = res[item].id;
@@ -252,6 +290,9 @@ function updateTranscriptionsData(data) {
 
         player.on('playlistitem', function () {
             updateCurrentVideoTranscriptions();
+            srcid = player.currentSrc();
+            download_transcriptions_div.empty()
+            updateDownloadVttButton(srcid);
         });
         player.on('timeupdate', function () {
             var currentTimeinMillis = player.currentTime() * 1000;
@@ -266,11 +307,9 @@ function updateTranscriptionsData(data) {
                 }).orderByDescending(function (item) { return item.start; }).take(1).toList();
 
                 for (var item in res) {
-                    scrollToListItem(res[item].id);                 
+                    scrollToListItem(res[item].id);
                 }
             }
         });
-
-        
     });
 })();
