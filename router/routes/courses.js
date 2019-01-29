@@ -124,8 +124,8 @@ router.get('/courses/', function (request, response) {
                 // Add create-a-class section if user is authenticated
                 // Table header
                 var thtml = "<tr id=\"#header\">\n" +
-                    '<th hidden="yes">Term</th>' +
-                    "                    <th>University</th>\n" +
+                    '<th >Term</th>' +
+                    "                    <th hidden='yes'>University</th>\n" +
                     "                    <th>Subject</th>\n" +
                     "                    <th>Course Number</th>\n" +
                     "                    <th>Section Number</th>\n" +
@@ -274,8 +274,8 @@ router.get('/courses/search', function (request, response) {
 
         search.search(function (line) {
           var rethtml= "<tr id=\"#header\">\n" +
-                       '<th hidden="yes">Term</th>'+
-                       "                    <th>University</th>\n" +
+                       '<th >Term</th>'+
+                       "                    <th hidden='yes'>University</th>\n" +
                        "                    <th>Subject</th>\n" +
                        "                    <th>Course Number</th>\n" +
                        "                    <th>Section Number</th>\n" +
@@ -419,8 +419,8 @@ router.post('/courses/applyfilter', function (request, response) {
     var termf = request.body.termfilter.split(';;');
     var subjectf = request.body.subjectfilter.split(';;');
     var rethtml="<tr id=\"#header\">\n" +
-        '<th hidden="yes">Term</th>'+
-        "                    <th>University</th>\n" +
+        '<th >Term</th>'+
+        "                    <th hidden='yes'>University</th>\n" +
         "                    <th>Subject</th>\n" +
         "                    <th>Course Number</th>\n" +
         "                    <th>Section Number</th>\n" +
@@ -501,9 +501,9 @@ function  generateListings(data, user, cb) {
         }
         
         html += '<tr id="'+ e.id +'" >';
-        html += '<td hidden="yes">' + e.termName + '</td>';
+        html += '<td>' + e.termName + '</td>';
         html += '<td hidden="yes">' + e.courseOfferingId + '</td>';
-        html += '<td>' + e.university + '</td>';
+        html += '<td hidden="yes">' + e.university + '</td>';
         html += '<td>' + e.acronym + '</td>';
         html += '<td>' + e.courseNumber + '</td>';
         html += '<td>' + e.section + '</td>';
