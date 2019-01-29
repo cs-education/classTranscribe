@@ -174,18 +174,31 @@ async function wavAndSrt(tasks) {
     });
 }
 
+async function wavAndSrtParallel(tasks) {
+    await Promise.all(tasks.map(async task => {
+        await convertTaskVideoToWav(task);
+        console.log("ConvertVideoToWav:" + task.id);
+        await convertTaskToSrt(task);
+        console.log("ConvertTaskToSrt:" + task.id);
+    }));
+}
+
 async function reprocessIncompleteMedias(courseOfferingId) {
     var mediaIds = await db.getMediaIdsByCourseOfferingId(courseOfferingId);
     await processTasks(mediaIds);
 }
 
-async function reprocessIncompleteTaskIdsForCourseOfferingId(courseOfferingId) {
+async function reprocessIncompleteTaskIdsForCourseOfferingId(courseOfferingId, parallel) {
     var taskIds = await db.getIncompleteTaskIdsForCourseOfferingId(courseOfferingId);
     var tasks = [];
     for (var taskId in taskIds) {
         tasks.push(db.getTask(taskIds[taskId]));
+    }
+    if (parallel) {
+        await wavAndSrtParallel(tasks);
+    } else {
+        await wavAndSrt(tasks);
     }    
-    await wavAndSrt(tasks);
 }
 
 async function convertTaskVideoToWav(task) {
