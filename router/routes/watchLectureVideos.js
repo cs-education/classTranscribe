@@ -19,7 +19,7 @@ router.get('/watchLectureVideos/:courseOfferingId', function (request, response)
 
     renderWithPartial(watchLectureVideosPage, request, response);
   } else {
-      response.redirect('/auth/google?redirectPath=' + encodeURIComponent(request.originalUrl));
+    response.redirect('/auth/google?redirectPath=' + encodeURIComponent(request.originalUrl));
   }
 });
 
@@ -73,6 +73,5 @@ router.post('/submitEdit', async function (request, response) {
         success: true
     });
 });
-
 
 module.exports = router;

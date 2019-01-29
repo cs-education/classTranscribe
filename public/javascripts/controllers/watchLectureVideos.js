@@ -252,8 +252,9 @@ function linkSrcAndTitle(playlist) {
             } else {
                 // Show results
                 if (fullCourseSearch) {
-                  if ($("#search").val())
+                  if ($("#search").val()){
                     $('.video-name-for-vtt').css('display', 'initial');
+                  }
                 } else {
                   $('.video-name-for-vtt').css('display', 'none');
                 }
