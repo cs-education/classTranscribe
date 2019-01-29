@@ -14,6 +14,7 @@ var search_all_box = $('#full_course_search')
 var idx;
 var data;
 var srctoTitle = {};
+var dummy_transcriptions_count = 10; // Hardcode the numbers of dummy transcriptions to 10
 
 function navigateToVideo(video, startTime) {
     console.log(startTime, video);
@@ -32,6 +33,23 @@ function navigateToVideo(video, startTime) {
     player.play();
 }
 
+// Update live_transcriptions_div with items in list
+function updateLiveTranscriptionsDiv(list) {
+    console.log("Total Transcriptions for video: " + list.length);
+
+    live_transcriptions_div.children().css('display', 'none');
+    // Show the dummy transcriptions (with negative ids)
+    for (let i = 0; i < dummy_transcriptions_count; i++) {
+        $("#" + (-i - 1)).css('display', 'block');
+    }
+    if (list.length !== 0) {
+        // Show results
+        for (var item in list) {
+            var listItemId = list[item].id;
+            $("#" + (listItemId)).css('display', 'initial');
+        }
+    }
+}
 function updateCurrentVideoTranscriptions() {
     var video = player.currentSrc();
     currentVideoTranscriptions = jslinqData.where(function (item) {
@@ -40,18 +58,7 @@ function updateCurrentVideoTranscriptions() {
     });
     var currentList = currentVideoTranscriptions.toList();
     // Output it
-    if (currentList.length === 0) {
-        // Hide results
-        live_transcriptions_div.hide();
-    } else {
-        // Show results
-        console.log("Total Transcriptions for video: " + currentList.length);
-        live_transcriptions_div.children().css('display', 'none');
-        for (var item in currentList) {
-            var listItemId = currentList[item].id;
-            $("#" + (listItemId)).css('display', 'initial');
-        }
-    }
+    updateLiveTranscriptionsDiv(currentList);
 }
 
 function attachTranscriptionItemListeners() {
@@ -115,6 +122,12 @@ function addAllTranscriptionsToList() {
             }
             var searchitem = generateItemHTML(currentList[item].id, currentList[item].start, currentList[item].video, currentList[item].part);
             live_transcriptions_div.append(searchitem);
+        }
+        // Append with the dummy transcriptions (with negative ids)
+        for (let i = 0; i < dummy_transcriptions_count; i++) {
+            live_transcriptions_div.append(
+                "<div class='list-group-item transcription-item' style='display:block;' id='" + (-i - 1) + "'></div>");
+                $("#" + (-i - 1)).css('display', 'block');
         }
         live_transcriptions_div.show();
     }
@@ -264,6 +277,7 @@ function linkSrcAndTitle(playlist) {
                     $("#" + (listItemId)).css('display', 'initial');
                 }
             }
+            updateLiveTranscriptionsDiv(res);
         }
 
         $('#search').on('keyup', update_search_results);
@@ -312,5 +326,14 @@ function linkSrcAndTitle(playlist) {
                 }
             }
         });
+
+        // Enables the autoplay functionality
+        player.on('ended', function () {
+            // autoplays if duration < 90 mins (in unit of seconds)
+            if(player.duration() < 5400 && $('.vjs-up-next').length) {
+                $('.vjs-up-next').click();
+            }
+        })
+
     });
 })();
