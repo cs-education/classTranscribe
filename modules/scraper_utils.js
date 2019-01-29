@@ -183,7 +183,7 @@ async function reprocessIncompleteTaskIdsForCourseOfferingId(courseOfferingId) {
     var taskIds = await db.getIncompleteTaskIdsForCourseOfferingId(courseOfferingId);
     var tasks = [];
     for (var taskId in taskIds) {
-        tasks.push(db.getTask(taskIds[taskId]));
+        tasks.push(await db.getTask(taskIds[taskId]));
     }    
     await wavAndSrt(tasks);
 }
