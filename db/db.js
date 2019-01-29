@@ -383,7 +383,9 @@ function addCourseHelper(id) {
     where : {
       courseId : id.courseId,
       offeringId : id.offeringId,
-    },
+      }, defaults: {
+          id: uuid()
+      }
   }).then(result => {
     var courseOfferingInfo = result[0].dataValues;
 
