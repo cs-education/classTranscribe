@@ -84,11 +84,42 @@ var port = process.env.CT_PORT || 8000;
 var argv = require('minimist')(process.argv.slice(2));
 var env = argv["e"] || 'production';
 
+const DEVELOPER_MODE = env == 'dev'
+
+// Allow Mustache to load (and cache in production) the templates from disk
+Mustache.mustacheFileTemplateCache = {};
+
+var readMustacheTemplateCached = function(filename) {
+  result = Mustache.mustacheFileTemplateCache[filename];
+  if(result) {
+    return result;
+  }
+  result = fs.readFileSync(mustachePath + filename).toString()
+  Mustache.mustacheFileTemplateCache[filename]  = result;
+  return result;
+}
+
+if(DEVELOPER_MODE) {
+  Mustache.getMustacheTemplate = function(filename) {
+    Mustache.clearCache(); // clear internal cache, toforce reparsing
+    Mustache.mustacheFileTemplateCache = {}
+    return readMustacheTemplateCached(filename);
+  }
+} else {
+  Mustache.getMustacheTemplate = readMustacheTemplateCached;
+}
+
+
+
 // Certificate
 
-const privateKey = fs.readFileSync('./cert/privkey.pem', 'utf8');
-const certificate = fs.readFileSync('./cert/cert.pem', 'utf8');
-const ca = fs.readFileSync('./cert/chain.pem', 'utf8');
+var privateKey = fs.readFileSync('./cert/privkey.pem', 'utf8');
+var certificate = fs.readFileSync('./cert/cert.pem', 'utf8');
+var ca = "";
+
+if (env !== "dev") {
+    ca = fs.readFileSync('./cert/chain.pem', 'utf8');
+}
 
 const credentials = {
     key: privateKey,

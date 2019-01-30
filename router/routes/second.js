@@ -11,7 +11,9 @@ const validator = require('../../modules/validator.js');
 
 const client_api = require('./db');
 
-var secondPassMustache = fs.readFileSync(mustachePath + 'editor.mustache').toString();
+//var secondPassMustache = fs.readFileSync(mustachePath + 'editor.mustache').toString();
+
+
 router.get('/second/:className/:id', function (request, response) {
   var className = request.params.className.toUpperCase();
   response.writeHead(200, {
@@ -24,7 +26,7 @@ router.get('/second/:className/:id', function (request, response) {
     className: className,
     taskName: request.query.task,
   };
-  var html = Mustache.render(secondPassMustache, view);
+  var html = Mustache.render(Mustache.getMustacheTemplate('editor.mustache'), view);
   response.end(html);
 });
 

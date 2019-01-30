@@ -8,7 +8,10 @@
     <link href="/node_modules/videojs-playlist-ui/dist/videojs-playlist-ui.css" type="text/css" rel="stylesheet">
     <link href="/public/stylesheets/videojs-playlist-ui-demo.css" type="text/css" rel="stylesheet">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" crossorigin="anonymous">
+
+    <link rel="stylesheet" type="text/css" href="/stylesheets/global.css">
     <link rel="stylesheet" href="/public/stylesheets/watchLectureVideos.css" type="text/css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="/browserify/search_bundle.js"></script>
@@ -28,6 +31,7 @@
       </p>
     </div> -->
     <div class="player-container">
+
         <video id="video"
                class="video-js"
                controls data-setup='{ "playbackRates": [0.5, 1, 1.25, 1.5, 1.75, 2] }'></video>
@@ -61,10 +65,12 @@
     <div>
         <div id="live_transcriptions" class="list-group"></div>
     </div>
+
     <script src="/node_modules/video.js/dist/video.js"></script>
     <script src="/node_modules/videojs-playlist/dist/videojs-playlist.js"></script>
     <script src="/node_modules/videojs-playlist-ui/dist/videojs-playlist-ui.js"></script>
     <script src="https://cdn.sc.gl/videojs-hotkeys/latest/videojs.hotkeys.min.js"></script>
+    <script src="/public/javascripts/utils.js"></script>
     <script src="/public/javascripts/controllers/watchLectureVideos.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>

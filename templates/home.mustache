@@ -7,9 +7,10 @@
 
     <title>Class Transcribe</title>
 
-    <link rel="stylesheet" type="text/css" href="stylesheets/resetHome.css" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/home.css" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/style-responsive.css" />
+    <link rel="stylesheet" type="text/css" href="/stylesheets/style-responsive.css" />
+    <link rel="stylesheet" type="text/css" href="/stylesheets/global.css">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/resetHome.css" />
+    <link rel="stylesheet" type="text/css" href="/stylesheets/home.css" />
 
     <script>
          var piwikServer = "{{piwikServer}}";
@@ -33,7 +34,7 @@
 
         <!-- login and signup button -->
         <div class="login-signup-container">
-          <button class="login-home" onclick="window.location='/login'">Log In To See Videos</button>
+          <button class="login-home" onclick="window.location='/login'">Sign In To See Videos</button>
           <!-- <button class="signup-home" onclick="window.location='/signup'">Sign Up</button> -->
         </div>
 
@@ -62,7 +63,7 @@
       <ul id="menu">
         <li><a href="#home">HOME</a></li>
         <!-- <li><a href="#about-us">ABOUT US</a></li> -->
-        <li><a href="#courses">COURSES</a></li>
+        {{! <li><a href="#courses">COURSES</a></li>}}
         <li><a href="#contact">CONTACT</a></li>
       </ul>
     </div>
@@ -109,131 +110,18 @@
   <div class="clear"></div>
 
   <!-- courses-->
-
+{{!
   <section class="courses" id="courses" role="main">
 
 
     <div class="courses-margin">
 
       <h1>COURSES</h1>
-      {{{courseGrid}}}
-    <!-- 1 item courses-->
 
-        <ul class="grid">
-
-          <li>
-            <a href="/class/cs446-fa16">
-                <div class="text">
-                  <p>CS 446</p>
-                  <p class="description">Fall 2016</p>
-              </div>
-            </a>
-          </li>
-
-          <li>
-            <a href="/class/cs225-sp16">
-                <div class="text">
-                  <p>CS 225</p>
-                  <p class="description">Spring 2016</p>
-              </div>
-            </a>
-          </li>
-
-          <!-- 2 item courses-->
-
-          <li>
-            <a href="/class/chem233-sp16">
-                <div class="text">
-                  <p>CHEM 233</p>
-                  <p class="description">Spring 2016</p>
-              </div>
-            </a>
-          </li> 
-
-          <!-- 3 item courses-->
-
-          <!-- <li>
-            <a href="/class/cs241">
-                <div class="text">
-                  <p>CS 241</p>
-                  <p class="description">Spring 2015</p>
-              </div>
-            </a>
-          </li> -->
-
-
-          <!-- 4 item courses-->
-
-          <!-- <li>
-            <a href="/class/cs225">
-                <div class="text">
-                  <p>CS 225</p>
-                  <p class="description">Fall 2015</p>
-              </div>
-            </a>
-          </li> -->
-
-          <!-- 5 item courses-->
-
-          <!-- <li>
-            <a href="/class/ece210">
-                <div class="text">
-                  <p>ECE 210</p>
-                  <p class="description">Spring 2015</p>
-              </div>
-            </a>
-          </li> -->
-
-
-          <!-- 6 item courses-->
-
-          <!-- <li>
-            <a href="/class/adv582">
-                <div class="text">
-                  <p>ADV 582</p>
-                  <p class="description">Fall 2015</p>
-              </div>
-            </a>
-          </li> -->
-
-         <!-- 7 item courses-->
-
-          <!-- <li>
-            <a href="/class/">
-                <div class="text">
-                  <p>COURSE 7</p>
-                  <p class="description">Your text here...</p>
-              </div>
-            </a>
-          </li> -->
-
-          <!-- 8 item courses-->
-
-          <!-- <li>
-            <a href="/class/">
-                <div class="text">
-                  <p>COURSE 8</p>
-                  <p class="description">Your text here...</p>
-              </div>
-            </a>
-          </li> -->
-
-          <!-- 9 item courses-->
-
-          <!-- <li>
-            <a href="/class/">
-                <div class="text">
-                  <p>COURSE 9</p>
-                  <p class="description">Your text here...</p>
-              </div>
-            </a>
-          </li> -->
-        </ul>
-
-   <!-- </div> -->
+       {{{courseGrid close brace x3
 
    </section>
-
+}}
 
    <div class="clear"></div>
 

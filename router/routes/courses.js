@@ -90,125 +90,132 @@ const permission = require('./permission');
 
 
 var allterms = [];
-var managementMustache = fs.readFileSync(mustachePath + 'courses.mustache').toString();
+//var  = fs.readFileSync(mustachePath + 'courses.mustache').toString();
+
+
 
 // courses page, display all relative courses
-router.get('/courses/', function (request, response) {
-    response.writeHead(200, {
-        'Content-Type': 'text/html'
-    });
-    var userid = getUserId(request);
-    // Get all terms data from the database
-    client_api.getTerms().then(reply => {
-      if(reply) {
-        // reply is null if the key is missing
-        allterms= reply.map( term => term.termName );
-      }
+router.get('/courses/', function (request, response) {   
+    if (!request.isAuthenticated()) {
+        response.redirect('/auth/google?redirectPath=' + encodeURIComponent(request.originalUrl));
+    }
+    else {        
+        response.writeHead(200, {
+            'Content-Type': 'text/html'
+        });
+        var userid = getUserId(request);
+        // Get all terms data from the database
+        client_api.getTerms().then(reply => {
+            if (reply) {
+                // reply is null if the key is missing
+                allterms = reply.map(term => term.termName);
+           }
 
-        var form = '';
-        var createClassBtn = '';
-        var userInfo = request.session.passport.user;
+            var form = '';
+            var createClassBtn = '';
+            var userInfo = request.session.passport.user;
+            // Super user hack
+            if (userInfo.mailId === 'mahipal2@illinois.edu') {
+                form = getCreateClassForm(userInfo);
+                createClassBtn =
+                    '<button class="btn" data-toggle="modal" data-target="#createPanel">' +
+                    '          Create a New Class</button>';
+            }            
+            client_api.getUniversityName(userInfo.universityId).then(result => {
 
-        client_api.getUniversityName(userInfo.universityId).then(result => {
+                userInfo.university = result.universityName;
+                // Add create-a-class section if user is authenticated
+                // Table header
+                var thtml = "<tr id=\"#header\">\n" +
+                    '<th hidden="yes">Term</th>' +
+                    '<th hidden="yes">Id</th>' +
+                    "                    <th>University</th>\n" +
+                    "                    <th>Subject</th>\n" +
+                    "                    <th>Course Number</th>\n" +
+                    "                    <th>Section Number</th>\n" +
+                    "                    <th>Course Name</th>\n" +
+                    "                    <th>Course Instructor</th>\n" +
+                    "                    <th>Course Description</th>\n" +
+                    "                    <th>Action</th>\n" +
+                    "                </tr>";
 
-          userInfo.university = result.universityName;
-          // Add create-a-class section if user is authenticated
-          if (request.isAuthenticated()) {
-             // form = getCreateClassForm(userInfo);
-             // createClassBtn =
-             // '<button class="btn" data-toggle="modal" data-target="#createPanel">' +
-             // '          Create a New Class</button>';
-          }
-          // Table header
-          var thtml = "<tr id=\"#header\">\n" +
-          '<th hidden="yes">Term</th>' +
-          '<th hidden="yes">Id</th>' +
-          "                    <th>University</th>\n" +
-          "                    <th>Subject</th>\n" +
-          "                    <th>Course Number</th>\n" +
-          "                    <th>Section Number</th>\n" +
-          "                    <th>Course Name</th>\n" +
-          "                    <th>Course Instructor</th>\n" +
-          "                    <th>Course Description</th>\n" +
-          "                    <th>Action</th>\n" +
-          "                </tr>";
+                client_api.getCoursesByUniversityId(userInfo.universityId).then(values => {
+                    // client_api.getCoursesByUserId(userInfo.id).then( values => {
 
-          client_api.getCoursesByUniversityId(userInfo.universityId).then(values=> {
-          // client_api.getCoursesByUserId(userInfo.id).then( values => {
+                    var termIds = [];
+                    var deptIds = [];
+                    var courses = [];
+                    var offeringIds = [];
+                    var courseOfferingIds = [];
 
-            var termIds = [];
-            var deptIds = [];
-            var courses = [];
-            var offeringIds = [];
-            var courseOfferingIds = [];
+                    for (let i = 0; i < values.length; i++) {
+                        termIds.push(values[i].termId);
+                        deptIds.push(values[i].deptId);
+                        courseOfferingIds.push(values[i].courseOfferingId);
+                        values[i].university = userInfo.university;
+                        courses.push(values[i]);
+                    }
 
-            for (let i = 0; i < values.length; i ++) {
-              termIds.push(values[i].termId);
-              deptIds.push(values[i].deptId);
-              courseOfferingIds.push(values[i].courseOfferingId);
-              values[i].university = userInfo.university;
-              courses.push(values[i]);
-            }
+                    var termFetches = client_api.getTermsById(termIds);
+                    var deptFetches = client_api.getDeptsById(deptIds);
+                    var instructorFetches = client_api.getInstructorsByCourseOfferingId(courseOfferingIds);
 
-            var termFetches = client_api.getTermsById(termIds);
-            var deptFetches = client_api.getDeptsById(deptIds);
-            var instructorFetches = client_api.getInstructorsByCourseOfferingId(courseOfferingIds);
-
-            Promise.all([termFetches, deptFetches, instructorFetches]).then(values => {
-              var filters = [];
-              var terms = {};
-              var depts = {};
-              var acronyms = {};
-              var instructors = {};
-
-
-
-              values[0].map(value => {
-                terms[value.id] = value.termName;
-              });
-
-              values[1].map(value => {
-                depts[value.id] = value.deptName;
-                acronyms[value.id] = value.acronym;
-              });
-
-              values[2].map(value => {
-                if ( !instructors[value.courseOfferingId] ) {
-                  instructors[value.courseOfferingId] = [];
-                }
-                instructors[value.courseOfferingId].push(value);
-              })
-
-              for (let i = 0; i < courses.length; i++) {
-                let currentCourse = courses[i];
-                courses[i].termName = terms[currentCourse.termId];
-                courses[i].deptName = depts[currentCourse.deptId];
-                courses[i].acronym = acronyms[currentCourse.deptId];
-                courses[i].instructor = instructors[currentCourse.courseOfferingId];
-              }
-
-              // Saving current content(courseId, termId) before applying filters
-              request.session['currentContent'] = courses;
+                    Promise.all([termFetches, deptFetches, instructorFetches]).then(values => {
+                        var filters = [];
+                        var terms = {};
+                        var depts = {};
+                        var acronyms = {};
+                        var instructors = {};
 
 
-              generateListings(courses, userid, function (res) {
-                thtml += res;
-                filterdata = generateFilters(terms, depts);
-                var view = {
-                  termlist: allterms,
-                  createform: form,
-                  tabledata: thtml,
-                  termfilterdata: filterdata[0],
-                  subjectfilterdata: filterdata[1],
-                  createClassButton: createClassBtn
-                };
-                var html = Mustache.render(managementMustache, view);
-                response.end(html);
-              });
-            }).catch(err => perror(err)); /* Promise.all() */
-          }).catch(err => perror(err)); /* getUniversityName() */
-    });
-  });
+
+                        values[0].map(value => {
+                            terms[value.id] = value.termName;
+                        });
+
+                        values[1].map(value => {
+                            depts[value.id] = value.deptName;
+                            acronyms[value.id] = value.acronym;
+                        });
+
+                        values[2].map(value => {
+                            if (!instructors[value.courseOfferingId]) {
+                                instructors[value.courseOfferingId] = [];
+                            }
+                            instructors[value.courseOfferingId].push(value);
+                        })
+
+                        for (let i = 0; i < courses.length; i++) {
+                            let currentCourse = courses[i];
+                            courses[i].termName = terms[currentCourse.termId];
+                            courses[i].deptName = depts[currentCourse.deptId];
+                            courses[i].acronym = acronyms[currentCourse.deptId];
+                            courses[i].instructor = instructors[currentCourse.courseOfferingId];
+                        }
+
+                        // Saving current content(courseId, termId) before applying filters
+                        request.session['currentContent'] = courses;
+
+
+                        generateListings(courses, userid, function (res) {
+                            thtml += res;
+                            filterdata = generateFilters(terms, depts);
+                            var view = {
+                                termlist: allterms,
+                                createform: form,
+                                tabledata: thtml,
+                                termfilterdata: filterdata[0],
+                                subjectfilterdata: filterdata[1],
+                                createClassButton: createClassBtn
+                            };
+                            var html = Mustache.render(Mustache.getMustacheTemplate('courses.mustache'), view);
+                            response.end(html);
+                        });
+                    }).catch(err => perror(err)); /* Promise.all() */
+                }).catch(err => perror(err)); /* getUniversityName() */
+            });
+        });
+    }
 });
 
 // Create new class
@@ -318,7 +325,7 @@ router.get('/courses/search', function (request, response) {
                 subjectfilterdata:filterdata[1]
               };
 
-              var html = Mustache.render(managementMustache, view);
+              var html = Mustache.render(Mustache.getMustacheTemplate('courses.mustache'), view);
 
               response.end(html);
             });
@@ -498,8 +505,8 @@ function  generateListings(data, user, cb) {
         } catch (err) {
             instructorName = "";
         }
-
-        html += '<tr id="'+ e.id +'">';
+        
+        html += '<tr id="'+ e.id +'" >';
         html += '<td hidden="yes">' + e.termName + '</td>';
         html += '<td hidden="yes">' + e.courseOfferingId + '</td>';
         html += '<td>' + e.university + '</td>';
@@ -508,7 +515,7 @@ function  generateListings(data, user, cb) {
         html += '<td>' + e.section + '</td>';
         html += '<td>' + e.courseName + '</td>';
         html += '<td>' + instructorName + '</td>';
-        html += '<td class="tddesc">' + e.courseDescription + '</td>';
+        html += '<td>' + e.courseDescription + '</td>';
         html += '<td class="col-md-2">';
         var debug = false;
         if (debug || (user != '' && user != undefined)) {
@@ -517,10 +524,10 @@ function  generateListings(data, user, cb) {
 
                 if (result) {
                         html +=
-                            '<a class="actionbtn mnbtn">' +
+                            '<a class="actionbtn mnbtn" href="#">' +
                             '          <span class="glyphicon glyphicon-plus"></span> Manage\n' +
                             '        </a>' + '</td> <td>'+
-                            '<a class="actionbtn viewbtn">' +
+                            '<a class="actionbtn viewbtn" href="#">' +
                             '          <span class="glyphicon glyphicon-plus"></span> Watch\n' +
                             '        </a> </td>';
                         fcb(null,html);
@@ -529,7 +536,7 @@ function  generateListings(data, user, cb) {
                   permission.checkCoursePermission(user, classid, 'Drop', function (err, res) {
                     if (!res) {
                       html +=
-                      '<a class="actionbtn viewbtn">' +
+                      '<a class="actionbtn viewbtn" href="#">' +
                       '          <span class="glyphicon glyphicon-plus"></span> Watch\n' +
                       '        </a>';
                     }
