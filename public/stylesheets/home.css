@@ -25,7 +25,7 @@ a{
   /*outline:none;*/
 }
 
-h1{
+h1, h2{
   font-size:56px;
   color:white;
   font-weight:bold;
@@ -333,7 +333,7 @@ h1 span{
   margin-bottom:10px;
 }
 
-.about-us h1{
+.about-us h2{
   font-size:56px;
   color:black;
   text-align:center;
@@ -362,7 +362,7 @@ h1 span{
   text-align:center;
 }
 
-.about-us h2{
+.about-us h3{
   text-align:center;
   margin-top:20px;
   font-size:29px;
@@ -535,7 +535,7 @@ h1 span{
   background:white;
 }
 
-.courses .courses-margin h1{
+.courses .courses-margin h2{
   font-size:56px;
   color:white;
   padding-top:50px;
@@ -628,7 +628,7 @@ h1 span{
   margin:0 auto;
 }
 
-.contact .contact-margin h1{
+.contact .contact-margin h2{
   font-size:56px;
   color:black;
   padding-top:50px;
