@@ -743,7 +743,7 @@ strong{
 .footer .margin .menu-footer a{
   line-height:90px;
   padding-right:25px;
-  color:#5f666e;
+  color:#818181;
   -webkit-transition: all 0.2s ease-in;
   -moz-transition: all 0.2s ease-in;
   -ms-transition: all 0.2s ease-in;
@@ -763,5 +763,5 @@ strong{
   float:left;
   line-height:90px;
   padding-right:25px;
-  color:#5f666e;
+  color:#818181;
 }
