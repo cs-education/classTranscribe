@@ -74,11 +74,12 @@ async function copy_file(source_file, outputFile) {
     const fs = require('fs');
 
     // destination.txt will be created or overwritten by default.
-    fs.copyFile(source_file, outputFile, (err) => {
-        if (err) {
-            console.log(err);
-        }
-    });
+    try {
+        fs.copyFileSync(source_file, outputFile);
+    } catch (err) {
+        console.log(err);
+    }
+    
     return outputFile
 }
 
