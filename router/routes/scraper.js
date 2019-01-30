@@ -7,7 +7,8 @@
 var router = express.Router();
 var fs = require('fs');
 var scraper = require('../../modules/scraper_utils');
-var scraperMustache = fs.readFileSync(mustachePath + 'scraper.mustache').toString();
+//var scraperMustache = fs.readFileSync(mustachePath + 'scraper.mustache').toString();
+
 
 router.get('/scraper', function (request, response) {
     response.writeHead(200, {
@@ -18,7 +19,7 @@ router.get('/scraper', function (request, response) {
         .then(function (playlists) {
             console.log(playlists);
         });
-    renderWithPartial(scraperMustache, request, response);
+    renderWithPartial(Mustache.getMustacheTemplate('scraper.mustache'), request, response);
 });
 
 router.get('/scrapeEchoSection', function (request, response) {
@@ -29,7 +30,7 @@ router.get('/scrapeEchoSection', function (request, response) {
     var courseOfferingId = request.query.courseOfferingId;
     console.log(url, courseOfferingId);
     scraper.download_public_echo_course(url, courseOfferingId)
-    renderWithPartial(scraperMustache, request, response);
+    renderWithPartial(Mustache.getMustacheTemplate('scraper.mustache'), request, response);
 });
 router.get('/scrapeYoutubePlaylist', function (request, response) {
     response.writeHead(200, {
@@ -39,7 +40,7 @@ router.get('/scrapeYoutubePlaylist', function (request, response) {
     var courseOfferingId = request.query.courseOfferingId;
     console.log(playlistId, courseOfferingId);
     scraper.download_youtube_playlist(playlistId, courseOfferingId);
-    renderWithPartial(scraperMustache, request, response);
+    renderWithPartial(Mustache.getMustacheTemplate('scraper.mustache'), request, response);
 });
 
 router.get('/addLocalVideosToCourse',async function (request, response) {
@@ -50,7 +51,7 @@ router.get('/addLocalVideosToCourse',async function (request, response) {
     var courseOfferingId = request.query.courseOfferingId;
     console.log(jsonFile, courseOfferingId);
     await scraper.addLocalVideosToCourse(jsonFile, courseOfferingId);
-    renderWithPartial(scraperMustache, request, response);
+    renderWithPartial(Mustache.getMustacheTemplate('scraper.mustache'), request, response);
 });
 
 router.get('/downloadLecture', function (request, response) {
@@ -58,7 +59,18 @@ router.get('/downloadLecture', function (request, response) {
         'Content-Type': 'text.html'
     });
     scraper.download_lecture(request.query.taskId)
-    renderWithPartial(scraperMustache, request, response);
+    renderWithPartial(Mustache.getMustacheTemplate('scraper.mustache'), request, response);
 });
+
+router.get('/reprocessIncompleteTasks', async function (request, response) {
+    var courseOfferingId = request.query.courseOfferingId;
+    await scraper.reprocessIncompleteTaskIdsForCourseOfferingId(courseOfferingId);
+});
+
+router.get('/reprocessIncompleteMedias', async function (request, response) {
+    var courseOfferingId = request.query.courseOfferingId;
+    await scraper.reprocessIncompleteMedias(courseOfferingId);
+});
+
 
 module.exports = router;
