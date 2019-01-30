@@ -75,7 +75,9 @@ async function copy_file(source_file, outputFile) {
 
     // destination.txt will be created or overwritten by default.
     fs.copyFile(source_file, outputFile, (err) => {
-        if (err) throw err;
+        if (err) {
+            console.log(err);
+        }
     });
     return outputFile
 }
