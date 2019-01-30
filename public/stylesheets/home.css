@@ -22,7 +22,7 @@ html, body{
 
 a{
   text-decoration:none;
-  outline:none;
+  /*outline:none;*/
 }
 
 h1{
@@ -132,9 +132,9 @@ h1 span{
   position:absolute;
   text-align:center;
   margin:auto;
-  top:0; 
-  left:0; 
-  bottom:0; 
+  top:0;
+  left:0;
+  bottom:0;
   right:0;
   width:500px;
   height:225px;
@@ -457,7 +457,7 @@ h1 span{
 /*}*/
 
 
-.about-us .column-three{ 
+.about-us .column-three{
   margin-top:40px;
   /*width:300px;*/
   float:left;
@@ -489,6 +489,7 @@ h1 span{
 /*.about-us .column-three .circle-three:hover{ */
   /*background: url(../stylesheets/img/icons/professor.png) #2fa68e no-repeat center center;*/
 /*}*/
+
 
 
 
@@ -570,6 +571,8 @@ h1 span{
   float: left;
   position: relative;
   overflow: auto;
+  margin-top: 25px;
+  margin-bottom: 25px;
 }
 
 .grid li:nth-child(2n){
@@ -577,7 +580,7 @@ h1 span{
 }
 
 .grid li:nth-child(2n+1){
-  background: #2fa68e;
+  background: #288F7B;
 }
 
 
@@ -593,7 +596,7 @@ h1 span{
   text-align:center;
   margin-top:80px;
   font-weight: bold;
-  color: #FFF;
+  color: white;
 }
 
 .grid p.description {
@@ -602,11 +605,11 @@ h1 span{
   margin-top:20px;
   text-align:center;
   font-weight: 400;
-  color: #FFF;
+  color: black;
 }
 
-.clear { 
-    clear:both; 
+.clear {
+    clear:both;
 }
 
 
@@ -762,4 +765,3 @@ strong{
   padding-right:25px;
   color:#5f666e;
 }
-
