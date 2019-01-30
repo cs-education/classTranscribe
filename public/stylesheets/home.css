@@ -331,7 +331,6 @@ h1 span{
   width:900px;
   margin:0 auto;
   margin-bottom:10px;
-
 }
 
 .about-us h1{
@@ -395,8 +394,8 @@ h1 span{
   margin-top:40px;
   /*width:300px;*/
   float:left;
-  /*margin-bottom:70px;*/
-  height:350px;
+  margin-bottom:70px;
+  /*height:350px;*/
   width:260px;
   padding-left:20px;
   padding-right:20px;
@@ -428,8 +427,8 @@ h1 span{
   margin-top:40px;
   /*width:300px;*/
   float:left;
-  /*margin-bottom:70px;*/
-  height:350px;
+  margin-bottom:70px;
+  /*height:350px;*/
   width:260px;
   padding-left:20px;
   padding-right:20px;
@@ -462,8 +461,8 @@ h1 span{
   margin-top:40px;
   /*width:300px;*/
   float:left;
-  /*margin-bottom:70px;*/
-  height:350px;
+  margin-bottom:70px;
+  /*height:350px;*/
   width:260px;
   padding-left:20px;
   padding-right:20px;
@@ -615,12 +614,18 @@ h1 span{
 
 .contact{
   position:relative;
-  width:900px;
-  margin: 0 auto;  
-  
+  width:100%;
+  background:#ecf0f1;
 }
 
-.contact h1{
+.contact .contact-margin{
+  position:relative;
+  width:900px;
+  overflow:hidden;
+  margin:0 auto;
+}
+
+.contact .contact-margin h1{
   font-size:56px;
   color:black;
   padding-top:50px;
@@ -630,34 +635,46 @@ h1 span{
   line-height:1.2;
 }
 
-.contact hr{
-  margin-top:30px;
-  background-color: black;
-  height: 1px;
-  width:340px;
-  border:0;
-}
+/*.contact .contact-margin hr{*/
+  /*margin-top:30px;*/
+  /*background-color: black;*/
+  /*height: 1px;*/
+  /*width:340px;*/
+  /*border:0;*/
+/*}*/
 
-
-.contact .content{
+.contact .contact-margin .content{
   position:relative;
   width:900px;
   overflow:hidden;
-  margin: 60px 0 65px 0;  
-  
+  margin: 40px 0 65px 0;  
 }
 
-
-
-.contact .content .contact-text{
+.contact .contact-margin .content .contact-text{
   width:405px;
   overflow:hidden;
   height:auto;
-  color:black;
-  font-size:17px;
+  color:#717171;
+  font-size:1.75rem;
   line-height:1.7;
   margin: 0 auto;
   text-align:center;
+}
+
+.contact .contact-margin a{
+  text-decoration:underline;
+  font-weight:700;
+  color:#505050;
+}
+
+.contact .contact-margin a:hover{
+  color:black;
+}
+
+.contact .contact-margin i{
+  font-size:1.5rem;
+  color:#2fa683;
+  padding:0 .15rem;
 }
 
 strong{
@@ -665,36 +682,35 @@ strong{
 
 }
 
+/*.contact .contact-margin .content .form .button{*/
+  /*width:142px;*/
+  /*height:34px;*/
+  /*float:right;*/
+  /*margin:0;*/
+  /*background:#23282d;*/
+  /*border:0;*/
+  /*-moz-border-radius:4px;*/
+  /*-webkit-border-radius:4px;*/
+  /*border-radius: 4px;*/
+    /*-webkit-transition: all 0.2s ease-in;*/
+  /*-moz-transition: all 0.2s ease-in;*/
+  /*-ms-transition: all 0.2s ease-in;*/
+  /*-o-transition: all 0.2s ease-in;*/
+  /*transition: all 0.2s ease-in;*/
+/*}*/
 
-.contact .content .form .button{
-  width:142px;
-  height:34px;
-  float:right;
-  margin:0;
-  background:#23282d;
-  border:0;
-  -moz-border-radius:4px;
-  -webkit-border-radius:4px;
-  border-radius: 4px;
-    -webkit-transition: all 0.2s ease-in;
-  -moz-transition: all 0.2s ease-in;
-  -ms-transition: all 0.2s ease-in;
-  -o-transition: all 0.2s ease-in;
-  transition: all 0.2s ease-in;
-}
+/*.contact .contact-margin .content .form a .button{*/
+  /*text-align:center;*/
+  /*color:white;*/
+  /*font-weight:bold;*/
+  /*line-height:34px;*/
+  /*font-size:17px;*/
+/*}*/
 
-.contact .content .form a .button{
-  text-align:center;
-  color:white;
-  font-weight:bold;
-  line-height:34px;
-  font-size:17px;
-}
-
-.contact .content .form .button:hover{
-  color:white;
-  background:#2fa68e;
-}
+/*.contact .contact-margin .content .form .button:hover{*/
+  /*color:white;*/
+  /*background:#2fa68e;*/
+/*}*/
 
 /* Footer */
 
