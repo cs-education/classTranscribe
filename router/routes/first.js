@@ -13,7 +13,9 @@ const validator = require('../../modules/validator.js');
 var client_api = require('../../db/db');
 
 
-var firstPassMustache = fs.readFileSync(mustachePath + 'index.mustache').toString();
+//var firstPassMustache = fs.readFileSync(mustachePath + 'index.mustache').toString();
+
+
 router.get('/first/:className/:id', function (request, response) {
   if(request.isAuthenticated()) {
   var className = request.params.className.toUpperCase();
@@ -27,7 +29,7 @@ router.get('/first/:className/:id', function (request, response) {
     className: className,
     taskName: request.query.task,
   };
-  var html = Mustache.render(firstPassMustache, view);
+  var html = Mustache.render(Mustache.getMustacheTemplate('index.mustache'), view);
   response.end(html);
 } else {
   response.redirect('/');

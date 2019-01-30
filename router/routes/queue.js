@@ -8,7 +8,9 @@
 const router = express.Router();
 const db = require('../../db/db');
 
-const queueMustache = fs.readFileSync(mustachePath + 'queue.mustache').toString();
+//const queueMustache = fs.readFileSync(mustachePath + 'queue.mustache').toString();
+
+
 
 router.get('/queue/:className', function (request, response) {
   if(request.isAuthenticated()) {
@@ -18,7 +20,7 @@ router.get('/queue/:className', function (request, response) {
     className: className
   };
 
-  var html = Mustache.render(queueMustache, view);
+  var html = Mustache.render(Mustache.getMustacheTemplate('queue.mustache'), view);
   response.end(html);
 } else {
   response.redirect('/');

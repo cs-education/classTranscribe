@@ -38,39 +38,10 @@ router.get('/', async function (request, response) {
                     "</li> \n";
     }
 
-  /* populate courses section in home page only if user is logged in */
-  if(request.isAuthenticated()) {
-
-    var userInfo = request.session.passport.user;
-    var courseGrid = "<h1>COURSES</h1> <ul class=\"grid\"> \n";
-    var courses = await db.getAllCourses().then(
-      async function(values) {
-
-        for (let i = 0; i < values.length; i++) {
-          let course = values[i].dataValues;
-          let courseNumber = course.courseNumber
-          let depId = course.deptId
-          let depName = await db.getDept(depId).then(result => {
-            return result.acronym;
-          }).catch(err => { perror(userInfo, err); }); /* db.getDept() */
-
-          /* TODO: for now, redirect user to /courses */
-          courseGrid += "<li> \n" +
-          /*"  <a href=\"/class/" + depName.toLowerCase() + course.courseNumber + "-fa18\"> \n" +*/
-                        "<a href=\"/courses\" > \n" +
-                        "     <div class=\"text\"> \n" +
-                        "        <p>" + depName + " " + course.courseNumber + "</p> \n" +
-                        "        <p class=\"description\">Fall 2018</p> \n" +
-                        "     </div> \n" +
-                        "  </a> \n" +
-                        "</li> \n";
-        }
-      }).catch(err => { perror(userInfo, err); }) /* db.getAllCourses() */
-      courseGrid += "</ul>"
-      renderWithPartial(homeMustache, request, response, {courseGrid: courseGrid});
-    } else {
-      renderWithPartial(homeMustache, request, response);
-    }
-});})
+  });
+  courseGrid += "</ul>"
+  // console.log(courseGrid)
+  await renderWithPartial(Mustache.getMustacheTemplate('home.mustache'), request, response, {courseGrid: courseGrid});
+});
 
 module.exports = router;

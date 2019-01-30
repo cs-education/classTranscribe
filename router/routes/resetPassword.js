@@ -33,14 +33,15 @@ var transporter = nodemailer.createTransport({
 });
 
 // Get the mustache page that will be rendered for the resetPassword route
-var resetPasswordMustache = fs.readFileSync(mustachePath + 'resetPassword.mustache').toString();
+//var resetPasswordMustache = fs.readFileSync(mustachePath + 'resetPassword.mustache').toString();
+
 
 // Render the resetPassword mustache page
 router.get('/resetPassword', function (request, response) {
     response.writeHead(200, {
         'Content-Type': 'text.html'
     });
-    renderWithPartial(resetPasswordMustache, request, response);
+    renderWithPartial(Mustache.getMustacheTemplate('resetPassword.mustache'), request, response);
 });
 
 // Reset password and change in database after form is submitted

@@ -8,9 +8,14 @@
 - Clone the repository,
     git clone https://github.com/cs-education/classTranscribe.git
     cd classTranscribe
-- Download the zip "cert" from, https://uillinoisedu-my.sharepoint.com/:u:/g/personal/mahipal2_illinois_edu/EcNfPMRp3clFtJf2sNWkhgEBvF8ZZDH4O0T34f7ixIuY-A?e=MMUT5H	
-    It contains certificates for https.(You'll need to login with your @illinois.edu Id's)	
-   Unzip it into classTranscribe folder.
+- Generate certificates
+	mkdir cert
+	openssl genrsa -out cert/privkey.pem
+	openssl req -new -key cert/privkey.pem -out cert/csr.pem
+	openssl x509 -req -days 356 -in cert/csr.pem -signkey cert/privkey.pem -out cert/cert.pem
+	rm cert/csr.pem
+   (Fill blanks if asked for any details) 
+   
 - Navigate to the "Docker" folder in the github repository.
 - Setup SQL
 
@@ -42,15 +47,6 @@
 
 RUN EITHER THE PRODUCTION OR THE DEVELOPMENT IMAGE INSTRUCTIONS
 
-For Setup of Production Image
-
-	Build the image,
-	sudo docker build -f Dockerfile.production -t cs-education/classtranscribe/production ..
-	Run the image,
-	(REPLACE THE {Absolute_path_to_data_directory} with a local directory where the data will be stored)
-	sudo docker run -i -t -p 443:8000 -p 80:7000 --mount type=bind,source={Absolute_path_to_data_directory},target=/data --link CTdb:mssql --env-file env.list -e "MODE=PRODUCTION" --name CT_Prod cs-education/classtranscribe/production /bin/bash -c "git pull; npm install; npm start"
-
-	OR
 
 For Setup of Development Image
 
@@ -64,11 +60,22 @@ For Setup of Development Image
 	For example,
 	sudo docker run -i -t --mount type=bind,source=D:\CT\classTranscribe,target=/classTranscribe --mount type=bind,source=D:\CT\data,target=/data -p 443:8000 -p 80:7000 --link CTdb:mssql --env-file env.list -e "MODE=DEV" --name CT_Dev cs-education/classtranscribe/dev /bin/bash
 
+For Setup of Production Image
+
+	Build the image,
+	sudo docker build -f Dockerfile.production -t cs-education/classtranscribe/production ..
+	Run the image,
+	(REPLACE THE {Absolute_path_to_data_directory} with a local directory where the data will be stored)
+	sudo docker run -i -t -p 443:8000 -p 80:7000 --mount type=bind,source={Absolute_path_to_data_directory},target=/data --link CTdb:mssql --env-file env.list -e "MODE=PRODUCTION" --name CT_Prod cs-education/classtranscribe/production /bin/bash -c "git pull; npm install; npm start"
+
+	OR
+
+
 	After the run instruction a shell within the container should start.
 	To start the node server you could do the following,
 	npm install
 	npm audit fix
-	npm start
+	node server.js -e dev
 
 - You can access it via your browser on the address "https://127.0.0.1"
 
