@@ -11,7 +11,7 @@
 </head>
 
 <body>
-	<div class="content">
+	<div class="content" role="navigation">
 		<div class="home-container">
             <button class="home" onclick="window.location='/';">Home</button>
 		</div>
@@ -20,11 +20,11 @@
 			<button class="logout-home" onclick="window.location='/logout'">Log Out</button>
 		</div>
 	</div>
-	<div class="dashboard-container">
+	<div class="dashboard-container" role="main">
 		<h1>DASHBOARD</h1>
 		<div class="buttons">
 			<!--<button type="manage" class="manage" onclick="window.location='/manageCourse';"/>Manage Course</button>-->
-			<button type="add" class="add" onclick="window.location='/courses';"/> Courses </button>
+			<button type="button" class="add" onclick="window.location='/courses';"> Courses </button>
 		</div>
 	</div>
 </body>
