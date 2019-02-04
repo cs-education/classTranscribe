@@ -27,7 +27,7 @@
 
 <!-- section start-page -->
 
-  <section class="start-page parallax-background" id="home">
+  <section class="start-page parallax-background" id="home" role="banner">
 
     <div class="opacity"></div>
       <div class="content">
@@ -54,7 +54,7 @@
 
   <!-- section menu -->
 
-  <section class="menu">
+  <section class="menu" role=navigation>
 
     <div class="menu-content">
 
@@ -62,7 +62,7 @@
 
       <ul id="menu">
         <li><a href="#home">HOME</a></li>
-        <li><a href="#about-us">ABOUT US</a></li>
+        <!-- <li><a href="#about-us">ABOUT US</a></li> -->
         {{! <li><a href="#courses">COURSES</a></li>}}
         <li><a href="#contact">CONTACT</a></li>
       </ul>
@@ -71,7 +71,7 @@
   </section>
 
 
-  <!-- section about us -->
+  <!-- section about us
 
   <section class="about-us" id="about-us" style="display:none">
 
@@ -105,20 +105,20 @@
     </div>
 
 
-  </section>
+  </section> -->
 
   <div class="clear"></div>
 
   <!-- courses-->
 {{!
-  <section class="courses" id="courses">
+  <section class="courses" id="courses" role="main">
 
 
     <div class="courses-margin">
 
       <h1>COURSES</h1>
-       {{{courseGrid close brace x3
 
+       {{{courseGrid close brace x3
 
    </section>
 }}
@@ -128,7 +128,7 @@
 
     <!-- Contact-->
 
-    <section class="contact" id="contact">
+    <section class="contact" id="contact" role="complementary">
         <h1>Contact</h1>
         <hr/>
 
@@ -169,7 +169,7 @@
     </section>
 
 
-    <section class="footer">
+    <section class="footer" role="contentinfo">
 
       <div class="margin">
 

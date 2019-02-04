@@ -144,6 +144,8 @@ async function addMedia(videoURL, sourceType, siteSpecificJSON) {
 async function addMSTranscriptionTask(mediaId, task, videoHashsum, videoLocalLocation) {
     if (task == null) {
         task = await MSTranscriptionTask.create({ id: uuid(), videoHashsum: videoHashsum, videoLocalLocation: videoLocalLocation });
+    } else {
+        task = await getTask(task.id);
     }
     await TaskMedia.create({ taskId: task.id, mediaId: mediaId });
     return task;

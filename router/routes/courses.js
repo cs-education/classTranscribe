@@ -92,6 +92,7 @@ var allterms = [];
 //var  = fs.readFileSync(mustachePath + 'courses.mustache').toString();
 
 
+
 // courses page, display all relative courses
 router.get('/courses/', function (request, response) {
     if (!request.isAuthenticated()) {
@@ -107,7 +108,7 @@ router.get('/courses/', function (request, response) {
             if (reply) {
                 // reply is null if the key is missing
                 allterms = reply.map(term => term.termName);
-            }
+           }
 
             var form = '';
             var createClassBtn = '';
@@ -126,6 +127,7 @@ router.get('/courses/', function (request, response) {
                 // Table header
                 var thtml = "<tr id=\"#header\">\n" +
                     '<th hidden="yes">Term</th>' +
+                    '<th hidden="yes">Id</th>' +
                     "                    <th>University</th>\n" +
                     "                    <th>Subject</th>\n" +
                     "                    <th>Course Number</th>\n" +
@@ -282,6 +284,7 @@ router.get('/courses/search', function (request, response) {
         search.search(function (line) {
           var rethtml= "<tr id=\"#header\">\n" +
                        '<th hidden="yes">Term</th>'+
+                       '<th hidden="yes">Id</th>' +
                        "                    <th>University</th>\n" +
                        "                    <th>Subject</th>\n" +
                        "                    <th>Course Number</th>\n" +
@@ -430,6 +433,7 @@ router.post('/courses/applyfilter', function (request, response) {
     var subjectf = request.body.subjectfilter.split(';;');
     var rethtml="<tr id=\"#header\">\n" +
         '<th hidden="yes">Term</th>'+
+        '<th hidden="yes">Id</th>' +
         "                    <th>University</th>\n" +
         "                    <th>Subject</th>\n" +
         "                    <th>Course Number</th>\n" +
