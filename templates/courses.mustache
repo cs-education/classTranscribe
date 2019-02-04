@@ -23,13 +23,13 @@
 
 <body style="padding-top: 10rem">
 
-<nav class="navbar navbar-default navbar-fixed-top navmain" >
+<header class="navbar navbar-default navbar-fixed-top navmain" >
     <div class="container" >
         <a href="/" class="CTtitle"><h1>Class Transcribe</h1></a>
     </div>
-</nav>
+</header>
 
-<div class="container">
+<div class="container" role="main">
 
     <div class="row">
         <div class="col-md-2">
@@ -40,7 +40,7 @@
             <!--<select id="school-term" value="All">/-->
             </select>
 
-            <form action="/courses/search" id="search-form" method="GET" class="pull-right">
+            <form action="/courses/search" id="search-form" method="GET" class="pull-right" role="search">
                 <input type='input' id='search-input' name="q">
                 <input type='submit' id='search-button' value='Search' class="btn">
             </form>
@@ -144,7 +144,7 @@
 
 
 
-<section class="footer">
+<section class="footer" role="contentinfo">
     <div class="margin">
         <div class="menu-footer">
             <a href="/">Home</a>
