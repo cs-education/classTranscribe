@@ -12,16 +12,16 @@ const log = logging.log;
 
 
 router.get('/watchLectureVideos/:courseOfferingId', function (request, response) {
-  if(request.isAuthenticated()) {
+    if (request.isAuthenticated()) {
 
-    response.writeHead(200, {
-      'Content-Type': 'text/html'
-    });
+        response.writeHead(200, {
+            'Content-Type': 'text/html'
+        });
 
-    renderWithPartial(Mustache.getMustacheTemplate('watchLectureVideos.mustache'), request, response);
-  } else {
-    response.redirect('/auth/google?redirectPath=' + encodeURIComponent(request.originalUrl));
-  }
+        renderWithPartial(Mustache.getMustacheTemplate('watchLectureVideos.mustache'), request, response);
+    } else {
+        response.redirect('/auth/google?redirectPath=' + encodeURIComponent(request.originalUrl));
+    }
 });
 
 router.get('/getPlaylist/:courseOfferingId', function (request, response) {
