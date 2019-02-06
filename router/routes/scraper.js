@@ -62,4 +62,15 @@ router.get('/downloadLecture', function (request, response) {
     renderWithPartial(Mustache.getMustacheTemplate('scraper.mustache'), request, response);
 });
 
+router.get('/reprocessIncompleteTasks', async function (request, response) {
+    var courseOfferingId = request.query.courseOfferingId;
+    await scraper.reprocessIncompleteTaskIdsForCourseOfferingId(courseOfferingId);
+});
+
+router.get('/reprocessIncompleteMedias', async function (request, response) {
+    var courseOfferingId = request.query.courseOfferingId;
+    await scraper.reprocessIncompleteMedias(courseOfferingId);
+});
+
+
 module.exports = router;

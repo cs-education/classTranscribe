@@ -93,16 +93,13 @@ var allterms = [];
 //var  = fs.readFileSync(mustachePath + 'courses.mustache').toString();
 
 
+
 // courses page, display all relative courses
 router.get('/courses/', function (request, response) {   
     if (!request.isAuthenticated()) {
-        // form = getCreateClassForm(userInfo);
-        // createClassBtn =
-        // '<button class="btn" data-toggle="modal" data-target="#createPanel">' +
-        // '          Create a New Class</button>';
         response.redirect('/auth/google?redirectPath=' + encodeURIComponent(request.originalUrl));
     }
-    else {
+    else {        
         response.writeHead(200, {
             'Content-Type': 'text/html'
         });
@@ -112,12 +109,18 @@ router.get('/courses/', function (request, response) {
             if (reply) {
                 // reply is null if the key is missing
                 allterms = reply.map(term => term.termName);
-            }
+           }
 
             var form = '';
             var createClassBtn = '';
             var userInfo = request.session.passport.user;
-
+            // Super user hack
+            if (userInfo.mailId === 'mahipal2@illinois.edu') {
+                form = getCreateClassForm(userInfo);
+                createClassBtn =
+                    '<button class="btn" data-toggle="modal" data-target="#createPanel">' +
+                    '          Create a New Class</button>';
+            }            
             client_api.getUniversityName(userInfo.universityId).then(result => {
 
                 userInfo.university = result.universityName;
@@ -125,6 +128,7 @@ router.get('/courses/', function (request, response) {
                 // Table header
                 var thtml = "<tr id=\"#header\">\n" +
                     '<th >Term</th>' +
+                    '<th hidden="yes">Id</th>' +
                     "                    <th hidden='yes'>University</th>\n" +
                     "                    <th>Subject</th>\n" +
                     "                    <th>Course Number</th>\n" +
@@ -275,7 +279,8 @@ router.get('/courses/search', function (request, response) {
         search.search(function (line) {
           var rethtml= "<tr id=\"#header\">\n" +
                        '<th >Term</th>'+
-                       "                    <th hidden='yes'>University</th>\n" +
+                       '<th hidden="yes">Id</th>' +
+                       "                    <th hidden='yes'>University</th>\n" +                       
                        "                    <th>Subject</th>\n" +
                        "                    <th>Course Number</th>\n" +
                        "                    <th>Section Number</th>\n" +
@@ -420,6 +425,7 @@ router.post('/courses/applyfilter', function (request, response) {
     var subjectf = request.body.subjectfilter.split(';;');
     var rethtml="<tr id=\"#header\">\n" +
         '<th >Term</th>'+
+        '<th hidden="yes">Id</th>' +
         "                    <th hidden='yes'>University</th>\n" +
         "                    <th>Subject</th>\n" +
         "                    <th>Course Number</th>\n" +
