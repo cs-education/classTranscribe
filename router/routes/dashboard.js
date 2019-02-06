@@ -8,7 +8,7 @@ const router = express.Router();
 const fs = require('fs');
 
 // Get the mustache page that will be rendered for the dashboard route
-const dashboardMustache = fs.readFileSync(mustachePath + 'dashboard.mustache').toString();
+//const dashboardMustache = fs.readFileSync(mustachePath + 'dashboard.mustache').toString();
 
 // Render the dashboard mustache page; if account is not authenticated, redirect to homepage
 router.get('/dashboard', function (request, response) {
@@ -20,7 +20,7 @@ router.get('/dashboard', function (request, response) {
         // Obtain user information to display user data
         var email = request.user.mailId;
         var user = email.substr(0, email.indexOf('@'));
-        var html = Mustache.render(dashboardMustache, { user: user });
+        var html = Mustache.render( Mustache.getMustacheTemplate('dashboard.mustache'), { user: user });
 
         response.end(html);
     } else {

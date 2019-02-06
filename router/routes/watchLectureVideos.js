@@ -8,7 +8,8 @@ const perror = logging.perror;
 const info = logging.info;
 const log = logging.log;
 
-const watchLectureVideosPage = fs.readFileSync(mustachePath + 'watchLectureVideos.mustache').toString();
+//const watchLectureVideosPage = fs.readFileSync(mustachePath + 'watchLectureVideos.mustache').toString();
+
 
 router.get('/watchLectureVideos/:courseOfferingId', function (request, response) {
   if(request.isAuthenticated()) {
@@ -17,7 +18,7 @@ router.get('/watchLectureVideos/:courseOfferingId', function (request, response)
       'Content-Type': 'text/html'
     });
 
-    renderWithPartial(watchLectureVideosPage, request, response);
+    renderWithPartial(Mustache.getMustacheTemplate('watchLectureVideos.mustache'), request, response);
   } else {
     response.redirect('/auth/google?redirectPath=' + encodeURIComponent(request.originalUrl));
   }
@@ -68,7 +69,7 @@ router.get('/getSrts/:courseOfferingId', async function (request, response) {
 
 router.post('/submitEdit', async function (request, response) {
     console.log(request.body);
-    utils.transferJsonToVtt(request.body.sub, request.body.subFile + ".2");
+    utils.transferJsonToVtt(request.body.sub, request.body.subFile);
     response.json({
         success: true
     });

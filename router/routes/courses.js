@@ -90,18 +90,16 @@ const permission = require('./permission');
 
 
 var allterms = [];
-var managementMustache = fs.readFileSync(mustachePath + 'courses.mustache').toString();
+//var  = fs.readFileSync(mustachePath + 'courses.mustache').toString();
+
+
 
 // courses page, display all relative courses
 router.get('/courses/', function (request, response) {   
     if (!request.isAuthenticated()) {
-        // form = getCreateClassForm(userInfo);
-        // createClassBtn =
-        // '<button class="btn" data-toggle="modal" data-target="#createPanel">' +
-        // '          Create a New Class</button>';
         response.redirect('/auth/google?redirectPath=' + encodeURIComponent(request.originalUrl));
     }
-    else {
+    else {        
         response.writeHead(200, {
             'Content-Type': 'text/html'
         });
@@ -111,12 +109,18 @@ router.get('/courses/', function (request, response) {
             if (reply) {
                 // reply is null if the key is missing
                 allterms = reply.map(term => term.termName);
-            }
+           }
 
             var form = '';
             var createClassBtn = '';
             var userInfo = request.session.passport.user;
-
+            // Super user hack
+            if (userInfo.mailId === 'mahipal2@illinois.edu') {
+                form = getCreateClassForm(userInfo);
+                createClassBtn =
+                    '<button class="btn" data-toggle="modal" data-target="#createPanel">' +
+                    '          Create a New Class</button>';
+            }            
             client_api.getUniversityName(userInfo.universityId).then(result => {
 
                 userInfo.university = result.universityName;
@@ -124,6 +128,7 @@ router.get('/courses/', function (request, response) {
                 // Table header
                 var thtml = "<tr id=\"#header\">\n" +
                     '<th hidden="yes">Term</th>' +
+                    '<th hidden="yes">Id</th>' +
                     "                    <th>University</th>\n" +
                     "                    <th>Subject</th>\n" +
                     "                    <th>Course Number</th>\n" +
@@ -203,7 +208,7 @@ router.get('/courses/', function (request, response) {
                                 subjectfilterdata: filterdata[1],
                                 createClassButton: createClassBtn
                             };
-                            var html = Mustache.render(managementMustache, view);
+                            var html = Mustache.render(Mustache.getMustacheTemplate('courses.mustache'), view);
                             response.end(html);
                         });
                     }).catch(err => perror(err)); /* Promise.all() */
@@ -274,6 +279,7 @@ router.get('/courses/search', function (request, response) {
         search.search(function (line) {
           var rethtml= "<tr id=\"#header\">\n" +
                        '<th hidden="yes">Term</th>'+
+                       '<th hidden="yes">Id</th>' +
                        "                    <th>University</th>\n" +
                        "                    <th>Subject</th>\n" +
                        "                    <th>Course Number</th>\n" +
@@ -319,7 +325,7 @@ router.get('/courses/search', function (request, response) {
                 subjectfilterdata:filterdata[1]
               };
 
-              var html = Mustache.render(managementMustache, view);
+              var html = Mustache.render(Mustache.getMustacheTemplate('courses.mustache'), view);
 
               response.end(html);
             });
@@ -419,6 +425,7 @@ router.post('/courses/applyfilter', function (request, response) {
     var subjectf = request.body.subjectfilter.split(';;');
     var rethtml="<tr id=\"#header\">\n" +
         '<th hidden="yes">Term</th>'+
+        '<th hidden="yes">Id</th>' +
         "                    <th>University</th>\n" +
         "                    <th>Subject</th>\n" +
         "                    <th>Course Number</th>\n" +
@@ -498,8 +505,8 @@ function  generateListings(data, user, cb) {
         } catch (err) {
             instructorName = "";
         }
-
-        html += '<tr id="'+ e.id +'">';
+        
+        html += '<tr id="'+ e.id +'" >';
         html += '<td hidden="yes">' + e.termName + '</td>';
         html += '<td hidden="yes">' + e.courseOfferingId + '</td>';
         html += '<td>' + e.university + '</td>';
@@ -508,7 +515,7 @@ function  generateListings(data, user, cb) {
         html += '<td>' + e.section + '</td>';
         html += '<td>' + e.courseName + '</td>';
         html += '<td>' + instructorName + '</td>';
-        html += '<td class="tddesc">' + e.courseDescription + '</td>';
+        html += '<td>' + e.courseDescription + '</td>';
         html += '<td class="col-md-2">';
         var debug = false;
         if (debug || (user != '' && user != undefined)) {
@@ -517,10 +524,10 @@ function  generateListings(data, user, cb) {
 
                 if (result) {
                         html +=
-                            '<a class="actionbtn mnbtn">' +
+                            '<a class="actionbtn mnbtn" href="#">' +
                             '          <span class="glyphicon glyphicon-plus"></span> Manage\n' +
                             '        </a>' + '</td> <td>'+
-                            '<a class="actionbtn viewbtn">' +
+                            '<a class="actionbtn viewbtn" href="#">' +
                             '          <span class="glyphicon glyphicon-plus"></span> Watch\n' +
                             '        </a> </td>';
                         fcb(null,html);
@@ -529,7 +536,7 @@ function  generateListings(data, user, cb) {
                   permission.checkCoursePermission(user, classid, 'Drop', function (err, res) {
                     if (!res) {
                       html +=
-                      '<a class="actionbtn viewbtn">' +
+                      '<a class="actionbtn viewbtn" href="#">' +
                       '          <span class="glyphicon glyphicon-plus"></span> Watch\n' +
                       '        </a>';
                     }

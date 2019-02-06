@@ -1,3 +1,4 @@
+
 var url = window.location.pathname;
 var courseOfferingId = url.substring(url.lastIndexOf('/') + 1);
 var getPlaylistUrl = '/getPlaylist/' + courseOfferingId;
@@ -135,35 +136,34 @@ function addAllTranscriptionsToList() {
 }
 
 function generateItemHTML(id, start, video, part) {
-    return  "<div class='list-group-item transcription-item' style='display:none;' id='" + id + "'>" +
-              "<div class= 'row'>" +
-                "<div class='col-sm-3'>" +
-                  utils.msToTime(start) +
-                  "<a href='#' onclick=generateShareLink('" + video + "'," + start + ")> Share </a>" +
-                  "<div class='form-check form-check-inline'>" +
-                    "<input class='btn btn-outline-primary btn-sm edit-button' type='button' id='edit-button-" + id +"' value= 'Edit'>" +
-                  "</div>" +
-                "</div>" +
-                "<div class='col-sm-9 text-view' style = 'display:initial;' id='text-view-" + id +"'>" +
-                  "<a onclick=navigateToVideo('" + video + "'," + start + ") >" + part + "</a>" +
-                  "<div class='video-name-for-vtt' style='display:None;'>" +
-                    "<a>" + srctoTitle[video] + "</a>" +
-                  "</div>" +
-                "</div>" +
-                "<div class='col-sm-9 text-edit' style = 'display:none;' id='text-edit-" + id +"'>" +
-                  "<div class= 'row'>" +
-                    "<div class='col-sm-9'>" +
-                      "<input class='form-control input-sm edit-box' type='text' value='" + part + "' id='edit-box-" + id +"'>" +
-                    "</div>" +
-                    "<div class='col-sm-3'>" +
-                      "<button type='button' class='btn btn-outline-success btn-sm submit-edit' id='submit-edit-" + id +"'>Submit</button>" +
-                      "<button type='button' class='btn btn-outline-danger btn-sm cancel-edit' id='cancel-edit-" + id +"'>Cancel</button>" +
-                    "</div>" +
-                  "</div>" +
-                "</div>" +
-              "</div>" +
-            "</div>";
-
+    return "<div class='list-group-item transcription-item' style='display:none;' id='" + id + "'>" +
+        "<div class= 'row'>" + 
+        "<div class='col-sm-3'><tt>" +
+        utils.msToTime(start) + 
+        "</tt><button type='button' class='btn btn-outline-secondary btn-sm align-top' onclick=generateShareLink('" + video + "'," + start + ")> Share </button>" +
+        "<div class='form-check form-check-inline'>" +
+        "<input class='btn btn-outline-secondary btn-sm edit-button' type='button' id='edit-button-" + id +"' value= 'Edit'>" +
+        "</div>" +
+        "</div>" +
+        "<div class='col-sm-9 text-view' style = 'display:initial;' id='text-view-" + id +"'>" +
+        "<a onclick=navigateToVideo('" + video + "'," + start + ") >" + part + "</a>" +
+        "<div class='video-name-for-vtt' style='display:None;'>" +
+        "<a>" + srctoTitle[video] + "</a>" +
+        "</div>" +
+        "</div>" +
+        "<div class='col-sm-9 text-edit' style = 'display:none;' id='text-edit-" + id +"'>" +
+        "<div class= 'row'>" + 
+        "<div class='col-sm-9'>" +
+        "<input class='form-control input-sm edit-box' type='text' value='" + part + "' id='edit-box-" + id +"'>" +
+        "</div>" +
+        "<div class='col-sm-3'>" +
+        "<button type='button' class='btn btn-outline-success btn-sm submit-edit' id='submit-edit-" + id +"'>Submit</button>" +
+        "<button type='button' class='btn btn-outline-danger btn-sm cancel-edit' id='cancel-edit-" + id +"'>Cancel</button>" +
+        "</div>" +
+        "</div>" +
+        "</div>" +
+        "</div>" +
+        "</div>";
 }
 
 function updateDownloadVttButton(srcid) {
@@ -185,8 +185,8 @@ function generateDownloadVttButtonHTML(srcid) {
 }
 
 function scrollToListItem(listItemId) {
-    $("#live_transcriptions").children().removeClass('active');
-    $("#" + (listItemId)).addClass('active');
+    $("#live_transcriptions").children().removeClass('active_line');
+    $("#" + (listItemId)).addClass('active_line');
     if (autoScroll) {
         $("#live_transcriptions").scrollTo("#" + (listItemId - 1));
     }
@@ -238,7 +238,7 @@ function linkSrcAndTitle(playlist) {
                 navigateToVideo(queryParams['video'], 0);
             }
         }
-
+        
 
         function update_search_results() {
             // Get query
