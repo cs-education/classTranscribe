@@ -24,7 +24,7 @@ router.get('/dashboard', function (request, response) {
 
         response.end(html);
     } else {
-        response.redirect('/auth/google?redirectPath=' + encodeURIComponent(request.originalUrl));
+        response.redirect('/login?redirectPath=' + encodeURIComponent(request.originalUrl));
     }
 });
 

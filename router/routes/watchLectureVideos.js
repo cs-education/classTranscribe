@@ -20,7 +20,7 @@ router.get('/watchLectureVideos/:courseOfferingId', function (request, response)
 
     renderWithPartial(Mustache.getMustacheTemplate('watchLectureVideos.mustache'), request, response);
   } else {
-      response.redirect('/auth/google?redirectPath=' + encodeURIComponent(request.originalUrl));
+      response.redirect('/login?redirectPath=' + encodeURIComponent(request.originalUrl));
   }
 });
 

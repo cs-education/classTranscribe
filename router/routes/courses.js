@@ -61,30 +61,26 @@ const permission = require('./permission');
 //     }
 //   }]
 //
-// var passwordHash = require('password-hash');
-// // test user profile
-// var testInfo = {
-//   mailId : 'testing@testdomabbccc.edu',
-//   firstName : 'First',
-//   lastName :'Sur',
-//   password: passwordHash.generate("passtest"),
-//   university : 'test uni',
-//   verifiedId : 'sample-verification-buffer',
-// };
-//
-//
-// client_api.createUser(testInfo).then(
-//   result => {
-//     var userInfo = result;
-//     permission.addUser(userInfo.mailId);
-//     client_api.verifyUser('sample-verification-buffer', 'testing@testdomabbccc.edu').then(() => {
-//       client_api.addCourse(userInfo, courseList[0]).then(result => {
-//         info(userInfo);
-//         permission.addCoursePermission(userInfo.mailId, result.courseOfferingId, 'Modify');
-//         // client_api.
-//       })
-//     });
-//   }).catch(err => { perror(err);})
+var password = require('password-hash').generate("Test123!");
+var mailId = 'testuser@illinois.edu';
+// test user profile
+var testInfo = {
+    mailId: mailId,
+    firstName: 'John',
+    lastName: 'Wick',
+    password: password,
+    university: 'University of Illinois at Urbana-Champaign',
+    verifiedId: 'sample-verification-buffer',
+};
+
+
+client_api.createUser(testInfo).then(
+    result => {
+        var userInfo = result;
+        permission.addUser(userInfo.mailId);
+        client_api.verifyUser('sample-verification-buffer', mailId).then(() => {
+        });
+    }).catch(err => { perror(err); })
 
 /************************* End Of Dummy Data **********************************/
 
@@ -97,7 +93,7 @@ var allterms = [];
 // courses page, display all relative courses
 router.get('/courses/', function (request, response) {   
     if (!request.isAuthenticated()) {
-        response.redirect('/auth/google?redirectPath=' + encodeURIComponent(request.originalUrl));
+        response.redirect('/login?redirectPath=' + encodeURIComponent(request.originalUrl));
     }
     else {        
         response.writeHead(200, {
