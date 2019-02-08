@@ -72,7 +72,7 @@ router.get('/manage/:courseOfferingId', function (request, response) {
       renderWithPartial(Mustache.getMustacheTemplate('manageCourse.mustache'), request, response, { className : className} );
     }
   } else  {
-      response.redirect('/auth/google?redirectPath=' + encodeURIComponent(request.originalUrl));
+      response.redirect('/login?redirectPath=' + encodeURIComponent(request.originalUrl));
   }
 });
 

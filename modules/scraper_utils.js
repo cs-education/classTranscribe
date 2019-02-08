@@ -377,5 +377,6 @@ module.exports = {
     download_public_echo_course: download_public_echo_course,
     addLocalVideosToCourse: addLocalVideosToCourse,
     reprocessIncompleteTaskIdsForCourseOfferingId: reprocessIncompleteTaskIdsForCourseOfferingId,
-    reprocessIncompleteMedias: reprocessIncompleteMedias
+    reprocessIncompleteMedias: reprocessIncompleteMedias,
+    processTasks: processTasks
 }
