@@ -11,6 +11,8 @@
     <link rel="stylesheet" type="text/css" href="/stylesheets/global.css">
     <link rel="stylesheet" type="text/css" href="/stylesheets/resetHome.css" />
     <link rel="stylesheet" type="text/css" href="/stylesheets/home.css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/solid.css" integrity="sha384-r/k8YTFqmlOaqRkZuSiE9trsrDXkh07mRaoGBMoDcmA58OHILZPsk29i2BsFng1B" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/fontawesome.css" integrity="sha384-4aon80D8rXCGx9ayDt85LbyUHeMWd3UiBaWliBlJ53yzm9hqN21A+o1pqoyK04h+" crossorigin="anonymous">
 
     <script>
          var piwikServer = "{{piwikServer}}";
@@ -27,34 +29,29 @@
 
 <!-- section start-page -->
 
-  <section class="start-page parallax-background" id="home" role="banner">
+  <header class="start-page parallax-background" id="home" role="banner">
 
     <div class="opacity"></div>
       <div class="content">
-
-        <!-- login and signup button -->
-        <div class="login-signup-container">
-          <button class="login-home" onclick="window.location='/login'">Sign In To See Videos</button>
-          <!-- <button class="signup-home" onclick="window.location='/signup'">Sign Up</button> -->
-        </div>
-
         <div class="text">
-
           <h1>Welcome to<br/>
           <span>Class Transcribe</span></h1>
 
-          <!--<a href="#about-us"><div class="read-more">Read more</div></a>-->
+          <div class="arrow-down"></div>
 
+          <!-- login and signup button -->
+          <div class="login-signup-container">
+            <button class="login-home" onclick="window.location='/login'">Sign In To See Videos</button>
+          </div>
         </div>
-        <div class="arrow-down"></div>
       </div>
 
-  </section>
+  </header>
 
 
   <!-- section menu -->
 
-  <section class="menu" role=navigation>
+  <nav class="menu" role=navigation>
 
     <div class="menu-content">
 
@@ -62,61 +59,61 @@
 
       <ul id="menu">
         <li><a href="#home">HOME</a></li>
-        <!-- <li><a href="#about-us">ABOUT US</a></li> -->
+        <li><a href="#about-us">ABOUT US</a></li> 
         {{! <li><a href="#courses">COURSES</a></li>}}
         <li><a href="#contact">CONTACT</a></li>
       </ul>
     </div>
 
-  </section>
+  </nav>
 
 
-  <!-- section about us
+  <!-- section about us -->
 
-  <section class="about-us" id="about-us" style="display:none">
+  <main class="about-us" id="about-us" role="main">
 
-    <h1>ABOUT US</h1>
-    <hr/>
-    <p class="title">University Of Illinois at Urbana-Champaign</p>
+    <h2>ABOUT US</h2>
+
+    <p class="title">ClassTranscribe is an open-source, web-based platform developed by students and faculty at the University of Illinois at Urbana-Champaign</p>
 
       <div class="column-one">
 
-        <div class="circle-one"></div>
-
-           <h2>WHAT IS CT</h2>
+        <!--<div class="circle-one"></div>-->
+        <p><i class="fas fa-question-circle"></i><p>
+        <p>Our mission is to provide text-searchable lecture videos for all students</p>
 
       </div>
 
       <div class="column-two">
 
-        <div class="circle-two"></div>
-
-          <h2>STUDENT FAQ</h2>
+        <!--<div class="circle-two"></div>-->
+        <p><i class="fas fa-comments"></i><p>
+        <p>Captions are created using automated transcription and perfected with your help</p>
 
       </div>
 
 
       <div class="column-three">
 
-        <div class="circle-three"></div>
-
-        <h2>INSTRUCTOR FAQ</h2>
+        <!--<div class="circle-three"></div>-->
+        <p><i class="fas fa-universal-access"></i></p>
+          <p>We strive to meet modern accessibility standards to promote inclusive learning</p>
 
     </div>
 
 
-  </section> -->
+  </main>
 
   <div class="clear"></div>
 
   <!-- courses-->
 {{!
-  <section class="courses" id="courses" role="main">
+  <section class="courses" id="courses">
 
 
     <div class="courses-margin">
 
-      <h1>COURSES</h1>
+      <h2>COURSES</h2>
 
        {{{courseGrid close brace x3
 
@@ -128,10 +125,9 @@
 
     <!-- Contact-->
 
-    <section class="contact" id="contact" role="complementary">
-        <h1>Contact</h1>
-        <hr/>
-
+    <aside class="contact" id="contact" role="complementary">
+      <div class="contact-margin">
+        <h2>Contact</h2>
         <div class="content">
 
           <!-- <div class="form">
@@ -156,20 +152,18 @@
 
           <div class="contact-text">
 
-            Please use
-            the following e-mail address<br/><br/>
-
-            e-mail: <strong>classTranscribe@illinois.edu</strong>
+            Questions? Comments? Let us know!
+            <i class="fas fa-envelope"></i> <a href="mailto:classtranscribe@illinois.edu">ClassTranscribe@illinois.edu</a>
 
           </div>
 
 
         </div>
+      </div>
+    </aside>
 
-    </section>
 
-
-    <section class="footer" role="contentinfo">
+    <footer class="footer" role="contentinfo">
 
       <div class="margin">
 
@@ -179,11 +173,11 @@
 
         </div>
 
-          <div class="copyright"> &copy; 2016-2018. UIUC</div>
+          <div class="copyright"> &copy; 2016-2018 UIUC</div>
 
       </div>
 
-    </section>
+    </footer>
 
 </div>
 

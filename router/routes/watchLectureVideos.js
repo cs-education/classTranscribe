@@ -12,11 +12,11 @@ const log = logging.log;
 
 
 router.get('/watchLectureVideos/:courseOfferingId', function (request, response) {
-  if(request.isAuthenticated()) {
+    if (request.isAuthenticated()) {
 
-    response.writeHead(200, {
-      'Content-Type': 'text/html'
-    });
+        response.writeHead(200, {
+            'Content-Type': 'text/html'
+        });
 
     renderWithPartial(Mustache.getMustacheTemplate('watchLectureVideos.mustache'), request, response);
   } else {
@@ -74,6 +74,5 @@ router.post('/submitEdit', async function (request, response) {
         success: true
     });
 });
-
 
 module.exports = router;
