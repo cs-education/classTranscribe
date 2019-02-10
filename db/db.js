@@ -28,6 +28,7 @@ const UserOffering = models.UserOffering;
 const YoutubeChannel = models.YoutubeChannel;
 const CourseOfferingMedia = models.CourseOfferingMedia;
 const TaskMedia = models.TaskMedia;
+const UpdationJobs = models.UpdationJobs;
 /* ----- end of defining ----- */
 
 function getAllCourses() {
@@ -60,13 +61,13 @@ async function getMediaIdsByCourseOfferingId(courseOfferingId) {
 
 function getPlaylistByCourseOfferingId(courseOfferingId) {
   return sequelize.query(
-   'SELECT mst.videoLocalLocation, mst.srtFileLocation, M.siteSpecificJSON, mst.mediaId \
+   'SELECT DISTINCT M.id as mediaId, mst.videoLocalLocation, mst.srtFileLocation, M.siteSpecificJSON, M.createdAt \
     FROM MSTranscriptionTasks AS mst \
     INNER JOIN TaskMedia as tm on tm.taskId = mst.id \
     INNER JOIN Media as M on tm.mediaId = M.id \
     INNER JOIN CourseOfferingMedia as com on com.mediaId = M.id \
     WHERE com.courseOfferingId = ? \
-    ORDER BY M.id',
+    ORDER BY M.createdAt, M.id',
    { replacements: [ courseOfferingId ], type: sequelize.QueryTypes.SELECT}).catch(err => perror(err)); /* raw query */
 }
 
@@ -141,7 +142,8 @@ async function addMedia(videoURL, sourceType, siteSpecificJSON) {
         defaults: {
             videoURL: videoURL,
             sourceType: sourceType,
-            siteSpecificJSON: JSON.stringify(siteSpecificJSON)
+            siteSpecificJSON: JSON.stringify(siteSpecificJSON),
+            createdAt: siteSpecificJSON.createdAt
         }
     });
     return media[0].id;
@@ -761,6 +763,39 @@ function setUserRole(userId, role) {
   }).catch(err => perror(err)); /* Role.findOrCreate() */
 }
 
+async function getUpdationJobsBetween(startDate, endDate) {
+    return await UpdationJobs.findAll({
+        where: {
+            startDate: {
+                $gte: startDate
+            },
+            endDate: {
+                $lte: endDate
+            }
+        }
+    });
+};
+
+async function addUpdationJob(job) {
+    return await UpdationJobs.findOrCreate({
+        where: { courseOfferingId: job.courseOfferingId },
+        defaults: {
+            id: uuid(),
+            startDate: job.startDate,
+            endDate: job.endDate,
+            sourceType: job.sourceType,
+            url: job.url,
+            params: job.params
+        }
+    });
+}
+
+async function getJobForCourseOfferingId(courseOfferingId) {
+    return await UpdationJobs.findOne({
+        where: { courseOfferingId: courseOfferingId }
+    });
+}
+
 module.exports = {
     models: models,
     getAllCourses: getAllCourses,
@@ -808,5 +843,8 @@ module.exports = {
     doesEchoMediaExist: doesEchoMediaExist,
     doesYoutubeMediaExist: doesYoutubeMediaExist,
     getIncompleteTaskIdsForCourseOfferingId: getIncompleteTaskIdsForCourseOfferingId,
-    getMediaIdsByCourseOfferingId: getMediaIdsByCourseOfferingId
+    getMediaIdsByCourseOfferingId: getMediaIdsByCourseOfferingId,
+    addUpdationJob: addUpdationJob,
+    getUpdationJobsBetween: getUpdationJobsBetween,
+    getJobForCourseOfferingId: getJobForCourseOfferingId
 }
