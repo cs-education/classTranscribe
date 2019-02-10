@@ -30,7 +30,7 @@ async function addJobs() {
         url: 'https://echo360.org/section/64c7ddf3-deb3-4cbc-a342-230b413b41e1/public',
         courseOfferingId: 'f33cabc4-fef0-4232-9e43-067aaf907abc',
         params: JSON.stringify({
-            stream: 0
+            stream: 1
         })
     };
 
@@ -93,12 +93,8 @@ async function processCourseOfferingId(courseOfferingId) {
 }
 
 (async () => {
-    //var playlist = await db.getPlaylistByCourseOfferingId('e746be86-2761-44a0-ab90-76adedddc1f7');
-    //playlist.forEach(p => {
-    //    console.log(p.mediaId);
-    //})
-    // await addJobs();
-    // await getJobs();
+    await addJobs();
+    await getJobs();
 })();
 
 

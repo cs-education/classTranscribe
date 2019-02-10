@@ -55,7 +55,7 @@ function download_youtube_playlist(playlist_id, courseOfferingId) {
                     mediaIds.push(mediaId);
                 }                
             });
-            await processTasks(mediaIds);
+            // await processTasks(mediaIds);
         });
 }
 
@@ -341,7 +341,7 @@ async function extractSyllabusAndDownload(syllabus, download_header, courseOffer
             // console.log(err);
         }
     }
-    await processTasks(mediaIds);
+    // await processTasks(mediaIds);
 }
 
 async function addLocalVideosToCourse(jsonFile, courseOfferingId) {

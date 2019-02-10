@@ -177,6 +177,7 @@ async function getTaskIfNotUnique(videoHashsum) {
 // Return taskId
 async function addToMediaAndCourseOfferingMedia(videoURL, sourceType, siteSpecificJSON, courseOfferingId) {
     var mediaId = await addMedia(videoURL, sourceType, siteSpecificJSON);
+    console.log("MediaId" + mediaId);
     await addCourseOfferingMedia(courseOfferingId, mediaId, siteSpecificJSON);    
     return mediaId;
 }
