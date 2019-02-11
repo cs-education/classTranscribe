@@ -12,32 +12,18 @@ module.exports = function(app) {
 */
     const router = express.Router();
 
-    // app.use(require('./routes/api'));
     app.use(require('./routes/base'));
     app.use(require('./routes/admin'));
-    // app.use(require('./routes/utils'));
-    app.use(require('./routes/signup'));
     app.use(require('./routes/login'));
     app.use(require('./routes/logout'));
-    app.use(require('./routes/resetPassword'));
-    app.use(require('./routes/changePassword'));
     app.use(require('./routes/settings'));
     app.use(require('./routes/dashboard'));
     app.use(require('./routes/accountRecovery'));
     app.use(require('./routes/activated'));
-    app.use(require('./routes/first'));
-    app.use(require('./routes/progress'));
-    app.use(require('./routes/viewProgress'));
-    app.use(require('./routes/download'));
-    app.use(require('./routes/queue'));
-    app.use(require('./routes/second'));
-    app.use(require('./routes/search'));
     app.use(require('./routes/viewer'));
-    app.use(require('./routes/captions'));
     app.use(require('./routes/manage'));
     app.use(require('./routes/watchLectureVideos'));
     app.use(require('./routes/courses'));
-    app.use(require('./routes/scraper'));
 }
 
 //const authenticatedPartial = fs.readFileSync(mustachePath + 'authenticated.mustache').toString();
@@ -48,9 +34,7 @@ const invalidClassHTML = "<p>Could not find the requested page.<\p> <a href=\"/\
 const piwikServer = "192.17.96.13:" + process.env.PROXY_PORT;
 
 renderWithPartial = function(mustacheFile, request, response, params) {
-  //console.log('getMustacheTemplate 1= ' + Mustache.getMustacheTemplate('authenticated.mustache'));
-  //console.log('getMustacheTemplate 2= ' + Mustache.getMustacheTemplate('notAuthenticated.mustache'));
-  
+
   var html;
   var options = {};
   options["piwikServer"] = piwikServer;

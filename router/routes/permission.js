@@ -3,7 +3,7 @@
  *     https://www.npmjs.com/package/acl
  */
 
-const roles = ['Admin', 'Student', 'Instructor'];
+const roles = ['Admin', 'Student', 'Assistance', 'Instructor'];
 const macl = require('acl');
 const aclSeq = require('acl-sequelize');
 const db = require('../../models/index');

@@ -55,12 +55,13 @@ async function getMediaIdsByCourseOfferingId(courseOfferingId) {
 
 function getPlaylistByCourseOfferingId(courseOfferingId) {
   return sequelize.query(
-   'SELECT mst.videoLocalLocation, mst.srtFileLocation, M.siteSpecificJSON \
+   'SELECT mst.videoLocalLocation, mst.srtFileLocation, M.siteSpecificJSON, mst.mediaId \
     FROM MSTranscriptionTasks AS mst \
     INNER JOIN TaskMedia as tm on tm.taskId = mst.id \
     INNER JOIN Media as M on tm.mediaId = M.id \
     INNER JOIN CourseOfferingMedia as com on com.mediaId = M.id \
-    WHERE com.courseOfferingId = ?',
+    WHERE com.courseOfferingId = ?\
+    ORDER BY M.id',
    { replacements: [ courseOfferingId ], type: sequelize.QueryTypes.SELECT}).catch(err => {throw new Error(err.message)}); /* raw query */
 }
 
