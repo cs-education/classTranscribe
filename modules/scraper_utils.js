@@ -203,9 +203,14 @@ async function convertTaskVideoToWav(task) {
     //console.log(task);
     console.log(task.id, task.videoLocalLocation);
     var outputFile = await conversion_utils.convertVideoToWav(task.videoLocalLocation);
-    await task.update({
-        wavAudioLocalFile: path.resolve(outputFile)
-    });
+    if (outputFile != null) {
+        await task.update({
+            wavAudioLocalFile: path.resolve(outputFile)
+        });
+        return outputFile;
+    } else {
+        return null;
+    }   
 }
 
 async function convertTaskToSrt(task) {
