@@ -30,7 +30,7 @@ async function addJobs() {
         url: 'https://echo360.org/section/64c7ddf3-deb3-4cbc-a342-230b413b41e1/public',
         courseOfferingId: 'f33cabc4-fef0-4232-9e43-067aaf907abc',
         params: JSON.stringify({
-            stream: 1
+            stream: 0
         })
     };
 
