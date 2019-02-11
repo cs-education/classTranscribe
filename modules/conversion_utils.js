@@ -37,7 +37,7 @@ async function convertVideoToWav(pathToFile) {
 
     try {
         await ffmpeg;
-        return output;
+        return outputFile;
     } catch (err) {
         console.log(err);
         return null;
