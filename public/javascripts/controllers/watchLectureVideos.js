@@ -154,7 +154,7 @@ function generateItemHTML(id, start, video, part) {
         "<div class='col-sm-9 text-edit' style = 'display:none;' id='text-edit-" + id +"'>" +
         "<div class= 'row'>" + 
         "<div class='col-sm-9'>" +
-        "<input class='form-control input-sm edit-box' type='text' value='" + part + "' id='edit-box-" + id +"'>" +
+        "<input class='form-control input-sm edit-box' type='text' value='" + utils.escapeHtml(part) + "' id='edit-box-" + id + "'>" +
         "</div>" +
         "<div class='col-sm-3'>" +
         "<button type='button' class='btn btn-outline-success btn-sm submit-edit' id='submit-edit-" + id +"'>Submit</button>" +
