@@ -6,23 +6,48 @@
  */
 const router = express.Router();
 const fs = require('fs');
-const passport = require('passport')
+const passport = require('passport');
+var argv = require('minimist')(process.argv.slice(2));
+var env = argv["e"] || 'production';
 
 // Get the mustache page that will be rendered for the login route
 //const loginMustache = fs.readFileSync(mustachePath + 'login.mustache').toString();
 
 // Render the login mustache page; if account is authenticated, just bring user to dashboard
-router.get('/login', function(request, response) {
+router.get('/login', function (request, response) {
+    var redirectPath;
+    if (typeof request.query.redirectPath != "undefined") {
+        redirectPath = request.query.redirectPath;
+    }    
     if (request.isAuthenticated()) {
         response.redirect('../courses');
     } else {
-        response.redirect('../auth/google');
-
-        // response.writeHead(200, {
-        //     'Content-Type': 'text.html'
-        // });
-        // renderWithPartial(Mustache.getMustacheTemplate('login.mustache'), request, response);
+        if (env === "dev") {
+            response.redirect('/devlogin?redirectPath=' + encodeURIComponent(redirectPath));
+        } else {
+            response.redirect('/auth/google?redirectPath=' + encodeURIComponent(redirectPath));
+        }        
     }
+});
+
+// Use Passport to authentication the login information
+router.get('/devlogin', function (request, response, next) {
+    request.body.username = 'testuser@illinois.edu';
+    request.body.password = "Test123!";
+    passport.authenticate('local', function (err, user, info) {
+        // Display error if failed to login; otherwise, redirect to dashboard
+        if (!user) {
+            response.send({ message: info.message, html: '../login' });
+        } else {
+            request.logIn(user, function (err) {
+                if (typeof request.query.redirectPath != "undefined") {
+                    response.redirect(request.query.redirectPath);
+                } else {
+                    response.redirect('../courses');
+                }                
+            });
+        }
+    })(request, response, next);
 });
 
 // Use Passport to authentication the login information
