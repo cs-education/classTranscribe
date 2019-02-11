@@ -3,7 +3,10 @@ var Sequelize = require('sequelize');
 var models = require('../models');
 const utils = require('../utils/logging');
 const uuid = require('uuid/v4');
+var fs = require('fs');
 const sequelize = models.sequelize;
+var path = require('path');
+const _dirname = '/data/';
 
 sequelize.sync();
 
@@ -149,22 +152,28 @@ async function addMedia(videoURL, sourceType, siteSpecificJSON) {
     return media[0].id;
 }
 
-async function addMSTranscriptionTask(mediaId, task, videoHashsum, videoLocalLocation) {
-    if (task == null) {
-        task = await MSTranscriptionTask.create({ id: uuid(), videoHashsum: videoHashsum, videoLocalLocation: videoLocalLocation });
+async function addMSTranscriptionTask(mediaId, taskId, videoHashsum, videoLocalLocation) {
+    var task;
+    if (taskId == null) {
+        var id = uuid();
+        var fileName = _dirname + id + videoLocalLocation.substring(videoLocalLocation.lastIndexOf('.'));
+        fileName = path.resolve(fileName);
+        fs.copyFileSync(videoLocalLocation, fileName);
+        fs.unlinkSync(videoLocalLocation);
+        task = await MSTranscriptionTask.create({ id: id, videoHashsum: videoHashsum, videoLocalLocation: fileName});
     } else {
-        task = await getTask(task.id);
+        task = await getTask(taskId);
     }
     await TaskMedia.create({ taskId: task.id, mediaId: mediaId });    
     return task;
 }
 
-async function getTaskIfNotUnique(videoHashsum) {
+async function getTaskIdIfNotUnique(videoHashsum) {
     var result = await MSTranscriptionTask.findAndCountAll({ where: { videoHashsum: videoHashsum } });
     if (result.count != 0) {
         // Ensure file exists
         if (fs.existsSync(result.rows[0].dataValues.videoLocalLocation)) {
-            return result.rows[0].dataValues;
+            return result.rows[0].id;
         } else {
             await MSTranscriptionTask.destroy({ where: { videoHashsum: videoHashsum } });
             return null;
@@ -840,7 +849,7 @@ module.exports = {
     getSectionsById : getSectionsById,
     getInstructorsByCourseOfferingId : getInstructorsByCourseOfferingId,
     validateUserAccess: validateUserAccess,
-    getTaskIfNotUnique: getTaskIfNotUnique,
+    getTaskIdIfNotUnique: getTaskIdIfNotUnique,
     doesEchoMediaExist: doesEchoMediaExist,
     doesYoutubeMediaExist: doesYoutubeMediaExist,
     getIncompleteTaskIdsForCourseOfferingId: getIncompleteTaskIdsForCourseOfferingId,

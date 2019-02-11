@@ -5,6 +5,7 @@ var path = require('path');
 var conversion_utils = require('./conversion_utils');
 var youtube_google_api_key = process.env.YOUTUBE_API_KEY;
 const _dirname = '/data/';
+const _tempdir = '/data/temp';
 var utils = require('../utils/utils');
 
 const promiseSerial = funcs =>
@@ -109,7 +110,7 @@ async function download_lecture(media) {
 async function download_youtube_video(media) {
     console.log("download_youtube_video");
     var videoUrl = JSON.parse(media.siteSpecificJSON).videoUrl;
-    var outputFile = _dirname + media.id + '.mp4';
+    var outputFile = _tempdir + media.id + '.mp4';
     outputFile = await conversion_utils.download_from_youtube_url(videoUrl, outputFile);
     return outputFile;
 }
@@ -117,7 +118,7 @@ async function download_youtube_video(media) {
 async function download_local_video(media) {
     console.log("download_local_video");
     var videoUrl = JSON.parse(media.siteSpecificJSON).videoUrl;
-    var outputFile = _dirname + media.id + '.mp4';
+    var outputFile = _tempdir + media.id + '.mp4';
     outputFile = await conversion_utils.copy_file(videoUrl, outputFile);
     return outputFile;
 }
@@ -126,7 +127,7 @@ async function download_echo_lecture(media) {
     console.log("download_echo_lecture");
     var url = media.videoURL;
     var siteSpecificJSON = JSON.parse(media.siteSpecificJSON);
-    var dest = _dirname + media.id + "_" + url.substring(url.lastIndexOf('/') + 1);
+    var dest = _tempdir + media.id + url.substring(url.lastIndexOf('.'));
     var outputFile = await conversion_utils.downloadFile(url, siteSpecificJSON.download_header, dest);
     console.log("Outputfile " + outputFile);
     return outputFile;
@@ -141,9 +142,9 @@ async function processTasks(mediaIds) {
         var media = await db.getMedia(mediaId);
         var outputFile = await download_lecture(media);
         var videoHashsum = await conversion_utils.hash_file(outputFile);
-        var task = await db.getTaskIfNotUnique(videoHashsum);
-        if (task != null) {
-            console.log("Duplicate: " + task.id);
+        var taskId = await db.getTaskIdIfNotUnique(videoHashsum);
+        if (taskId != null) {
+            console.log("Duplicate: " + taskId);
             try {
                 console.log("Deleting:" + outputFile);
                 fs.unlinkSync(path.resolve(outputFile));
@@ -152,7 +153,7 @@ async function processTasks(mediaIds) {
             }
         }        
 
-        var task = await db.addMSTranscriptionTask(mediaId, task, videoHashsum, path.resolve(outputFile));
+        var task = await db.addMSTranscriptionTask(mediaId, taskId, videoHashsum, path.resolve(outputFile));
         tasks.push(task);
     });
     await wavAndSrt(tasks);
@@ -160,13 +161,13 @@ async function processTasks(mediaIds) {
 
 async function wavAndSrt(tasks) {
     await utils.asyncForEach(tasks, async function (task) {
-        await convertTaskVideoToWav(task);
         console.log("ConvertVideoToWav:" + task.id);
-    });
-    console.log("downloaded all");
-    await utils.asyncForEach(tasks, async function (task) {
-        await convertTaskToSrt(task);
-        console.log("ConvertTaskToSrt:" + task.id);
+        var result = await convertTaskVideoToWav(task);
+        
+        if (result != null) {
+            console.log("ConvertTaskToSrt:" + task.id);
+            await convertTaskToSrt(task);
+        }        
     });
 }
 
