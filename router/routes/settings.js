@@ -24,7 +24,7 @@ router.get('/settings', function(request, response) {
     var html = Mustache.render(Mustache.getMustacheTemplate('settings.mustache'), {first_name : userInfo.firstName, last_name : userInfo.lastName });
     response.end(html);
   } else {
-      response.redirect('/auth/google?redirectPath=' + encodeURIComponent(request.originalUrl));
+      response.redirect('/login?redirectPath=' + encodeURIComponent(request.originalUrl));
   }
 });
 
