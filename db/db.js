@@ -7,6 +7,7 @@ var fs = require('fs');
 const sequelize = models.sequelize;
 var path = require('path');
 const _dirname = '/data/';
+var conversion_utils = require('../modules/conversion_utils');
 
 sequelize.sync();
 
@@ -173,7 +174,14 @@ async function getTaskIdIfNotUnique(videoHashsum) {
     if (result.count != 0) {
         // Ensure file exists
         if (fs.existsSync(result.rows[0].dataValues.videoLocalLocation)) {
-            return result.rows[0].id;
+            // Ensure the hash is the same
+            var hash = await conversion_utils.hash_file(result.rows[0].dataValues.videoLocalLocation);
+            if (hash === videoHashsum) {
+                return result.rows[0].id;
+            } else {
+                await MSTranscriptionTask.destroy({ where: { videoHashsum: videoHashsum } });
+                return null;
+            }            
         } else {
             await MSTranscriptionTask.destroy({ where: { videoHashsum: videoHashsum } });
             return null;
