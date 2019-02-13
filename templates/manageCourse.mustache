@@ -1,93 +1,113 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Manage Courses - Instructors</title>
+  <title>Manage Courses - Instructors</title>
 
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
     <script type="text/javascript" src="https://rawgit.com/enyo/dropzone/master/dist/dropzone.js"></script>
     <script type="text/javascript" src="/routers/routes/manage.js"></script>
     <script type="text/javascript" src="/javascripts/controllers/manageCourse.js"></script>
     <link rel="stylesheet"  type="text/css" href="/stylesheets/global.css">
-<link rel="stylesheet" type="text/css" href="/stylesheets/manageCourse.css" />
+    <link rel="stylesheet" type="text/css" href="/stylesheets/manageCourse.css" />
 
-    <!-- link rel="stylesheet" type="text/css" href="https://rawgit.com/enyo/dropzone/master/dist/dropzone.css" / -->
+  <!-- Google web fonts -->
+  <link href="http://fonts.googleapis.com/css?family=PT+Sans+Narrow:400,700" rel='stylesheet' />
+  <!-- The main CSS file -->
+  <link href="/stylesheets/fileupload.css" rel="stylesheet" />
+
+  <!-- link rel="stylesheet" type="text/css" href="https://rawgit.com/enyo/dropzone/master/dist/dropzone.css" / -->
 </head>
 
 <body>
-	<div class="header-container">
-	    <header class="manage-course"> Manage {{className}} </header>
-	    <br>
-        <div class="line-separator-header"></div>
-        <br>
+  <div class="header-container">
+    <header class="manage-course"> Manage {{className}} </header>
+    <br>
+    <div class="line-separator-header"></div>
+    <br>
         </div>
+  </div>
+
+  <div class="enroll-container">
+    <header class="enroll-header"> Enroll Instructors/TAs </header>
+
+    <div class="line-separator"></div>
+
+    <div class="enroll-instructor-container">
+      <br>
+      <textarea class="enroll-person" id="instructor-box" placeholder="Add Instructors"></textarea>
+      <br>
+      <button class="enroll-button" id="instructor-button">Add Instructors</button>
+      <br>
+      <span id="i-test"> </span>
     </div>
 
-    <div class="enroll-container">
-        <header class="enroll-header"> Enroll Instructors/TAs </header>
+    <header class="enroll-header"> Enroll Students </header>
 
-        <div class="line-separator"></div>
+    <div class="line-separator"></div>
 
-        <div class="enroll-instructor-container">
-            <br>
-        	<textarea class="enroll-person" id="instructor-box" placeholder="Add Instructors"></textarea>
-        	<br>
-        	<button class="enroll-button" id="instructor-button">Add Instructors</button>
-            <br>
-            <span id="i-test"> </span>
-        </div>
-
-        <header class="enroll-header"> Enroll Students </header>
-
-        <div class="line-separator"></div>
-
-        <div class="enroll-student-container">
-            <br>
-        	<textarea class="enroll-person" id="student-box" placeholder="Add Students"></textarea>
-     		<br>
-            <button class="enroll-button" id="student-button">Add Students</button>
-            <br>
-            <span style="padding: 20px; font-weight: bold;"> or </span>
-            <br>
-            <form id="upload-students-files"
-                name="studentsFiles"
-                enctype="multipart/form-data"
-                action="/uploadStudentsFiles"
-                method="POST"
-                class="dropzone">
-            </form>
-            <span id="s-test"> </span>
-        </div>
-
-        <header class="upload-video-header"> Upload Lecture Video </header>
-
-        <div class="line-separator"></div>
-
-        <div class="upload-video-container">
-            <!--<br>-->
-            <!-- <form id="upload-lecture-videos"
-                name="lectureVideos"
-                enctype="multipart/form-data"
-                action="/uploadLectureVideos"
-                method="POST"
-              class="dropzone">
-            </form> -->
-
-            <form method="post" enctype="multipart/form-data" action="/manage/{{className}}">
-              <input type="file" name="filename">
-              <input type="submit" value="Upload">
-            </form>
-            <!-- <span id="ul-test"> </span> -->
-        </div>
-
-        <div class="watch-videos-container">
-            <button type="watch-videos" class="watch-videos" onclick="window.location='/{{className}}';"/>Watch Lecture Videos</button>
-        </div>
+    <div class="enroll-student-container">
+      <br>
+      <textarea class="enroll-person" id="student-box" placeholder="Add Students"></textarea>
+      <br>
+      <button class="enroll-button" id="student-button">Add Students</button>
+      <br>
+      <span style="padding: 20px; font-weight: bold;"> or </span>
+      <br>
+      <form id="upload-students-files" name="studentsFiles" enctype="multipart/form-data" action="/uploadStudentsFiles" method="POST" class="dropzone">
+      </form>
+      <span id="s-test"> </span>
     </div>
+
+    <header class="upload-video-header"> Upload Lecture Videos </header>
+
+    <div class="upload-video-container">
+      <!-- <form id="upload-lecture-videos" name="lectureVideos" enctype="multipart/form-data" action="/uploadLectureVideos" method="POST" class="dropzone">
+      </form>
+
+      <form method="post" enctype="multipart/form-data" action="/manage/{{className}}">
+        <input type="file" name="filename">
+        <input type="submit" value="Upload">
+              </form>
+        <span id="ul-test"> </span> -->
+
+      <form id="upload" method="post" action="upload.php" enctype="multipart/form-data">
+        <div id="drop">
+          Drop Here
+
+          <a>Browse</a>
+          <input type="file" name="upl" multiple />
+            </div>
+
+          <ul>
+            <!-- The file uploads will be shown here -->
+          </ul>
+
+      </form>
+
+      <!-- JavaScript Includes -->
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+      <script src="/javascripts/controllers/jquery.knob.js"></script>
+
+      <!-- jQuery File Upload Dependencies -->
+      <script src="/javascripts/controllers/jquery.ui.widget.js"></script>
+      <script src="/javascripts/controllers/jquery.iframe-transport.js"></script>
+      <script src="/javascripts/controllers/jquery.fileupload.js"></script>
+
+      <!-- Our main JS file -->
+      <script src="/javascripts/controllers/videoUpload.js"></script>
+
+    </div>
+
+    <div class="watch-videos-container">
+      <button type="watch-videos" class="watch-videos" onclick="window.location='/{{className}}';"/>Watch Lecture Videos</button>
+    </div>
+
+  </div>
 </body>
 
 

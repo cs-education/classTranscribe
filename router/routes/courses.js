@@ -91,11 +91,11 @@ var allterms = [];
 
 
 // courses page, display all relative courses
-router.get('/courses/', function (request, response) {   
+router.get('/courses/', function (request, response) {
     if (!request.isAuthenticated()) {
         response.redirect('/login?redirectPath=' + encodeURIComponent(request.originalUrl));
     }
-    else {        
+    else {
         response.writeHead(200, {
             'Content-Type': 'text/html'
         });
@@ -116,7 +116,7 @@ router.get('/courses/', function (request, response) {
                 createClassBtn =
                     '<button class="btn" data-toggle="modal" data-target="#createPanel">' +
                     '          Create a New Class</button>';
-            }            
+            }
             client_api.getUniversityName(userInfo.universityId).then(result => {
 
                 userInfo.university = result.universityName;
@@ -276,7 +276,7 @@ router.get('/courses/search', function (request, response) {
           var rethtml= "<tr id=\"#header\">\n" +
                        '<th >Term</th>'+
                        '<th hidden="yes">Id</th>' +
-                       "                    <th hidden='yes'>University</th>\n" +                       
+                       "                    <th hidden='yes'>University</th>\n" +
                        "                    <th>Subject</th>\n" +
                        "                    <th>Course Number</th>\n" +
                        "                    <th>Section Number</th>\n" +
@@ -501,7 +501,7 @@ function  generateListings(data, user, cb) {
         } catch (err) {
             instructorName = "";
         }
-        
+
         html += '<tr id="'+ e.id +'" >';
         html += '<td>' + e.termName + '</td>';
         html += '<td hidden="yes">' + e.courseOfferingId + '</td>';
@@ -532,9 +532,9 @@ function  generateListings(data, user, cb) {
                   permission.checkCoursePermission(user, classid, 'Drop', function (err, res) {
                     if (!res) {
                       html +=
-                      '<a class="actionbtn viewbtn" href="#">' +
+                      '<button class="actionbtn viewbtn" href="#">' +
                       '          <span class="glyphicon glyphicon-plus"></span> Watch\n' +
-                      '        </a>';
+                      '        </button>';
                     }
                     // } else {
                     //   html +=

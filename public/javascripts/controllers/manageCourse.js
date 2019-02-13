@@ -117,37 +117,37 @@ function filter() {
     });
 }
 
-
-/** dropzone video upload **/
-//Dropzone.autoDiscover = false;
-$(function() {
-    Dropzone.options.uploadLectureVideos = {
-      //paramName: 'test_file',
-      maxFilesize: 1000, // MB
-      //maxFiles: 1,
-      dictDefaultMessage: 'Drag a file here to upload, or click to select one',
-      acceptedFiles: ".mp4, .avi, .flv, .wmv, .mov, .wav, .ogv, .mpg, .m4v",
-      init: function() {
-        this.on('addedfile', function(file) {
-						console.log(file);
-						filename = file.name;
-        });
-      },
-    };
-});
-
-$(function() {
-    Dropzone.options.uploadStudentsFiles = {
-      //paramName: 'test_file',
-      maxFilesize: 100, // MB
-      //maxFiles: 1,
-      dictDefaultMessage: 'Drag a file here to upload, or click to select one',
-      acceptedFiles: ".txt, .csv, .xl*",
-      init: function() {
-        self = this;
-        this.on('addedfile', function(file) {
-            console.log("in addedfile");
-        });
-      },
-    };
-});
+//
+// /** dropzone video upload **/
+// //Dropzone.autoDiscover = false;
+// $(function() {
+//     Dropzone.options.uploadLectureVideos = {
+//       //paramName: 'test_file',
+//       maxFilesize: 1000, // MB
+//       //maxFiles: 1,
+//       dictDefaultMessage: 'Drag a file here to upload, or click to select one',
+//       acceptedFiles: ".mp4, .avi, .flv, .wmv, .mov, .wav, .ogv, .mpg, .m4v",
+//       init: function() {
+//         this.on('addedfile', function(file) {
+// 						console.log(file);
+// 						filename = file.name;
+//         });
+//       },
+//     };
+// });
+//
+// $(function() {
+//     Dropzone.options.uploadStudentsFiles = {
+//       //paramName: 'test_file',
+//       maxFilesize: 100, // MB
+//       //maxFiles: 1,
+//       dictDefaultMessage: 'Drag a file here to upload, or click to select one',
+//       acceptedFiles: ".txt, .csv, .xl*",
+//       init: function() {
+//         self = this;
+//         this.on('addedfile', function(file) {
+//             console.log("in addedfile");
+//         });
+//       },
+//     };
+// });

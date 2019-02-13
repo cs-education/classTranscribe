@@ -378,7 +378,7 @@ h1 span{
   margin-top:20px;
   font-size:1.4rem;
   width:100%;
-  color:#818181;
+  color:#5E5E5E;
   line-height:1.4;
   position:relative;
   font-weight:400;
@@ -387,7 +387,7 @@ h1 span{
 .about-us i{
   display:block;
   font-size:8rem;
-  color:#2fa683;
+  color:#247F64;
 }
 
 .about-us .column-one{
@@ -650,7 +650,7 @@ h1 span{
   position:relative;
   width:900px;
   overflow:hidden;
-  margin: 40px 0 65px 0;  
+  margin: 40px 0 65px 0;
 }
 
 .contact .contact-margin .content .contact-text{
