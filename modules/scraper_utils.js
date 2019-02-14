@@ -143,7 +143,9 @@ async function processTasks(mediaIds) {
         var outputFile = await download_lecture(media);
         var videoHashsum = await conversion_utils.hash_file(outputFile);
         var taskId = await db.getTaskIdIfNotUnique(videoHashsum);
+        var duplicate = false;
         if (taskId != null) {
+            duplicate = true;
             console.log("Duplicate: " + taskId);
             try {
                 console.log("Deleting:" + outputFile);
@@ -151,10 +153,12 @@ async function processTasks(mediaIds) {
             } catch (err) {
                 console.log(err);
             }
-        }        
+        }
 
         var task = await db.addMSTranscriptionTask(mediaId, taskId, videoHashsum, path.resolve(outputFile));
-        tasks.push(task);
+        if(!duplicate) {
+            tasks.push(task);
+        }
     });
     await wavAndSrt(tasks);
 }
@@ -187,6 +191,7 @@ async function reprocessIncompleteMedias(courseOfferingId) {
 
 async function reprocessIncompleteTaskIdsForCourseOfferingId(courseOfferingId, parallel) {
     var taskIds = await db.getIncompleteTaskIdsForCourseOfferingId(courseOfferingId);
+    console.log(taskIds);
     var tasks = [];
     for (var taskId in taskIds) {
         tasks.push(await db.getTask(taskIds[taskId]));

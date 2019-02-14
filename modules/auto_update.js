@@ -93,8 +93,10 @@ async function processCourseOfferingId(courseOfferingId) {
 }
 
 (async () => {
-    await addJobs();
     await getJobs();
+    // await processCourseOfferingId('c48ca8d2-a7a7-40b2-86c5-14bfa0630e0e');
+    // await scraper_utils.reprocessIncompleteMedias('c48ca8d2-a7a7-40b2-86c5-14bfa0630e0e');
+    // await scraper_utils.reprocessIncompleteTaskIdsForCourseOfferingId('c48ca8d2-a7a7-40b2-86c5-14bfa0630e0e', false);
 })();
 
 
