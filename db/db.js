@@ -161,11 +161,13 @@ async function addMSTranscriptionTask(mediaId, taskId, videoHashsum, videoLocalL
         fileName = path.resolve(fileName);
         fs.copyFileSync(videoLocalLocation, fileName);
         fs.unlinkSync(videoLocalLocation);
-        task = await MSTranscriptionTask.create({ id: id, videoHashsum: videoHashsum, videoLocalLocation: fileName});
+        task = await MSTranscriptionTask.create({ id: id, videoHashsum: videoHashsum, videoLocalLocation: fileName });
     } else {
         task = await getTask(taskId);
     }
-    await TaskMedia.create({ taskId: task.id, mediaId: mediaId });    
+    await TaskMedia.findOrCreate({
+        where: { taskId: task.id, mediaId: mediaId }
+    });
     return task;
 }
 
