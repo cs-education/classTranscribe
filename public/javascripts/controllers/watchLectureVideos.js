@@ -7,6 +7,7 @@ var player;
 var jslinqData;
 var currentVideoTranscriptions;
 var timeUpdateLastEnd = 0;
+var timeUpdateLastStart = 0;
 var fullCourseSearch = false;
 var autoScroll = true;
 var live_transcriptions_div = $('#live_transcriptions');
@@ -53,7 +54,7 @@ function navigateToVideo(video, startTime) {
 //}
 
 function updateCurrentVideoTranscriptions() {
-    timeUpdateLastEnd = 0;
+    timeUpdateLastEnd = timeUpdateLastStart = 0;
     var video = player.currentSrc();
     currentVideoTranscriptions = jslinqData.where(function (item) {
         // filter out results to currentVideo
@@ -294,8 +295,8 @@ function update_search_results() {
             updateCurrentVideoTranscriptions();
         });
         player.on('timeupdate', function () {
-            var currentTimeinMillis = player.currentTime() * 1000;            
-            if (currentTimeinMillis > timeUpdateLastEnd) {
+            var currentTimeinMillis = player.currentTime() * 1000;
+            if (currentTimeinMillis > timeUpdateLastEnd || currentTimeinMillis < timeUpdateLastStart) {
                 console.log(currentTimeinMillis);
                 var res = currentVideoTranscriptions.where(function (item) {
                     // find the appropriate subtitle
@@ -305,6 +306,7 @@ function update_search_results() {
                 for (var item in res) {
                     scrollToListItem(res[item].id);
                     timeUpdateLastEnd = res[item].end;
+                    timeUpdateLastStart = res[item].start;
                 }
             }
         });
