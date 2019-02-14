@@ -81,9 +81,13 @@ async function doesEchoMediaExist(echoMediaId) {
                 WHERE echoMediaId = ? \
                 GROUP BY id; ",
         { replacements: [echoMediaId], type: sequelize.QueryTypes.SELECT }).catch(err => perror(err)); /* raw query */
-    var count = query.count;
-    console.log(query);
-    console.log(count);
+    var count = 0;
+    if (query.length > 0) {
+        count = query[0].count;
+    } else {
+        count = 0;
+    }
+    console.log("EchoMediaid count:" + count);
     return count > 0 ? true : false;
 }
 
@@ -107,7 +111,13 @@ async function doesYoutubeMediaExist(playlistId, title) {
         WHERE playlistId = ? and title = ? \
         GROUP BY id",
         { replacements: [playlistId, title], type: sequelize.QueryTypes.SELECT }).catch(err => perror(err)); /* raw query */
-    var count = query.count;
+    var count = 0;
+    if (query.length > 0) {
+        count = query[0].count;
+    } else {
+        count = 0;
+    }
+    console.log("EchoMediaid count:" + count);
     return count > 0 ? true : false;
 }
 
@@ -161,11 +171,13 @@ async function addMSTranscriptionTask(mediaId, taskId, videoHashsum, videoLocalL
         fileName = path.resolve(fileName);
         fs.copyFileSync(videoLocalLocation, fileName);
         fs.unlinkSync(videoLocalLocation);
-        task = await MSTranscriptionTask.create({ id: id, videoHashsum: videoHashsum, videoLocalLocation: fileName});
+        task = await MSTranscriptionTask.create({ id: id, videoHashsum: videoHashsum, videoLocalLocation: fileName });
     } else {
         task = await getTask(taskId);
     }
-    await TaskMedia.create({ taskId: task.id, mediaId: mediaId });    
+    await TaskMedia.findOrCreate({
+        where: { taskId: task.id, mediaId: mediaId }
+    });
     return task;
 }
 
