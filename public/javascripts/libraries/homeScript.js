@@ -78,21 +78,22 @@ jQuery(document).ready(function($){
   );    
 
 
-  if ( $(window).width() > 1023) {     
+  //TODO: fix compatibility with 4K displays
+  //if ( $(window).width() > 1023) {
 
-    tiles = $("p, h1, h2, h3, .column-one, .column-two, .column-three, .start-page .content .text, hr, .grid li, .contact .content .form, .contact .content .contact-text ").fadeTo(0, 0);
+    //tiles = $("p, h1, h2, h3, .column-one, .column-two, .column-three, .start-page .content .text, hr, .grid li, .contact .content .form, .contact .content .contact-text ").fadeTo(0, 0);
 
-    $(window).scroll(function(d,h) {
-      tiles.each(function(i) {
-          a = $(this).offset().top + $(this).height();
-          b = $(window).scrollTop() + $(window).height();
-          if (a < b) $(this).fadeTo(1000,1);
-      });
-    });
+    //$(window).scroll(function(d,h) {
+      //tiles.each(function(i) {
+          //a = $(this).offset().top + $(this).height();
+          //b = $(window).scrollTop() + $(window).height();
+          //if (a < b) $(this).fadeTo(1000,1);
+      //});
+    //});
 
-  }
-  else {
-  }
+  //}
+  //else {
+  //}
 
 
   //Menu mobile click
