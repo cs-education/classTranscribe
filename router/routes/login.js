@@ -18,7 +18,9 @@ router.get('/login', function (request, response) {
     var redirectPath;
     if (typeof request.query.redirectPath != "undefined") {
         redirectPath = request.query.redirectPath;
-    }    
+    } else {
+        redirectPath = '/courses';
+    }
     if (request.isAuthenticated()) {
         response.redirect('../courses');
     } else {

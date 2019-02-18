@@ -7,6 +7,7 @@ var player;
 var jslinqData;
 var currentVideoTranscriptions;
 var timeUpdateLastEnd = 0;
+var timeUpdateLastStart = 0;
 var fullCourseSearch = false;
 var autoScroll = true;
 var live_transcriptions_div = $('#live_transcriptions');
@@ -34,24 +35,26 @@ function navigateToVideo(video, startTime) {
     player.play();
 }
 
-// Update live_transcriptions_div with items in list
-function updateLiveTranscriptionsDiv(list) {
-    console.log("Total Transcriptions for video: " + list.length);
+//// Update live_transcriptions_div with items in list
+//function updateLiveTranscriptionsDiv(list) {
+//    console.log("Total Transcriptions for video: " + list.length);
 
-    live_transcriptions_div.children().css('display', 'none');
-    // Show the dummy transcriptions (with negative ids)
-    for (let i = 0; i < dummy_transcriptions_count; i++) {
-        $("#" + (-i - 1)).css('display', 'block');
-    }
-    if (list.length !== 0) {
-        // Show results
-        for (var item in list) {
-            var listItemId = list[item].id;
-            $("#" + (listItemId)).css('display', 'initial');
-        }
-    }
-}
+//    live_transcriptions_div.children().css('display', 'none');
+//    // Show the dummy transcriptions (with negative ids)
+//    for (let i = 0; i < dummy_transcriptions_count; i++) {
+//        $("#" + (-i - 1)).css('display', 'block');
+//    }
+//    if (list.length !== 0) {
+//        // Show results
+//        for (var item in list) {
+//            var listItemId = list[item].id;
+//            $("#" + (listItemId)).css('display', 'initial');
+//        }
+//    }
+//}
+
 function updateCurrentVideoTranscriptions() {
+    timeUpdateLastEnd = timeUpdateLastStart = 0;
     var video = player.currentSrc();
     currentVideoTranscriptions = jslinqData.where(function (item) {
         // filter out results to currentVideo
@@ -59,7 +62,9 @@ function updateCurrentVideoTranscriptions() {
     });
     var currentList = currentVideoTranscriptions.toList();
     // Output it
-    updateLiveTranscriptionsDiv(currentList);
+    // updateLiveTranscriptionsDiv(currentList);
+    addTranscriptionsToDiv(currentList);
+    updateDownloadVttButton(video);
 }
 
 function attachTranscriptionItemListeners() {
@@ -108,8 +113,7 @@ function generateShareLink(video, startTime) {
     utils.copyTextToClipboard(shareLink);
 }
 
-function addAllTranscriptionsToList() {
-    var currentList = jslinqData.toList();
+function addTranscriptionsToDiv(currentList) {
     // Output it
     if (currentList.length === 0) {
         // Hide results
@@ -134,9 +138,9 @@ function addAllTranscriptionsToList() {
     }
     attachTranscriptionItemListeners();
 }
-
+ 
 function generateItemHTML(id, start, video, part) {
-    return "<div class='list-group-item transcription-item' style='display:none;' id='" + id + "'>" +
+    return "<div class='list-group-item transcription-item' style='display:initial;' id='" + id + "'>" +
         "<div class= 'row'>" + 
         "<div class='col-sm-3'><tt>" +
         utils.msToTime(start) + 
@@ -167,15 +171,15 @@ function generateItemHTML(id, start, video, part) {
 }
 
 function updateDownloadVttButton(srcid) {
-  currentVideoTranscriptions = jslinqData.where(function (item) {
-      // filter out results to currentVideo
-      return srcid === item.video;
-  });
-  var currentList = currentVideoTranscriptions.toList();
-  var filePath = currentList[0].subFile;
-  var buttonItem = generateDownloadVttButtonHTML(filePath);
-  download_transcriptions_div.append(buttonItem);
-  live_transcriptions_div.show();
+    currentVideoTranscriptions = jslinqData.where(function (item) {
+        // filter out results to currentVideo
+        return srcid === item.video;
+    });
+    var currentList = currentVideoTranscriptions.toList();
+    var filePath = currentList[0].subFile;
+    var buttonItem = generateDownloadVttButtonHTML(filePath);
+    download_transcriptions_div.empty()
+    download_transcriptions_div.append(buttonItem);
 }
 
 function generateDownloadVttButtonHTML(srcid) {
@@ -195,13 +199,41 @@ function scrollToListItem(listItemId) {
 function updateTranscriptionsData(data) {
     idx = getLunrObj(data);
     jslinqData = jslinq(data);
-    addAllTranscriptionsToList();
 }
 
 function linkSrcAndTitle(playlist) {
   for (var i = 0; i < playlist.length; i++){
     srctoTitle[playlist[i].sources[0].src] = playlist[i].name;
   }
+}
+
+function update_search_results() {
+    // Get query
+    var query = $("#search").val();
+    results = idx.search(query);
+    filteredSubs = []
+    results.forEach(function (result) {
+        index = parseInt(result.ref);
+        filteredSubs.push(data[index]);
+    });
+    var queryObj = jslinq(filteredSubs);
+    var res;
+    if (fullCourseSearch) {
+        res = queryObj.toList();
+    } else {
+        res = queryObj.where(function (item) {
+            return item.video === player.currentSrc();
+        }).toList();
+    }
+    console.log("Total Search Results" + res.length);
+    addTranscriptionsToDiv(res)
+    if (fullCourseSearch) {
+        if ($("#search").val()) {
+            $('.video-name-for-vtt').css('display', 'initial');
+        }
+    } else {
+        $('.video-name-for-vtt').css('display', 'none');
+    }
 }
 
 (async () => {
@@ -225,11 +257,9 @@ function linkSrcAndTitle(playlist) {
             nextButton: true
         });
         data = await $.when($.getJSON(getSrtUrl));
-        var srcid = player.currentSrc()
         updateTranscriptionsData(data);
         updateCurrentVideoTranscriptions();
-        updateDownloadVttButton(srcid);
-
+        
         var queryParams = utils.getUrlVars();
         if (queryParams.hasOwnProperty('video')) {
             if (queryParams.hasOwnProperty('startTime')) {
@@ -238,50 +268,8 @@ function linkSrcAndTitle(playlist) {
                 navigateToVideo(queryParams['video'], 0);
             }
         }
-        
-
-        function update_search_results() {
-            // Get query
-            var query = $("#search").val();
-            results = idx.search(query);
-            filteredSubs = []
-            results.forEach(function (result) {
-                index = parseInt(result.ref);
-                filteredSubs.push(data[index]);
-            });
-            var queryObj = jslinq(filteredSubs);
-            var res;
-            if (fullCourseSearch) {
-                res = queryObj.toList();
-            } else {
-                res = queryObj.where(function (item) {
-                    return item.video === player.currentSrc();
-                }).toList();
-            }
-            console.log("Total Search Results" + res.length);
-            if (res.length === 0) {
-                // Hide results
-                live_transcriptions_div.children().css('display', 'initial');
-            } else {
-                // Show results
-                if (fullCourseSearch) {
-                  if ($("#search").val()){
-                    $('.video-name-for-vtt').css('display', 'initial');
-                  }
-                } else {
-                  $('.video-name-for-vtt').css('display', 'none');
-                }
-                live_transcriptions_div.children().css('display', 'none');
-                for (var item in res) {
-                    var listItemId = res[item].id;
-                    $("#" + (listItemId)).css('display', 'initial');
-                }
-            }
-            updateLiveTranscriptionsDiv(res);
-        }
 
         $('#search').on('keyup', update_search_results);
-
 
         $('#full_course_search').change(function () {
             if (this.checked) {
@@ -305,17 +293,11 @@ function linkSrcAndTitle(playlist) {
 
         player.on('playlistitem', function () {
             updateCurrentVideoTranscriptions();
-            srcid = player.currentSrc();
-            download_transcriptions_div.empty()
-            updateDownloadVttButton(srcid);
         });
         player.on('timeupdate', function () {
             var currentTimeinMillis = player.currentTime() * 1000;
-            if (currentTimeinMillis > timeUpdateLastEnd) {
-                var res = currentVideoTranscriptions.where(function (item) {
-                    // find the appropriate subtitle
-                    return (currentTimeinMillis >= item.start) && currentTimeinMillis <= item.end;
-                }).toList();
+            if (currentTimeinMillis > timeUpdateLastEnd || currentTimeinMillis < timeUpdateLastStart) {
+                console.log(currentTimeinMillis);
                 var res = currentVideoTranscriptions.where(function (item) {
                     // find the appropriate subtitle
                     return (item.start <= currentTimeinMillis);
@@ -323,6 +305,8 @@ function linkSrcAndTitle(playlist) {
 
                 for (var item in res) {
                     scrollToListItem(res[item].id);
+                    timeUpdateLastEnd = res[item].end;
+                    timeUpdateLastStart = res[item].start;
                 }
             }
         });
@@ -334,6 +318,5 @@ function linkSrcAndTitle(playlist) {
                 $('.vjs-up-next').click();
             }
         })
-
     });
 })();
