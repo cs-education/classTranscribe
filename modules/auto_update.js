@@ -68,7 +68,7 @@ async function addJobs() {
     });
 }
 
-async function getJobs() {
+async function runSpring2019Jobs() {
     var jobs = await db.getUpdationJobsBetween(utils.stringToDate("2019-01-01"),
         utils.stringToDate("2019-12-31"));
     await utils.asyncForEach(jobs, async function (job) {
@@ -93,15 +93,27 @@ async function processCourseOfferingId(courseOfferingId) {
 }
 
 (async () => {
-    await getJobs();
-    // await processCourseOfferingId('c48ca8d2-a7a7-40b2-86c5-14bfa0630e0e');
-    // await scraper_utils.reprocessIncompleteMedias('c48ca8d2-a7a7-40b2-86c5-14bfa0630e0e');
-    // await scraper_utils.reprocessIncompleteTaskIdsForCourseOfferingId('c48ca8d2-a7a7-40b2-86c5-14bfa0630e0e', false);
+    if (process.argv.length < 3) {
+        console.log("Insufficient arguments");
+        return;
+    }
+    var method = process.argv[2];
+    console.log(method);
+    switch (method) {
+        case "runSpring2019Jobs": runSpring2019Jobs();
+            break;
+        case "reprocessMedias": scraper_utils.reprocessIncompleteMedias(process.argv[3]);
+            break;
+        case "reprocessTasks": scraper_utils.reprocessIncompleteTaskIdsForCourseOfferingId(process.argv[3], false);
+            break;
+        case "processCourseOfferingId": processCourseOfferingId(process.argv[3]);
+            break;
+    }    
 })();
 
 
 module.exports = {
     addJobs: addJobs,
-    getJobs: getJobs,
+    runSpring2019Jobs: runSpring2019Jobs,
     processCourseOfferingId: processCourseOfferingId
 }
