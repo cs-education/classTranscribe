@@ -13,6 +13,8 @@ router.get('/', async function (request, response) {
   response.writeHead(200, {
     'Content-Type': 'text/html'
   });
+  // UNUSED - 
+
   let courseGrid = "<ul class=\"grid\"> \n";
   let courses = await client_api.getAllCourses().then(async function(values){
     // console.log("++++++++++++++++++++++++")
@@ -47,6 +49,7 @@ router.get('/', async function (request, response) {
 
   });
   courseGrid += "</ul>"
+  
   // console.log(courseGrid)
   await renderWithPartial(Mustache.getMustacheTemplate('home.mustache'), request, response, {courseGrid: courseGrid});
 });
