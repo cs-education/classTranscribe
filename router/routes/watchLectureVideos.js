@@ -33,11 +33,15 @@ router.get('/getPlaylist/:courseOfferingId', function (request, response) {
             var playlist = values.map(result => {
                 let video = {};
                 let des = JSON.parse(result.siteSpecificJSON);
-                if (result['sourceType'] == 0 || result['sourceType'] == 2) {
-                    video['name'] = ctr++ + ". " + dateformat(result['createdAt'], "mm-dd-yyyy");
-                } else {
+                if (result['sourceType'] == 0) {
+                    video['name'] = ctr++ + ": " + dateformat(result['createdAt'], "mm-dd-yyyy");
+                } else if (result['sourceType'] == 2) {
+                    var sitespecifcJSON = JSON.parse(result['siteSpecificJSON']);
+                    video['name'] = ctr++ + ": " + dateformat(result['createdAt'], "mm-dd-yyyy") + ": " + sitespecifcJSON.lessonName;
+                }
+                else {
                     video['name'] = des.title;
-                }                
+                }
                 video['sources'] = [{ src: result['videoLocalLocation'], type: 'video/mp4' }];
                 video['textTracks'] = [{ src: result['srtFileLocation'], srclang: 'eng', label: 'English' }];
                 video['thumbnail'] = false;
