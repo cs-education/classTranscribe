@@ -10,12 +10,16 @@ function convertVttToJson(vttString) {
       let line_end = vttString.indexOf('\n', line_pivot + 3);
       subtitleIsNext = true;
 
-      let left_lines = vttString.substring(line_start, line_pivot).trimRight();
-      let right_lines = vttString.substring(line_pivot + 3, line_end).trimLeft();
-      let tmp_idx = right_lines.indexOf(' ');
+      let left_half = vttString.substring(line_start, line_pivot).trimRight();
+      let first_space_in_left_half_idx = left_half.indexOf(' ');
+
+      let right_half = vttString.substring(line_pivot + 3, line_end).trimLeft();
+      let first_space_in_right_half_idx = right_half.indexOf(' ');
+
       current = {
-        start: timeString2ms(left_lines.substring(left_lines.lastIndexOf(' ') + 1)),
-        end: timeString2ms(tmp_idx < 0 ? right_lines : right_lines.substring(0, tmp_idx)),
+        //Avoid a copy if no space is found.
+        start: timeString2ms(first_space_in_left_half_idx < 0 ? left_half : left_half.substring(first_space_in_left_half_idx + 1)),
+        end: timeString2ms(first_space_in_right_half_idx < 0 ? right_half : right_half.substring(0, first_space_in_right_half_idx)),
         subtitles: []
       }
       sections.push(current);
