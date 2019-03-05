@@ -14,8 +14,8 @@
 	openssl req -new -key cert/privkey.pem -out cert/csr.pem
 	openssl x509 -req -days 356 -in cert/csr.pem -signkey cert/privkey.pem -out cert/cert.pem
 	rm cert/csr.pem
-   (Fill blanks if asked for any details) 
-
+   (Fill blanks if asked for any details)
+	 
 - Navigate to the "Docker" folder in the github repository.
 - Setup SQL
 
@@ -52,7 +52,7 @@ For Setup of Development Image
 
 	Build the image,
 	sudo docker build -f Dockerfile.dev -t cs-education/classtranscribe/dev ..
-	Run the image, 
+	Run the image,
 	(REPLACE THE {Absolute_path_to_local_classTranscribe_repository} with a local directory the git repositor is stored)
 	(REPLACE THE {Absolute_path_to_data_directory} with a local directory where the data will be stored)
 	sudo docker run -i -t --mount type=bind,source={Absolute_path_to_local_classTranscribe_repository},target=/classTranscribe --mount type=bind,source={Absolute_path_to_data_directory},target=/data -p 443:8000 -p 80:7000 --link CTdb:mssql --env-file env.list  -e "MODE=DEV" --name CT_Dev cs-education/classtranscribe/dev /bin/bash
