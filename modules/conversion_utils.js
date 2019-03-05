@@ -35,7 +35,35 @@ async function convertVideoToWav(pathToFile) {
         console.log(`stderr: ${data}`);
     });
 
-    return await ffmpeg.then(result => { return Promise.resolve(outputFile) });
+    try {
+        await ffmpeg;
+        return outputFile;
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
+}
+
+async function convertVideoToFaststart(input, output) {
+    console.log("convertVideoToWav");
+    const { spawn } = require('child-process-promise');
+    const ffmpeg = spawn('ffmpeg', ['-nostdin', '-y', '-i', input, '-acodec', 'copy', '-vcodec', 'copy', '-movflags', 'faststart', '-f', 'mp4', output]);
+
+    ffmpeg.childProcess.stdout.on('data', (data) => {
+        console.log(`stdout: ${data}`);
+    });
+
+    ffmpeg.childProcess.stderr.on('data', (data) => {
+        console.log(`stderr: ${data}`);
+    });
+
+    try {
+        await ffmpeg;
+        return output;
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
 }
 
 async function convertWavFileToSrt(pathToFile) {
@@ -49,10 +77,14 @@ async function convertWavFileToSrt(pathToFile) {
     dotnet.childProcess.stderr.on('data', (data) => {
         console.log(`stderr: ${data}`);
     });
-
-    return await dotnet.then(result => {
-        return Promise.resolve(outputFile)
-    });
+    
+    try {
+        await dotnet;
+        return outputFile;
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
 }
 
 async function download_from_youtube_url(videoUrl, outputFile) {
@@ -74,9 +106,12 @@ async function copy_file(source_file, outputFile) {
     const fs = require('fs');
 
     // destination.txt will be created or overwritten by default.
-    fs.copyFile(source_file, outputFile, (err) => {
-        if (err) throw err;
-    });
+    try {
+        fs.copyFileSync(source_file, outputFile);
+    } catch (err) {
+        console.log(err);
+    }
+    
     return outputFile
 }
 
@@ -117,10 +152,20 @@ async function get_thumbnails_from_video(pathToFile) {
     return outputFile;
 }
 
+async function hash_file(filename, algo='sha256') {
+    const hasha = require('hasha');
+
+    return await hasha.fromFile(filename, { algorithm: algo }).then(hash => {
+        return Promise.resolve(hash);
+    });
+}
+
 module.exports = {
     convertVideoToWav: convertVideoToWav,
     convertWavFileToSrt: convertWavFileToSrt,
     downloadFile: downloadFile,
     copy_file: copy_file,
-    download_from_youtube_url: download_from_youtube_url
+    download_from_youtube_url: download_from_youtube_url,
+    hash_file: hash_file,
+    convertVideoToFaststart: convertVideoToFaststart
 }

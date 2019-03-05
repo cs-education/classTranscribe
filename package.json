@@ -1,7 +1,7 @@
 {
   "name": "classTranscribe",
   "version": "1.0.0",
-  "description": "Enables efficient crowdsourcing of lecture material to power search and closed-captioning.",
+  "description": "Searchable Accessible video player designed for university classes with automatic and crowd-sourced captioning and text searching.",
   "main": "server.js",
   "dependencies": {
     "acl": "^0.4.11",
@@ -28,6 +28,7 @@
     "grunt-contrib-watch": "^1.1.0",
     "grunt-express-server": "0.5.3",
     "grunt-php": "1.5.1",
+    "hasha": "^3.0.0",
     "http-proxy": "1.16.2",
     "jsclass": "^4.0.5",
     "jslinq": "^1.0.21",
@@ -41,7 +42,6 @@
     "mustache": "^2.1.2",
     "node-webvtt": "^1.2.0",
     "node-wget": "^0.4.3",
-    "node-wget-promise": "^0.1.6",
     "nodemailer": "^1.11.0",
     "passport": "0.2.1",
     "passport-google-oauth": "^1.0.0",
@@ -54,7 +54,6 @@
     "pug": "^2.0.3",
     "redis": "^2.0.0",
     "request": "^2.88.0",
-    "request-cookies": "^1.1.0",
     "request-promise": "^4.2.2",
     "require-promise": "^1.0.1",
     "sequelize": "^4.41.2",
@@ -83,8 +82,8 @@
     "type": "git",
     "url": "https://github.com/cs-education/classTranscribe.git"
   },
-  "author": "Oliver Melvin",
-  "license": "",
+  "author": "Copyright 2015-2019 Board of Trustees of University of Illinois and university, faculty staff and students where listed",
+  "license": "MIT Open Source License",
   "bugs": {
     "url": "https://github.com/cs-education/classTranscribe/issues"
   },

@@ -7,7 +7,10 @@
 const router = express.Router();
 const fs = require('fs');
 const db = require('../../db/db');
-const settingsMustache = fs.readFileSync(mustachePath + 'settings.mustache').toString();
+
+//const settingsMustache = fs.readFileSync(mustachePath + 'settings.mustache').toString();
+
+
 const utils = require('../../utils/logging');
 const perror = utils.perror;
 
@@ -18,10 +21,10 @@ router.get('/settings', function(request, response) {
     });
 
     var userInfo = request.user;
-    var html = Mustache.render(settingsMustache, {first_name : userInfo.firstName, last_name : userInfo.lastName });
+    var html = Mustache.render(Mustache.getMustacheTemplate('settings.mustache'), {first_name : userInfo.firstName, last_name : userInfo.lastName });
     response.end(html);
   } else {
-    response.redirect('../');
+      response.redirect('/login?redirectPath=' + encodeURIComponent(request.originalUrl));
   }
 });
 

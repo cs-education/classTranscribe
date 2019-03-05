@@ -25,7 +25,7 @@ const storage = multer.diskStorage({
   }
 });
 
-var manageCoursePage = fs.readFileSync(mustachePath + 'manageCourse.mustache').toString();
+//var manageCoursePage = fs.readFileSync(mustachePath + 'manageCourse.mustache').toString();
 
 router.get('/manage/:courseOfferingId', function (request, response) {
 
@@ -62,17 +62,17 @@ router.get('/manage/:courseOfferingId', function (request, response) {
           perror(error);
           response.send({ message : error, html : '/' });
         } else { /* TODO: check permission */
-          renderWithPartial(manageCoursePage, request, response, { className : className} );
+          renderWithPartial(Mustache.getMustacheTemplate('manageCourse.mustache'), request, response, { className : className} );
         }
       }).catch(err => perror(err)) /* db.validateUserAccess() */
     } else {
       response.writeHead(200, {
         'Content-Type': 'text/html'
       });
-      renderWithPartial(manageCoursePage, request, response, { className : className} );
+      renderWithPartial(Mustache.getMustacheTemplate('manageCourse.mustache'), request, response, { className : className} );
     }
   } else  {
-    response.redirect('../../');
+      response.redirect('/login?redirectPath=' + encodeURIComponent(request.originalUrl));
   }
 });
 

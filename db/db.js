@@ -3,7 +3,11 @@ var Sequelize = require('sequelize');
 var models = require('../models');
 const utils = require('../utils/logging');
 const uuid = require('uuid/v4');
+var fs = require('fs');
 const sequelize = models.sequelize;
+var path = require('path');
+const _dirname = '/data/';
+var conversion_utils = require('../modules/conversion_utils');
 
 sequelize.sync();
 
@@ -27,6 +31,8 @@ const User = models.User;
 const UserOffering = models.UserOffering;
 const YoutubeChannel = models.YoutubeChannel;
 const CourseOfferingMedia = models.CourseOfferingMedia;
+const TaskMedia = models.TaskMedia;
+const UpdationJobs = models.UpdationJobs;
 /* ----- end of defining ----- */
 
 function getAllCourses() {
@@ -48,15 +54,71 @@ function addCourseOfferingMedia(courseOfferingId, mediaId, description) {
     })
 }
 
+async function getMediaIdsByCourseOfferingId(courseOfferingId) {
+    var mediaIds = await sequelize.query("SELECT M.id \
+        FROM Media as M, CourseOfferingMedia  \
+        WHERE M.id = CourseOfferingMedia.mediaId and CourseOfferingMedia.courseOfferingId = ? ",
+        { replacements: [courseOfferingId], type: sequelize.QueryTypes.SELECT }).catch(err => perror(err)); /* raw query */
+    mediaIds = mediaIds.map(a => a.id);
+    return mediaIds;
+}
+
 function getPlaylistByCourseOfferingId(courseOfferingId) {
   return sequelize.query(
-   'SELECT mst.videoLocalLocation, mst.srtFileLocation, M.siteSpecificJSON, mst.mediaId \
+   'SELECT DISTINCT M.id as mediaId, mst.videoLocalLocation, mst.srtFileLocation, M.siteSpecificJSON, M.createdAt, M.sourceType as sourceType \
     FROM MSTranscriptionTasks AS mst \
-    INNER JOIN Media as M on mst.mediaId = M.id \
+    INNER JOIN TaskMedia as tm on tm.taskId = mst.id \
+    INNER JOIN Media as M on tm.mediaId = M.id \
     INNER JOIN CourseOfferingMedia as com on com.mediaId = M.id \
     WHERE com.courseOfferingId = ? \
-    ORDER BY M.id',
+    ORDER BY M.createdAt, M.id',
    { replacements: [ courseOfferingId ], type: sequelize.QueryTypes.SELECT}).catch(err => perror(err)); /* raw query */
+}
+
+async function doesEchoMediaExist(echoMediaId) {
+    var query = await sequelize.query("SELECT count(*) as count, id as mediaId\
+                FROM(Select JSON_VALUE(siteSpecificJSON, '$.mediaId') as echoMediaId, id FROM Media) a \
+                WHERE echoMediaId = ? \
+                GROUP BY id; ",
+        { replacements: [echoMediaId], type: sequelize.QueryTypes.SELECT }).catch(err => perror(err)); /* raw query */
+    var count = 0;
+    if (query.length > 0) {
+        count = query[0].count;
+    } else {
+        count = 0;
+    }
+    console.log("EchoMediaid count:" + count);
+    return count > 0 ? true : false;
+}
+
+async function getIncompleteTaskIdsForCourseOfferingId(courseOfferingId) {
+    var taskIds = await sequelize.query("	SELECT T.id \
+    FROM Media as M, CourseOfferingMedia, MSTranscriptionTasks as T, TaskMedia as TM \
+    WHERE M.id = CourseOfferingMedia.mediaId \
+	and TM.mediaId = M.id \
+	and T.id = TM.taskId \
+	and CourseOfferingMedia.courseOfferingId = ? \
+    and T.srtFileLocation is NULL \
+    and T.videoHashsum is not NULL",
+        { replacements: [courseOfferingId], type: sequelize.QueryTypes.SELECT }).catch(err => perror(err)); /* raw query */
+    taskIds = taskIds.map(a => a.id);
+    return taskIds;
+}
+
+async function doesYoutubeMediaExist(playlistId, title) {
+    var query = await sequelize.query("Select count(*)  as count, id as mediaId\
+        FROM(Select JSON_VALUE(siteSpecificJSON, '$.playlistId') as playlistId, JSON_VALUE(siteSpecificJSON, '$.title') as title, id FROM Media) a \
+        WHERE playlistId = ? and title = ? \
+        GROUP BY id",
+        { replacements: [playlistId, title], type: sequelize.QueryTypes.SELECT }).catch(err => perror(err)); /* raw query */
+    var count = 0;
+    if (query.length > 0) {
+        count = query[0].count;
+    } else {
+        count = 0;
+    }
+    console.log("EchoMediaid count:" + count);
+    return count > 0 ? true : false;
 }
 
 function addYoutubeChannelPlaylist(playlistId, channelId) {
@@ -94,31 +156,59 @@ async function addMedia(videoURL, sourceType, siteSpecificJSON) {
         defaults: {
             videoURL: videoURL,
             sourceType: sourceType,
-            siteSpecificJSON: JSON.stringify(siteSpecificJSON)
+            siteSpecificJSON: JSON.stringify(siteSpecificJSON),
+            createdAt: siteSpecificJSON.createdAt
         }
     });
     return media[0].id;
 }
 
-async function addMSTranscriptionTask(mediaId) {
-    var task = await MSTranscriptionTask.findOrCreate({
-        where: {
-        mediaId: mediaId
-        },
-        defaults: {
-        id: uuid(),
-        mediaId: mediaId
-        }
+async function addMSTranscriptionTask(mediaId, taskId, videoHashsum, videoLocalLocation) {
+    var task;
+    if (taskId == null) {
+        var id = uuid();
+        var fileName = _dirname + id + videoLocalLocation.substring(videoLocalLocation.lastIndexOf('.'));
+        fileName = path.resolve(fileName);
+        fs.copyFileSync(videoLocalLocation, fileName);
+        fs.unlinkSync(videoLocalLocation);
+        task = await MSTranscriptionTask.create({ id: id, videoHashsum: videoHashsum, videoLocalLocation: fileName });
+    } else {
+        task = await getTask(taskId);
+    }
+    await TaskMedia.findOrCreate({
+        where: { taskId: task.id, mediaId: mediaId }
     });
-    return task[0].id;
+    return task;
+}
+
+async function getTaskIdIfNotUnique(videoHashsum) {
+    var result = await MSTranscriptionTask.findAndCountAll({ where: { videoHashsum: videoHashsum } });
+    if (result.count != 0) {
+        // Ensure file exists
+        if (fs.existsSync(result.rows[0].dataValues.videoLocalLocation)) {
+            // Ensure the hash is the same
+            var hash = await conversion_utils.hash_file(result.rows[0].dataValues.videoLocalLocation);
+            if (hash === videoHashsum) {
+                return result.rows[0].id;
+            } else {
+                await MSTranscriptionTask.destroy({ where: { videoHashsum: videoHashsum } });
+                return null;
+            }            
+        } else {
+            await MSTranscriptionTask.destroy({ where: { videoHashsum: videoHashsum } });
+            return null;
+        }
+    } else {
+        return null;
+    }
 }
 
 // Return taskId
-async function addToMediaAndMSTranscriptionTask(videoURL, sourceType, siteSpecificJSON, courseOfferingId) {
+async function addToMediaAndCourseOfferingMedia(videoURL, sourceType, siteSpecificJSON, courseOfferingId) {
     var mediaId = await addMedia(videoURL, sourceType, siteSpecificJSON);
-    await addCourseOfferingMedia(courseOfferingId, mediaId, siteSpecificJSON);
-    var taskId = await addMSTranscriptionTask(mediaId);
-    return taskId;
+    console.log("MediaId" + mediaId);
+    await addCourseOfferingMedia(courseOfferingId, mediaId, siteSpecificJSON);    
+    return mediaId;
 }
 
 function getTask(taskId) {
@@ -327,7 +417,9 @@ function addCourseHelper(id) {
     where : {
       courseId : id.courseId,
       offeringId : id.offeringId,
-    },
+      }, defaults: {
+          id: uuid()
+      }
   }).then(result => {
     var courseOfferingInfo = result[0].dataValues;
 
@@ -701,6 +793,39 @@ function setUserRole(userId, role) {
   }).catch(err => perror(err)); /* Role.findOrCreate() */
 }
 
+async function getUpdationJobsBetween(startDate, endDate) {
+    return await UpdationJobs.findAll({
+        where: {
+            startDate: {
+                $gte: startDate
+            },
+            endDate: {
+                $lte: endDate
+            }
+        }
+    });
+};
+
+async function addUpdationJob(job) {
+    return await UpdationJobs.findOrCreate({
+        where: { courseOfferingId: job.courseOfferingId },
+        defaults: {
+            id: uuid(),
+            startDate: job.startDate,
+            endDate: job.endDate,
+            sourceType: job.sourceType,
+            url: job.url,
+            params: job.params
+        }
+    });
+}
+
+async function getJobForCourseOfferingId(courseOfferingId) {
+    return await UpdationJobs.findOne({
+        where: { courseOfferingId: courseOfferingId }
+    });
+}
+
 module.exports = {
     models: models,
     getAllCourses: getAllCourses,
@@ -709,7 +834,7 @@ module.exports = {
     addCourseAndSection: addCourseAndSection,
     addMedia: addMedia,
     addMSTranscriptionTask: addMSTranscriptionTask,
-    addToMediaAndMSTranscriptionTask: addToMediaAndMSTranscriptionTask,
+    addToMediaAndCourseOfferingMedia: addToMediaAndCourseOfferingMedia,
     addLecture : addLecture,
     addCourse : addCourse,
     addPasswordToken : addPasswordToken,
@@ -743,5 +868,13 @@ module.exports = {
     getDeptsById : getDeptsById,
     getSectionsById : getSectionsById,
     getInstructorsByCourseOfferingId : getInstructorsByCourseOfferingId,
-    validateUserAccess : validateUserAccess,
+    validateUserAccess: validateUserAccess,
+    getTaskIdIfNotUnique: getTaskIdIfNotUnique,
+    doesEchoMediaExist: doesEchoMediaExist,
+    doesYoutubeMediaExist: doesYoutubeMediaExist,
+    getIncompleteTaskIdsForCourseOfferingId: getIncompleteTaskIdsForCourseOfferingId,
+    getMediaIdsByCourseOfferingId: getMediaIdsByCourseOfferingId,
+    addUpdationJob: addUpdationJob,
+    getUpdationJobsBetween: getUpdationJobsBetween,
+    getJobForCourseOfferingId: getJobForCourseOfferingId
 }

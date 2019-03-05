@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Profile Management</title>
+    <title>Classes</title>
 
     <!--<link rel="stylesheet" type="text/css" href="stylesheets/resetHome.css" />-->
     <!--<link rel="stylesheet" type="text/css" href="stylesheets/home.css" />-->
@@ -17,18 +17,22 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <link rel="stylesheet"  type="text/css" href="/stylesheets/global.css">
     <link rel="stylesheet"  type="text/css" href="/stylesheets/courseTable.css">
 </head>
 
 <body style="padding-top: 10rem">
 
-<nav class="navbar navbar-default navbar-fixed-top navmain" >
+<header class="navbar navbar-default navbar-fixed-top navmain" >
     <div class="container" >
         <a href="/" class="CTtitle"><h1>Class Transcribe</h1></a>
     </div>
-</nav>
+    <ul class="nav navbar-nav navbar-right" margin='100'>
+        <li style='margin: 25px 25px 25px 25px;'><button type="button" class="btn btn-default" onclick="window.location.href='/logout'">Sign out</button</li>
+    </ul>
+</header>
 
-<div class="container">
+<div class="container" role="main">
 
     <div class="row">
         <div class="col-md-2">
@@ -39,7 +43,7 @@
             <!--<select id="school-term" value="All">/-->
             </select>
 
-            <form action="/courses/search" id="search-form" method="GET" class="pull-right">
+            <form action="/courses/search" id="search-form" method="GET" class="pull-right" role="search">
                 <input type='input' id='search-input' name="q">
                 <input type='submit' id='search-button' value='Search' class="btn">
             </form>
@@ -71,7 +75,7 @@
 
         </div>
         <div class="col-lg-10">
-            <table class="table table-sm" id="course-list">
+            <table class="table table-sm table-striped" id="course-list"><tbody>
                 <!--<tr id="#header">-->
                     <!--<th>University</th>-->
                     <!--<th>Subject</th>-->
@@ -83,7 +87,7 @@
                     <!--<th>Action</th>-->
                 <!--</tr>-->
                 {{{tabledata}}}
-            </table>
+          </tbody></table>
 
             {{{createform}}}
         </div>
@@ -143,12 +147,12 @@
 
 
 
-<section class="footer">
+<section class="footer" role="contentinfo">
     <div class="margin">
         <div class="menu-footer">
             <a href="/">Home</a>
         </div>
-        <div class="copyright"> &copy; 2016-2018. UIUC</div>
+        <div class="copyright"> &copy; 2016-2019. UIUC</div>
     </div>
 </section>
 

@@ -10,7 +10,9 @@ const webvtt = require('node-webvtt');
 
 const db = require('../../db/db');
 
-const searchMustache = fs.readFileSync(mustachePath + 'search.mustache').toString();
+//const searchMustache = fs.readFileSync(mustachePath + 'search.mustache').toString();
+
+
 const invalidClassHTML = "<p>Could not find the requested page.<\p> <a href=\"/\">Click here to return to the home page.</a>";
 
 router.get('/search/:courseId/:offeringId', function (request, response) {
@@ -31,7 +33,7 @@ router.get('/search/:courseId/:offeringId', function (request, response) {
         });
 
         var className = value.acronym + ' ' + course[0].courseNumber;
-        renderWithPartial(searchMustache, request, response, {className : className});
+        renderWithPartial(Mustache.getMustacheTemplate('search.mustache'), request, response, {className : className});
       }).catch(err => console.log(err)); /* db.getDept() */
     }).catch(err => console.log(err)); /* db.getCourseByOfferingId() */
     response.end(invalidClassHTML);

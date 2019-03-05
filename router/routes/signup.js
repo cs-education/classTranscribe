@@ -37,7 +37,8 @@ const info = utils.info;
 const log = utils.log;
 
 // Get the mustache page that will be rendered for the signup route
-const signupMustache = fs.readFileSync(mustachePath + 'signup.mustache').toString();
+//const signupMustache = fs.readFileSync(mustachePath + 'signup.mustache').toString();
+
 
 /* TODO: will be added when role of users is implemented */
 // const signupGoogleMustache = fs.readFileSync(mustachePath + 'signupGoogle.mustache').toString();
@@ -71,7 +72,7 @@ router.get('/signup', function (request, response) {
         response.writeHead(200, {
             'Content-Type': 'text.html'
         });
-        renderWithPartial(signupMustache, request, response);
+        renderWithPartial(Mustache.getMustacheTemplate('signup.mustache'), request, response);
     }
 });
 

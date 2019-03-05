@@ -14,7 +14,7 @@
 	openssl req -new -key cert/privkey.pem -out cert/csr.pem
 	openssl x509 -req -days 356 -in cert/csr.pem -signkey cert/privkey.pem -out cert/cert.pem
 	rm cert/csr.pem
-   (Fill blanks if asked for any details)
+   (Fill blanks if asked for any details) 
 
 - Navigate to the "Docker" folder in the github repository.
 - Setup SQL
@@ -46,6 +46,7 @@
 	(The dot at the end is important)
 
 RUN EITHER THE PRODUCTION OR THE DEVELOPMENT IMAGE INSTRUCTIONS
+
 
 For Setup of Development Image
 
