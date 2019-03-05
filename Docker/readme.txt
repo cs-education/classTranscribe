@@ -15,7 +15,7 @@
 	openssl x509 -req -days 356 -in cert/csr.pem -signkey cert/privkey.pem -out cert/cert.pem
 	rm cert/csr.pem
    (Fill blanks if asked for any details)
- 
+
 - Navigate to the "Docker" folder in the github repository.
 - Setup SQL
 
