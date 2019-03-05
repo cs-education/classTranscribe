@@ -2,7 +2,7 @@ const uuid = require('uuid/v4');
 'use strict';
 module.exports = (sequelize, DataTypes) => {
     var UpdationJobs = sequelize.define('UpdationJobs', {
-        id: { type: DataTypes.UUID, primaryKey: true, defaultValue: uuid() },
+        id: { type: DataTypes.UUID, primaryKey: true },
         startDate: DataTypes.DATEONLY,
         endDate: DataTypes.DATEONLY,
         sourceType: DataTypes.TINYINT,
