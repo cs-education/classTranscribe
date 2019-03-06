@@ -14,7 +14,6 @@ module.exports = (sequelize, DataTypes) => {
     });
     MSTranscriptionTask.associate = function (models) {
         models.MSTranscriptionTask.belongsTo(models.User, { foreignKey: 'taskCreatorUserId' });
-        models.MSTranscriptionTask.belongsTo(models.Media, { foreignKey: 'mediaId' });
     };
     return MSTranscriptionTask;
 };
