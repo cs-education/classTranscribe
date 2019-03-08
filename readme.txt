@@ -86,7 +86,7 @@ redirectServer.js: redirects http://<<classtranscribe>> to https://<<classtransc
 proxyServer: provides https for Piwik
 Gruntfile.js: runs the Piwik server
 
-Unforuntately, the names of the routes (/routes) and names of some javascripts (javascripts/controllers) have similar names. They are in different folders, but just be aware that this the case.
+Unforuntately, the names of the routes (/router) and names of some javascripts (javascripts/controllers) have similar names. They are in different folders, but just be aware that this the case.
 
 templates/home.mustache is the home page for classtranscribe
 

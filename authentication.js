@@ -62,7 +62,7 @@ passport.use(new LocalStrategy(
     }
 ));
 
-const permission = require('./router/routes/permission');
+const permission = require('./modules/permission');
 
 var configAuth = require('./config/auth');
 
@@ -154,7 +154,7 @@ function findUser(id,cb){
   }).catch(err => cb(err, null));
 }
 
-// same function in router/routes/signup.js
+// same function in router/signup.js
 // Look up and return the university name from the email domain name
 // Data file comes from https://github.com/Hipo/university-domains-list
 function getUniversity(email) {

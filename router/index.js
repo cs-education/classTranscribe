@@ -12,16 +12,17 @@ module.exports = function(app) {
 */
     const router = express.Router();
 
-    app.use(require('./routes/base'));
-    app.use(require('./routes/login'));
-    app.use(require('./routes/logout'));
-    app.use(require('./routes/download'));
-    app.use(require('./routes/search'));
-    app.use(require('./routes/viewer'));
-
-    app.use(require('./routes/watchLectureVideos'));
-    app.use(require('./routes/courses'));
-    app.use(require('./routes/scraper'));
+    app.use(require('./base'));
+    app.use(require('./courses'));
+    app.use(require('./login'));
+    app.use(require('./logout'));
+    app.use(require('./manage'));
+    app.use(require('./scraper'));
+    app.use(require('./search'));
+    app.use(require('./viewer'));    
+    app.use(require('./watchLectureVideos'));
+    
+    
 }
 
 

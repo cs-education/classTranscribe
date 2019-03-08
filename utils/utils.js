@@ -42,9 +42,16 @@ function stringToDate(dateString) {
     return new Date(parts[0], parts[1] - 1, parts[2]); 
 }
 
+function runSynchronously(f) {
+    (async () => {
+        await f();
+    })();
+}
+
 module.exports = {
     asyncForEach: asyncForEach,
     transferJsonToVtt: transferJsonToVtt,
     convertMStoTime: convertMStoTime,
-    stringToDate: stringToDate
+    stringToDate: stringToDate,
+    runSynchronously: runSynchronously
 }
