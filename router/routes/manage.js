@@ -196,9 +196,10 @@ router.post('/uploadLectureVideos', function(request, response) {
   var className = "CLASSNAME";
   var upload = multer({ storage : storage}).any();
 
-  console.log(request.files[0].filename);
-  console.log(request.files[0].destination);
-  console.log(request.files[0].path);
+  console.log(request);
+  // console.log(request.files[0].filename);
+  // console.log(request.files[0].destination);
+  // console.log(request.files[0].path);
 
   // upload(request, response, function(err) {
   //   var filename = request.files[0].filename;
