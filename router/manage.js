@@ -8,9 +8,9 @@ const fs = require('fs');
 const readline = require('readline');
 const sys = require('sys');
 const exec = require('child_process').exec;
-const db = require('../../db/db');
+const db = require('../db/db');
 
-const utils = require('../../utils/logging');
+const utils = require('../utils/logging');
 const perror = utils.perror;
 const info = utils.info;
 const log = utils.log;
@@ -37,7 +37,7 @@ router.get('/manage/:courseOfferingId', function (request, response) {
 
     /* no cached courses */
     if(!courses) {
-      response.redirect('../../courses');
+      response.redirect('../courses');
       return;
     }
 
@@ -82,12 +82,12 @@ var upload = multer({ dest: 'manage/' })
 router.post('/manage/:courseOfferingId', upload.single('filename'), function(request, response) {
   var className = request._parsedOriginalUrl.pathname.split("/")[2];
   var upload = multer({ storage : storage}).any();
-  var path_videos = path.join(__dirname, "../../videos");
-  var path_class = path.join(__dirname, "../../videos/"+className);
+  var path_videos = path.join(__dirname, "../videos");
+  var path_class = path.join(__dirname, "../videos/"+className);
 
-  var path_splitRunner = path.join(__dirname, "../../utility_scripts/splitRunner.js");
-  var path_taskInitializer = path.join(__dirname, "../../utility_scripts/taskInitializer.js");
-  var path_splitted = path.join(__dirname, "../../videos/splitted");
+  var path_splitRunner = path.join(__dirname, "../utility_scripts/splitRunner.js");
+  var path_taskInitializer = path.join(__dirname, "../utility_scripts/taskInitializer.js");
+  var path_splitted = path.join(__dirname, "../videos/splitted");
 
   upload(request, response, function(err) {
     var filename = request.file.filename;
@@ -192,12 +192,12 @@ router.post('/uploadLectureVideos', function(request, response) {
   //var className = request.body.className.toUpperCase();
   var className = "CLASSNAME";
   var upload = multer({ storage : storage}).any();
-  var path_videos = path.join(__dirname, "../../videos");
-  var path_class = path.join(__dirname, "../../videos/"+className);
+  var path_videos = path.join(__dirname, "../videos");
+  var path_class = path.join(__dirname, "../videos/"+className);
 
-  var path_splitRunner = path.join(__dirname, "../../utility_scripts/splitRunner.js");
-  var path_taskInitializer = path.join(__dirname, "../../utility_scripts/taskInitializer.js");
-  var path_splitted = path.join(__dirname, "../../videos/splitted");
+  var path_splitRunner = path.join(__dirname, "../utility_scripts/splitRunner.js");
+  var path_taskInitializer = path.join(__dirname, "../utility_scripts/taskInitializer.js");
+  var path_splitted = path.join(__dirname, "../videos/splitted");
 
   upload(request, response, function(err) {
     var filename = request.files[0].filename;

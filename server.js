@@ -31,7 +31,6 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const saml = require('passport-saml');
 const flash = require('connect-flash');
-const passwordHash = require('./node_modules/password-hash/lib/password-hash');
 const dotenv = require('dotenv');
 const https = require('https');
 
@@ -46,8 +45,7 @@ switch (mode) {
 console.log("~~~~~~~~~~~");
 
 
-require("./authentication");
-require("./public/functions");
+require("./modules/authentication");
 
 var app = express();
 

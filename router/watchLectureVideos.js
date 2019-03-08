@@ -1,8 +1,8 @@
 const fs = require('fs');
-const db = require('../../db/db');
+const db = require('../db/db');
 
-const logging = require('../../utils/logging');
-const utils = require('../../utils/utils');
+const logging = require('../utils/logging');
+const utils = require('../utils/utils');
 const vttToJson = require('vtt-json');
 const perror = logging.perror;
 const info = logging.info;

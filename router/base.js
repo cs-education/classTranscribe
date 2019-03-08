@@ -6,7 +6,7 @@
  */
 const router = express.Router();
 const fs = require('fs');
-const client_api = require('../../db/db');
+const client_api = require('../db/db');
 
 //const homeMustache = fs.readFileSync(mustachePath + 'home.mustache').toString();
 router.get('/', async function (request, response) {

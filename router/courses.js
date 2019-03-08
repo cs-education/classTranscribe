@@ -4,15 +4,15 @@
 const async = require('async');
 const router = express.Router();
 // Search helper
-const srchHelper = require("../../utility_scripts/searchContent.js");
+const srchHelper = require("../utility_scripts/searchContent.js");
 
-const client_api = require('../../db/db');
-const utils = require('../../utils/logging');
+const client_api = require('../db/db');
+const utils = require('../utils/logging');
 const perror = utils.perror;
 const info = utils.info;
 const log = utils.log;
 
-const permission = require('./permission');
+const permission = require('../modules/permission');
 /*************************** Create Dummy Data ********************************/
 
 // var courseList = [
