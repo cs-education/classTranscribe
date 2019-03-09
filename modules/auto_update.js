@@ -76,6 +76,14 @@ async function runSpring2019Jobs() {
     });
 }
 
+async function reprocessIncompleteSp19Jobs() {
+    var jobs = await db.getUpdationJobsBetween(utils.stringToDate("2019-01-01"),
+        utils.stringToDate("2019-12-31"));
+    await utils.asyncForEach(jobs, async function(job) {
+        await scraper_utils.reprocessIncompleteTaskIdsForCourseOfferingId(job.courseOfferingId, false);
+    });
+}
+
 async function processJob(job) {
     console.log(job.dataValues);
     var params = JSON.parse(job.params);
@@ -100,15 +108,17 @@ async function processCourseOfferingId(courseOfferingId) {
     var method = process.argv[2];
     console.log(method);
     switch (method) {
-        case "runSpring2019Jobs": runSpring2019Jobs();
+        case "runSpring2019Jobs": await runSpring2019Jobs();
             break;
-        case "reprocessMedias": scraper_utils.reprocessIncompleteMedias(process.argv[3]);
+        case "reprocessMedias": await scraper_utils.reprocessIncompleteMedias(process.argv[3]);
             break;
-        case "reprocessTasks": scraper_utils.reprocessIncompleteTaskIdsForCourseOfferingId(process.argv[3], false);
+        case "reprocessTasks": await scraper_utils.reprocessIncompleteTaskIdsForCourseOfferingId(process.argv[3], false);
             break;
-        case "processCourseOfferingId": processCourseOfferingId(process.argv[3]);
+        case "processCourseOfferingId": await processCourseOfferingId(process.argv[3]);
             break;
-    }    
+        case "reprocessSp19Jobs": await reprocessIncompleteSp19Jobs();
+            break;
+    }
 })();
 
 
