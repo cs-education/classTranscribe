@@ -34,6 +34,12 @@ const flash = require('connect-flash');
 const passwordHash = require('./node_modules/password-hash/lib/password-hash');
 const dotenv = require('dotenv');
 const https = require('https');
+const prerun = require('./modules/prerun');
+
+
+(async () => {
+    await prerun.runMigrations();
+})();
 
 dotenv.load();
 piwik_port = process.env.PIWIK_PORT;
