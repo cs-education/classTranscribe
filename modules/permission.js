@@ -8,7 +8,7 @@
 // const client = require('./../../modules/redis');
 const macl = require('acl');
 const aclSeq = require('acl-sequelize');
-const db = require('../../models/index');
+const db = require('../models/index');
 const acl = new macl(new aclSeq(db.sequelize, { prefix : 'acl_'}));
 
 // acl = new macl(new macl.redisBackend(client, "ClassTranscribe::acl::"));
