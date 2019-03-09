@@ -3,7 +3,7 @@ const uuid = require('uuid/v4');
 // var models = require('../models');
 module.exports = (sequelize, DataTypes) => {
     var UserOffering = sequelize.define('UserOffering', {
-        // id: { type: DataTypes.UUIDV4, primaryKey: true, defaultValue: uuid() },
+        // id: { type: DataTypes.UUIDV4, primaryKey: true },
     });
 
     UserOffering.associate = function(models) {

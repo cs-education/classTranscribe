@@ -3,7 +3,7 @@ const uuid = require('uuid/v4');
 // var models = require('../models');
 module.exports = (sequelize, DataTypes) => {
     var User = sequelize.define('User', {
-        id: { type: DataTypes.UUID, primaryKey: true, defaultValue: uuid() },
+        id: { type: DataTypes.UUID, primaryKey: true },
         mailId: DataTypes.TEXT,
         firstName: DataTypes.TEXT,
         lastName: DataTypes.TEXT,

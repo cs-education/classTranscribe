@@ -1,53 +1,44 @@
-﻿'use strict';
+'use strict';
 
-var fs = require('fs');
-var path = require('path');
-var Sequelize = require('sequelize');
-var basename = path.basename(__filename);
+const fs = require('fs');
+const path = require('path');
+const Sequelize = require('sequelize');
+const basename = path.basename(__filename);
+// const env = process.env.NODE_ENV || 'development';
 var argv = require('minimist')(process.argv.slice(2));
-var env = argv["e"] || 'production';
-// var config = require(__dirname + '/../config/config.js')[env];
-var db = {};
-var sqlHost = process.env.MSSQL_PORT_1433_TCP_ADDR;
+const env = argv["e"] || 'production';
+var config;
 if (env === 'dev') {
-    sqlHost = "host.docker.internal";
+    config = require(__dirname + '/../config/config.js')['development'];
+} else {
+    config = require(__dirname + '/../config/config.js')[env];
 }
-var sqlPass = process.env.SQL_PASS;
-var sqlDb = process.env.SQL_DB;
-var sqlUser = process.env.SQL_USER;
-var sequelize;
 
-/* sequelize = new Sequelize('database', 'username', 'password')*/
-sequelize = new Sequelize(sqlDb, sqlUser, sqlPass, {
-    /* uses docker container's name/ID for host */
-    host: sqlHost,
-    dialect: 'mssql',
-    port: 1433,
+const db = {};
 
-    pool: {
-        max: 5,
-        min: 0,
-        idle: 10000
-    },
-    dialectOptions: {
-        encrypt: true
-    }
-});
+
+
+let sequelize;
+if (config.use_env_variable) {
+  sequelize = new Sequelize(process.env[config.use_env_variable], config);
+} else {
+  sequelize = new Sequelize(config.database, config.username, config.password, config);
+}
 
 fs
-    .readdirSync(__dirname)
-    .filter(file => {
-        return (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js');
-    })
-    .forEach(file => {
-        var model = sequelize['import'](path.join(__dirname, file));
-        db[model.name] = model;
-    });
+  .readdirSync(__dirname)
+  .filter(file => {
+    return (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js');
+  })
+  .forEach(file => {
+    const model = sequelize['import'](path.join(__dirname, file));
+    db[model.name] = model;
+  });
 
 Object.keys(db).forEach(modelName => {
-    if (db[modelName].associate) {
-        db[modelName].associate(db);
-    }
+  if (db[modelName].associate) {
+    db[modelName].associate(db);
+  }
 });
 
 db.sequelize = sequelize;

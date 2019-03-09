@@ -33,6 +33,12 @@ const saml = require('passport-saml');
 const flash = require('connect-flash');
 const dotenv = require('dotenv');
 const https = require('https');
+const prerun = require('./modules/prerun');
+
+
+(async () => {
+    await prerun.runMigrations();
+})();
 
 dotenv.load();
 piwik_port = process.env.PIWIK_PORT;

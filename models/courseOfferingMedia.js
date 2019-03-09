@@ -2,7 +2,7 @@ const uuid = require('uuid/v4');
 'use strict';
 module.exports = (sequelize, DataTypes) => {
     var CourseOfferingMedia = sequelize.define('CourseOfferingMedia', {
-      id: { type: DataTypes.UUID, primaryKey: true, defaultValue: uuid() },
+      id: { type: DataTypes.UUID, primaryKey: true },
       descpJSON: DataTypes.TEXT
     });
 
