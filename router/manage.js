@@ -11,19 +11,13 @@ const exec = require('child_process').exec;
 const db = require('../db/db');
 
 const utils = require('../utils/logging');
+var multer = require('multer')
 const perror = utils.perror;
 const info = utils.info;
 const log = utils.log;
 
-const storage = multer.diskStorage({
-  destination: function(req, file, callback) {
-    callback(null, './videos');
-  },
-  filename: function(req, file, callback) {
-    var split = file.originalname.split(/(?:.mp4|.avi|.flv|.wmv|.mov|.wav|.ogv|.mpg|.m4v)/);
-    callback(null, file.originalname);
-  }
-});
+
+
 
 //var manageCoursePage = fs.readFileSync(mustachePath + 'manageCourse.mustache').toString();
 
@@ -188,15 +182,24 @@ router.post('/UploadStudentsFiles', function (request, response) {
 
 
 // /* upload the lecture video and segment it into 4-6 minute chunks */
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, '/data/temp')
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.fieldname + '-' + Date.now())
+    }
+})
 
+var upload = multer({ storage: storage })
+var cpUpload = upload.fields([{ name: 'videos', maxCount: 100 }])
 
-
-router.post('/uploadLectureVideos', function(request, response) {
+router.post('/uploadLectureVideos', cpUpload, function (request, response) {
   //var className = request.body.className.toUpperCase();
   var className = "CLASSNAME";
-  var upload = multer({ storage : storage}).any();
-
-  console.log(request);
+    
+    console.dir(request.body);
+    console.dir(request.files);
   // console.log(request.files[0].filename);
   // console.log(request.files[0].destination);
   // console.log(request.files[0].path);

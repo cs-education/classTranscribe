@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -10,7 +10,6 @@
 
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
   <script type="text/javascript" src="https://rawgit.com/enyo/dropzone/master/dist/dropzone.js"></script>
-  <script type="text/javascript" src="/routers/routes/manage.js"></script>
   <script type="text/javascript" src="/javascripts/controllers/manageCourse.js"></script>
   <link rel="stylesheet" type="text/css" href="/stylesheets/global.css">
   <link rel="stylesheet" type="text/css" href="/stylesheets/manageCourse.css" />
@@ -20,8 +19,8 @@
   <!-- Generic page styles -->
   <!-- <link rel="stylesheet" href="css/style.css"> -->
   <!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
-  <link rel="stylesheet" href="/stylesheets/fileupload.css">
-  <link rel="stylesheet" href="/stylesheets/fileupload-ui.css">
+  <link rel="stylesheet" href="/node_modules/blueimp-file-upload/css/jquery.fileupload.css">
+  <link rel="stylesheet" href="/node_modules/blueimp-file-upload/css/jquery.fileupload-ui.css">
   <link rel="stylesheet" href="https://blueimp.github.io/Gallery/css/blueimp-gallery.min.css">
 
   <!-- link rel="stylesheet" type="text/css" href="https://rawgit.com/enyo/dropzone/master/dist/dropzone.css" / -->
@@ -81,17 +80,17 @@
         <span id="ul-test"> </span> -->
 
         <!-- The file upload form used as target for the file upload widget -->
-      <form id="fileupload" action="/uploadLectureVideos" method="POST" enctype="multipart/form-data">
-          <!-- Redirect browsers with JavaScript disabled to the origin page -->
-          <noscript><input type="hidden" name="redirect" value="https://blueimp.github.io/jQuery-File-Upload/"></noscript>
-          <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
+      <form id="fileupload" action="/uploadLectureVideos" method="POST" enctype="application/json">
+          <input type="text" name="test" />
+          <input type="submit" />
+         <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
           <div class="row fileupload-buttonbar">
               <div class="col-lg-7">
                   <!-- The fileinput-button span is used to style the file input field as button -->
                   <span class="btn btn-success fileinput-button">
                       <i class="glyphicon glyphicon-plus"></i>
                       <span>Add files...</span>
-                      <input type="file" name="files[]" multiple>
+                      <input type="file" name="videos" multiple>
                   </span>
                   <button type="submit" class="btn btn-primary start">
                       <i class="glyphicon glyphicon-upload"></i>
@@ -232,21 +231,21 @@
       <!-- blueimp Gallery script -->
       <script src="https://blueimp.github.io/Gallery/js/jquery.blueimp-gallery.min.js"></script>
       <!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
-      <script src="/javascripts/controllers/jquery.iframe-transport.js"></script>
+      <script src="/node_modules/blueimp-file-upload/js/jquery.iframe-transport.js"></script>
       <!-- The basic File Upload plugin -->
-      <script src="/javascripts/controllers/jquery.fileupload.js"></script>
+      <script src="/node_modules/blueimp-file-upload/js/jquery.fileupload.js"></script>
       <!-- The File Upload processing plugin -->
-      <script src="/javascripts/controllers/jquery.fileupload-process.js"></script>
+      <script src="/node_modules/blueimp-file-upload/js/jquery.fileupload-process.js"></script>
       <!-- The File Upload image preview & resize plugin -->
-      <script src="/javascripts/controllers/jquery.fileupload-image.js"></script>
+      <script src="/node_modules/blueimp-file-upload/js/jquery.fileupload-image.js"></script>
       <!-- The File Upload audio preview plugin -->
-      <script src="/javascripts/controllers/jquery.fileupload-audio.js"></script>
+      <script src="/node_modules/blueimp-file-upload/js/jquery.fileupload-audio.js"></script>
       <!-- The File Upload video preview plugin -->
-      <script src="/javascripts/controllers/jquery.fileupload-video.js"></script>
+      <script src="/node_modules/blueimp-file-upload/js/jquery.fileupload-video.js"></script>
       <!-- The File Upload validation plugin -->
-      <script src="/javascripts/controllers/jquery.fileupload-validate.js"></script>
+      <script src="/node_modules/blueimp-file-upload/js/jquery.fileupload-validate.js"></script>
       <!-- The File Upload user interface plugin -->
-      <script src="/javascripts/controllers/jquery.fileupload-ui.js"></script>
+      <script src="/node_modules/blueimp-file-upload/js/jquery.fileupload-ui.js"></script>
       <!-- The main application script -->
       <script src="/javascripts/controllers/videoUpload.js"></script>
 
