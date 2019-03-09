@@ -7,6 +7,7 @@ const vttToJson = require('vtt-json');
 const perror = logging.perror;
 const info = logging.info;
 const log = logging.log;
+var dateformat = require('dateformat');
 
 //const watchLectureVideosPage = fs.readFileSync(mustachePath + 'watchLectureVideos.mustache').toString();
 
@@ -26,12 +27,21 @@ router.get('/watchLectureVideos/:courseOfferingId', function (request, response)
 
 router.get('/getPlaylist/:courseOfferingId', function (request, response) {
     var courseOfferingId = request.params.courseOfferingId;
+    var ctr = 1;
     db.getPlaylistByCourseOfferingId(courseOfferingId).then(
         values => {
             var playlist = values.map(result => {
                 let video = {};
                 let des = JSON.parse(result.siteSpecificJSON);
-                video['name'] = des.title;
+                if (result['sourceType'] == 0) {
+                    video['name'] = ctr++ + ": " + dateformat(result['createdAt'], "mm-dd-yyyy");
+                } else if (result['sourceType'] == 2) {
+                    var sitespecifcJSON = JSON.parse(result['siteSpecificJSON']);
+                    video['name'] = ctr++ + ": " + dateformat(result['createdAt'], "mm-dd-yyyy") + ": " + sitespecifcJSON.lessonName;
+                }
+                else {
+                    video['name'] = des.title;
+                }
                 video['sources'] = [{ src: result['videoLocalLocation'], type: 'video/mp4' }];
                 video['textTracks'] = [{ src: result['srtFileLocation'], srclang: 'eng', label: 'English' }];
                 video['thumbnail'] = false;
