@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-const db = require('../../db/db');
-const utils = require('../../utils/logging');
+const db = require('../db/db');
+const utils = require('../utils/logging');
 const perror = utils.perror;
 
 //const viewerMustache = fs.readFileSync(mustachePath + 'viewer.mustache').toString();

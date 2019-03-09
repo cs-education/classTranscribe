@@ -34,8 +34,24 @@ function convertMStoTime(duration) {
     return hours + ":" + minutes + ":" + seconds + "." + milliseconds;
 }
 
+function stringToDate(dateString) {
+    // Require format - yyyy-mm-dd
+    var parts = dateString.split('-');
+    // Please pay attention to the month (parts[1]); JavaScript counts months from 0:
+    // January - 0, February - 1, etc.
+    return new Date(parts[0], parts[1] - 1, parts[2]); 
+}
+
+function runSynchronously(f) {
+    (async () => {
+        await f();
+    })();
+}
+
 module.exports = {
     asyncForEach: asyncForEach,
     transferJsonToVtt: transferJsonToVtt,
-    convertMStoTime: convertMStoTime
+    convertMStoTime: convertMStoTime,
+    stringToDate: stringToDate,
+    runSynchronously: runSynchronously
 }

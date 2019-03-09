@@ -6,7 +6,7 @@
  */
 var router = express.Router();
 var fs = require('fs');
-var scraper = require('../../modules/scraper_utils');
+var scraper = require('../modules/scraper_utils');
 //var scraperMustache = fs.readFileSync(mustachePath + 'scraper.mustache').toString();
 
 

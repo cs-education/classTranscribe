@@ -35,7 +35,35 @@ async function convertVideoToWav(pathToFile) {
         console.log(`stderr: ${data}`);
     });
 
-    return await ffmpeg.then(result => { return Promise.resolve(outputFile) });
+    try {
+        await ffmpeg;
+        return outputFile;
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
+}
+
+async function convertVideoToFaststart(input, output) {
+    console.log("convertVideoToWav");
+    const { spawn } = require('child-process-promise');
+    const ffmpeg = spawn('ffmpeg', ['-nostdin', '-y', '-i', input, '-acodec', 'copy', '-vcodec', 'copy', '-movflags', 'faststart', '-f', 'mp4', output]);
+
+    ffmpeg.childProcess.stdout.on('data', (data) => {
+        console.log(`stdout: ${data}`);
+    });
+
+    ffmpeg.childProcess.stderr.on('data', (data) => {
+        console.log(`stderr: ${data}`);
+    });
+
+    try {
+        await ffmpeg;
+        return output;
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
 }
 
 async function convertWavFileToSrt(pathToFile) {
@@ -49,10 +77,14 @@ async function convertWavFileToSrt(pathToFile) {
     dotnet.childProcess.stderr.on('data', (data) => {
         console.log(`stderr: ${data}`);
     });
-
-    return await dotnet.then(result => {
-        return Promise.resolve(outputFile)
-    });
+    
+    try {
+        await dotnet;
+        return outputFile;
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
 }
 
 async function download_from_youtube_url(videoUrl, outputFile) {
@@ -134,5 +166,6 @@ module.exports = {
     downloadFile: downloadFile,
     copy_file: copy_file,
     download_from_youtube_url: download_from_youtube_url,
-    hash_file: hash_file
+    hash_file: hash_file,
+    convertVideoToFaststart: convertVideoToFaststart
 }

@@ -1,0 +1,678 @@
+{
+    "tables": {
+        "CourseOfferings": {
+            "tableName": "CourseOfferings",
+            "schema": {
+                "id": {
+                    "primaryKey": true,
+                    "field": "id",
+                    "seqType": "Sequelize.UUID"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "courseId": {
+                    "allowNull": true,
+                    "references": {
+                        "model": "Courses",
+                        "key": "id"
+                    },
+                    "onDelete": "SET NULL",
+                    "onUpdate": "CASCADE",
+                    "field": "courseId",
+                    "seqType": "Sequelize.UUID"
+                },
+                "offeringId": {
+                    "allowNull": true,
+                    "references": {
+                        "model": "Offerings",
+                        "key": "id"
+                    },
+                    "onDelete": "SET NULL",
+                    "onUpdate": "CASCADE",
+                    "field": "offeringId",
+                    "seqType": "Sequelize.UUID"
+                }
+            },
+            "indexes": []
+        },
+        "CourseOfferingMedia": {
+            "tableName": "CourseOfferingMedia",
+            "schema": {
+                "id": {
+                    "primaryKey": true,
+                    "field": "id",
+                    "seqType": "Sequelize.UUID"
+                },
+                "descpJSON": {
+                    "field": "descpJSON",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "courseOfferingId": {
+                    "allowNull": true,
+                    "references": {
+                        "model": "CourseOfferings",
+                        "key": "id"
+                    },
+                    "onDelete": "SET NULL",
+                    "onUpdate": "CASCADE",
+                    "field": "courseOfferingId",
+                    "seqType": "Sequelize.UUID"
+                },
+                "mediaId": {
+                    "allowNull": true,
+                    "references": {
+                        "model": "Media",
+                        "key": "id"
+                    },
+                    "onDelete": "SET NULL",
+                    "onUpdate": "CASCADE",
+                    "field": "mediaId",
+                    "seqType": "Sequelize.INTEGER"
+                }
+            },
+            "indexes": []
+        },
+        "Courses": {
+            "tableName": "Courses",
+            "schema": {
+                "id": {
+                    "primaryKey": true,
+                    "field": "id",
+                    "seqType": "Sequelize.UUID"
+                },
+                "courseNumber": {
+                    "field": "courseNumber",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "courseName": {
+                    "field": "courseName",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "courseDescription": {
+                    "field": "courseDescription",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "deptId": {
+                    "allowNull": true,
+                    "references": {
+                        "model": "Depts",
+                        "key": "id"
+                    },
+                    "onDelete": "SET NULL",
+                    "onUpdate": "CASCADE",
+                    "field": "deptId",
+                    "seqType": "Sequelize.UUID"
+                }
+            },
+            "indexes": []
+        },
+        "Depts": {
+            "tableName": "Depts",
+            "schema": {
+                "id": {
+                    "primaryKey": true,
+                    "field": "id",
+                    "seqType": "Sequelize.UUID"
+                },
+                "deptName": {
+                    "field": "deptName",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "acronym": {
+                    "field": "acronym",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                }
+            },
+            "indexes": []
+        },
+        "Lectures": {
+            "tableName": "Lectures",
+            "schema": {
+                "id": {
+                    "primaryKey": true,
+                    "field": "id",
+                    "seqType": "Sequelize.UUID"
+                },
+                "date": {
+                    "field": "date",
+                    "seqType": "Sequelize.DATEONLY"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "offeringId": {
+                    "allowNull": true,
+                    "references": {
+                        "model": "Offerings",
+                        "key": "id"
+                    },
+                    "onDelete": "SET NULL",
+                    "onUpdate": "CASCADE",
+                    "field": "offeringId",
+                    "seqType": "Sequelize.UUID"
+                },
+                "mediaId": {
+                    "allowNull": true,
+                    "references": {
+                        "model": "Media",
+                        "key": "id"
+                    },
+                    "onDelete": "SET NULL",
+                    "onUpdate": "CASCADE",
+                    "field": "mediaId",
+                    "seqType": "Sequelize.INTEGER"
+                }
+            },
+            "indexes": []
+        },
+        "Media": {
+            "tableName": "Media",
+            "schema": {
+                "id": {
+                    "autoIncrement": true,
+                    "primaryKey": true,
+                    "field": "id",
+                    "seqType": "Sequelize.INTEGER"
+                },
+                "videoURL": {
+                    "field": "videoURL",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "sourceType": {
+                    "field": "sourceType",
+                    "seqType": "Sequelize.TINYINT"
+                },
+                "siteSpecificJSON": {
+                    "field": "siteSpecificJSON",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                }
+            },
+            "indexes": []
+        },
+        "MSTranscriptionTasks": {
+            "tableName": "MSTranscriptionTasks",
+            "schema": {
+                "id": {
+                    "primaryKey": true,
+                    "field": "id",
+                    "seqType": "Sequelize.UUID"
+                },
+                "videoLocalLocation": {
+                    "field": "videoLocalLocation",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "audioLocalLocation": {
+                    "field": "audioLocalLocation",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "videoHashsum": {
+                    "field": "videoHashsum",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "audioHashsum": {
+                    "field": "audioHashsum",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "wavAudioLocalFile": {
+                    "field": "wavAudioLocalFile",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "wavHashsum": {
+                    "field": "wavHashsum",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "srtFileLocation": {
+                    "field": "srtFileLocation",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "log": {
+                    "field": "log",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "taskCreatorUserId": {
+                    "allowNull": true,
+                    "references": {
+                        "model": "Users",
+                        "key": "id"
+                    },
+                    "onDelete": "SET NULL",
+                    "onUpdate": "CASCADE",
+                    "field": "taskCreatorUserId",
+                    "seqType": "Sequelize.UUID"
+                },
+                "mediaId": {
+                    "allowNull": true,
+                    "references": {
+                        "model": "Media",
+                        "key": "id"
+                    },
+                    "onDelete": "SET NULL",
+                    "onUpdate": "CASCADE",
+                    "field": "mediaId",
+                    "seqType": "Sequelize.INTEGER"
+                }
+            },
+            "indexes": []
+        },
+        "Offerings": {
+            "tableName": "Offerings",
+            "schema": {
+                "id": {
+                    "primaryKey": true,
+                    "field": "id",
+                    "seqType": "Sequelize.UUID"
+                },
+                "section": {
+                    "field": "section",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "termId": {
+                    "allowNull": true,
+                    "references": {
+                        "model": "Terms",
+                        "key": "id"
+                    },
+                    "onDelete": "SET NULL",
+                    "onUpdate": "CASCADE",
+                    "field": "termId",
+                    "seqType": "Sequelize.UUID"
+                },
+                "deptId": {
+                    "allowNull": true,
+                    "references": {
+                        "model": "Depts",
+                        "key": "id"
+                    },
+                    "onDelete": "SET NULL",
+                    "onUpdate": "CASCADE",
+                    "field": "deptId",
+                    "seqType": "Sequelize.UUID"
+                },
+                "universityId": {
+                    "allowNull": true,
+                    "references": {
+                        "model": "Universities",
+                        "key": "id"
+                    },
+                    "onDelete": "SET NULL",
+                    "onUpdate": "CASCADE",
+                    "field": "universityId",
+                    "seqType": "Sequelize.UUID"
+                }
+            },
+            "indexes": []
+        },
+        "Roles": {
+            "tableName": "Roles",
+            "schema": {
+                "id": {
+                    "primaryKey": true,
+                    "field": "id",
+                    "seqType": "Sequelize.UUID"
+                },
+                "roleName": {
+                    "field": "roleName",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                }
+            },
+            "indexes": []
+        },
+        "TaskMedia": {
+            "tableName": "TaskMedia",
+            "schema": {
+                "id": {
+                    "allowNull": false,
+                    "primaryKey": true,
+                    "autoIncrement": true,
+                    "field": "id",
+                    "seqType": "Sequelize.INTEGER"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "taskId": {
+                    "allowNull": true,
+                    "references": {
+                        "model": "MSTranscriptionTasks",
+                        "key": "id"
+                    },
+                    "onDelete": "SET NULL",
+                    "onUpdate": "CASCADE",
+                    "field": "taskId",
+                    "seqType": "Sequelize.UUID"
+                },
+                "mediaId": {
+                    "allowNull": true,
+                    "references": {
+                        "model": "Media",
+                        "key": "id"
+                    },
+                    "onDelete": "SET NULL",
+                    "onUpdate": "CASCADE",
+                    "field": "mediaId",
+                    "seqType": "Sequelize.INTEGER"
+                }
+            },
+            "indexes": []
+        },
+        "Terms": {
+            "tableName": "Terms",
+            "schema": {
+                "id": {
+                    "primaryKey": true,
+                    "field": "id",
+                    "seqType": "Sequelize.UUID"
+                },
+                "termName": {
+                    "field": "termName",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                }
+            },
+            "indexes": []
+        },
+        "Universities": {
+            "tableName": "Universities",
+            "schema": {
+                "id": {
+                    "primaryKey": true,
+                    "field": "id",
+                    "seqType": "Sequelize.UUID"
+                },
+                "universityName": {
+                    "field": "universityName",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                }
+            },
+            "indexes": []
+        },
+        "UpdationJobs": {
+            "tableName": "UpdationJobs",
+            "schema": {
+                "id": {
+                    "primaryKey": true,
+                    "field": "id",
+                    "seqType": "Sequelize.UUID"
+                },
+                "startDate": {
+                    "field": "startDate",
+                    "seqType": "Sequelize.DATEONLY"
+                },
+                "endDate": {
+                    "field": "endDate",
+                    "seqType": "Sequelize.DATEONLY"
+                },
+                "sourceType": {
+                    "field": "sourceType",
+                    "seqType": "Sequelize.TINYINT"
+                },
+                "url": {
+                    "field": "url",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "params": {
+                    "field": "params",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "courseOfferingId": {
+                    "allowNull": true,
+                    "references": {
+                        "model": "CourseOfferings",
+                        "key": "id"
+                    },
+                    "onDelete": "SET NULL",
+                    "onUpdate": "CASCADE",
+                    "field": "courseOfferingId",
+                    "seqType": "Sequelize.UUID"
+                }
+            },
+            "indexes": []
+        },
+        "Users": {
+            "tableName": "Users",
+            "schema": {
+                "id": {
+                    "primaryKey": true,
+                    "field": "id",
+                    "seqType": "Sequelize.UUID"
+                },
+                "mailId": {
+                    "field": "mailId",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "firstName": {
+                    "field": "firstName",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "lastName": {
+                    "field": "lastName",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "password": {
+                    "field": "password",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "passwordToken": {
+                    "field": "passwordToken",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "verified": {
+                    "field": "verified",
+                    "seqType": "Sequelize.BOOLEAN"
+                },
+                "verifiedId": {
+                    "field": "verifiedId",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "google": {
+                    "field": "google",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "googleId": {
+                    "field": "googleId",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "universityId": {
+                    "allowNull": true,
+                    "references": {
+                        "model": "Universities",
+                        "key": "id"
+                    },
+                    "onDelete": "SET NULL",
+                    "onUpdate": "CASCADE",
+                    "field": "universityId",
+                    "seqType": "Sequelize.UUID"
+                }
+            },
+            "indexes": []
+        },
+        "UserOfferings": {
+            "tableName": "UserOfferings",
+            "schema": {
+                "id": {
+                    "allowNull": false,
+                    "primaryKey": true,
+                    "autoIncrement": true,
+                    "field": "id",
+                    "seqType": "Sequelize.INTEGER"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "userId": {
+                    "allowNull": true,
+                    "references": {
+                        "model": "Users",
+                        "key": "id"
+                    },
+                    "onDelete": "SET NULL",
+                    "onUpdate": "CASCADE",
+                    "field": "userId",
+                    "seqType": "Sequelize.UUID"
+                },
+                "courseOfferingId": {
+                    "allowNull": true,
+                    "references": {
+                        "model": "CourseOfferings",
+                        "key": "id"
+                    },
+                    "onDelete": "SET NULL",
+                    "onUpdate": "CASCADE",
+                    "field": "courseOfferingId",
+                    "seqType": "Sequelize.UUID"
+                },
+                "roleId": {
+                    "allowNull": true,
+                    "references": {
+                        "model": "Roles",
+                        "key": "id"
+                    },
+                    "onDelete": "SET NULL",
+                    "onUpdate": "CASCADE",
+                    "field": "roleId",
+                    "seqType": "Sequelize.UUID"
+                }
+            },
+            "indexes": []
+        }
+    },
+    "revision": 2
+}

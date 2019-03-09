@@ -5,7 +5,7 @@ var callbackURL;
 if (env === "dev") {
     callbackURL = "https://127.0.0.1/auth/google/callback";
 } else {
-    callbackURL = "https://www.classtranscribe.com/auth/google/callback"
+    callbackURL = "https://classtranscribe.illinois.edu/auth/google/callback"
 }
 
 module.exports = {
