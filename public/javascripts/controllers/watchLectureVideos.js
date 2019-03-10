@@ -1,4 +1,3 @@
-
 var url = window.location.pathname;
 var courseOfferingId = url.substring(url.lastIndexOf('/') + 1);
 var getPlaylistUrl = '/getPlaylist/' + courseOfferingId;
@@ -236,6 +235,22 @@ function update_search_results() {
     }
 }
 
+function create_json(event_type){
+    var currentdate = new Date();
+    var datetime = currentdate.getDate() + "/"
+    + (currentdate.getMonth()+1)  + "/" 
+    + currentdate.getFullYear() + "T"  
+    + currentdate.getHours() + ":"  
+    + currentdate.getMinutes() + ":" 
+    + currentdate.getSeconds();
+    var data = JSON.stringify({'courseID': courseOfferingId,'action':event_type,'time':datetime});
+    return data;
+}
+
+function log_json_data(data){
+    console.log(data);
+}
+
 (async () => {
     var playlist = await $.when($.getJSON(getPlaylistUrl))
     linkSrcAndTitle(playlist)
@@ -284,17 +299,39 @@ function update_search_results() {
         $('#auto_scroll').change(function () {
             if (this.checked) {
                 autoScroll = true;
-
+                console.log("autoscroll on");
             } else {
                 autoScroll = false;
+                console.log("autoscroll off");
             }
             update_search_results();
         });
-
-        player.on('playlistitem', function () {
-            updateCurrentVideoTranscriptions();
+        player.on('pause', function () {
+            data=create_json("pausevideo");
+            log_json_data(data);
+        });
+        player.on('play', function () {
+            data=create_json("playvideo");
+            log_json_data(data);
+        });
+        player.on('ratechange', function () {
+            data=create_json("changedspeed");
+            log_json_data(data);
+        });
+        player.on('userinactive', function () {
+            data=create_json("userinactive");
+            log_json_data(data);
+        });
+        player.on('testtrackchange', function () {
+            data=create_json("testtrackchange");
+            log_json_data(data);
+        });
+        player.on('fullscreenchange', function () {
+            data=create_json("fullscreenchange");
+            log_json_data(data);
         });
         player.on('timeupdate', function () {
+
             var currentTimeinMillis = player.currentTime() * 1000;
             if (currentTimeinMillis > timeUpdateLastEnd || currentTimeinMillis < timeUpdateLastStart) {
                 console.log(currentTimeinMillis);
@@ -315,6 +352,7 @@ function update_search_results() {
         player.on('ended', function () {
             // autoplays if duration < 90 mins (in unit of seconds)
             if(player.duration() < 5400 && $('.vjs-up-next').length) {
+                console.log("auto-play turned on");
                 $('.vjs-up-next').click();
             }
         })
