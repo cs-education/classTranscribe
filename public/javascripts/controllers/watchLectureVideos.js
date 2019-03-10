@@ -306,6 +306,9 @@ function log_json_data(data){
             }
             update_search_results();
         });
+        player.on('playlistitem', function () {
+            updateCurrentVideoTranscriptions();
+        });
         player.on('pause', function () {
             data=create_json("pausevideo");
             log_json_data(data);
