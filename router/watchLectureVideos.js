@@ -3,7 +3,7 @@ const db = require('../db/db');
 
 const logging = require('../utils/logging');
 const utils = require('../utils/utils');
-const vttToJson = require('vtt-json');
+const vttToJson = require('../modules/vtt-json');
 const perror = logging.perror;
 const info = logging.info;
 const log = logging.log;
@@ -62,14 +62,14 @@ router.get('/getSrts/:courseOfferingId', async function (request, response) {
             await utils.asyncForEach(values, async function (value) {
                 var subFile = value['srtFileLocation'];
                 var videoFile = value['videoLocalLocation'];
-                vtt = fs.readFileSync(subFile).toString();
-                await vttToJson(vtt).then(results => utils.asyncForEach(results, function (result) {
-                    result.part = result.part.substring(0, result.part.lastIndexOf(' '));
+                let results = await vttToJson(subFile);
+                utils.asyncForEach(results, function (result) {
+                    result.part = result.subtitles[0].substring(0, result.subtitles[0].lastIndexOf(' '));
                     result.subFile = subFile;
                     result.video = videoFile;
                     result.id = counter++;
                     allSubs.push(result);
-                }));
+                });
             });
             return allSubs;
         }).catch(err => { perror(err); });
