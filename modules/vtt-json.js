@@ -1,4 +1,8 @@
-function convertVttToJson(vttString) {
+const fs = require('fs');
+
+function convertVttToJson(vttPath) {
+  let vttString = fs.readFileSync(vttPath).toString();
+
   let current = {}
   let sections = []
   let subtitleIsNext = false;
