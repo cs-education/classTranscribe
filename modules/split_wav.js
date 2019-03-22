@@ -11,7 +11,7 @@
 //   console.log(ret);
 // })();
 
-const {spawn} = require('child_process');
+const {spawn} = require('child-process-promise');
 const fs = require('fs');
 
 function deleteDirectoryRecursive(path) {
@@ -46,33 +46,33 @@ function createTempDir(prefix, noThrow, noLog) {
   }
   return tempDirName;
 }
-
-function onExit(childProcess, idx, noThrow, noLog) {
-  return new Promise((resolve, reject) => {
-    childProcess.once('exit', (code, signal) => {
-      if (code === 0) {
-        resolve(0);
-      } else {
-        if (!noThrow) {
-          reject(new Error(`Exit code nonzero when trying to produce ${idx + 1}.wav: ${code}, abort.`));
-        }
-        if (!noLog) {
-          console.error(`Exit code nonzero when trying to produce ${idx + 1}.wav: ${code}, abort.`);
-        }
-        resolve(1);
-      }
-    });
-    childProcess.once('error', (err) => {
-      if (!noThrow) {
-        reject(err);
-      }
-      if (!noLog) {
-        console.error(err);
-      }
-      resolve(1);
-    });
-  });
-}
+//
+// function onExit(childProcess, idx, noThrow, noLog) {
+//   return new Promise((resolve, reject) => {
+//     childProcess.once('exit', (code, signal) => {
+//       if (code === 0) {
+//         resolve(0);
+//       } else {
+//         if (!noThrow) {
+//           reject(new Error(`Exit code nonzero when trying to produce ${idx + 1}.wav: ${code}, abort.`));
+//         }
+//         if (!noLog) {
+//           console.error(`Exit code nonzero when trying to produce ${idx + 1}.wav: ${code}, abort.`);
+//         }
+//         resolve(1);
+//       }
+//     });
+//     childProcess.once('error', (err) => {
+//       if (!noThrow) {
+//         reject(err);
+//       }
+//       if (!noLog) {
+//         console.error(err);
+//       }
+//       resolve(1);
+//     });
+//   });
+// }
 
 /**
 *
@@ -95,7 +95,7 @@ function onExit(childProcess, idx, noThrow, noLog) {
 *                   files upon failure for whatever reason.
 * @return {Integer} Returns 0 on success and 1 on failure.
 */
-async function splitWavSequential(wavFile, splitInstsInJson, noThrow=false, noLog=true, deleteTmpDirOnFailure=true) {
+async function splitWavSequential(wavFile, splitInstsInJson, noThrow=true, noLog=true, deleteTmpDirOnFailure=true) {
   let tempDirName = createTempDir(wavFile, noThrow, noLog);
   if (!tempDirName) {
     return 1; //On failure
@@ -105,17 +105,19 @@ async function splitWavSequential(wavFile, splitInstsInJson, noThrow=false, noLo
     let currInst = splitInstsInJson[i];
     const ffmpeg = spawn('ffmpeg', ['-y', '-i', wavFile, '-ss', String(currInst.start / 1000), '-to', String(currInst.end / 1000), '-c', 'copy', `${tempDirName}/${i + 1}.wav`]);
     try {
-      if (await onExit(ffmpeg, i, noThrow, noLog)) {
-        if (deleteTmpDirOnFailure) {
-          deleteDirectoryRecursive(tempDirName);
-        }
-        return 1; //On failure
-      }
+      await ffmpeg;
     } catch (err) {
       if (deleteTmpDirOnFailure) {
         deleteDirectoryRecursive(tempDirName);
       }
-      throw err;
+      console.error(`Error encountered trying to produce ${i + 1}.wav, abort.`);
+      if (!noThrow) {
+        throw err;
+      }
+      if (!noLog) {
+        console.error(err);
+      }
+      return 1;
     }
   }
 
@@ -142,42 +144,27 @@ async function splitWavSequential(wavFile, splitInstsInJson, noThrow=false, noLo
 *                   files upon failure for whatever reason.
 * @return {Integer} Returns 0 on success and 1 on failure.
 */
-async function splitWavParallel(wavFile, splitInstsInJson, noThrow=false, noLog=true, deleteTmpDirOnFailure=true) {
+async function splitWavParallel(wavFile, splitInstsInJson, noThrow=true, noLog=true, deleteTmpDirOnFailure=true) {
   let tempDirName = createTempDir(wavFile, noThrow, noLog);
   if (!tempDirName) {
     return 1; //On failure
   }
 
   let retval = 0;
-  const promises = splitInstsInJson.map((currInst, idx) => {
+  const promises = splitInstsInJson.map(async (currInst, idx) => {
     const ffmpeg = spawn('ffmpeg', ['-y', '-i', wavFile, '-ss', String(currInst.start / 1000), '-to', String(currInst.end / 1000), '-c', 'copy', `${tempDirName}/${idx + 1}.wav`]);
-
-    return new Promise((resolve, reject) => {
-      ffmpeg.once('exit', (code, signal) => {
-        if (code === 0) {
-          resolve(0);
-        } else {
-          if (!noThrow) {
-            reject(new Error(`Exit code nonzero when trying to produce ${idx + 1}.wav: ${code}, abort.`));
-          }
-          if (!noLog) {
-            console.error(`Exit code nonzero when trying to produce ${idx + 1}.wav: ${code}`);
-          }
-          retval = 1;
-          resolve(1);
-        }
-      });
-      ffmpeg.once('error', (err) => {
-        if (!noThrow) {
-          reject(err);
-        }
-        if (!noLog) {
-          console.error(err);
-        }
-        retval = 1;
-        resolve(1);
-      });
-    });
+    try {
+      await ffmpeg;
+    } catch (err) {
+      console.error(`Error encountered trying to produce ${idx + 1}.wav, abort.`);
+      if (!noThrow) {
+        throw err;
+      }
+      if (!noLog) {
+        console.error(err);
+      }
+      retval = 1;
+    }
   });
 
   try {
