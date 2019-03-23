@@ -1,5 +1,6 @@
-# ClassTranscribe Tutorial 
-Hi! Welcome to a quick introduction on how to transcribe using ClassTranscribe.
+# ClassTranscribe Tutorial 2017
+
+Hi! *These instructions describe how to use the early 2017 prototype of ClassTranscribe, and do not apply to the current version of ClassTranscribe.*
 
 ## 1. Type as you listen to the video.
 ![image](http://i.imgur.com/sPwv3Ip.gif)

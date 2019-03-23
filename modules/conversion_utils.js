@@ -160,6 +160,31 @@ async function hash_file(filename, algo='sha256') {
     });
 }
 
+async function detectMuteVideo(pathToFile) {
+    const { spawn } = require('child-process-promise');
+    // ffprobe -i INPUT -show_streams -select_streams a -loglevel error
+    const ffprobe = spawn('ffprobe', ['-i', pathToFile, '-show_streams', '-select_streams', 'a', '-loglevel', 'error']);
+
+    var isMute = true;
+
+    ffprobe.childProcess.stdout.on('data', (data) => {
+        isMute = false;
+        // console.log(`stdout: ${data}`);
+    });
+
+    ffprobe.childProcess.stderr.on('data', (data) => {
+        console.log(`stderr: ${data}`);
+    });
+
+    try {
+        await ffprobe;
+        return isMute;
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
+}
+
 module.exports = {
     convertVideoToWav: convertVideoToWav,
     convertWavFileToSrt: convertWavFileToSrt,
