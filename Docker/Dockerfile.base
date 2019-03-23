@@ -75,6 +75,7 @@ WORKDIR MSTranscription
 RUN dotnet publish -c release -o /MSTranscription/Release/ -r linux-x64 -f netcoreapp2.1 --self-contained false
 # END 
 
+RUN apt-get update
 RUN apt-get install -y curl
 
 RUN npm cache clean -f
