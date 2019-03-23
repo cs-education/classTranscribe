@@ -8,7 +8,7 @@
 const fs = require('fs');
 const webvtt = require('node-webvtt');
 
-const db = require('../../db/db');
+const db = require('../db/db');
 
 //const searchMustache = fs.readFileSync(mustachePath + 'search.mustache').toString();
 
@@ -47,7 +47,7 @@ router.get('/search/:courseId/:offeringId', function (request, response) {
 router.get('/getVideos', function(request, response) {
   var className = request.query.className.toUpperCase();
   console.log("getting list of videos: " + className);
-  var path_videos = path.join(__dirname, "../../videos/" + className);
+  var path_videos = path.join(__dirname, "../videos/" + className);
   var videos = [[]];
   try {
     fs.readdirSync(path_videos).forEach(function(dir) {
@@ -58,7 +58,7 @@ router.get('/getVideos', function(request, response) {
           /* if not a .mp3/.wav/directory, replace .mp4 with "" */
           if(! /^\..*/.test(file) && !/.mp3/.test(file) && !/.wav/.test(file)) {
             lecture_video = file.replace(".mp4", "");
-            path_video = "../../videos/" + className + "/" + dir + "/" + file
+            path_video = "../videos/" + className + "/" + dir + "/" + file
             videos.push([lecture_video, path_video]);
           }
         });
@@ -82,7 +82,7 @@ router.get('/getVideos', function(request, response) {
 router.get('/getCaptions', function(request, response) {
   var className = request.query.className.toUpperCase();
   console.log("getting captions: " + className);
-  var path_videos = path.join(__dirname, "../../videos/" + className);
+  var path_videos = path.join(__dirname, "../videos/" + className);
   var promises = [];
 
   try {

@@ -7,6 +7,7 @@ var youtube_google_api_key = process.env.YOUTUBE_API_KEY;
 const _dirname = '/data/';
 const _tempdir = '/data/temp';
 var utils = require('../utils/utils');
+const fs = require('fs');
 
 const promiseSerial = funcs =>
     funcs.reduce((promise, func) =>
