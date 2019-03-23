@@ -13,11 +13,12 @@ const perror = utils.perror;
 
 router.get('/viewer/:offeringId', ensureAuthenticated, function (request, response) {
     var className = request.params.className.toLowerCase();
+    var userInfo = request.user || {user : undefined};
     /* TODO: don't think this is the correct function */
     db.getCourseId(function(err, results) {
     // client.smembers("ClassTranscribe::CourseList", function(err, results) {
       if (!isClassNameValid(className) || err) {
-        perror("not valid course: " + className);
+        perror(userInfo, "not valid course: " + className);
         response.end(invalidClassHTML);
         return;
       }

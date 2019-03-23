@@ -42,11 +42,11 @@ var allterms = [];
 
 
 // courses page, display all relative courses
-router.get('/courses/', function (request, response) {   
+router.get('/courses/', function (request, response) {
     if (!request.isAuthenticated()) {
         response.redirect('/login?redirectPath=' + encodeURIComponent(request.originalUrl));
     }
-    else {        
+    else {
         response.writeHead(200, {
             'Content-Type': 'text/html'
         });
@@ -67,7 +67,7 @@ router.get('/courses/', function (request, response) {
                 createClassBtn =
                     '<button class="btn" data-toggle="modal" data-target="#createPanel">' +
                     '          Create a New Class</button>';
-            }            
+            }
             client_api.getUniversityName(userInfo.universityId).then(result => {
 
                 userInfo.university = result.universityName;
@@ -173,7 +173,7 @@ router.post('/courses/newclass', function (request, response) {
     var course = request.body;
 
     if (!userInfo) {
-      perror('Invalid userInfo');
+      perror({user : undefined}, 'Invalid userInfo');
       response.end();
       return;
     }
@@ -187,9 +187,13 @@ router.post('/courses/newclass', function (request, response) {
     client_api.addCourse(userInfo, course)
     .then(result => {
       permission.addCoursePermission(userInfo.mailId, result.courseOfferingId, 'Modify');
+      response.end();
     })
-    .catch(err => perror(err)); /* addCourse() */
-    response.end();
+    .catch(err => {
+      perror(userInfo, err);
+      response.end();
+    }); /* addCourse() */
+
 });
 
 // modify the view table based on the filter
@@ -278,7 +282,7 @@ function  generateListings(data, user, cb) {
         } catch (err) {
             instructorName = "";
         }
-        
+
         html += '<tr id="'+ e.id +'" >';
         html += '<td>' + e.termName + '</td>';
         html += '<td hidden="yes">' + e.courseOfferingId + '</td>';
@@ -338,7 +342,7 @@ function getUserId(req) {
     try {
       id = req.session.passport.user.mailId;
     } catch(e) {
-      perror("Invalid user id detected");
+      perror({user : undefined}, "Invalid user id detected");
     }
     return id;
 }
@@ -399,7 +403,16 @@ function getCreateClassForm(rep){
                                 "<label>Section Number</label> <input type=\"text\" class=\"form-control\" id=\"fminput5\" placeholder=\"\" name=\"section\"> " +
                                 "<label>University</label> <input type=\"text\" class=\"form-control\" id=\"fminput6\" value=\""+rep.university+"\" name=\"university\" readonly> </div> </div> " +
                         "<div class=\"row\"> <div class=\"col-md-12\"> " +
-                            "<label>Course Description</label> <input type=\"text\" class=\"form-control\" id=\"fminput7\" placeholder=\"\" name=\"courseDescription\"> </div> </div> " +
+                            "<label>Course Description</label> <input type=\"text\" class=\"form-control\" id=\"fminput7\" placeholder=\"\" name=\"courseDescription\"> </div>" +
+                             "<div class=\"col-md-12\"> " +
+                                "<label>Viewer Identity</label>" +
+                                "<select class=\"form-control\" id=\"fminput8\" placeholder=\"\" name=\"viewer\"> " +
+                                "<option value=0> Public </option>" +
+                                "<option value=1> Instructor Allowed </option>" +
+                                "<option value=2> User Allowed </option>" +
+                                "<option value=3> University Allowed </option>" +
+                                "</select> </div>" +
+                             "</div> " +
                     '<div class="modal-footer">'+
                         '<input id="cfmCreate" type="submit" class="btn btn-default" value="Create"></input>'+
                         '<button id="cfmCancel" type="button" class="btn btn-default" data-dismiss="modal">Close</button>'+

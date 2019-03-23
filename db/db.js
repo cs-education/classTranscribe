@@ -1,7 +1,6 @@
 'use strict';
 var Sequelize = require('sequelize');
 var models = require('../models');
-const utils = require('../utils/logging');
 const uuid = require('uuid/v4');
 var fs = require('fs');
 const sequelize = models.sequelize;
@@ -10,10 +9,6 @@ const _dirname = '/data/';
 var conversion_utils = require('../modules/conversion_utils');
 
 sequelize.sync();
-
-const perror = utils.perror;
-const info = utils.info;
-const log = utils.log;
 
 const Op = Sequelize.Op;
 const CourseOffering = models.CourseOffering;
@@ -255,8 +250,8 @@ function addUser(user) {
       }
     }).then(result => {
       return result[0].dataValues;
-    }).catch(err => perror(err)); /* User.findOrCreate() */
-  }).catch(err => perror(err)); /* University.findOrCreate() */
+    }).catch(err => {throw new Error(err.message)}); /* User.findOrCreate() */
+  }).catch(err => {throw new Error(err.message)}); /* University.findOrCreate() */
 }
 
 /* SELECT * FROM User WHERE mailId=email LIMIT 1*/
@@ -271,11 +266,11 @@ function getUserByEmail(email) {
     try {
       return result.dataValues;
     } catch (err) {
-      perror(err);
+      throw new Error(err.message);
       return null;
     }
 
-  }).catch(err => perror(err));
+  }).catch(err => {throw new Error(err.message)});
 }
 
 /* SELECT * FROM User WHERE googleId=profileId LIMIT 1*/
@@ -291,7 +286,7 @@ function getUserByGoogleId(profileId) {
         } else {
             return null;
         }
-    }).catch(err => perror(err));
+    }).catch(err => {throw new Error(err.message)});
 }
 
 /* UPDATE User SET verifiedId = verifiedId WHERE mailId = email */
@@ -303,7 +298,7 @@ function verifyUser(verifiedId, email) {
       mailId : email,
       verifiedId : verifiedId,
     }
-  }).catch(err => perror(err));
+  }).catch(err => {throw new Error(err.message)});
 }
 
 function setUserName(name, email) {
@@ -314,7 +309,7 @@ function setUserName(name, email) {
     where : {
       mailId : email,
     }
-  }).catch(err => perror(err));
+  }).catch(err => {throw new Error(err.message)});
 }
 
 function setUserPassword(newPassword, email) {
@@ -325,7 +320,7 @@ function setUserPassword(newPassword, email) {
     where : {
       mailId : email,
     }
-  }).catch(err => perror(err));
+  }).catch(err => {throw new Error(err.message)});
 }
 
 /* findOrCreate university to Table Universities,
@@ -342,7 +337,7 @@ function getUniversityId(universityName) {
     }
   }).then(result => {
     return result[0].dataValues;
-  }).catch(err => perror(err));
+  }).catch(err => {throw new Error(err.message)});
 }
 
 /* Assuming input is an array */
@@ -390,7 +385,94 @@ function getCoursesByIds(courseId) {
   }).then(values => {
     var jsonList = values.map(value => value.dataValues);
     return jsonList;
-  }).catch(err => perror(err));
+  }).catch(err => {throw new Error(err.message)});
+}
+
+function setUserName(name, email) {
+  return User.update({
+    firstName : name.firstName,
+    lastName : name.lastName,
+  }, {
+    where : {
+      mailId : email,
+    }
+  }).catch(err => {throw new Error(err.message)});
+}
+
+function setUserPassword(newPassword, email) {
+  return User.update({
+    password : newPassword,
+    passwordToken : '',
+  }, {
+    where : {
+      mailId : email,
+    }
+  }).catch(err => {throw new Error(err.message)});
+}
+
+/* findOrCreate university to Table Universities,
+ * Shouldn't be used since we
+ * currently only support UIUC
+ */
+function getUniversityId(universityName) {
+
+  return University.findOrCreate({
+    where: {
+      universityName : universityName,
+    }, defaults: {
+      id: uuid(),
+    }
+  }).then(result => {
+    return result[0].dataValues;
+  }).catch(err => {throw new Error(err.message)});
+}
+
+/* Assuming input is an array */
+function getCoursesByTerms(term) {
+  var termId_list = []
+  var offeringId_list = [];
+  var courseId_list = [];
+
+  return Term.findAll({ // fetch termId
+    where : {
+      termName : { [Op.in] : term } // SELECT * FROM Term WHERE termName IN term
+    }
+  }).then((result) => { // fetch offeringId
+    for (let i = 0; i < result.length; i++) {
+      termId_list[i] = result[i].dataValues.id;
+    }
+    return Offering.findAll({
+      where : {
+        termId: { [Op.in] : termId_list } // SELECT * FROM Offering WHERE termId == result:  (list)
+      }
+    });
+  }).then((result) => { // fetch courseId
+    for (let i = 0; i < result.length; i++) {
+      offeringId_list[i] = result[i].dataValues.id;
+    }
+    return CourseOffering.findAll({
+      where : {
+        offeringId : { [Op.in] : offeringId_list} // SELECT * FROM CourseOffering WHERE offeringId IN result
+      }
+    });
+  }).then((result) => { // fetch Courses
+    for (let i = 0; i < result.length; i++) {
+      courseId_list[i] = result[i].dataValues.courseId;
+    }
+    return getCoursesByIds(courseId_list);
+  });
+}
+
+/* SELECT * FROM Course WHERE id IN courseId */
+function getCoursesByIds(courseId) {
+  return Course.findAll({
+    where : {
+      id : {[Op.in] : courseId}
+    }
+  }).then(values => {
+    var jsonList = values.map(value => value.dataValues);
+    return jsonList;
+  }).catch(err => {throw new Error(err.message)});
 }
 
 function addLecture(courseId, mediaId, date) {
@@ -405,7 +487,7 @@ function addLecture(courseId, mediaId, date) {
     },
   }).then(result => {
     return result[0].dataValues;
-  }).catch(err => perror(err));
+  }).catch(err => {throw new Error(err.message)});
 }
 
 /* findOrCreate the course,
@@ -417,9 +499,10 @@ function addCourseHelper(id) {
     where : {
       courseId : id.courseId,
       offeringId : id.offeringId,
-      }, defaults: {
-          id: uuid()
-      }
+    }, defaults : {
+      id : uuid(),
+      role : id.viewer
+    }
   }).then(result => {
     var courseOfferingInfo = result[0].dataValues;
 
@@ -433,8 +516,8 @@ function addCourseHelper(id) {
       }
     }).then(result => {
       return result[0].dataValues;
-    }).catch(err => perror(err)); /* UserOffering.findOrCreate() */
-  }).catch(err => perror(err)); /*  CourseOffering.findOrCreate() */
+    }).catch(err => {throw new Error(err.message)}); /* UserOffering.findOrCreate() */
+  }).catch(err => {throw new Error(err.message)}); /*  CourseOffering.findOrCreate() */
 }
 
 function getCourseId(courseInfo) {
@@ -458,8 +541,8 @@ function getCourseId(courseInfo) {
       }
     }).then(result => {
       return result[0].dataValues;
-    }).catch(err => perror(err)); /* Course.findOrCreate() */
-  }).catch(err => perror(err)); /* Dept.findOne() */
+    }).catch(err => {throw new Error(err.message)}); /* Course.findOrCreate() */
+  }).catch(err => {throw new Error(err.message)}); /* Dept.findOne() */
 }
 
 /* getRole() findOrCreate a role */
@@ -469,7 +552,7 @@ function getRoleId(role) {
     defaults : { id: uuid() }
   }).then(result => {
     return result[0].dataValues;
-  }).catch(err => perror(err));
+  }).catch(err => {throw new Error(err.message)});
 }
 
 /* findOrCreate term, and return termId */
@@ -479,7 +562,7 @@ function getTermId(term) {
     defaults : { id: uuid() }
   }).then( result => {
     return result[0].dataValues;
-  }).catch( err => perror(err));
+  }).catch( err => {throw new Error(err.message)});
 }
 
 function getDeptId(dept) {
@@ -491,7 +574,7 @@ function getDeptId(dept) {
     }
   }).then(result => {
     return result[0].dataValues;
-  }).catch(err => perror(err));
+  }).catch(err => {throw new Error(err.message)});
 }
 
 /* getOfferingId() findOrCreate an offeringId */
@@ -507,7 +590,7 @@ function getOfferingId(id, sectionName) {
     }
   }).then(result => {
     return result[0].dataValues;
-  }).catch(err => perror(err));
+  }).catch(err => {throw new Error(err.message)});
 }
 
 /*
@@ -517,6 +600,7 @@ function getOfferingId(id, sectionName) {
  *  }
  */
 function addCourse(user, course) {
+
   /* if user and courseList are not empty */
   if(user && course) {
     var id = { universityId : user.universityId };
@@ -539,7 +623,6 @@ function addCourse(user, course) {
       let term_result = getTermId( course.term );
       let dept_result = getDeptId( course.dept );
       return Promise.all([term_result, dept_result]).then(values => {
-
         id.termId = values[0].id;
         id.deptId = values[1].id;
         let course_result = getCourseId(course);
@@ -548,12 +631,14 @@ function addCourse(user, course) {
 
           id.courseId = values[0].id;
           id.offeringId = values[1].id;
+          id.viewer = parseInt(course.viewer);
           return addCourseHelper(id);
-        }).catch(err => { perror(err) }); /* end of getOfferingId() */
-      }).catch(err => { perror(err) }); /* end of Promise.all */
-    }).catch(err => { perror(err) }); /* end of Promise.all */
+        }).catch(err => { throw new Error(err.message) }); /* end of getOfferingId() */
+      }).catch(err => { throw new Error(err.message) }); /* end of Promise.all */
+    }).catch(err => {throw new Error(err.message) }); /* end of Promise.all */
+  } else { /* user OR course is empty */
+    throw Error('User Info or Course List is empty');
   }
-  throw Error('User Info or Course List is empty');
 }
 
 /* Get All Terms */
@@ -586,7 +671,7 @@ function getCoursesByUniversityId( universityId ) {
          delete value.updatedAt;
          return value;
        })
-     }).catch(err => perror(err)); /* raw query */
+     }).catch(err => {throw new Error(err.message)}); /* raw query */
 }
 
 /* Get All Courses by User info */
@@ -622,8 +707,8 @@ function getCoursesByUserId( uid ) {
           return value;
         });
 
-      }).catch(err => perror(err)); /* rawquery */
-    }).catch(err => perror(err)); /* UserOffering.findAll() */
+      }).catch(err => {throw new Error(err.message)}); /* rawquery */
+    }).catch(err => {throw new Error(err.message)}); /* UserOffering.findAll() */
 }
 
 function addStudent(studentId, courseOfferingId) {
@@ -647,8 +732,8 @@ function addStudent(studentId, courseOfferingId) {
         log('YOU HAVE REGISTER ALREADY');
       }
       return result[0].dataValues;
-    }).catch(err => perror(err)); /* UserOffering.findOrCreate() */
-  }).catch(err => perror(err));/* Role.findOrCreate() */
+    }).catch(err => {throw new Error(err.message)}); /* UserOffering.findOrCreate() */
+  }).catch(err => {throw new Error(err.message)});/* Role.findOrCreate() */
 }
 
 function removeStudent (studentId, offeringId) {
@@ -665,8 +750,8 @@ function removeStudent (studentId, offeringId) {
       }
     }).then(result => {
       log('Student has been removed.');
-    }).catch(err => perror(err)); /* UserOffering.destroy() */
-  }).catch(err => perror(err)); /* Role.findOne() */
+    }).catch(err => {throw new Error(err.message)}); /* UserOffering.destroy() */
+  }).catch(err => {throw new Error(err.message)}); /* Role.findOne() */
 }
 
 function getUniversityName (universityId) {
@@ -680,7 +765,7 @@ function getTermsById (ids) {
     }
   }).then(values => {
     return values.map(value => value.dataValues);
-  }).catch(err => perror(err))
+  }).catch(err => {throw new Error(err.message)})
 }
 
 function getDeptsById (ids) {
@@ -690,7 +775,7 @@ function getDeptsById (ids) {
     }
   }).then(values => {
     return values.map(value => value.dataValues);
-  }).catch(err => perror(err))
+  }).catch(err => {throw new Error(err.message)})
 }
 
 function getSectionsById (ids) {
@@ -700,7 +785,7 @@ function getSectionsById (ids) {
     },
   }).then(values => {
     return values.map(value => value.dataValues);
-  }).catch(err => perror(err))
+  }).catch(err => {throw new Error(err.message)})
 }
 
 function getInstructorsByCourseOfferingId (ids) {
@@ -727,8 +812,8 @@ function getInstructorsByCourseOfferingId (ids) {
       WHERE \
       uoid.courseOfferingId IN (:coids) AND uoid.roleId = :rid AND uoid.userId = uid.id',
       { replacements: { coids : ids, rid : instructorId }, type: sequelize.QueryTypes.SELECT })
-      .catch(err => perror(err)); /* sequelize.query() */
-    }).catch(err => perror(err)); /* Role.findOne() */
+      .catch(err => {throw new Error(err.message)}); /* sequelize.query() */
+    }).catch(err => {throw new Error(err.message)}); /* Role.findOne() */
 }
 
 function validateUserAccess( courseOfferingId, userId ) {
@@ -739,7 +824,7 @@ function validateUserAccess( courseOfferingId, userId ) {
     }
   }).then(result => {
     return result.dataValues;
-  }).catch(err => perror(err));
+  }).catch(err => {throw new Error(err.message)});
 }
 
 function getCourseByOfferingId(offeringId) {
@@ -754,8 +839,8 @@ function getCourseByOfferingId(offeringId) {
       }
     }).then(values => {
       return values.map(value => value.dataValues);
-    }).catch(err => perror(err)); /* Course.findAll() */
-  }).catch(err => perror(err)); /* CourseOffering.findAll() */
+    }).catch(err => {throw new Error(err.message)}); /* Course.findAll() */
+  }).catch(err => {throw new Error(err.message)}); /* CourseOffering.findAll() */
 }
 
 function getDept(deptId) {
@@ -765,7 +850,7 @@ function getDept(deptId) {
     }
   }).then(result => {
     return result.dataValues;
-  }).catch(err => perror(err));
+  }).catch(err => {throw new Error(err.message)});
 }
 
 function addPasswordToken(userInfo, token) {
@@ -776,7 +861,7 @@ function addPasswordToken(userInfo, token) {
       id : userInfo.id,
       mailId : userInfo.mailId,
     }
-  }).catch(err => perror(err));
+  }).catch(err => {throw new Error(err.message)});
 }
 
 function setUserRole(userId, role) {
@@ -789,8 +874,8 @@ function setUserRole(userId, role) {
       roleId : roleInfo.id,
     }, {
       where : { id : userId },
-    }).catch(err => perror(err)); /* User.update() */
-  }).catch(err => perror(err)); /* Role.findOrCreate() */
+    }).catch(err => {throw new Error(err.message)}); /* User.update() */
+  }).catch(err => {throw new Error(err.message)}); /* Role.findOrCreate() */
 }
 
 async function getUpdationJobsBetween(startDate, endDate) {

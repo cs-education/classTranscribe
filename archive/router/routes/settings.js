@@ -33,13 +33,14 @@ router.post('/settings/submit', function(request, response) {
     firstName : request.body.first_name,
     lastName : request.body.last_name,
   }
-  var mailId = request.user.mailId;
+  var userInfo = request.user;
+  var mailId = userInfo.mailId;
 
   // Edit user information in database
   db.setUserName(name, mailId).then(()=>{
     response.send({ message : 'success', html: '../dashboard'});
   }).catch(err => {
-    perror(err);
+    perror(userInfo, err);
     response.send({ message : err, html : '../dashboard'});
   });
 });

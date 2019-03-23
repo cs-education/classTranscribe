@@ -12,17 +12,18 @@ module.exports = function(app) {
 */
     const router = express.Router();
 
-    app.use(require('./base'));
-    app.use(require('./courses'));
-    app.use(require('./login'));
-    app.use(require('./logout'));
-    app.use(require('./manage'));
-    app.use(require('./scraper'));
-    app.use(require('./search'));
-    app.use(require('./viewer'));    
-    app.use(require('./watchLectureVideos'));
-    
-    
+    app.use(require('./routes/base'));
+    app.use(require('./routes/admin'));
+    app.use(require('./routes/login'));
+    app.use(require('./routes/logout'));
+    app.use(require('./routes/settings'));
+    app.use(require('./routes/dashboard'));
+    app.use(require('./routes/accountRecovery'));
+    app.use(require('./routes/activated'));
+    app.use(require('./routes/viewer'));
+    app.use(require('./routes/manage'));
+    app.use(require('./routes/watchLectureVideos'));
+    app.use(require('./routes/courses'));
 }
 
 
@@ -36,9 +37,7 @@ const invalidClassHTML = "<p>Could not find the requested page.<\p> <a href=\"/\
 const piwikServer = "192.17.96.13:" + process.env.PROXY_PORT;
 
 renderWithPartial = function(mustacheFile, request, response, params) {
-  //console.log('getMustacheTemplate 1= ' + Mustache.getMustacheTemplate('authenticated.mustache'));
-  //console.log('getMustacheTemplate 2= ' + Mustache.getMustacheTemplate('notAuthenticated.mustache'));
-  
+
   var html;
   var options = {};
   options["piwikServer"] = piwikServer;

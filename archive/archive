@@ -152,7 +152,7 @@ router.post('/signup/submit', function (request, response) {
 
                   client_api.createUser(userInfo).then(result => {
                     /* add user in permission */
-                    permission.addUser(result.id);
+                    permission.addRole(result.id, 'Student');
 
                     /* send e-mail */
                     transporter.sendMail(mailOptions, (err, response) => {
