@@ -28,8 +28,6 @@ ensureAuthenticated = function(req, res, next) {
   }
 }
 
-
-
 // ========== current local strategy ==========
 passport.use(new LocalStrategy(
     function(username, password, done) {
@@ -61,8 +59,6 @@ passport.use(new LocalStrategy(
       }); /* client.getUserByEmail() */
     }
 ));
-
-const permission = require('../modules/permission');
 
 var configAuth = require('../config/auth');
 
@@ -101,7 +97,6 @@ passport.use(new GoogleStrategy({
                     client.createUser( googleInfo ).then(
                         result => {
                             var userInfo = result;
-                            permission.addUser(userInfo.mailId);
                             client.verifyUser(userInfo.verifiedId, userInfo.mailId).then(
                               result => {
 
