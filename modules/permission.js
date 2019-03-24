@@ -16,20 +16,20 @@ async function updateCoursePermission(userId, courseOfferingId, roleName) {
   }).then(result => {
 
     var roleInfo = result[0].dataValues;
-    
+
     return UserOffering.findOrCreate({ 
-      where : {userId : userId, courseOfferingId : courseOfferingId},
-      defaults : {roleId : roleInfo.id}
-    }).then(() => {
+      where : {userId : userId, courseOfferingId : courseOfferingId}, 
+      defaults : {id : uuid(), roleId : roleInfo.id}
+    }).then((_, create) => {
+      
+      if (create === true) { return true; }
 
       return UserOffering.update(
         { roleId : roleInfo.id },
         { where : {
           userId :userId,
           courseOfferingId : courseOfferingId
-        }}).then(result => {
-
-          return result});
+        }}).then(result => result);
 
     }).catch(err => {
       console.log(err);
@@ -39,7 +39,6 @@ async function updateCoursePermission(userId, courseOfferingId, roleName) {
 }
 
 async function addCoursePermission(userId, courseOfferingId, permission) {
-  
   switch (permission) {
     case 'View': return updateCoursePermission(userId, courseOfferingId, 'Student');
     case 'Edit': return updateCoursePermission(userId, courseOfferingId, 'Instructor');
@@ -71,9 +70,9 @@ async function isWatchingPrivateAllowed(userData, courseData) {
 
   // Since every valid role has [View] access, we only need to check if 
   // there is a corresponding information inside of table
-  return UserOffering.findOne({ where: { userId : userData.id}}).then(
-    result => result !== null
-  );  
+  var userCourse = await UserOffering.findOne({ where: { userId : userData.id}});
+  
+  return userCourse !== null;
 }
 
 async function isWatchingAllowed(userId , courseOfferingId) {
@@ -91,13 +90,13 @@ async function isWatchingAllowed(userId , courseOfferingId) {
       case 0: return true;
       
       /* Private Courses */
-      case 1: return isWatchingPrivateAllowed(userData, courseData).then(result => result);
+      case 1: return await isWatchingPrivateAllowed(userData, courseData);
       
       /* Signed In Courses */
       case 2: return userData !== null;
 
       /* University Only */
-      case 3: return isWatchingUniversityAllowed(userData, courseData).then(result => result);
+      case 3: return await isWatchingUniversityAllowed(userData, courseData);
 
       /* Don't know what it is */
       default: return false;
