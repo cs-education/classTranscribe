@@ -28,7 +28,6 @@ var testInfo = {
 client_api.createUser(testInfo).then(
     result => {
         var userInfo = result;
-        permission.addUser(userInfo.mailId);
         client_api.verifyUser('sample-verification-buffer', mailId).then(() => {
         });
     }).catch(err => { perror(err); })
@@ -37,9 +36,6 @@ client_api.createUser(testInfo).then(
 
 
 var allterms = [];
-//var  = fs.readFileSync(mustachePath + 'courses.mustache').toString();
-
-
 
 // courses page, display all relative courses
 router.get('/courses/', function (request, response) {   
@@ -62,7 +58,7 @@ router.get('/courses/', function (request, response) {
             var createClassBtn = '';
             var userInfo = request.session.passport.user;
             // Super user hack
-            if (userInfo.mailId === 'mahipal2@illinois.edu') {
+            if (userInfo.mailId === 'mahipal2@illinois.edu' || userInfo.mailId === 'testuser@illinois.edu') {
                 form = getCreateClassForm(userInfo);
                 createClassBtn =
                     '<button class="btn" data-toggle="modal" data-target="#createPanel">' +
@@ -87,7 +83,6 @@ router.get('/courses/', function (request, response) {
                     "                </tr>";
 
                 client_api.getCoursesByUniversityId(userInfo.universityId).then(values => {
-                    // client_api.getCoursesByUserId(userInfo.id).then( values => {
 
                     var termIds = [];
                     var deptIds = [];
@@ -114,11 +109,7 @@ router.get('/courses/', function (request, response) {
                         var acronyms = {};
                         var instructors = {};
 
-
-
-                        values[0].map(value => {
-                            terms[value.id] = value.termName;
-                        });
+                        values[0].map(value => { terms[value.id] = value.termName; });
 
                         values[1].map(value => {
                             depts[value.id] = value.deptName;
@@ -142,7 +133,6 @@ router.get('/courses/', function (request, response) {
 
                         // Saving current content(courseId, termId) before applying filters
                         request.session['currentContent'] = courses;
-
 
                         generateListings(courses, userid, function (res) {
                             thtml += res;
@@ -183,13 +173,15 @@ router.post('/courses/newclass', function (request, response) {
       acronym: dept
     }
 
-    /* course creator should be enrolled as instructor */
+    /* course creator should be enrolled as Administrator, any other people will be enrolled as Instructor */
     client_api.addCourse(userInfo, course)
     .then(result => {
-      permission.addCoursePermission(userInfo.mailId, result.courseOfferingId, 'Modify');
+      permission.addCoursePermission(userInfo.mailId, result.courseOfferingId, 'Delete');
+      response.end();
     })
-    .catch(err => perror(err)); /* addCourse() */
-    response.end();
+    .catch(err => perror(err)) /* addCourse() */
+    
+    
 });
 
 // modify the view table based on the filter
@@ -293,10 +285,9 @@ function  generateListings(data, user, cb) {
         var debug = false;
         if (debug || (user != '' && user != undefined)) {
             var classid = e.courseOfferingId;
-            permission.checkCoursePermission(user, classid, 'Modify', function(error, result) {
-
+            permission.isManagingAllowed(user, classid).then( result => {
                 if (result) {
-                        html +=
+                    html +=
                             '<a class="actionbtn mnbtn" href="#">' +
                             '          <span class="glyphicon glyphicon-plus"></span> Manage\n' +
                             '        </a>' + '</td> <td>'+
@@ -304,24 +295,17 @@ function  generateListings(data, user, cb) {
                             '          <span class="glyphicon glyphicon-plus"></span> Watch\n' +
                             '        </a> </td>';
                         fcb(null,html);
-                    // });
                 } else {
-                  permission.checkCoursePermission(user, classid, 'Drop', function (err, res) {
-                    if (!res) {
-                      html +=
-                      '<a class="actionbtn viewbtn" href="#">' +
-                      '          <span class="glyphicon glyphicon-plus"></span> Watch\n' +
-                      '        </a>';
-                    }
-                    // } else {
-                    //   html +=
-                    //   '<a class="actionbtn dpbtn">' +
-                    //   '          <span class="glyphicon glyphicon-minus"></span> Drop\n' +
-                    //   '        </a>';
-                    // }
-                    html += '</br>';
-                    fcb(null, html);
-                  }); /* permission.checkCoursePermission() [drop] */
+                    permission.isWatchingAllowed(user, classid).then(result => {
+                        if (result) {
+                          html +=
+                          '<a class="actionbtn viewbtn" href="#">' +
+                          '          <span class="glyphicon glyphicon-plus"></span> Watch\n' +
+                          '        </a>';
+                        }
+                        html += '</br>';
+                        fcb(null, html);
+                    }); /* permission.checkCoursePermission() [drop] */
                 }
             }); /* permission.checkCoursePermission() [modify] */
         } else {
@@ -351,7 +335,7 @@ router.post('/courses/enroll/', function (request, response) {
     var classid = request.body.cid;
 
     client_api.addStudent(userid, classid);
-    permission.addCoursePermission(userid, classid, 'Drop');
+    permission.addCoursePermission(userid, classid, 'View');
 
     response.end();
 });
@@ -365,8 +349,7 @@ router.post('/courses/drop/', function (request, response) {
     var classid = request.body.cid;
 
     client_api.removeStudent(userid, classid);
-    permission.removeCoursePermission(userid, classid, 'Drop');
-    // acl.removeAllow(userid, "ClassTranscribe::Course::"+classid, 'Drop');
+    permission.removeCoursePermission(userid, classid, 'View');
 
     response.end()
 });

@@ -237,7 +237,8 @@ function getEchoSection(sectionId) {
 function addUser(user) {
 
   return University.findOrCreate({
-    where : { universityName : user.university }
+    where : { universityName : user.university },
+    defaults : {id : uuid()}
   }).then((result) => {
     var universityInfo = result[0].dataValues; // result is an array of json object
     /* create the User or find the User */
@@ -420,14 +421,17 @@ function addLecture(courseId, mediaId, date) {
  * update userOffering table
  */
 function addCourseHelper(id) {
+
   return CourseOffering.findOrCreate({
     where : {
       courseId : id.courseId,
       offeringId : id.offeringId,
+      role : 3
       }, defaults: {
           id: uuid()
       }
   }).then(result => {
+
     var courseOfferingInfo = result[0].dataValues;
 
     return UserOffering.findOrCreate({
@@ -435,8 +439,6 @@ function addCourseHelper(id) {
         userId : id.userId,
         courseOfferingId : courseOfferingInfo.id,
         roleId : id.roleId,
-      }, defaults: {
-        id: uuid(),
       }
     }).then(result => {
       return result[0].dataValues;
@@ -527,7 +529,7 @@ function addCourse(user, course) {
   /* if user and courseList are not empty */
   if(user && course) {
     var id = { universityId : user.universityId };
-    var role_result = getRoleId( 'Instructor' );
+    var role_result = getRoleId( 'Administrator' );
     var user_result = getUserByEmail( user.mailId );
     return Promise.all([role_result, user_result]).then( values => {
 
@@ -555,6 +557,7 @@ function addCourse(user, course) {
 
           id.courseId = values[0].id;
           id.offeringId = values[1].id;
+
           return addCourseHelper(id);
         }).catch(err => { perror(err) }); /* end of getOfferingId() */
       }).catch(err => { perror(err) }); /* end of Promise.all */
@@ -646,7 +649,6 @@ function addStudent(studentId, courseOfferingId) {
         userId : studentId,
       },
       defaults : {
-        id: uuid(),
         roleId : roleInfo.id
       }
     }).then((result, created) => {
@@ -716,11 +718,12 @@ function getInstructorsByCourseOfferingId (ids) {
     return ids;
   }
 
-  return Role.findOne({
+  return Role.findAll({
     /* find Instructor's uuid */
-    where : { roleName : 'Instructor', },
-  }).then(result => {
-    var instructorId = result.dataValues.id;
+    where: { roleName: { [Op.in]: ['Administrator', 'Instructor'] } },
+  }).then(values => {
+
+    var instructorId = values.map(value => value.dataValues.id);
 
     /*
      * query to fetch informations based on courseOfferingIds and roleId
@@ -732,7 +735,7 @@ function getInstructorsByCourseOfferingId (ids) {
       FROM \
       UserOfferings uoid, Users uid \
       WHERE \
-      uoid.courseOfferingId IN (:coids) AND uoid.roleId = :rid AND uoid.userId = uid.id',
+      uoid.courseOfferingId IN (:coids) AND uoid.roleId IN (:rid) AND uoid.userId = uid.id',
       { replacements: { coids : ids, rid : instructorId }, type: sequelize.QueryTypes.SELECT })
       .catch(err => perror(err)); /* sequelize.query() */
     }).catch(err => perror(err)); /* Role.findOne() */
