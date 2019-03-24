@@ -28,7 +28,6 @@ var testInfo = {
 client_api.createUser(testInfo).then(
     result => {
         var userInfo = result;
-        permission.addUser(userInfo.mailId);
         client_api.verifyUser('sample-verification-buffer', mailId).then(() => {
         });
     }).catch(err => { perror(err); })

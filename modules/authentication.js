@@ -101,7 +101,6 @@ passport.use(new GoogleStrategy({
                     client.createUser( googleInfo ).then(
                         result => {
                             var userInfo = result;
-                            permission.addUser(userInfo.mailId);
                             client.verifyUser(userInfo.verifiedId, userInfo.mailId).then(
                               result => {
 
