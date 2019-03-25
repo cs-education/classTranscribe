@@ -16,20 +16,20 @@ async function updateCoursePermission(userId, courseOfferingId, roleName) {
   }).then(result => {
 
     var roleInfo = result[0].dataValues;
-    
+
     return UserOffering.findOrCreate({ 
-      where : {userId : userId, courseOfferingId : courseOfferingId},
-      defaults : {roleId : roleInfo.id}
-    }).then(() => {
+      where : {userId : userId, courseOfferingId : courseOfferingId}, 
+      defaults : {id : uuid(), roleId : roleInfo.id}
+    }).then((_, create) => {
+      
+      if (create === true) { return true; }
 
       return UserOffering.update(
         { roleId : roleInfo.id },
         { where : {
           userId :userId,
           courseOfferingId : courseOfferingId
-        }}).then(result => {
-
-          return result});
+        }}).then(result => result);
 
     }).catch(err => {
       console.log(err);
