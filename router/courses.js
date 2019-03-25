@@ -173,10 +173,12 @@ router.post('/courses/newclass', function (request, response) {
       acronym: dept
     }
 
+    console.log(userInfo);
+
     /* course creator should be enrolled as Administrator, any other people will be enrolled as Instructor */
     client_api.addCourse(userInfo, course)
     .then(result => {
-      permission.addCoursePermission(userInfo.mailId, result.courseOfferingId, 'Delete');
+      permission.addCoursePermission(userInfo.id, result.courseOfferingId, 'Delete');
       response.end();
     })
     .catch(err => perror(err)) /* addCourse() */
@@ -320,7 +322,7 @@ function  generateListings(data, user, cb) {
 function getUserId(req) {
     var id = '';
     try {
-      id = req.session.passport.user.mailId;
+      id = req.session.passport.user.id;
     } catch(e) {
       perror("Invalid user id detected");
     }
