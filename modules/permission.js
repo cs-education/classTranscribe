@@ -101,7 +101,11 @@ async function isWatchingAllowed(userId , courseOfferingId) {
       
       /* University Only */
       case 3: return await isWatchingUniversityAllowed(userData, courseData);
+<<<<<<< HEAD
 
+=======
+      
+>>>>>>> minor fix
       /* Don't know what it is */
       default: return false;
     }
