@@ -9,11 +9,9 @@ const db = require('../db/db');
 
 router.post('/log',async function (req, res) {
 
-    console.log(req.user);
     userId = req.user.id;
     mailId = req.user.mailId;
     json = req.body;
-    console.log(req.body);
     json.mailId = mailId;
     await db.addLogs(userId, json.courseOfferingId, json.action, json.item, json.time, JSON.stringify(json));
     res.json({ success: true });
