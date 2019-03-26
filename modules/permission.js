@@ -95,13 +95,13 @@ async function isWatchingAllowed(userId , courseOfferingId) {
       case 0: return true;
       
       /* Private Courses */
-      case 1: return await isWatchingPrivateAllowed(userData, courseData).then(result => result);
+      case 1: return await isWatchingPrivateAllowed(userData, courseData);
       
       /* Signed In Courses */
       case 2: return userData !== null;
       
       /* University Only */
-      case 3: return await isWatchingUniversityAllowed(userData, courseData).then(result => result);
+      case 3: return await isWatchingUniversityAllowed(userData, courseData);
       
       /* Don't know what it is */
       default: return false;
