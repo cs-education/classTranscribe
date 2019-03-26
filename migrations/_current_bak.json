@@ -304,17 +304,6 @@
                     "onUpdate": "CASCADE",
                     "field": "taskCreatorUserId",
                     "seqType": "Sequelize.UUID"
-                },
-                "mediaId": {
-                    "allowNull": true,
-                    "references": {
-                        "model": "Media",
-                        "key": "id"
-                    },
-                    "onDelete": "SET NULL",
-                    "onUpdate": "CASCADE",
-                    "field": "mediaId",
-                    "seqType": "Sequelize.INTEGER"
                 }
             },
             "indexes": []
@@ -674,5 +663,5 @@
             "indexes": []
         }
     },
-    "revision": 2
+    "revision": 3
 }

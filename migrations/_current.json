@@ -210,6 +210,48 @@
             },
             "indexes": []
         },
+        "Logs": {
+            "tableName": "Logs",
+            "schema": {
+                "id": {
+                    "autoIncrement": true,
+                    "primaryKey": true,
+                    "field": "id",
+                    "seqType": "Sequelize.INTEGER"
+                },
+                "courseOfferingId": {
+                    "field": "courseOfferingId",
+                    "seqType": "Sequelize.UUID"
+                },
+                "userId": {
+                    "field": "userId",
+                    "seqType": "Sequelize.UUID"
+                },
+                "action": {
+                    "field": "action",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "item": {
+                    "field": "item",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "json": {
+                    "field": "json",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                }
+            },
+            "indexes": []
+        },
         "Media": {
             "tableName": "Media",
             "schema": {
@@ -663,5 +705,5 @@
             "indexes": []
         }
     },
-    "revision": 3
+    "revision": 4
 }

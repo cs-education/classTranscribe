@@ -16,6 +16,9 @@ var idx;
 var data;
 var srctoTitle = {};
 var dummy_transcriptions_count = 10; // Hardcode the numbers of dummy transcriptions to 10
+var vLogger;
+var tLogger;
+var mLogger;
 
 function navigateToVideo(video, startTime) {
     console.log(startTime, video);
@@ -86,6 +89,8 @@ function attachTranscriptionItemListeners() {
     $(".submit-edit").click(async function () {
         var id = this.id.substring(this.id.lastIndexOf('-') + 1);
         var editedText = $("#edit-box-" + id).val();
+        var uneditedText = $("#text-view-" + id + " a").html();
+        tLogger.edittrans(uneditedText, editedText);
         var subFile = data[id].subFile;
         data[id].part = editedText;
         updateTranscriptionsData(data);
@@ -110,6 +115,7 @@ function attachTranscriptionItemListeners() {
 function generateShareLink(video, startTime) {
     var shareLink = "https://" + window.location.hostname + "/watchLectureVideos/" + courseOfferingId + "?video=" + video + "&startTime=" + startTime;
     utils.copyTextToClipboard(shareLink);
+    tLogger.sharelink(shareLink);
 }
 
 function addTranscriptionsToDiv(currentList) {
@@ -209,6 +215,7 @@ function linkSrcAndTitle(playlist) {
 function update_search_results() {
     // Get query
     var query = $("#search").val();
+    tLogger.filtertrans(query);
     results = idx.search(query);
     filteredSubs = []
     results.forEach(function (result) {
@@ -235,27 +242,15 @@ function update_search_results() {
     }
 }
 
-function create_json(event_type){
-    var currentdate = new Date();
-    var datetime = currentdate.getDate() + "/"
-    + (currentdate.getMonth()+1)  + "/" 
-    + currentdate.getFullYear() + "T"  
-    + currentdate.getHours() + ":"  
-    + currentdate.getMinutes() + ":" 
-    + currentdate.getSeconds();
-    var data = JSON.stringify({'courseID': courseOfferingId,'action':event_type,'time':datetime});
-    return data;
-}
-
-function log_json_data(data){
-    console.log(data);
-}
-
 (async () => {
     var playlist = await $.when($.getJSON(getPlaylistUrl))
     linkSrcAndTitle(playlist)
     videojs('video').ready(async function () {
         player = this;
+        vLogger = new logger.VideoLogger(window, player);
+        tLogger = new logger.TranscriptionLogger(window, player);
+        mLogger = new logger.MiscEventLogger(window);
+        mLogger.selectcourse(courseOfferingId);
         player.hotkeys({                          // press F to full screen
             volumeStep: 0.1,                      // increase and decrease the volume with Up and Down
             seekStep: 5,                          // seek forward and backwards 5s of video with Left and Right
@@ -307,34 +302,36 @@ function log_json_data(data){
             update_search_results();
         });
         player.on('playlistitem', function () {
+            vLogger.changeVideo();
             updateCurrentVideoTranscriptions();
         });
         player.on('pause', function () {
-            data=create_json("pausevideo");
-            log_json_data(data);
+            vLogger.pausevideo();
         });
         player.on('play', function () {
-            data=create_json("playvideo");
-            log_json_data(data);
+            vLogger.playvideo();
         });
         player.on('ratechange', function () {
-            data=create_json("changedspeed");
-            log_json_data(data);
+            vLogger.changedspeed();
         });
         player.on('userinactive', function () {
-            data=create_json("userinactive");
-            log_json_data(data);
+            vLogger.userinactive();
         });
         player.on('testtrackchange', function () {
-            data=create_json("testtrackchange");
-            log_json_data(data);
+            vLogger.testtrackchange();
         });
         player.on('fullscreenchange', function () {
-            data=create_json("fullscreenchange");
-            log_json_data(data);
+            vLogger.fullscreenchange();
         });
-        player.on('timeupdate', function () {
+        player.on('seeking', function () {
+            vLogger.seeking();
+        });
+        player.on('seeked', function () {
+            vLogger.seeked();
+        });
 
+        player.on('timeupdate', function () {
+            vLogger.timeupdate();
             var currentTimeinMillis = player.currentTime() * 1000;
             if (currentTimeinMillis > timeUpdateLastEnd || currentTimeinMillis < timeUpdateLastStart) {
                 console.log(currentTimeinMillis);

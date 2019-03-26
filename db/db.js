@@ -33,6 +33,7 @@ const YoutubeChannel = models.YoutubeChannel;
 const CourseOfferingMedia = models.CourseOfferingMedia;
 const TaskMedia = models.TaskMedia;
 const UpdationJobs = models.UpdationJobs;
+const Log = models.Log
 /* ----- end of defining ----- */
 
 function getAllCourses() {
@@ -276,6 +277,12 @@ function getUserByEmail(email) {
     }
 
   }).catch(err => perror(err));
+}
+
+async function getUserByEmailAsync(emailId) {
+  return await User.findOne({
+    where : {mailId: emailId}
+  });
 }
 
 /* SELECT * FROM User WHERE googleId=profileId LIMIT 1*/
@@ -826,6 +833,10 @@ async function getJobForCourseOfferingId(courseOfferingId) {
     });
 }
 
+async function addLogs(userId, courseOfferingId, action, item, time, json) {
+    return await Log.create({ userId: userId, courseOfferingId: courseOfferingId, action: action, item: item, json: json, createdAt: time });
+}
+
 module.exports = {
     models: models,
     getAllCourses: getAllCourses,
@@ -849,6 +860,7 @@ module.exports = {
     getMediaByTask: getMediaByTask,
     getEchoSection: getEchoSection,
     getUserByEmail: getUserByEmail,
+    getUserByEmailAsync: getUserByEmailAsync,
     getUserByGoogleId: getUserByGoogleId,
     getUniversityId: getUniversityId,
     getUniversityName : getUniversityName,
@@ -876,5 +888,6 @@ module.exports = {
     getMediaIdsByCourseOfferingId: getMediaIdsByCourseOfferingId,
     addUpdationJob: addUpdationJob,
     getUpdationJobsBetween: getUpdationJobsBetween,
-    getJobForCourseOfferingId: getJobForCourseOfferingId
+    getJobForCourseOfferingId: getJobForCourseOfferingId,
+    addLogs: addLogs
 }
