@@ -9,6 +9,7 @@ const fs = require('fs');
 const passport = require('passport');
 var argv = require('minimist')(process.argv.slice(2));
 var env = argv["e"] || 'production';
+const db = require('../db/db');
 
 // Get the mustache page that will be rendered for the login route
 //const loginMustache = fs.readFileSync(mustachePath + 'login.mustache').toString();
@@ -41,10 +42,11 @@ router.get('/devlogin', function (request, response, next) {
         if (!user) {
             response.send({ message: info.message, html: '../login' });
         } else {
-            request.logIn(user, function (err) {
+            request.logIn(user, async function (err) {
+                await logLogin(request, "devlogin");
                 if (typeof request.query.redirectPath != "undefined") {
                     response.redirect(request.query.redirectPath);
-                } else {
+                } else {                    
                     response.redirect('../courses');
                 }                
             });
@@ -82,16 +84,25 @@ router.get('/auth/google/callback', function (req, res, next) {
         if (!user) {
             return res.send({ message: info.message, html: '/' })
         }
-        req.logIn(user, function (err) {
+        req.logIn(user, async function (err) {
             if (err) { return next(err); }
+            await logLogin(req, "googleauth");
             if (typeof req.query.state != "undefined" && req.query.state.length > 0) {
                 return res.redirect(req.query.state);
-            }
+            }            
             return res.redirect('/courses');
         });
     })(req, res, next);
 });
 
-
+async function logLogin(req, item) {
+    userId = req.user.id;
+    mailId = req.user.mailId;
+    json = {};
+    json.mailId = mailId;
+    json.time = new Date().toISOString();
+    console.log(json);
+    await db.addLogs(userId, "", "login", item, json.time, JSON.stringify(json));
+}
 
 module.exports = router;

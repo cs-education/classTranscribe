@@ -1,4 +1,3 @@
-
 var url = window.location.pathname;
 var courseOfferingId = url.substring(url.lastIndexOf('/') + 1);
 var getPlaylistUrl = '/getPlaylist/' + courseOfferingId;
@@ -17,6 +16,9 @@ var idx;
 var data;
 var srctoTitle = {};
 var dummy_transcriptions_count = 10; // Hardcode the numbers of dummy transcriptions to 10
+var vLogger;
+var tLogger;
+var mLogger;
 
 function navigateToVideo(video, startTime) {
     console.log(startTime, video);
@@ -87,6 +89,8 @@ function attachTranscriptionItemListeners() {
     $(".submit-edit").click(async function () {
         var id = this.id.substring(this.id.lastIndexOf('-') + 1);
         var editedText = $("#edit-box-" + id).val();
+        var uneditedText = $("#text-view-" + id + " a").html();
+        tLogger.edittrans(uneditedText, editedText);
         var subFile = data[id].subFile;
         data[id].part = editedText;
         updateTranscriptionsData(data);
@@ -111,6 +115,7 @@ function attachTranscriptionItemListeners() {
 function generateShareLink(video, startTime) {
     var shareLink = "https://" + window.location.hostname + "/watchLectureVideos/" + courseOfferingId + "?video=" + video + "&startTime=" + startTime;
     utils.copyTextToClipboard(shareLink);
+    tLogger.sharelink(shareLink);
 }
 
 function addTranscriptionsToDiv(currentList) {
@@ -210,6 +215,7 @@ function linkSrcAndTitle(playlist) {
 function update_search_results() {
     // Get query
     var query = $("#search").val();
+    tLogger.filtertrans(query);
     results = idx.search(query);
     filteredSubs = []
     results.forEach(function (result) {
@@ -241,6 +247,10 @@ function update_search_results() {
     linkSrcAndTitle(playlist)
     videojs('video').ready(async function () {
         player = this;
+        vLogger = new logger.VideoLogger(window, player);
+        tLogger = new logger.TranscriptionLogger(window, player);
+        mLogger = new logger.MiscEventLogger(window);
+        mLogger.selectcourse(courseOfferingId);
         player.hotkeys({                          // press F to full screen
             volumeStep: 0.1,                      // increase and decrease the volume with Up and Down
             seekStep: 5,                          // seek forward and backwards 5s of video with Left and Right
@@ -284,17 +294,44 @@ function update_search_results() {
         $('#auto_scroll').change(function () {
             if (this.checked) {
                 autoScroll = true;
-
+                console.log("autoscroll on");
             } else {
                 autoScroll = false;
+                console.log("autoscroll off");
             }
             update_search_results();
         });
-
         player.on('playlistitem', function () {
+            vLogger.changeVideo();
             updateCurrentVideoTranscriptions();
         });
+        player.on('pause', function () {
+            vLogger.pausevideo();
+        });
+        player.on('play', function () {
+            vLogger.playvideo();
+        });
+        player.on('ratechange', function () {
+            vLogger.changedspeed();
+        });
+        player.on('userinactive', function () {
+            vLogger.userinactive();
+        });
+        player.on('testtrackchange', function () {
+            vLogger.testtrackchange();
+        });
+        player.on('fullscreenchange', function () {
+            vLogger.fullscreenchange();
+        });
+        player.on('seeking', function () {
+            vLogger.seeking();
+        });
+        player.on('seeked', function () {
+            vLogger.seeked();
+        });
+
         player.on('timeupdate', function () {
+            vLogger.timeupdate();
             var currentTimeinMillis = player.currentTime() * 1000;
             if (currentTimeinMillis > timeUpdateLastEnd || currentTimeinMillis < timeUpdateLastStart) {
                 console.log(currentTimeinMillis);
@@ -315,6 +352,7 @@ function update_search_results() {
         player.on('ended', function () {
             // autoplays if duration < 90 mins (in unit of seconds)
             if(player.duration() < 5400 && $('.vjs-up-next').length) {
+                console.log("auto-play turned on");
                 $('.vjs-up-next').click();
             }
         })

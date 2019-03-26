@@ -21,6 +21,7 @@ module.exports = function(app) {
     app.use(require('./search'));
     app.use(require('./viewer'));    
     app.use(require('./watchLectureVideos'));
+    app.use(require('./logging'));
     
     
 }
