@@ -277,31 +277,6 @@ function  generateListings(data, user, cb) {
                     '</br>';
                 fcb(null, html);
             }
-
-            // permission.isManagingAllowed(user, classid).then( result => {
-            //     if (result) {
-            //         html +=
-            //                 '<a class="actionbtn mnbtn" href="#">' +
-            //                 '          <span class="glyphicon glyphicon-plus"></span> Manage\n' +
-            //                 '        </a>' + '</td> <td>'+
-            //                 '<a class="actionbtn viewbtn" href="#">' +
-            //                 '          <span class="glyphicon glyphicon-plus"></span> Watch\n' +
-            //                 '        </a> </td>';
-            //             fcb(null,html);
-            //     } else {
-            //         permission.isWatchingAllowed(user, classid).then(result => {
-            //             if (result) {
-            //               html +=
-            //               '<a class="actionbtn viewbtn" href="#">' +
-            //               '          <span class="glyphicon glyphicon-plus"></span> Watch\n' +
-            //               '        </a>';
-            //             }
-            //             html += '</br>';
-            //             fcb(null, html);
-            //         }); /* permission.checkCoursePermission() [drop] */
-            //     }
-            // }); /* permission.checkCoursePermission() [modify] */
-
         } else {
           fcb(null,html);
         }

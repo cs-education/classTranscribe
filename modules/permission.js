@@ -135,36 +135,6 @@ async function isManagingAllowed(userId, courseOfferingId) {
   }
 }
 
-/**
-SELECT 
-    *
-FROM 
-
-    (SELECT 
-    uni.id AS universityId, 
-    u.id AS userId, 
-    uof.courseOfferingId AS courseOfferingId
-    FROM Universities.uni 
-    JOIN Users.u ON uni == u.universityId
-    JOIN UserOfferings.uof ON uof.userId == u.id) user
-
- RIGHT OUTER JOIN
-
-    (SELECT
-      cof.role AS role,
-      cof.id AS courseOfferingId,
-      of.universityId AS universityId
-    FROM Offerings of
-    JOIN CourseOfferings cof ON of.id == cof.offeringId) courseOffering
- 
- ON user.courseOfferingId == courseOffering.courseOfferingId
-
- WHERE 
-    cof.role == 0
-    OR (courseOffering.role == 1 AND user IS NOT NULL)
-    OR (courseOffering.role == 2 AND u.id IS NOT NULL)
-    OR (courseOffering.role == 3 AND courseOffering.universityId == user.id)
- */
 async function allWatchableCourses(userId) {
   var publicCoursesInfo = await CourseOffering.findAll({where : {role : 0}});
   var privateCoursesInfo = await UserOffering.findAll({where : {userId : userId}});
