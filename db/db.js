@@ -840,6 +840,49 @@ async function addLogs(userId, courseOfferingId, action, item, time, json) {
     return await Log.create({ userId: userId, courseOfferingId: courseOfferingId, action: action, item: item, json: json, createdAt: time });
 }
 
+async function getCoursesByCourseOfferingId(courseOfferingId) {
+  var joinedCourseOfferingTable = 
+    " (SELECT \
+        cof.id AS courseOfferingId, cof.role AS Role, oftable.*, c.courseDescription, c.courseName , c.courseNumber \
+      FROM CourseOfferings cof \
+      JOIN \
+        ( SELECT \
+            ofs.id, u.id AS universityId, ofs.section, t.id AS termId, d.id AS deptId, u.universityName, d.deptName, d.acronym, t.termName \
+          FROM Offerings ofs \
+          JOIN Terms t ON t.id = ofs.termId \
+          JOIN Depts d ON d.id = ofs.deptId \
+          JOIN Universities u ON u.id = ofs.universityId \
+        ) oftable \
+      ON cof.offeringId = oftable.id \
+      JOIN Courses c ON c.id = cof.courseId)";
+
+  var joinedUserOfferingTable = 
+    " (SELECT \
+        uof.courseOfferingId, u.mailId, u.firstName, u.lastName, u.universityId \
+      FROM UserOfferings uof \
+      JOIN Roles r ON uof.roleId = r.id \
+      JOIN Users u ON uof.userId = u.id) ";
+  
+  try {
+    
+    return await sequelize.query(
+      " SELECT * \
+      FROM " + 
+      joinedUserOfferingTable + 
+      " ju \
+      RIGHT JOIN " +
+      joinedCourseOfferingTable +
+      " jcof \
+      ON ju.courseOfferingId = jcof.courseOfferingId \
+      WHERE ju.courseOfferingId IN ( :coids ) ", 
+      { replacements: { coids: courseOfferingId }, type: sequelize.QueryTypes.SELECT });
+    
+  } catch(err) {
+    perror(err);
+    return null;
+  }
+}
+
 module.exports = {
     models: models,
     getAllCourses: getAllCourses,
@@ -891,6 +934,7 @@ module.exports = {
     getMediaIdsByCourseOfferingId: getMediaIdsByCourseOfferingId,
     addUpdationJob: addUpdationJob,
     getUpdationJobsBetween: getUpdationJobsBetween,
-    getJobForCourseOfferingId: getJobForCourseOfferingId,
-    addLogs: addLogs
+    getJobForCourseOfferingId: getJobForCourseOfferingId,  
+    addLogs: addLogs,
+    getCoursesByCourseOfferingId: getCoursesByCourseOfferingId
 }

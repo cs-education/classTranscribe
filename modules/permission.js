@@ -101,11 +101,7 @@ async function isWatchingAllowed(userId , courseOfferingId) {
       
       /* University Only */
       case 3: return await isWatchingUniversityAllowed(userData, courseData);
-<<<<<<< HEAD
-
-=======
       
->>>>>>> minor fix
       /* Don't know what it is */
       default: return false;
     }
@@ -139,6 +135,36 @@ async function isManagingAllowed(userId, courseOfferingId) {
   }
 }
 
+/**
+SELECT 
+    *
+FROM 
+
+    (SELECT 
+    uni.id AS universityId, 
+    u.id AS userId, 
+    uof.courseOfferingId AS courseOfferingId
+    FROM Universities.uni 
+    JOIN Users.u ON uni == u.universityId
+    JOIN UserOfferings.uof ON uof.userId == u.id) user
+
+ RIGHT OUTER JOIN
+
+    (SELECT
+      cof.role AS role,
+      cof.id AS courseOfferingId,
+      of.universityId AS universityId
+    FROM Offerings of
+    JOIN CourseOfferings cof ON of.id == cof.offeringId) courseOffering
+ 
+ ON user.courseOfferingId == courseOffering.courseOfferingId
+
+ WHERE 
+    cof.role == 0
+    OR (courseOffering.role == 1 AND user IS NOT NULL)
+    OR (courseOffering.role == 2 AND u.id IS NOT NULL)
+    OR (courseOffering.role == 3 AND courseOffering.universityId == user.id)
+ */
 async function allWatchableCourses(userId) {
   var publicCoursesInfo = await CourseOffering.findAll({where : {role : 0}});
   var privateCoursesInfo = await UserOffering.findAll({where : {userId : userId}});
@@ -150,13 +176,13 @@ async function allWatchableCourses(userId) {
   var courses = publicCoursesInfo === null ? [] : publicCoursesInfo.map(course => course.dataValues.id);
 
   // Add Private
-  courses.concat(privateCoursesInfo === null ? [] : privateCoursesInfo.map(course => course.dataValues.courseOfferingId ));
+  courses = courses.concat(privateCoursesInfo === null ? [] : privateCoursesInfo.map(course => course.dataValues.courseOfferingId ));
 
   if (userInfo === null) { return courses; }
 
   // Add Sign In
-  courses.concat(signInCoursesInfo === null ? [] : signInCoursesInfo.map(course => course.dataValues.id));
-
+  courses = courses.concat(signInCoursesInfo === null ? [] : signInCoursesInfo.map(course => course.dataValues.id));
+  
   if (univeristyCoursesInfo === null) { return courses; } 
 
   var univeristyCoursesData = univeristyCoursesInfo.map(course => course.dataValues);
@@ -165,10 +191,10 @@ async function allWatchableCourses(userId) {
 
   if (coursesInfo === null) { return courses; }
 
-  coursesData = coursesInfo.map(course => course.dataValues.offeringId);
+  var coursesData = coursesInfo.map(course => course.dataValues.offeringId);
 
   // Add University
-  courses.concat(univeristyCoursesData.filter(course => coursesData.indexOf(course.offeringId) > 0));
+  courses = courses.concat(univeristyCoursesData.filter(course => coursesData.indexOf(course.offeringId) > 0));
 
   return courses;
 }
@@ -176,15 +202,17 @@ async function allWatchableCourses(userId) {
 async function allManageableCourses(userId) {
   var userCoursesInfo = await UserOffering.findAll({ where : {userId : userId}});
 
+  
   if (userCoursesInfo === null) { return []; }
   
   var roleInfo = await Role.findOne({ where : {roleName : 'Student'}});
   var roleData = roleInfo.dataValues;
-
+  
   var userCoursesData = userCoursesInfo.map(data => data.dataValues);
-  var managableCourses = userCoursesData.filter(course => course.roleId !== roleData.id);
+  
+  var managableCourses = userCoursesData.filter(course => (course.roleId !== null) && (course.roleId !== roleData.id));
 
-  return managableCourses.map(course => course.id);
+  return managableCourses.map(course => course.courseOfferingId);
 }
 
 module.exports = {

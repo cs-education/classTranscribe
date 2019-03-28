@@ -57,17 +57,20 @@ router.get('/courses/', function (request, response) {
             var form = '';
             var createClassBtn = '';
             var userInfo = request.session.passport.user;
-            // Super user hack
+            
+            // Add create-a-class section if user is authenticated
+            // Super user hack            
             if (userInfo.mailId === 'mahipal2@illinois.edu' || userInfo.mailId === 'testuser@illinois.edu') {
                 form = getCreateClassForm(userInfo);
                 createClassBtn =
                     '<button class="btn" data-toggle="modal" data-target="#createPanel">' +
                     '          Create a New Class</button>';
             }            
+            permission.isManagingAllowed(userid, 'fc51b78d-f414-45b6-8ef5-95c9c61aa713');
             client_api.getUniversityName(userInfo.universityId).then(result => {
 
                 userInfo.university = result.universityName;
-                // Add create-a-class section if user is authenticated
+
                 // Table header
                 var thtml = "<tr id=\"#header\">\n" +
                     '<th >Term</th>' +
@@ -81,56 +84,29 @@ router.get('/courses/', function (request, response) {
                     "                    <th>Course Description</th>\n" +
                     "                    <th>Action</th>\n" +
                     "                </tr>";
+                
+                var manageCourseInfo = permission.allManageableCourses(userid);
+                var watchCourseInfo = permission.allWatchableCourses(userid);
 
-                client_api.getCoursesByUniversityId(userInfo.universityId).then(values => {
+                Promise.all([manageCourseInfo, watchCourseInfo]).then(values => {
+                    var manageCourseData = values[0];
+                    var watchCourseData = values[1];
 
-                    var termIds = [];
-                    var deptIds = [];
-                    var courses = [];
-                    var offeringIds = [];
-                    var courseOfferingIds = [];
-
-                    for (let i = 0; i < values.length; i++) {
-                        termIds.push(values[i].termId);
-                        deptIds.push(values[i].deptId);
-                        courseOfferingIds.push(values[i].courseOfferingId);
-                        values[i].university = userInfo.university;
-                        courses.push(values[i]);
-                    }
-
-                    var termFetches = client_api.getTermsById(termIds);
-                    var deptFetches = client_api.getDeptsById(deptIds);
-                    var instructorFetches = client_api.getInstructorsByCourseOfferingId(courseOfferingIds);
-
-                    Promise.all([termFetches, deptFetches, instructorFetches]).then(values => {
-                        var filters = [];
+                    client_api.getCoursesByCourseOfferingId(watchCourseData).then(values => {
+                        
+                        var courses = values;
                         var terms = {};
                         var depts = {};
-                        var acronyms = {};
-                        var instructors = {};
+                        
+                        for (let index = 0; index < courses.length; index++) {
+                            let course = courses[index];
 
-                        values[0].map(value => { terms[value.id] = value.termName; });
-
-                        values[1].map(value => {
-                            depts[value.id] = value.deptName;
-                            acronyms[value.id] = value.acronym;
-                        });
-
-                        values[2].map(value => {
-                            if (!instructors[value.courseOfferingId]) {
-                                instructors[value.courseOfferingId] = [];
-                            }
-                            instructors[value.courseOfferingId].push(value);
-                        })
-
-                        for (let i = 0; i < courses.length; i++) {
-                            let currentCourse = courses[i];
-                            courses[i].termName = terms[currentCourse.termId];
-                            courses[i].deptName = depts[currentCourse.deptId];
-                            courses[i].acronym = acronyms[currentCourse.deptId];
-                            courses[i].instructor = instructors[currentCourse.courseOfferingId];
+                            courses[index].manage = (manageCourseData.indexOf(course.courseOfferingId) >= 0);
+                            terms[course.termId] = course.termName;
+                            depts[course.deptId] = course.deptName;
+                            courses[index].instructor = {firstName : course.firstName, lastName: course.lastName};
                         }
-
+                        
                         // Saving current content(courseId, termId) before applying filters
                         request.session['currentContent'] = courses;
 
@@ -148,8 +124,8 @@ router.get('/courses/', function (request, response) {
                             var html = Mustache.render(Mustache.getMustacheTemplate('courses.mustache'), view);
                             response.end(html);
                         });
-                    }).catch(err => perror(err)); /* Promise.all() */
-                }).catch(err => perror(err)); /* getUniversityName() */
+                    })
+                }).catch(err => perror(err)) /* Promise.all() && getCoursesByCourseOfferingId()*/
             });
         });
     }
@@ -172,8 +148,6 @@ router.post('/courses/newclass', function (request, response) {
       name: dept,
       acronym: dept
     }
-
-    console.log(userInfo);
 
     /* course creator should be enrolled as Administrator, any other people will be enrolled as Instructor */
     client_api.addCourse(userInfo, course)
@@ -259,17 +233,16 @@ function  generateListings(data, user, cb) {
 
   /* async.reduce(array, startValue, reducer) */
     async.reduce(data, '', function (html, e, fcb) {
-      let instructors = e.instructor;
+
       let instructorName = '';
 
       /* concatenate each instructor's name */
         try {
-            instructors.map(instructor => {
-                instructorName = instructorName + ', ' + instructor.firstName + ' ' + instructor.lastName;
-            });
-            /* remove first comma */
-            instructorName = instructorName.substring(1);
+
+            instructorName = e.instructor.firstName + ' ' + e.instructor.lastName;
+
         } catch (err) {
+
             instructorName = "";
         }
         
@@ -284,32 +257,51 @@ function  generateListings(data, user, cb) {
         html += '<td>' + instructorName + '</td>';
         html += '<td>' + e.courseDescription + '</td>';
         html += '<td class="col-md-2">';
-        var debug = false;
-        if (debug || (user != '' && user != undefined)) {
-            var classid = e.courseOfferingId;
-            permission.isManagingAllowed(user, classid).then( result => {
-                if (result) {
-                    html +=
-                            '<a class="actionbtn mnbtn" href="#">' +
-                            '          <span class="glyphicon glyphicon-plus"></span> Manage\n' +
-                            '        </a>' + '</td> <td>'+
-                            '<a class="actionbtn viewbtn" href="#">' +
-                            '          <span class="glyphicon glyphicon-plus"></span> Watch\n' +
-                            '        </a> </td>';
-                        fcb(null,html);
-                } else {
-                    permission.isWatchingAllowed(user, classid).then(result => {
-                        if (result) {
-                          html +=
-                          '<a class="actionbtn viewbtn" href="#">' +
-                          '          <span class="glyphicon glyphicon-plus"></span> Watch\n' +
-                          '        </a>';
-                        }
-                        html += '</br>';
-                        fcb(null, html);
-                    }); /* permission.checkCoursePermission() [drop] */
-                }
-            }); /* permission.checkCoursePermission() [modify] */
+
+        if ((user != '' && user != undefined)) {
+            // var classid = e.courseOfferingId;
+            if(e.manage === true) {
+                html +=
+                    '<a class="actionbtn mnbtn" href="#">' +
+                    '          <span class="glyphicon glyphicon-plus"></span> Manage\n' +
+                    '        </a>' + '</td> <td>' +
+                    '<a class="actionbtn viewbtn" href="#">' +
+                    '          <span class="glyphicon glyphicon-plus"></span> Watch\n' +
+                    '        </a> </td>';
+                fcb(null, html);
+            } else {
+                html +=
+                    '<a class="actionbtn viewbtn" href="#">' +
+                    '          <span class="glyphicon glyphicon-plus"></span> Watch\n' +
+                    '        </a>' + 
+                    '</br>';
+                fcb(null, html);
+            }
+
+            // permission.isManagingAllowed(user, classid).then( result => {
+            //     if (result) {
+            //         html +=
+            //                 '<a class="actionbtn mnbtn" href="#">' +
+            //                 '          <span class="glyphicon glyphicon-plus"></span> Manage\n' +
+            //                 '        </a>' + '</td> <td>'+
+            //                 '<a class="actionbtn viewbtn" href="#">' +
+            //                 '          <span class="glyphicon glyphicon-plus"></span> Watch\n' +
+            //                 '        </a> </td>';
+            //             fcb(null,html);
+            //     } else {
+            //         permission.isWatchingAllowed(user, classid).then(result => {
+            //             if (result) {
+            //               html +=
+            //               '<a class="actionbtn viewbtn" href="#">' +
+            //               '          <span class="glyphicon glyphicon-plus"></span> Watch\n' +
+            //               '        </a>';
+            //             }
+            //             html += '</br>';
+            //             fcb(null, html);
+            //         }); /* permission.checkCoursePermission() [drop] */
+            //     }
+            // }); /* permission.checkCoursePermission() [modify] */
+
         } else {
           fcb(null,html);
         }
