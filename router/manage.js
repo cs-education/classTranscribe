@@ -193,13 +193,17 @@ var storage = multer.diskStorage({
 
 var upload = multer({ storage: storage })
 var cpUpload = upload.fields([{ name: 'videos', maxCount: 100 }])
+var index = 0;
+
 
 router.post('/uploadLectureVideos', cpUpload, function (request, response) {
   //var className = request.body.className.toUpperCase();
   var className = "CLASSNAME";
-    
-    console.dir(request.body);
-    console.dir(request.files);
+
+  console.log(index);
+  console.dir(request.body.lessonName[index]);
+  console.dir(request.files.videos[0].path);
+  index++;
   // console.log(request.files[0].filename);
   // console.log(request.files[0].destination);
   // console.log(request.files[0].path);
