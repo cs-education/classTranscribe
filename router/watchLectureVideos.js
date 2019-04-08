@@ -4,6 +4,7 @@ const db = require('../db/db');
 const logging = require('../utils/logging');
 const utils = require('../utils/utils');
 const vttToJson = require('../modules/vtt-json');
+const permission = require('../modules/permission');
 const perror = logging.perror;
 const info = logging.info;
 const log = logging.log;
@@ -14,12 +15,15 @@ var dateformat = require('dateformat');
 
 router.get('/watchLectureVideos/:courseOfferingId', function (request, response) {
     if (request.isAuthenticated()) {
+        if (permission.isWatchingAllowed(req.session.passport.user.id, request.params.courseOfferingId)) {
+            response.writeHead(200, {
+                'Content-Type': 'text/html'
+            });
 
-        response.writeHead(200, {
-            'Content-Type': 'text/html'
-        });
-
-    renderWithPartial(Mustache.getMustacheTemplate('watchLectureVideos.mustache'), request, response);
+            renderWithPartial(Mustache.getMustacheTemplate('watchLectureVideos.mustache'), request, response);
+        } else {
+            response.redirect('/login?redirectPath=' + encodeURIComponent(request.originalUrl));
+        }
   } else {
       response.redirect('/login?redirectPath=' + encodeURIComponent(request.originalUrl));
   }

@@ -38,7 +38,7 @@ client_api.createUser(testInfo).then(
 var allterms = [];
 
 // courses page, display all relative courses
-router.get('/courses/', function (request, response) {   
+router.get('/courses/', function (request, response) {
     if (!request.isAuthenticated()) {
         response.redirect('/login?redirectPath=' + encodeURIComponent(request.originalUrl));
     }
@@ -53,20 +53,19 @@ router.get('/courses/', function (request, response) {
                 // reply is null if the key is missing
                 allterms = reply.map(term => term.termName);
            }
-
             var form = '';
             var createClassBtn = '';
             var userInfo = request.session.passport.user;
             
             // Add create-a-class section if user is authenticated
             // Super user hack            
-            if (userInfo.mailId === 'mahipal2@illinois.edu' || userInfo.mailId === 'testuser@illinois.edu') {
+            if (userInfo.mailId === 'mahipal2@illinois.edu') {
                 form = getCreateClassForm(userInfo);
                 createClassBtn =
                     '<button class="btn" data-toggle="modal" data-target="#createPanel">' +
                     '          Create a New Class</button>';
             }            
-            permission.isManagingAllowed(userid, 'fc51b78d-f414-45b6-8ef5-95c9c61aa713');
+
             client_api.getUniversityName(userInfo.universityId).then(result => {
 
                 userInfo.university = result.universityName;
@@ -92,39 +91,45 @@ router.get('/courses/', function (request, response) {
                     var manageCourseData = values[0];
                     var watchCourseData = values[1];
 
-                    client_api.getCoursesByCourseOfferingId(watchCourseData).then(values => {
-                        
-                        var courses = values;
-                        var terms = {};
-                        var depts = {};
-                        
-                        for (let index = 0; index < courses.length; index++) {
-                            let course = courses[index];
+                    if(watchCourseData.length > 0) {
+                        client_api.getCoursesByCourseOfferingId(watchCourseData).then(values => {
 
-                            courses[index].manage = (manageCourseData.indexOf(course.courseOfferingId) >= 0);
-                            terms[course.termId] = course.termName;
-                            depts[course.deptId] = course.deptName;
-                            courses[index].instructor = {firstName : course.firstName, lastName: course.lastName};
-                        }
-                        
-                        // Saving current content(courseId, termId) before applying filters
-                        request.session['currentContent'] = courses;
+                            var courses = values;
+                            var terms = {};
+                            var depts = {};
 
-                        generateListings(courses, userid, function (res) {
-                            thtml += res;
-                            filterdata = generateFilters(terms, depts);
-                            var view = {
-                                termlist: allterms,
-                                createform: form,
-                                tabledata: thtml,
-                                termfilterdata: filterdata[0],
-                                subjectfilterdata: filterdata[1],
-                                createClassButton: createClassBtn
-                            };
-                            var html = Mustache.render(Mustache.getMustacheTemplate('courses.mustache'), view);
-                            response.end(html);
-                        });
-                    })
+                            for (let index = 0; index < courses.length; index++) {
+                                let course = courses[index];
+
+                                courses[index].manage = (manageCourseData.indexOf(course.courseOfferingId) >= 0);
+                                terms[course.termId] = course.termName;
+                                depts[course.deptId] = course.deptName;
+                                courses[index].instructor = { firstName: course.firstName, lastName: course.lastName };
+                            }
+
+                            // Saving current content(courseId, termId) before applying filters
+                            request.session['currentContent'] = courses;
+
+                            generateListings(courses, userid, function (res) {
+                                thtml += res;
+                                filterdata = generateFilters(terms, depts);
+                                var view = {
+                                    termlist: allterms,
+                                    createform: form,
+                                    tabledata: thtml,
+                                    termfilterdata: filterdata[0],
+                                    subjectfilterdata: filterdata[1],
+                                    createClassButton: createClassBtn
+                                };
+                                var html = Mustache.render(Mustache.getMustacheTemplate('courses.mustache'), view);
+                                response.end(html);
+                            });
+                        })
+                    } else {
+                        var html = Mustache.render(Mustache.getMustacheTemplate('courses.mustache'), []);
+                        response.end(html);
+                    }
+
                 }).catch(err => perror(err)) /* Promise.all() && getCoursesByCourseOfferingId()*/
             });
         });

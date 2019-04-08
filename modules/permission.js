@@ -143,15 +143,15 @@ async function allWatchableCourses(userId) {
   var univeristyCoursesInfo = await CourseOffering.findAll({ where : {role : 3}});
 
   // Add Public
-  var courses = publicCoursesInfo === null ? [] : publicCoursesInfo.map(course => course.dataValues.id);
+  var courses = publicCoursesInfo.length === 0 ? [] : publicCoursesInfo.map(course => course.dataValues.id);
 
   // Add Private
-  courses = courses.concat(privateCoursesInfo === null ? [] : privateCoursesInfo.map(course => course.dataValues.courseOfferingId ));
+  courses = courses.concat(privateCoursesInfo.length === 0 ? [] : privateCoursesInfo.map(course => course.dataValues.courseOfferingId ));
 
   if (userInfo === null) { return courses; }
 
   // Add Sign In
-  courses = courses.concat(signInCoursesInfo === null ? [] : signInCoursesInfo.map(course => course.dataValues.id));
+  courses = courses.concat(signInCoursesInfo.length == 0 ? [] : signInCoursesInfo.map(course => course.dataValues.id));
   
   if (univeristyCoursesInfo === null) { return courses; } 
 
@@ -159,7 +159,7 @@ async function allWatchableCourses(userId) {
 
   var coursesInfo = await Offering.findAll({ where: { universityId: userInfo.univeristyId } });
 
-  if (coursesInfo === null) { return courses; }
+  if (coursesInfo.length === 0) { return courses; }
 
   var coursesData = coursesInfo.map(course => course.dataValues.offeringId);
 
@@ -172,8 +172,7 @@ async function allWatchableCourses(userId) {
 async function allManageableCourses(userId) {
   var userCoursesInfo = await UserOffering.findAll({ where : {userId : userId}});
 
-  
-  if (userCoursesInfo === null) { return []; }
+  if (userCoursesInfo.length === 0) { return []; }
   
   var roleInfo = await Role.findOne({ where : {roleName : 'Student'}});
   var roleData = roleInfo.dataValues;
