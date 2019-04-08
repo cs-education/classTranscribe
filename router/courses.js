@@ -264,7 +264,6 @@ function  generateListings(data, user, cb) {
         html += '<td class="col-md-2">';
 
         if ((user != '' && user != undefined)) {
-            // var classid = e.courseOfferingId;
             if(e.manage === true) {
                 html +=
                     '<a class="actionbtn mnbtn" href="#">' +
@@ -306,10 +305,10 @@ router.post('/courses/enroll/', function (request, response) {
     var params = request.body.classinfo;
     params = params.split(',,');
     var userid = getUserId(request);
-    var classid = request.body.cid;
+    var courseOfferingId = request.body.cid;
 
-    client_api.addStudent(userid, classid);
-    permission.addCoursePermission(userid, classid, 'View');
+    client_api.addStudent(userid, courseOfferingId);
+    permission.addCoursePermission(userid, courseOfferingId, 'View');
 
     response.end();
 });
@@ -320,10 +319,10 @@ router.post('/courses/drop/', function (request, response) {
     var params = request.body.classinfo;
     params = params.split(',,');
     var userid = getUserId(request);
-    var classid = request.body.cid;
+    var courseOfferingId = request.body.cid;
 
-    client_api.removeStudent(userid, classid);
-    permission.removeCoursePermission(userid, classid, 'View');
+    client_api.removeStudent(userid, courseOfferingId);
+    permission.removeCoursePermission(userid, courseOfferingId, 'View');
 
     response.end()
 });
