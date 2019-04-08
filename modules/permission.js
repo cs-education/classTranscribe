@@ -73,10 +73,11 @@ async function isWatchingUniversityAllowed(userData, courseData) {
 
 async function isWatchingPrivateAllowed(userData, courseData) {
   if (userData === null || courseData === null) { return false; }
+  if (userData.id === null || courseData.id === null) { return false; }
 
   // Since every valid role has [View] access, we only need to check if 
   // there is a corresponding information inside of table
-  var userCourse = await UserOffering.findOne({ where: { userId : userData.id}});
+  var userCourse = await UserOffering.findOne({ where: { userId : userData.id, courseId : courseData.id }});
   
   return userCourse !== null;
 }
