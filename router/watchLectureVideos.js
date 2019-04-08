@@ -65,7 +65,7 @@ router.get('/getSrts/:courseOfferingId', async function (request, response) {
                 let results = await vttToJson(subFile);
                 utils.asyncForEach(results, function (result) {
                     if (result.subtitles.length > 0) {
-                      result.part = result.subtitles[0].substring(0, result.subtitles[0].lastIndexOf(' '));
+                      result.part = result.subtitles[0];
                     } else {
                       result.part = ''
                     }
