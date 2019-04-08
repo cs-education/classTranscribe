@@ -841,6 +841,13 @@ async function addLogs(userId, courseOfferingId, action, item, time, json) {
 }
 
 async function getCoursesByCourseOfferingId(courseOfferingId) {
+  /**
+   * To extract detailed Terms, Depts, Universities information from each table, 
+   * we combine these tables based on various Ids from Offering, then using OfferingIds 
+   * from CourseOffering table to map relavent information to each precise courseOfferings. 
+   * 
+   * Apply the same idea to JOIN Courses by courseId
+   */
   var joinedCourseOfferingTable = 
     " (SELECT \
         cof.id AS courseOfferingId, cof.role AS Role, oftable.*, c.courseDescription, c.courseName , c.courseNumber \
@@ -856,6 +863,10 @@ async function getCoursesByCourseOfferingId(courseOfferingId) {
       ON cof.offeringId = oftable.id \
       JOIN Courses c ON c.id = cof.courseId)";
 
+  /**
+   * To extract similar information from Role, User, 
+   * we combine those tables based on provided Ids from UserOfferings.
+   */
   var joinedUserOfferingTable = 
     " (SELECT \
         uof.courseOfferingId, u.mailId, u.firstName, u.lastName, u.universityId \
@@ -865,6 +876,11 @@ async function getCoursesByCourseOfferingId(courseOfferingId) {
   
   try {
     
+    /**
+     * Given a list of courseOfferingIds, we want to get a list of detailed information about the course and instructor. 
+     * Thus, we combine joinedUserOfferingTable and joinedCourseOfferingTable create a table that provides every information 
+     * that we may need. Then we select rows from the pool based on each courseOfferingId and return a list of watchable courses.
+     */
     return await sequelize.query(
       " SELECT * \
       FROM " + 
