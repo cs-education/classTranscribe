@@ -64,7 +64,11 @@ router.get('/getSrts/:courseOfferingId', async function (request, response) {
                 var videoFile = value['videoLocalLocation'];
                 let results = await vttToJson(subFile);
                 utils.asyncForEach(results, function (result) {
-                    result.part = result.subtitles[0].substring(0, result.subtitles[0].lastIndexOf(' '));
+                    if (result.subtitles.length > 0) {
+                      result.part = result.subtitles[0];
+                    } else {
+                      result.part = ''
+                    }
                     result.subFile = subFile;
                     result.video = videoFile;
                     result.id = counter++;
