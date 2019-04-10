@@ -117,37 +117,61 @@ function filter() {
     });
 }
 
+// function addTable() {
+//   var myTableDiv = document.getElementById("myDynamicTable");
+//
+//   var table = document.createElement('TABLE');
+//   table.border = '1';
+//
+//   var tableBody = document.createElement('TBODY');
+//   table.appendChild(tableBody);
+//
+//   for (var i = 0; i < 3; i++) {
+//     var tr = document.createElement('TR');
+//     tableBody.appendChild(tr);
+//
+//     for (var j = 0; j < 4; j++) {
+//       var td = document.createElement('TD');
+//       td.width = '75';
+//       td.appendChild(document.createTextNode("Cell " + i + "," + j));
+//       tr.appendChild(td);
+//     }
+//   }
+//   myTableDiv.appendChild(table);
+// }
+// addTable();
 
-/** dropzone video upload **/
-//Dropzone.autoDiscover = false;
-$(function() {
-    Dropzone.options.uploadLectureVideos = {
-      //paramName: 'test_file',
-      maxFilesize: 1000, // MB
-      //maxFiles: 1,
-      dictDefaultMessage: 'Drag a file here to upload, or click to select one',
-      acceptedFiles: ".mp4, .avi, .flv, .wmv, .mov, .wav, .ogv, .mpg, .m4v",
-      init: function() {
-        this.on('addedfile', function(file) {
-						console.log(file);
-						filename = file.name;
-        });
-      },
-    };
-});
-
-$(function() {
-    Dropzone.options.uploadStudentsFiles = {
-      //paramName: 'test_file',
-      maxFilesize: 100, // MB
-      //maxFiles: 1,
-      dictDefaultMessage: 'Drag a file here to upload, or click to select one',
-      acceptedFiles: ".txt, .csv, .xl*",
-      init: function() {
-        self = this;
-        this.on('addedfile', function(file) {
-            console.log("in addedfile");
-        });
-      },
-    };
-});
+//
+// /** dropzone video upload **/
+// //Dropzone.autoDiscover = false;
+// $(function() {
+//     Dropzone.options.uploadLectureVideos = {
+//       //paramName: 'test_file',
+//       maxFilesize: 1000, // MB
+//       //maxFiles: 1,
+//       dictDefaultMessage: 'Drag a file here to upload, or click to select one',
+//       acceptedFiles: ".mp4, .avi, .flv, .wmv, .mov, .wav, .ogv, .mpg, .m4v",
+//       init: function() {
+//         this.on('addedfile', function(file) {
+// 						console.log(file);
+// 						filename = file.name;
+//         });
+//       },
+//     };
+// });
+//
+// $(function() {
+//     Dropzone.options.uploadStudentsFiles = {
+//       //paramName: 'test_file',
+//       maxFilesize: 100, // MB
+//       //maxFiles: 1,
+//       dictDefaultMessage: 'Drag a file here to upload, or click to select one',
+//       acceptedFiles: ".txt, .csv, .xl*",
+//       init: function() {
+//         self = this;
+//         this.on('addedfile', function(file) {
+//             console.log("in addedfile");
+//         });
+//       },
+//     };
+// });
