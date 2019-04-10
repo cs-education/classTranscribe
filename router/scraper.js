@@ -26,6 +26,7 @@ router.get('/scrapeEchoSection', function (request, response) {
     response.writeHead(200, {
         'Content-Type': 'text.html'
     });
+    console.log("test");
     var url = request.query.publicUrl;
     var courseOfferingId = request.query.courseOfferingId;
     console.log(url, courseOfferingId);
@@ -47,6 +48,7 @@ router.get('/addLocalVideosToCourse',async function (request, response) {
     response.writeHead(200, {
         'Content-Type': 'text.html'
     });
+    console.log("test");
     var jsonFile = request.query.jsonFile;
     var courseOfferingId = request.query.courseOfferingId;
     console.log(jsonFile, courseOfferingId);
