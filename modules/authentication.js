@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 var passwordHash = require('../node_modules/password-hash/lib/password-hash');
+var uni_data = require('../utils/world_universities_and_domains.json');
 
 // Currently, I don't think this logout url is being used.
 // var LOGOUT_URL = "https://www.testshib.org/.sso/Logout";
@@ -159,11 +160,15 @@ function findUser(id,cb){
 // Data file comes from https://github.com/Hipo/university-domains-list
 function getUniversity(email) {
     var domain = email.split('@')[1];
-    var data = JSON.parse(fs.readFileSync('../utils/world_universities_and_domains.json'));
-    for (var i = 0; i < data.length; i++) {
-        if (data[i].domains[0] == domain) {
-            return data[i].name;
+    // var data = JSON.parse(fs.readFileSync('../utils/world_universities_and_domains.json'));
+    for (var i = 0; i < uni_data.length; i++) {
+        if (uni_data[i].domains[0] == domain) {
+            return uni_data[i].name;
         }
     }
     return "Unknown University";
+}
+
+module.exports = {
+getUniversity: getUniversity
 }
