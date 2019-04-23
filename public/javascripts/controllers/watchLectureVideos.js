@@ -262,6 +262,7 @@ function update_search_results() {
 
         // player.src()
         player.playlist(playlist);
+        player.controlBar.addChild('QualitySelector');
         // Initialize the playlist-ui plugin with no option (i.e. the defaults).
         player.playlistUi({
             nextButton: true
