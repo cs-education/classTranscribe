@@ -30,7 +30,7 @@ function navigateToVideo(video, startTime) {
         }
     }
     updateCurrentVideoTranscriptions();
-    $('#search').val('');
+    // $('#search').val('');
     var videoId = player.playlist.indexOf(video);
     player.playlist.currentItem(videoId);
     player.currentTime(Math.floor(startTime / 1000));
@@ -279,7 +279,7 @@ function update_search_results() {
             }
         }
 
-        $('#search').on('keyup', update_search_results);
+        $('#search').on('keyup focus', update_search_results);
 
         $('#full_course_search').change(function () {
             if (this.checked) {

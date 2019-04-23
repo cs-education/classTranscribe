@@ -35,3 +35,16 @@
     height: 25px;
 }
 
+.player-container {
+    max-height: 50vh;
+}
+
+.video-js {
+    max-height: 50vh;
+}
+.vjs-playlist {
+    max-height: 50vh;
+}
+.vjs-playlist-item {
+    height: 70px;
+}
