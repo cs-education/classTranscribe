@@ -164,6 +164,17 @@ async function addMedia(videoURL, sourceType, siteSpecificJSON) {
     return media[0].id;
 }
 
+async function updateAltVideoFileName(task, videoLocalLocation) {
+    var fileName = _dirname + task.id + '_alt' + videoLocalLocation.substring(videoLocalLocation.lastIndexOf('.'));
+    fileName = path.resolve(fileName);
+    fs.copyFileSync(videoLocalLocation, fileName);
+    fs.unlinkSync(videoLocalLocation);
+    console.log('ALT FILE NAME' + fileName);
+    await task.update({
+      altVideoLocalLocation: path.resolve(fileName)
+  });
+}
+
 async function addMSTranscriptionTask(mediaId, taskId, videoHashsum, videoLocalLocation) {
     var task;
     if (taskId == null) {
@@ -889,5 +900,6 @@ module.exports = {
     addUpdationJob: addUpdationJob,
     getUpdationJobsBetween: getUpdationJobsBetween,
     getJobForCourseOfferingId: getJobForCourseOfferingId,
-    addLogs: addLogs
+    addLogs: addLogs,
+    updateAltVideoFileName: updateAltVideoFileName
 }

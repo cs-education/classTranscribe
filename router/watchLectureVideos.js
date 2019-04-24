@@ -69,6 +69,7 @@ router.get('/getSrts/:courseOfferingId', async function (request, response) {
                     } else {
                       result.part = ''
                     }
+                    result.createdAt = value.createdAt;
                     result.subFile = subFile;
                     result.video = videoFile;
                     result.id = counter++;

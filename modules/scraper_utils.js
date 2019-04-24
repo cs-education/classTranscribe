@@ -88,50 +88,60 @@ async function add_youtube_video_info(videoInfo, courseOfferingId) {
     }    
 }
 
-async function download_lecture(media) {
+async function download_lecture(media, alt = false) {
     console.log("Download_lecture");
     var outputFile;
     switch (media.sourceType) {
         case 0:
-            outputFile = await download_echo_lecture(media);
+            outputFile = await download_echo_lecture(media, alt);
             break;
         case 1:
-            outputFile = await download_youtube_video(media);
+            outputFile = await download_youtube_video(media, alt);
             break;
         case 2:
-            outputFile = await download_local_video(media);
+            outputFile = await download_local_video(media, alt);
             break;
         default:
             console.log("Invalid sourceType");
             outputFile = "";
     }
-    return outputFile;    
+    return outputFile;
 }
 
-async function download_youtube_video(media) {
+async function download_youtube_video(media, alt = false) {
     console.log("download_youtube_video");
-    var videoUrl = JSON.parse(media.siteSpecificJSON).videoUrl;
-    var outputFile = _tempdir + media.id + '.mp4';
+    var videoUrl = alt ? JSON.parse(media.siteSpecificJSON).altVideoUrl : JSON.parse(media.siteSpecificJSON).videoUrl;
+    var suffix = alt ? "_alt" : "";
+    var outputFile = _tempdir + media.id + suffix + '.mp4';
     outputFile = await conversion_utils.download_from_youtube_url(videoUrl, outputFile);
     return outputFile;
 }
 
-async function download_local_video(media) {
+async function download_local_video(media, alt = false) {
     console.log("download_local_video");
-    var videoUrl = JSON.parse(media.siteSpecificJSON).videoUrl;
-    var outputFile = _tempdir + media.id + '.mp4';
+    var videoUrl = alt ? JSON.parse(media.siteSpecificJSON).altVideoUrl : JSON.parse(media.siteSpecificJSON).videoUrl;
+    var suffix = alt ? "_alt" : "";
+    var outputFile = _tempdir + media.id + suffix + '.mp4';
     outputFile = await conversion_utils.copy_file(videoUrl, outputFile);
     return outputFile;
 }
 
-async function download_echo_lecture(media) {
+async function download_echo_lecture(media, alt = false) {
     console.log("download_echo_lecture");
-    var url = media.videoURL;
+    var videoUrl = alt ? JSON.parse(media.siteSpecificJSON).altVideoUrl : JSON.parse(media.siteSpecificJSON).videoUrl;
+    var suffix = alt ? "_alt" : "";
     var siteSpecificJSON = JSON.parse(media.siteSpecificJSON);
-    var dest = _tempdir + media.id + url.substring(url.lastIndexOf('.'));
-    var outputFile = await conversion_utils.downloadFile(url, siteSpecificJSON.download_header, dest);
+    var dest = _tempdir + media.id + suffix + videoUrl.substring(videoUrl.lastIndexOf('.'));
+    var outputFile = await conversion_utils.downloadFile(videoUrl, siteSpecificJSON.download_header, dest);
     console.log("Outputfile " + outputFile);
     return outputFile;
+}
+
+async function download_alt_video(task, media) {
+    if (JSON.parse(media.siteSpecificJSON).altVideoUrl.length > 0) {
+        var outputFile = await download_lecture(media);
+        await db.updateAltVideoFileName(task, outputFile);
+    }
 }
 
 async function processTasks(mediaIds) {
@@ -157,6 +167,7 @@ async function processTasks(mediaIds) {
         }
 
         var task = await db.addMSTranscriptionTask(mediaId, taskId, videoHashsum, path.resolve(outputFile));
+        await download_alt_video(task, media);
         if(!duplicate) {
             tasks.push(task);
         }
@@ -302,7 +313,7 @@ async function get_syllabus(cookiesAndHeader) {
 }
 
 async function extractSyllabusAndDownload(syllabus, download_header, courseOfferingId, params) {
-    console.log("CALLING EXTRACT SYLLABUS");    
+    console.log("CALLING EXTRACT SYLLABUS");
     var audio_data_arr = syllabus['data'];
     var mediaIds = [];
     var dateFormat = require('dateformat');
@@ -320,11 +331,14 @@ async function extractSyllabusAndDownload(syllabus, download_header, courseOffer
             var createdAt = media['createdAt'];
             var audioUrl = media['media']['current']['audioFiles'][0]['s3Url'];
             var videoUrl;
+            var altVideoUrl;
             if (params.stream == 0) {
                 videoUrl = media['media']['current']['primaryFiles'][1]['s3Url']; // 0 for SD, 1 for HD
+                altVideoUrl = media['media']['current']['secondaryFiles'][1]['s3Url']; // 0 for SD, 1 for HD
             } else {
                 videoUrl = media['media']['current']['secondaryFiles'][1]['s3Url']; // 0 for SD, 1 for HD
-            }            
+                altVideoUrl = media['media']['current']['primaryFiles'][1]['s3Url']; // 0 for SD, 1 for HD
+            }
             var termName = audio_data['lesson']['video']['published']['termName'];
             var lessonName = audio_data['lesson']['video']['published']['lessonName'];
             var courseName = audio_data['lesson']['video']['published']['courseName'];
@@ -340,6 +354,7 @@ async function extractSyllabusAndDownload(syllabus, download_header, courseOffer
                 createdAt: new Date(createdAt),
                 audioUrl: audioUrl,
                 videoUrl: videoUrl,
+                altVideoUrl: altVideoUrl,
                 download_header: download_header,
                 termName: termName,
                 lessonName: lessonName,

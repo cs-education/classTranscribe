@@ -326,6 +326,14 @@
                     "field": "log",
                     "seqType": "Sequelize.TEXT"
                 },
+                "altVideoLocalLocation": {
+                    "field": "altVideoLocalLocation",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "altVideoHashsum": {
+                    "field": "altVideoHashsum",
+                    "seqType": "Sequelize.TEXT"
+                },
                 "createdAt": {
                     "allowNull": false,
                     "field": "createdAt",
@@ -705,5 +713,5 @@
             "indexes": []
         }
     },
-    "revision": 4
+    "revision": 5
 }

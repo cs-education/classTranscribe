@@ -62,7 +62,7 @@ router.get('/courses/', function (request, response) {
             var createClassBtn = '';
             var userInfo = request.session.passport.user;
             // Super user hack
-            if (userInfo.mailId === 'mahipal2@illinois.edu') {
+            if (userInfo.mailId === 'mahipal2@illinois.edu' || userInfo.mailId == 'testuser@illinois.edu') {
                 form = getCreateClassForm(userInfo);
                 createClassBtn =
                     '<button class="btn" data-toggle="modal" data-target="#createPanel">' +

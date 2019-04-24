@@ -157,7 +157,7 @@ function generateItemHTML(id, start, video, part) {
         "<div class='col-sm-9 text-view' style = 'display:initial;' id='text-view-" + id +"'>" +
         "<a onclick=navigateToVideo('" + video + "'," + start + ") >" + part + "</a>" +
         "<div class='video-name-for-vtt' style='display:None;'>" +
-        "<a>" + srctoTitle[video] + "</a>" +
+        "<a><b>&nbsp;&nbsp;&nbsp;&nbsp;" + srctoTitle[video] + "</b></a>" +
         "</div>" +
         "</div>" +
         "<div class='col-sm-9 text-edit' style = 'display:none;' id='text-edit-" + id +"'>" +
@@ -189,7 +189,7 @@ function updateDownloadVttButton(srcid) {
 
 function generateDownloadVttButtonHTML(srcid) {
   return "<a class='btn download-button' href=\""+ srcid +"\") download>" +
-         "Down The Vtt File" +
+         "Download Captions" +
          "</a>"
 }
 
@@ -222,7 +222,8 @@ function update_search_results() {
         index = parseInt(result.ref);
         filteredSubs.push(data[index]);
     });
-    var queryObj = jslinq(filteredSubs);
+    var queryObj = jslinq(filteredSubs).orderBy(function(item) { return item.createdAt; });
+
     var res;
     if (fullCourseSearch) {
         res = queryObj.toList();
@@ -335,7 +336,6 @@ function update_search_results() {
             vLogger.timeupdate();
             var currentTimeinMillis = player.currentTime() * 1000;
             if (currentTimeinMillis > timeUpdateLastEnd || currentTimeinMillis < timeUpdateLastStart) {
-                console.log(currentTimeinMillis);
                 var res = currentVideoTranscriptions.where(function (item) {
                     // find the appropriate subtitle
                     return (item.start <= currentTimeinMillis);

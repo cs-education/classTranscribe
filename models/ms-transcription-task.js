@@ -10,7 +10,9 @@ module.exports = (sequelize, DataTypes) => {
         wavAudioLocalFile: DataTypes.TEXT,
         wavHashsum: DataTypes.TEXT,
         srtFileLocation: DataTypes.TEXT,
-        log: DataTypes.TEXT
+        log: DataTypes.TEXT,
+        altVideoLocalLocation: DataTypes.TEXT,
+        altVideoHashsum: DataTypes.TEXT
     });
     MSTranscriptionTask.associate = function (models) {
         models.MSTranscriptionTask.belongsTo(models.User, { foreignKey: 'taskCreatorUserId' });
