@@ -142,7 +142,7 @@ async function download_echo_lecture(media, alt = false) {
 async function download_alt_video(task, media) {
     var altVideoUrl = JSON.parse(media.siteSpecificJSON).altVideoUrl;
     if (altVideoUrl != null && altVideoUrl.length > 0) {
-        var outputFile = await download_lecture(media);
+        var outputFile = await download_lecture(media, alt=true);
         await db.updateAltVideoFileName(task, outputFile);
     }
 }
@@ -319,9 +319,7 @@ async function extractSyllabusAndDownload(syllabus, download_header, courseOffer
     console.log("CALLING EXTRACT SYLLABUS");
     var audio_data_arr = syllabus['data'];
     var mediaIds = [];
-    var dateFormat = require('dateformat');
     var playlist = await db.getPlaylistByCourseOfferingId(courseOfferingId);
-    var counter = playlist.length;
     var echoMediaIds = [];
     for (var j = 0; j < audio_data_arr.length; j++) {
         var audio_data = audio_data_arr[j];
