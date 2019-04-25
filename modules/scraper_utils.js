@@ -142,7 +142,7 @@ async function download_echo_lecture(media, alt = false) {
 async function download_alt_video(task, media) {
     var altVideoUrl = JSON.parse(media.siteSpecificJSON).altVideoUrl;
     if (altVideoUrl != null && altVideoUrl.length > 0) {
-        var outputFile = await download_lecture(media, alt=true);
+        var outputFile = await download_lecture(media, true);
         await db.updateAltVideoFileName(task, outputFile);
     }
 }

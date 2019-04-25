@@ -4,7 +4,7 @@ var url;
 
 function setWindow(win) {
     window = win
-    url = window.document.URL        ;
+    url = window.document.URL;
     courseOfferingId = url.substring(url.lastIndexOf('/') + 1);
 }
 
@@ -13,7 +13,7 @@ function log(action, item, json) {
     json.courseOfferingId = courseOfferingId;
     json.action = action;
     json.item = item;
-    console.log(json);
+    // console.log(json);
     $.post( "/log", json );
 
 }
