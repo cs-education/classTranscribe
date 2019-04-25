@@ -39,7 +39,7 @@ router.get('/getPlaylist/:courseOfferingId', function (request, response) {
                     var sitespecifcJSON = JSON.parse(result['siteSpecificJSON']);
                     video['name'] = ctr++ + ": " + dateformat(result['createdAt'], "mm-dd-yyyy") + ": " + sitespecifcJSON.lessonName;
                 }
-                else {
+                else {// if youtube
                     video['name'] = des.title;
                 }
                 video['sources'] = [{ src: result['videoLocalLocation'], type: 'video/mp4' }];

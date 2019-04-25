@@ -77,11 +77,7 @@ function getPlaylistByCourseOfferingId(courseOfferingId) {
 }
 
 async function doesEchoMediaExist(echoMediaId) {
-    var query = await sequelize.query("SELECT count(*) as count, id as mediaId\
-                FROM(Select JSON_VALUE(siteSpecificJSON, '$.mediaId') as echoMediaId, id FROM Media) a \
-                WHERE echoMediaId = ? \
-                GROUP BY id; ",
-        { replacements: [echoMediaId], type: sequelize.QueryTypes.SELECT }).catch(err => perror(err)); /* raw query */
+    var query = await getEchoMedia(echoMediaId);
     var count = 0;
     if (query.length > 0) {
         count = query[0].count;
@@ -90,6 +86,28 @@ async function doesEchoMediaExist(echoMediaId) {
     }
     console.log("EchoMediaid count:" + count);
     return count > 0 ? true : false;
+}
+
+async function getMediaIdForEchoMedia(echoMediaId) {
+  var query = await getEchoMedia(echoMediaId);
+  var mediaId;
+    if (query.length > 0) {
+        mediaId = query[0].mediaId;
+    } else {
+        mediaId = null;
+    }
+  console.log("EchoMediaid mediaId:" + mediaId);
+  return mediaId;
+}
+
+async function getEchoMedia(echoMediaId) {
+    var query = await sequelize.query("SELECT count(*) as count, id as mediaId\
+                    FROM(Select JSON_VALUE(siteSpecificJSON, '$.mediaId') as echoMediaId, id FROM Media) a \
+                    WHERE echoMediaId = ? \
+                    GROUP BY id; ",
+            { replacements: [echoMediaId], type: sequelize.QueryTypes.SELECT }).catch(err => perror(err)); /* raw query */
+    
+    return query;
 }
 
 async function getIncompleteTaskIdsForCourseOfferingId(courseOfferingId) {
@@ -118,7 +136,7 @@ async function doesYoutubeMediaExist(playlistId, title) {
     } else {
         count = 0;
     }
-    console.log("EchoMediaid count:" + count);
+    console.log("YoutubeMediaid count:" + count);
     return count > 0 ? true : false;
 }
 
@@ -233,6 +251,21 @@ function getMedia(mediaId) {
 
 function getMediaByTask(taskId) {
     return getTask(taskId).then(task => getMedia(task.mediaId));
+}
+
+async function getTaskIdForMediaId(mediaId) {
+  var query = await sequelize.query("Select taskId from TaskMedia as tm, Media as M, MSTranscriptionTasks as MST \
+  WHERE M.id = ? and MST.id = tm.taskId and M.id = tm.mediaId",
+        { replacements: [mediaId], type: sequelize.QueryTypes.SELECT }).catch(err => perror(err)); /* raw query */
+
+  var taskId;
+
+  if (query.length > 0) {
+        taskId = query[0].taskId;
+  } else {
+    taskId = null;
+  }
+  return taskId;
 }
 
 function getEchoSection(sectionId) {
@@ -901,5 +934,7 @@ module.exports = {
     getUpdationJobsBetween: getUpdationJobsBetween,
     getJobForCourseOfferingId: getJobForCourseOfferingId,
     addLogs: addLogs,
-    updateAltVideoFileName: updateAltVideoFileName
+    updateAltVideoFileName: updateAltVideoFileName,
+    getMediaIdForEchoMedia: getMediaIdForEchoMedia,
+    getTaskIdForMediaId: getTaskIdForMediaId
 }

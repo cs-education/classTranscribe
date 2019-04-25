@@ -9,7 +9,8 @@ async function downloadFile(url, header, dest) {
     console.log('downloadFile');
     console.log(url, header, dest);
     const { spawn } = require('child-process-promise');
-    const curl = spawn('curl', ['-o', dest, '-O', url, '-H', header, '--silent']);
+    header = header.replace(';','\;');
+    const curl = spawn("curl", ["-o", dest, "-O", url, "-H", header, "--silent"]);
     curl.childProcess.stdout.on('data', (data) => {
         console.log(`stdout: ${data}`);
     });

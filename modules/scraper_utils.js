@@ -112,7 +112,8 @@ async function download_youtube_video(media, alt = false) {
     console.log("download_youtube_video");
     var videoUrl = alt ? JSON.parse(media.siteSpecificJSON).altVideoUrl : JSON.parse(media.siteSpecificJSON).videoUrl;
     var suffix = alt ? "_alt" : "";
-    var outputFile = _tempdir + media.id + suffix + '.mp4';
+    var randstr = Math.random().toString(36).substring(4);
+    var outputFile = _tempdir + '_' + randstr + '_' + media.id + suffix + '.mp4';
     outputFile = await conversion_utils.download_from_youtube_url(videoUrl, outputFile);
     return outputFile;
 }
@@ -131,14 +132,16 @@ async function download_echo_lecture(media, alt = false) {
     var videoUrl = alt ? JSON.parse(media.siteSpecificJSON).altVideoUrl : JSON.parse(media.siteSpecificJSON).videoUrl;
     var suffix = alt ? "_alt" : "";
     var siteSpecificJSON = JSON.parse(media.siteSpecificJSON);
-    var dest = _tempdir + media.id + suffix + videoUrl.substring(videoUrl.lastIndexOf('.'));
+    var randstr = Math.random().toString(36).substring(4);
+    var dest = _tempdir + '_' + randstr + '_' + media.id + suffix + videoUrl.substring(videoUrl.lastIndexOf('.'));
     var outputFile = await conversion_utils.downloadFile(videoUrl, siteSpecificJSON.download_header, dest);
     console.log("Outputfile " + outputFile);
     return outputFile;
 }
 
 async function download_alt_video(task, media) {
-    if (JSON.parse(media.siteSpecificJSON).altVideoUrl.length > 0) {
+    var altVideoUrl = JSON.parse(media.siteSpecificJSON).altVideoUrl;
+    if (altVideoUrl != null && altVideoUrl.length > 0) {
         var outputFile = await download_lecture(media);
         await db.updateAltVideoFileName(task, outputFile);
     }
@@ -342,10 +345,8 @@ async function extractSyllabusAndDownload(syllabus, download_header, courseOffer
             var termName = audio_data['lesson']['video']['published']['termName'];
             var lessonName = audio_data['lesson']['video']['published']['lessonName'];
             var courseName = audio_data['lesson']['video']['published']['courseName'];
-            if (await db.doesEchoMediaExist(echoMediaId)) {
-                continue;
-            }
 
+            
             var mediaJson = {
                 sectionId: sectionId,
                 mediaId: echoMediaId,
@@ -358,9 +359,24 @@ async function extractSyllabusAndDownload(syllabus, download_header, courseOffer
                 download_header: download_header,
                 termName: termName,
                 lessonName: lessonName,
-                courseName: courseName,
-                title: (counter++ + 1) + ":" + dateFormat(createdAt, "yyyy-mm-dd")
+                courseName: courseName
             };
+
+            if (await db.doesEchoMediaExist(echoMediaId)) {
+                var existingMediaId = await db.getMediaIdForEchoMedia(echoMediaId);
+                var existingMedia = await db.getMedia(existingMediaId);
+                var existingTaskId = await db.getTaskIdForMediaId(existingMediaId) ;
+                var existingTask = await db.getTask(existingTaskId);
+                console.log('ADDING ALT VIDEO' + echoMediaId + ',   ' + existingMediaId + ', ' + existingTaskId);
+                if (existingTask.altVideoLocalLocation == null || existingTask.altVideoLocalLocation.length == 0) {
+                    // console.log(existingTask.dataValues);
+                    await existingMedia.update({
+                        siteSpecificJSON: JSON.stringify(mediaJson)
+                    });
+                    await download_alt_video(existingTask, existingMedia);
+                }
+                continue;
+            }
             echoMediaIds.push(echoMediaId);
             var mediaId = await db.addToMediaAndCourseOfferingMedia(mediaJson.videoUrl, 0, mediaJson, courseOfferingId);
             mediaIds.push(mediaId);
