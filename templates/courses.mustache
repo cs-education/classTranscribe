@@ -250,8 +250,8 @@
         });
     });
 
-    $(document).on('click',".form-check-input",function (e) {
-        var fterm=$("#termFilterData input:checked").map(function(i,e){return e.value;}).get().join(';;');
+    function refreshFilters() {
+         var fterm=$("#termFilterData input:checked").map(function(i,e){return e.value;}).get().join(';;');
         var fsubject=$("#subjectFilterData input:checked").map(function(i,e){return e.value;}).get().join(';;');
         $.ajax({
             url : "/courses/applyfilter",
@@ -264,7 +264,14 @@
                 alert(errorThrown);
             }
         });
+    }
+    refreshFilters();
+    $(document).on('click',".form-check-input",function (e) {
+       refreshFilters();
     });
+
+
+
     // Manage
     $(document).on('click',".actionbtn.mnbtn",function (e) {
         e.preventDefault();
