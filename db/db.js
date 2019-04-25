@@ -66,7 +66,7 @@ async function getMediaIdsByCourseOfferingId(courseOfferingId) {
 
 function getPlaylistByCourseOfferingId(courseOfferingId) {
   return sequelize.query(
-   'SELECT DISTINCT M.id as mediaId, mst.videoLocalLocation, mst.srtFileLocation, M.siteSpecificJSON, M.createdAt, M.sourceType as sourceType \
+   'SELECT DISTINCT M.id as mediaId, mst.videoLocalLocation, mst.altVideoLocalLocation, mst.srtFileLocation, M.siteSpecificJSON, M.createdAt, M.sourceType as sourceType \
     FROM MSTranscriptionTasks AS mst \
     INNER JOIN TaskMedia as tm on tm.taskId = mst.id \
     INNER JOIN Media as M on tm.mediaId = M.id \

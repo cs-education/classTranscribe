@@ -42,7 +42,12 @@ router.get('/getPlaylist/:courseOfferingId', function (request, response) {
                 else {// if youtube
                     video['name'] = des.title;
                 }
-                video['sources'] = [{ src: result['videoLocalLocation'], type: 'video/mp4' }];
+                var sources = [{ src: result['videoLocalLocation'], type: 'video/mp4' , "label":"View 1"}];
+                if(result['altVideoLocalLocation'] != null && result['altVideoLocalLocation'].length > 0) {
+                    sources.push({ src: result['altVideoLocalLocation'], type: 'video/mp4', "label":"View 2" })
+                }
+                
+                video['sources'] = sources;
                 video['textTracks'] = [{ src: result['srtFileLocation'], srclang: 'eng', label: 'English' }];
                 video['thumbnail'] = false;
                 return video;

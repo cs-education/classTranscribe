@@ -9,8 +9,14 @@ const db = require('../db/db');
 
 router.post('/log',async function (req, res) {
 
-    userId = req.user.id;
-    mailId = req.user.mailId;
+    if (typeof req.user.id !== 'undefined') {
+        userId = req.user.id;
+        mailId = req.user.mailId;
+    } else {
+        userId = 'NotLoggedIn';
+        mailId = 'NotLoggedIn';
+    }
+    
     json = req.body;
     json.mailId = mailId;
     await db.addLogs(userId, json.courseOfferingId, json.action, json.item, json.time, JSON.stringify(json));
