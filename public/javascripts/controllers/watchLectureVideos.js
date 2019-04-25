@@ -130,7 +130,7 @@ function addTranscriptionsToDiv(currentList) {
             if (currentList[item].part === '') {
                 continue;
             }
-            var searchitem = generateItemHTML(currentList[item].id, currentList[item].start, currentList[item].video, currentList[item].part);
+            var searchitem = generateItemHTML(currentList[item].id, currentList[item].start, currentList[item].video, currentList[item].part, currentList[item].subId);
             live_transcriptions_div.append(searchitem);
         }
         // Append with the dummy transcriptions (with negative ids)
@@ -144,8 +144,8 @@ function addTranscriptionsToDiv(currentList) {
     attachTranscriptionItemListeners();
 }
  
-function generateItemHTML(id, start, video, part) {
-    return "<div class='list-group-item transcription-item' style='display:initial;' id='" + id + "'>" +
+function generateItemHTML(id, start, video, part, subId) {
+    return "<div class='list-group-item transcription-item' style='display:initial;' id='" + video.substring(video.lastIndexOf('/')+1, video.indexOf('.')) + "-" + subId + "'>" +
         "<div class= 'row'>" + 
         "<div class='col-sm-3'><tt>" +
         utils.msToTime(start) + 
@@ -193,11 +193,19 @@ function generateDownloadVttButtonHTML(srcid) {
          "</a>"
 }
 
-function scrollToListItem(listItemId) {
+function scrollToListItem(listItemSubId) {
+    var video = player.currentSrc();
+    video = video.substring(video.lastIndexOf('/')+1, video.indexOf('.'))
+    var listItemId = video + '-' + listItemSubId;
     $("#live_transcriptions").children().removeClass('active_line');
     $("#" + (listItemId)).addClass('active_line');
     if (autoScroll) {
-        $("#live_transcriptions").scrollTo("#" + (listItemId - 1));
+        if(listItemSubId == 0) {
+            $("#live_transcriptions").scrollTo("#" + (video + '-' + listItemSubId));
+        } else {
+            $("#live_transcriptions").scrollTo("#" + (video + '-' + (listItemSubId - 1)));
+        }
+        
     }
 }
 
@@ -342,7 +350,7 @@ function update_search_results() {
                 }).orderByDescending(function (item) { return item.start; }).take(1).toList();
 
                 for (var item in res) {
-                    scrollToListItem(res[item].id);
+                    scrollToListItem(res[item].subId);
                     timeUpdateLastEnd = res[item].end;
                     timeUpdateLastStart = res[item].start;
                 }
