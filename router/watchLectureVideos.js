@@ -66,22 +66,26 @@ router.get('/getSrts/:courseOfferingId', async function (request, response) {
             var allSubs = [];
             await utils.asyncForEach(values, async function (value) {
                 var subctr = 0;
-                var subFile = value['srtFileLocation'];
-                var videoFile = value['videoLocalLocation'];
-                let results = await vttToJson(subFile);
-                await utils.asyncForEach(results, async function (result) {
-                    if (result.subtitles.length > 0) {
-                      result.part = result.subtitles[0];
-                    } else {
-                      result.part = ''
-                    }
-                    result.createdAt = value.createdAt;
-                    result.subFile = subFile;
-                    result.video = videoFile;
-                    result.subId = subctr++;
-                    result.id = counter++;
-                    allSubs.push(result);
-                });
+                try {                    
+                    var subFile = value['srtFileLocation'];
+                    var videoFile = value['videoLocalLocation'];
+                    let results = await vttToJson(subFile);
+                    await utils.asyncForEach(results, async function (result) {
+                        if (result.subtitles.length > 0) {
+                        result.part = result.subtitles[0];
+                        } else {
+                        result.part = ''
+                        }
+                        result.createdAt = value.createdAt;
+                        result.subFile = subFile;
+                        result.video = videoFile;
+                        result.subId = subctr++;
+                        result.id = counter++;
+                        allSubs.push(result);
+                    });
+                } catch(err) {
+                    console.log(err);
+                }
             });
             return allSubs;
         }).catch(err => { perror(err); });
