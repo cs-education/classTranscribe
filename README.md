@@ -2,7 +2,7 @@
 
 ClassTranscribe is an open-source, web-based platform that leverages crowdsourcing to address the problem of accurate,
 reliable and fast transcriptions of college lectures. Completed transcriptions provide search functionality that augments
-existing lecture recordings and enable enhanced educational features including closed captioning. Some early ClassTranscribe conference papers include - [https://www.slate2015.org/files/submissions/Ren15-CAN.pdf](Slate 2015) and [https://www.asee.org/public/conferences/140/papers/26836/view](ASEE 2019).
+existing lecture recordings and enable enhanced educational features including closed captioning. Some early ClassTranscribe conference papers include - [Slate 2015](https://www.slate2015.org/files/submissions/Ren15-CAN.pdf) and [ASEE 2019](https://www.asee.org/public/conferences/140/papers/26836/view).
 
 ## How to run your own instance of ClassTranscribe
 
