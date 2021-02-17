@@ -13,6 +13,7 @@ body {
 .player-container {
   background: #1a1a1a;
   overflow: auto;
+  overflow-y: hidden;
   /*width: 900px;*/
   width: 100%;
   margin-left: 0;
