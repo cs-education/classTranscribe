@@ -51,7 +51,7 @@
     "password-hash": "^1.2.2",
     "password-validator": "^4.1.1",
     "promise-fs": "^2.0.1",
-    "pug": "^2.0.3",
+    "pug": "^3.0.1",
     "redis": "^2.0.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.2",
