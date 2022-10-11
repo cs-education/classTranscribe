@@ -47,7 +47,7 @@
     "passport-google-oauth": "^1.0.0",
     "passport-hash": "^0.6.1",
     "passport-local": "^1.0.0",
-    "passport-saml": "0.9.0",
+    "passport-saml": "3.2.2",
     "password-hash": "^1.2.2",
     "password-validator": "^4.1.1",
     "promise-fs": "^2.0.1",
